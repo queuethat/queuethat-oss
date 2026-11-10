@@ -40,7 +40,26 @@ echo "migrate: applying migrations"
 # --include-all also applies a migration older than the newest one recorded, so a release that
 # slots a migration in order cannot be skipped. Applied versions are tracked in
 # supabase_migrations.schema_migrations; with nothing pending this changes nothing.
-supabase db push --db-url "$db_url" --include-all --yes
+#
+# pg_cron runs its jobs while migrations are applied, on a first install as soon as a migration
+# schedules them. A job that locks two tables in one order can meet a migration that alters them
+# in the other; Postgres then cancels one of the two, and when it is the migration the push fails
+# although nothing is wrong. Each migration is one transaction, so the push is simply run again,
+# up to three times. Any other failure stops here at once.
+attempt=1
+while :; do
+  if supabase db push --db-url "$db_url" --include-all --yes >/tmp/push.log 2>&1; then
+    cat /tmp/push.log
+    break
+  fi
+  cat /tmp/push.log >&2
+  if [ "$attempt" -ge 3 ] || ! grep -qE 'deadlock detected|SQLSTATE 40P01' /tmp/push.log; then
+    exit 1
+  fi
+  echo "migrate: a scheduled job and a migration deadlocked (attempt $attempt of 3); applying again" >&2
+  attempt=$((attempt + 1))
+  sleep 2
+done
 
 # Demo data is only ever added: a clean install (DEMO_MODE unset) has zero organizations and
 # starts in onboarding. Turning DEMO_MODE off later leaves the demo organization in place.
