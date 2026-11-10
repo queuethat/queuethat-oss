@@ -169,8 +169,10 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Install browsers
         run: pnpm exec playwright install --with-deps chromium webkit
-      - name: Start trimmed Supabase stack
-        run: pnpm exec supabase start -x studio,imgproxy,logflare,vector,storage-api,edge-runtime,supavisor,mailpit
+      # Storage and the mail catcher stay on, as in `pnpm ci:local`: the upload specs (branding,
+      # signage) and the email specs (sign-in codes, report previews) need them.
+      - name: Start Supabase stack
+        run: pnpm exec supabase start -x studio,imgproxy,logflare,vector,edge-runtime,supavisor
       - name: Playwright
         env:
           FULL_MATRIX: ${{ github.event_name == 'schedule' }}
