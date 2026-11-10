@@ -1,14 +1,50 @@
 # Browser tests (Playwright)
 
 Runs the web app against the local Supabase stack on four device projects: `desktop-chrome`,
-`iphone` (WebKit), `ipad` (WebKit) and `galaxy-tab`. Pull requests run `desktop-chrome` and
-`iphone`; the nightly CI run uses all four.
+`iphone` (WebKit), `ipad` (WebKit) and `galaxy-tab`.
 
 ```sh
 pnpm db:start                                   # once; needs Docker
+pnpm test:e2e:core                              # the core journeys on desktop Chrome
 pnpm test:e2e --project=desktop-chrome          # resets the database first
 E2E_SKIP_DB_RESET=1 pnpm test:e2e smoke         # keep data between local reruns
 ```
+
+## What CI runs
+
+| When                 | Tests                       | Projects                                |
+| -------------------- | --------------------------- | --------------------------------------- |
+| Pull request         | the core journeys (`@core`) | `desktop-chrome`, one job               |
+| Push to `main`       | everything                  | `desktop-chrome` and `iphone`, 4 shards |
+| Nightly              | everything                  | all four, 4 shards                      |
+| `pnpm ci:local`      | everything                  | `desktop-chrome` and `iphone`           |
+| `pnpm test:e2e:core` | the core journeys (`@core`) | `desktop-chrome`                        |
+
+A pull request that only touches documentation or repository housekeeping files runs no browser
+tests at all; the list is the `app` filter in `.github/workflows/ci.yml`.
+
+The price of the fast pull request: a regression outside the core journeys is found after the
+merge, as a red CI run on `main`, not before it. Whoever merged is expected to look at that run
+and fix or revert. If your change is anywhere near a spec that is not in the core set, run that
+spec, or `pnpm ci:local`, before you open the pull request.
+
+## The core journeys
+
+A test is in the core set when its title ends in `@core`. Playwright reads that as a tag, and
+`pnpm test:e2e:core` runs `--grep @core`. List them with:
+
+```sh
+pnpm test:e2e:core --list
+```
+
+They cover what must never break: a guest joins and follows their place, staff sign in, call,
+serve and mark a no-show, a guest leaves and comes back, the kiosk, the TV, booking, a new
+owner's first line, and staff seeing only their own organization. Keep the set at a few minutes
+on one runner (about 25 tests). To add a test, append ` @core` to its title; to add a journey,
+prefer tagging one existing test over writing a new one. A tagged test still runs in the full
+suite like any other.
+
+## Writing tests
 
 `pnpm test:e2e:pilot` runs `day-in-the-shop.spec.ts` against a deployed app with no database
 access. Code that spec reaches must not import the

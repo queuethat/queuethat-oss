@@ -2,7 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 import { operatorEnv, supabaseEnv } from './tests/e2e/support/env.ts';
 
 // F10 (#20). Needs the local stack (`pnpm db:start`); global setup resets it before each run.
-// Pull requests run `desktop-chrome` and `iphone`; the nightly CI run uses every project.
+// CI runs the tests tagged @core on `desktop-chrome` for a pull request, everything on
+// `desktop-chrome` and `iphone` for a push to main, and every project nightly (tests/e2e/README.md).
 const supabase = supabaseEnv();
 const port = 5173;
 /** Port of the production preview server; csp.spec.ts reads it as E2E_PREVIEW_URL. */

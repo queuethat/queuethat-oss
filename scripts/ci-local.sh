@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Runs the same checks as GitHub CI on this machine: `pnpm ci:local`.
+# Runs every check GitHub CI runs, on this machine: `pnpm ci:local`. That includes the whole
+# browser suite, which GitHub runs on main after the merge; a pull request there runs only the
+# core journeys (`pnpm test:e2e:core`).
 # Use it before every handoff, and whenever GitHub Actions is unavailable.
 # Needs Docker. In the Claude cloud container start it first: dockerd > /tmp/dockerd.log 2>&1 &
 set -euo pipefail
@@ -18,7 +20,7 @@ fi
 bash scripts/ci-db.sh
 
 echo "=== e2e"
-# Same projects as GitHub CI on a PR. WebKit is not preinstalled in the Claude container:
+# The whole suite on the projects GitHub CI runs on a push to main. WebKit is not preinstalled in the Claude container:
 # run `pnpm exec playwright install --with-deps webkit` once. E2E_PROJECTS overrides the list.
 e2e_args=()
 for project in ${E2E_PROJECTS:-desktop-chrome iphone}; do e2e_args+=("--project=$project"); done

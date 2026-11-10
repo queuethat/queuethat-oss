@@ -47,6 +47,7 @@ and `owner@other.test` (a second organisation, for cross-tenant checks). The gue
 | Unit tests, lint, types, build               | `pnpm test`, `pnpm lint`, `pnpm typecheck`, `pnpm build`                                |
 | Database tests (pgTAP)                       | `pnpm test:db`                                                                          |
 | Browser tests                                | `pnpm test:e2e` (see [tests/e2e/README.md](tests/e2e/README.md))                        |
+| Browser tests, core journeys only            | `pnpm test:e2e:core`                                                                    |
 | Screenshot baselines                         | `pnpm test:visual` (see [docs/ops/visual-regression.md](docs/ops/visual-regression.md)) |
 | Self-host stack checks                       | `pnpm test:selfhost`                                                                    |
 | Reset the database                           | `pnpm db:reset`                                                                         |
@@ -56,12 +57,19 @@ and `owner@other.test` (a second organisation, for cross-tenant checks). The gue
 | **Everything CI runs**                       | **`pnpm ci:local`**                                                                     |
 
 `pnpm ci:local` runs the same scripts as GitHub Actions: static checks, database tests, the
-Playwright suite on desktop Chrome and iPhone (WebKit), and the screenshot baselines. It needs
-Docker and takes a while. The iPhone project needs WebKit once:
+whole Playwright suite on desktop Chrome and iPhone (WebKit), and the screenshot baselines. It
+needs Docker and takes a while. The iPhone project needs WebKit once:
 
 ```sh
 pnpm exec playwright install webkit && pnpm exec playwright install-deps webkit
 ```
+
+On a pull request GitHub runs less than that, to answer quickly: the static and database checks
+as before, but of the browser tests only the core journeys on desktop Chrome
+(`pnpm test:e2e:core`, a few minutes), and none for a change that only touches documentation.
+The whole browser suite runs on `main` after the merge and every night. So a green pull request
+does not prove that nothing outside the core journeys broke: that shows up as a red run on
+`main`. `pnpm ci:local` is how you find out before merging.
 
 ## Generated files
 

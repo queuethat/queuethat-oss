@@ -1,5 +1,13 @@
-# F3 (#13): the full check suite for every PR. Branch protection should require only `ci-ok`,
-# which always reports, so path-skipped jobs never block a merge.
+# F3 (#13): the checks for every PR. Branch protection should require only `ci-ok`, which
+# always reports, so path-skipped jobs never block a merge.
+#
+# Browser tests are tiered so a pull request gets its answer quickly:
+#   pull request   the core journeys (tests tagged @core) on desktop Chrome, in one job;
+#                  none at all when the change cannot reach the app (docs and the like)
+#   push to main   the whole suite on desktop Chrome and iPhone, four shards
+#   nightly        the whole suite on every device project
+# A regression outside the core journeys therefore shows up as a red run on main after the
+# merge, not on the pull request.
 name: CI
 
 on:
@@ -12,8 +20,10 @@ on:
     - cron: '0 7 * * *'
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  # Only a pull request's superseded run is cancelled. Each push to main keeps its own run, so
+  # the full browser suite reports for every merge even when two land close together.
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -27,12 +37,15 @@ jobs:
     outputs:
       db: ${{ steps.filter.outputs.db }}
       compliance: ${{ steps.filter.outputs.compliance }}
+      app: ${{ steps.app.outputs.app }}
     permissions:
       contents: read
       pull-requests: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Only pull requests are filtered: every other event runs everything, whatever changed.
       - id: filter
+        if: github.event_name == 'pull_request'
         uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         with:
           filters: |
@@ -52,6 +65,30 @@ jobs:
               - 'package.json'
               - 'pnpm-lock.yaml'
               - '.github/workflows/ci.yml'
+      # True when at least one changed file is none of the kinds below, which is to say it
+      # could change what the browser tests see. A file has to match every pattern to count,
+      # hence the separate step: `every` would turn the lists above into "all of".
+      # Anything not listed here runs the browser tests, so a new kind of file is safe by default.
+      - id: app
+        if: github.event_name == 'pull_request'
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        with:
+          predicate-quantifier: every
+          filters: |
+            app:
+              - '!**/*.md'
+              - '!docs/**'
+              - '!LICENSE*'
+              - '!.github/ISSUE_TEMPLATE/**'
+              - '!.github/CODEOWNERS'
+              - '!.github/dependabot.yml'
+              - '!.github/labels.yml'
+              - '!.github/license-policy.json'
+              - '!.github/scripts/**'
+              - '!.github/workflows/dependency-review.yml'
+              - '!.github/workflows/labels.yml'
+              - '!.github/workflows/pr-checks.yml'
+              - '!.github/workflows/selfhost-smoke.yml'
 
   static:
     runs-on: ubuntu-latest
@@ -152,15 +189,54 @@ jobs:
         if: env.SKIP_UPGRADE != '1'
         run: npx --yes supabase@2.122.0 migration up --local
 
+  e2e-core:
+    # The pull request's browser tests: the tests tagged @core, on desktop Chrome, in one job.
+    # Skipped when the change cannot reach the app (see the `app` filter in `changes`).
+    # The whole suite runs in `e2e` below once the change is on main.
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.app == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: ${{ env.NODE_VERSION_FILE }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install browsers
+        run: pnpm exec playwright install --with-deps chromium
+      # The same stack as the full run, so a core test never behaves differently here.
+      - name: Start Supabase stack
+        run: |
+          # The stack's ports (55320-55329) sit in Linux's ephemeral range, so an outbound connection
+          # (an image pull, say) can be handed one of them first and the container then fails to bind.
+          sudo sysctl -qw net.ipv4.ip_local_reserved_ports=55320-55329
+          pnpm exec supabase start -x studio,imgproxy,logflare,vector,edge-runtime,supavisor
+      - name: Playwright (core journeys)
+        run: pnpm test:e2e:core
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: playwright-core-${{ github.run_attempt }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+          if-no-files-found: ignore
+
   e2e:
-    # F10 (#20): Playwright against the local stack. PRs run desktop Chrome and iPhone WebKit;
-    # the nightly schedule runs every project. Traces and videos upload on failure; the smoke
-    # spec's happy-path videos upload on every run.
+    # F10 (#20): the whole Playwright suite against the local stack. Runs on every push to main
+    # (desktop Chrome and iPhone WebKit) and on the nightly schedule (every project), not on pull
+    # requests: those run `e2e-core`. A failure here is a red CI run on the main branch's commit.
+    # Traces and videos upload on failure; the smoke spec's happy-path videos upload on every run.
     #
-    # Split into four shards. One runner needs about 45 minutes for the two pull-request
-    # projects, which the 25-minute limit cancelled on every run; each shard has its own
-    # database, so they do not interfere. The limit is 40 minutes because the nightly run covers
-    # four device projects, twice the pull-request load per shard.
+    # Split into four shards. One runner needs about 45 minutes for the two push projects,
+    # which the 25-minute limit cancelled on every run; each shard has its own database, so
+    # they do not interfere. The limit is 40 minutes because the nightly run covers four device
+    # projects, twice the push load per shard.
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     strategy:
@@ -204,7 +280,9 @@ jobs:
 
   ci-ok:
     if: always()
-    needs: [static, db, compliance, db-upgrade, e2e]
+    # `changes` is here so that a failed paths filter fails the roll-up: the jobs that wait on
+    # it would otherwise be skipped, and skipped counts as fine.
+    needs: [changes, static, db, compliance, db-upgrade, e2e-core, e2e]
     runs-on: ubuntu-latest
     steps:
       - name: All required jobs passed or were skipped
