@@ -8,7 +8,7 @@ import { AuthCard, readCredentials } from '../../features/auth/AuthForm.tsx';
 import { CodeForm } from '../../features/auth/CodeForm.tsx';
 import { ResendEmail } from '../../features/auth/ResendEmail.tsx';
 import { safeNext } from '../../features/auth/next.ts';
-import { LEGAL_URLS } from '../../features/marketing/company.ts';
+import { legalUrls } from '../../features/marketing/company.ts';
 import { LegalLink } from '../../features/marketing/LegalLink.tsx';
 
 export const Route = createFileRoute('/auth/sign-up')({
@@ -21,6 +21,7 @@ const consentLink = 'inline-flex min-h-target items-center font-medium underline
 
 function SignUpPage() {
   const { t } = useTranslation('auth');
+  const legal = legalUrls();
   const next = safeNext(Route.useSearch().next);
   const signUp = useSignUp();
   const captcha = useAuthCaptcha();
@@ -71,16 +72,19 @@ function SignUpPage() {
             minLength={8}
             required
           />
-          <p className="text-sm text-muted" data-testid="signup-consent">
-            <Trans
-              t={t}
-              i18nKey="signUp.consent"
-              components={{
-                terms: <LegalLink href={LEGAL_URLS.terms} className={consentLink} />,
-                privacy: <LegalLink href={LEGAL_URLS.privacy} className={consentLink} />,
-              }}
-            />
-          </p>
+          {/* The sentence names both pages, so it shows only when the operator has published both. */}
+          {legal.terms && legal.privacy ? (
+            <p className="text-sm text-muted" data-testid="signup-consent">
+              <Trans
+                t={t}
+                i18nKey="signUp.consent"
+                components={{
+                  terms: <LegalLink href={legal.terms} className={consentLink} />,
+                  privacy: <LegalLink href={legal.privacy} className={consentLink} />,
+                }}
+              />
+            </p>
+          ) : null}
           {captcha.widget}
           <Button
             type="submit"

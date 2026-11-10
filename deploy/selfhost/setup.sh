@@ -67,12 +67,14 @@ if [ "$rotate" = 1 ] && [ -f "$env_file" ]; then
   [ -n "$signup" ] || { [ "$(old DISABLE_SIGNUP)" = false ] && signup=open || signup=invite; }
   [ -n "$smtp_host" ] || { smtp_host=$(old SMTP_HOST); smtp_port=$(old SMTP_PORT); smtp_user=$(old SMTP_USER); smtp_pass=$(old SMTP_PASS); smtp_from=$(old SMTP_ADMIN_EMAIL); }
   keep_turnstile=$(old TURNSTILE_SECRET_KEY); keep_tunnel=$(old TUNNEL_TOKEN); keep_redirects=$(old ADDITIONAL_REDIRECT_URLS)
+  keep_terms=$(old TERMS_URL); keep_privacy=$(old PRIVACY_URL); keep_support=$(old SUPPORT_EMAIL)
 fi
 [ "$demo" = 1 ] || { [ "$rotate" = 1 ] && [ "$(old DEMO_MODE)" = true ] && demo=1; } || true
 keep_demo_password=$(old DEMO_PASSWORD)
 keep_recipient=$(old BACKUP_AGE_RECIPIENT)
 keep_recipient=${keep_recipient:-}
 keep_turnstile=${keep_turnstile:-} keep_tunnel=${keep_tunnel:-} keep_redirects=${keep_redirects:-}
+keep_terms=${keep_terms:-} keep_privacy=${keep_privacy:-} keep_support=${keep_support:-}
 
 ask() { # ask VARNAME "prompt" default
   [ "$interactive" = 1 ] && [ -t 0 ] || return 0
@@ -150,6 +152,10 @@ trap 'rm -f "$tmp"' EXIT
   echo "# Written by setup.sh on $(date -u +%Y-%m-%dT%H:%M:%SZ). Secrets: never commit or share this file."
   echo "PUBLIC_URL=$public_url"
   echo "ADDITIONAL_REDIRECT_URLS=$keep_redirects"
+  # Your own legal pages and support inbox; empty hides the links and the support form.
+  echo "TERMS_URL=$keep_terms"
+  echo "PRIVACY_URL=$keep_privacy"
+  echo "SUPPORT_EMAIL=$keep_support"
   echo "POSTGRES_PASSWORD=$postgres_password"
   echo "JWT_SECRET=$jwt_secret"
   echo "JWT_EXPIRY=3600"

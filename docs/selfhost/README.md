@@ -42,6 +42,22 @@ server and never put it in a browser.
 
 To look around without any of this, use [demo mode](#demo-mode).
 
+### Your own terms, privacy notice and support inbox
+
+The hosted service links guests and staff to its own legal pages and support inbox. A self-hosted
+install never does: until you set these in `.env`, the links and the staff "Contact support" form
+are simply not shown.
+
+| Variable        | Where it appears                                                                              |
+| --------------- | --------------------------------------------------------------------------------------------- |
+| `TERMS_URL`     | Beside the text-message opt-in on the join page, on the sign-up form, and at `/terms`         |
+| `PRIVACY_URL`   | The same places, the "how long we keep your details" sentence, and at `/privacy`              |
+| `SUPPORT_EMAIL` | The staff "Contact support" form sends its email here (it needs SMTP to deliver)              |
+
+Apply a change with `docker compose up -d`. `./setup.sh --rotate` keeps all three. If you send
+text messages, carriers expect the opt-in to link to your terms and privacy notice, so set both
+before turning SMS on.
+
 ### What the server needs to reach
 
 The `web` and `migrate` images are built on the server from this repository, so the first

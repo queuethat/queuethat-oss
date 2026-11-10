@@ -53,13 +53,31 @@ beforeEach(() => {
   setOnline(true);
   window.history.pushState({}, '', '/admin/queues?token=SECRET#frag');
 });
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  delete window.__APP_CONFIG__;
+});
 
 describe('ContactSupportButton', () => {
   it('renders nothing for a signed-out visitor', () => {
     m.session.current = null;
     show();
     expect(screen.queryByRole('button', { name: 'Contact support' })).toBeNull();
+  });
+
+  it('renders nothing on a self-hosted install with no support inbox', () => {
+    window.__APP_CONFIG__ = { SUPPORT_EMAIL: '' };
+    show();
+    expect(screen.queryByRole('button', { name: 'Contact support' })).toBeNull();
+  });
+
+  it("names a self-hosted install's own inbox to someone without a business", async () => {
+    window.__APP_CONFIG__ = { SUPPORT_EMAIL: 'help@shop.example' };
+    m.org.current = null;
+    const user = userEvent.setup();
+    show();
+    const dialog = await openDialog(user);
+    expect(within(dialog).getByRole('link').getAttribute('href')).toBe('mailto:help@shop.example');
   });
 
   it('keeps Send disabled until there is a subject and a message, and ignores blanks', async () => {

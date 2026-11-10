@@ -6,6 +6,7 @@ import { RetentionNotice } from './RetentionNotice.tsx';
 beforeAll(() => loadNamespaces('guest-join'));
 afterEach(async () => {
   cleanup();
+  delete window.__APP_CONFIG__;
   await i18n.changeLanguage('en');
 });
 
@@ -16,6 +17,19 @@ describe('RetentionNotice', () => {
       'Demo Barber keeps your visit details for 14 days.',
     );
     expect(screen.getByRole('link').getAttribute('href')).toBe('https://queuethat.com/privacy');
+  });
+
+  it("links to a self-hosted install's own privacy notice", () => {
+    window.__APP_CONFIG__ = { PRIVACY_URL: 'https://shop.example/privacy' };
+    render(<RetentionNotice business="Demo Barber" days={14} />);
+    expect(screen.getByRole('link').getAttribute('href')).toBe('https://shop.example/privacy');
+  });
+
+  it('shows the sentence without a link when the install has published no privacy notice', () => {
+    window.__APP_CONFIG__ = { PRIVACY_URL: '' };
+    render(<RetentionNotice business="Demo Barber" days={14} />);
+    expect(screen.getByTestId('retention-notice').textContent).toContain('for 14 days.');
+    expect(screen.queryByRole('link')).toBeNull();
   });
 
   it('uses the singular for one day', () => {
