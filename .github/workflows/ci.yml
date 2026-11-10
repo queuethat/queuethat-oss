@@ -148,8 +148,17 @@ jobs:
     # F10 (#20): Playwright against the local stack. PRs run desktop Chrome and iPhone WebKit;
     # the nightly schedule runs every project. Traces and videos upload on failure; the smoke
     # spec's happy-path videos upload on every run.
+    #
+    # Split into four shards. One runner needs about 45 minutes for the two pull-request
+    # projects, which the 25-minute limit cancelled on every run; each shard has its own
+    # database, so they do not interfere. The limit is 40 minutes because the nightly run covers
+    # four device projects, twice the pull-request load per shard.
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
@@ -165,13 +174,14 @@ jobs:
       - name: Playwright
         env:
           FULL_MATRIX: ${{ github.event_name == 'schedule' }}
+          SHARD: ${{ matrix.shard }}/4
         run: |
-          if [ "$FULL_MATRIX" = true ]; then pnpm test:e2e
-          else pnpm test:e2e --project=desktop-chrome --project=iphone; fi
+          if [ "$FULL_MATRIX" = true ]; then pnpm test:e2e --shard="$SHARD"
+          else pnpm test:e2e --project=desktop-chrome --project=iphone --shard="$SHARD"; fi
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
-          name: playwright-${{ github.run_attempt }}
+          name: playwright-${{ matrix.shard }}-${{ github.run_attempt }}
           path: |
             playwright-report/
             test-results/
