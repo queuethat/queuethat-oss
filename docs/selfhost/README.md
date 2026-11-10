@@ -204,6 +204,12 @@ Images are pinned in `docker-compose.yml`; Dependabot bumps them weekly and the 
 `docker compose pull && docker compose up -d`. Migrations are expand/contract, so the migrate
 service (#209) can run before the new web image starts.
 
+The scheduled jobs (pg_cron) keep running while migrations are applied. If a job and a migration
+ever lock the same tables in opposite order, Postgres cancels one of them; the migrate service
+applies the migrations again, up to three times, and the job runs again at its next tick. If
+`migrate` still exits with `deadlock detected`, run `docker compose up -d` once more: migrations
+that were applied are not applied twice.
+
 ## Checks
 
 `bash deploy/selfhost/tests/check-compose.sh` fails when an image has no digest or a port other than

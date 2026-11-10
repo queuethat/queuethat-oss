@@ -36,6 +36,12 @@ first; these are the conventions for working in this directory.
   The guard trigger enforces `app.visit_transitions`; the event trigger writes `visit_events`.
 - Mutating RPCs are idempotent: anon joins on `visits.idempotency_key`, staff RPCs on `app.idempotency_keys`.
 - Expand/contract only: old PWA bundles on TVs and kiosks run for weeks.
+- pg_cron jobs run while migrations are applied, on a reset too. When a migration changes two
+  tables that one statement of a job also uses, alter them in the order that statement locks them
+  (its target table first, then the tables it reads). Otherwise the two can deadlock: `ops.enqueue_appointment_reminders` inserts into
+  `notifications` while reading `guest_contacts`, and a migration that altered `guest_contacts`
+  and then `notifications` lost to it in CI. `scripts/retry-on-deadlock.sh` reruns a reset that
+  fails this way, and the self-host migrate step does the same.
 - A migration that redefines an existing function copies the body from the latest migration that
   defines it and says so in a comment (`-- redefines private.join_core from <file>`).
   `scripts/check-redefinitions.mjs` fails the build when that source is stale, so two changes
