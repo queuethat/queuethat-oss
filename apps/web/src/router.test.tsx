@@ -19,7 +19,13 @@ async function renderAt(path: string) {
 afterEach(() => {
   cleanup();
   vi.unstubAllEnvs();
+  delete window.__APP_CONFIG__;
 });
+
+const LEGAL = {
+  TERMS_URL: 'https://shop.example/terms',
+  PRIVACY_URL: 'https://shop.example/privacy',
+};
 
 describe('public pages', () => {
   it('/ is not a marketing page: signed-out visitors land on sign-in', async () => {
@@ -30,23 +36,29 @@ describe('public pages', () => {
   });
 
   it.each([
-    ['/terms', 'https://queuethat.com/terms'],
-    ['/privacy', 'https://queuethat.com/privacy'],
-  ])('%s hands over to the marketing site', async (path, url) => {
+    ['/terms', LEGAL.TERMS_URL],
+    ['/privacy', LEGAL.PRIVACY_URL],
+  ])("%s hands over to the operator's own page", async (path, url) => {
+    window.__APP_CONFIG__ = LEGAL;
     const replace = vi.fn();
     vi.stubGlobal('location', { ...window.location, replace });
     await renderAt(path);
-    expect(
-      (await screen.findByRole('link', { name: 'Continue to queuethat.com' })).getAttribute('href'),
-    ).toBe(url);
+    expect((await screen.findByRole('link', { name: 'Continue' })).getAttribute('href')).toBe(url);
     expect(replace).toHaveBeenCalledWith(url);
   });
 
+  it('sign-up shows no consent line when the operator has published no pages', async () => {
+    await renderAt('/auth/sign-up');
+    expect(await screen.findByRole('button', { name: 'Create account' })).toBeTruthy();
+    expect(screen.queryByTestId('signup-consent')).toBeNull();
+  });
+
   it('sign-up shows a consent line linking the Terms and the Privacy Policy', async () => {
+    window.__APP_CONFIG__ = LEGAL;
     await renderAt('/auth/sign-up');
     const line = await screen.findByTestId('signup-consent');
-    expect(line.querySelector('a[href="https://queuethat.com/terms"]')).not.toBeNull();
-    expect(line.querySelector('a[href="https://queuethat.com/privacy"]')).not.toBeNull();
+    expect(line.querySelector('a[href="https://shop.example/terms"]')).not.toBeNull();
+    expect(line.querySelector('a[href="https://shop.example/privacy"]')).not.toBeNull();
   });
 });
 

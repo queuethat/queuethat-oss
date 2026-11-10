@@ -1,5 +1,15 @@
 import { execFileSync } from 'node:child_process';
 
+/**
+ * The operator's own pages and inbox for the servers the browser tests start. The app has none
+ * built in, so the tests supply example ones to exercise the links and the support form.
+ */
+export const operatorEnv = {
+  VITE_TERMS_URL: 'https://legal.example/terms',
+  VITE_PRIVACY_URL: 'https://legal.example/privacy',
+  VITE_SUPPORT_EMAIL: 'support@shop.example',
+} as const;
+
 /** Connection details for the local Supabase stack that the e2e run talks to. */
 export interface SupabaseEnv {
   url: string;

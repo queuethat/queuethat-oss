@@ -50,6 +50,7 @@ beforeEach(() => {
   m.rpc.mockResolvedValue({ data: 'SR-000042', error: null });
   m.session.current = { user: { id: 'u1' } };
   m.org.current = { id: 'org-1', name: 'Demo Barber', role: 'staff' };
+  window.__APP_CONFIG__ = { SUPPORT_EMAIL: 'support@shop.example' };
   setOnline(true);
   window.history.pushState({}, '', '/admin/queues?token=SECRET#frag');
 });
@@ -65,19 +66,10 @@ describe('ContactSupportButton', () => {
     expect(screen.queryByRole('button', { name: 'Contact support' })).toBeNull();
   });
 
-  it('renders nothing on a self-hosted install with no support inbox', () => {
-    window.__APP_CONFIG__ = { SUPPORT_EMAIL: '' };
+  it('renders nothing when no support inbox is configured', () => {
+    delete window.__APP_CONFIG__;
     show();
     expect(screen.queryByRole('button', { name: 'Contact support' })).toBeNull();
-  });
-
-  it("names a self-hosted install's own inbox to someone without a business", async () => {
-    window.__APP_CONFIG__ = { SUPPORT_EMAIL: 'help@shop.example' };
-    m.org.current = null;
-    const user = userEvent.setup();
-    show();
-    const dialog = await openDialog(user);
-    expect(within(dialog).getByRole('link').getAttribute('href')).toBe('mailto:help@shop.example');
   });
 
   it('keeps Send disabled until there is a subject and a message, and ignores blanks', async () => {
@@ -215,8 +207,8 @@ describe('ContactSupportButton', () => {
     show();
     const dialog = await openDialog(user);
     expect(within(dialog).queryByLabelText('Subject')).toBeNull();
-    const link = within(dialog).getByRole('link', { name: 'support@queuethat.com' });
-    expect(link.getAttribute('href')).toBe('mailto:support@queuethat.com');
+    const link = within(dialog).getByRole('link', { name: 'support@shop.example' });
+    expect(link.getAttribute('href')).toBe('mailto:support@shop.example');
     expect(m.rpc).not.toHaveBeenCalled();
   });
 

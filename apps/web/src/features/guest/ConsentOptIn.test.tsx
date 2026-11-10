@@ -18,13 +18,13 @@ afterEach(() => {
 });
 
 describe('ConsentOptIn legal links', () => {
-  it('links to the hosted Terms and Privacy when nothing is configured', () => {
+  it('shows no legal line when nothing is configured', () => {
     show();
-    const hrefs = screen.getAllByRole('link').map((a) => a.getAttribute('href'));
-    expect(hrefs).toEqual(['https://queuethat.com/terms', 'https://queuethat.com/privacy']);
+    expect(screen.getByTestId('sms-consent')).toBeDefined();
+    expect(screen.queryByTestId('sms-legal')).toBeNull();
   });
 
-  it("links to a self-hosted install's own pages", () => {
+  it("links to the install's own pages", () => {
     window.__APP_CONFIG__ = {
       TERMS_URL: 'https://shop.example/terms',
       PRIVACY_URL: 'https://shop.example/privacy',

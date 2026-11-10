@@ -30,16 +30,6 @@ export interface AppConfig {
   supportEmail: string;
 }
 
-/**
- * The operator's own pages and inbox, used when nothing is configured: the hosted service and
- * `pnpm dev`. A self-hosted install never falls back to these (see `operatorValue`).
- */
-export const HOSTED_DEFAULTS = {
-  termsUrl: 'https://queuethat.com/terms',
-  privacyUrl: 'https://queuethat.com/privacy',
-  supportEmail: 'support@queuethat.com',
-} as const;
-
 /** The shape of `window.__APP_CONFIG__`: the container's variable names, all strings. */
 export type RuntimeConfig = Partial<
   Record<
@@ -78,15 +68,14 @@ export function readConfig(
   const pick = (run: keyof RuntimeConfig, build: keyof ImportMetaEnv) =>
     (runtime?.[run] || (env[build] as string | undefined) || '').trim();
   /**
-   * Whose terms, privacy notice and support inbox the app points at. A runtime key that is
-   * present decides, even when empty: the self-host image always writes all three, so an install
-   * that sets none shows no link rather than someone else's legal pages. Otherwise the build
-   * value, then the hosted default.
+   * Whose terms, privacy notice and support inbox the app points at. Nothing is built in: unset
+   * means no link and no support form. A runtime key that is present decides, even when empty,
+   * so a self-hosted install is never overridden by a value baked into the image.
    */
-  const operatorValue = (run: keyof RuntimeConfig, build: keyof ImportMetaEnv, hosted: string) => {
+  const operatorValue = (run: keyof RuntimeConfig, build: keyof ImportMetaEnv) => {
     const set = runtime?.[run];
     if (set !== undefined) return set.trim();
-    return ((env[build] as string | undefined) || hosted).trim();
+    return ((env[build] as string | undefined) || '').trim();
   };
   return {
     supabaseUrl: pick('SUPABASE_URL', 'VITE_SUPABASE_URL').replace(/\/+$/, ''),
@@ -100,13 +89,9 @@ export function readConfig(
     authTurnstileSiteKey: pick('AUTH_TURNSTILE_SITE_KEY', 'VITE_AUTH_TURNSTILE_SITE_KEY'),
     publicJoin: pick('PUBLIC_JOIN', 'VITE_PUBLIC_JOIN'),
     demoMode: (runtime?.DEMO_MODE ?? '').trim().toLowerCase() === 'true',
-    termsUrl: operatorValue('TERMS_URL', 'VITE_TERMS_URL', HOSTED_DEFAULTS.termsUrl),
-    privacyUrl: operatorValue('PRIVACY_URL', 'VITE_PRIVACY_URL', HOSTED_DEFAULTS.privacyUrl),
-    supportEmail: operatorValue(
-      'SUPPORT_EMAIL',
-      'VITE_SUPPORT_EMAIL',
-      HOSTED_DEFAULTS.supportEmail,
-    ),
+    termsUrl: operatorValue('TERMS_URL', 'VITE_TERMS_URL'),
+    privacyUrl: operatorValue('PRIVACY_URL', 'VITE_PRIVACY_URL'),
+    supportEmail: operatorValue('SUPPORT_EMAIL', 'VITE_SUPPORT_EMAIL'),
   };
 }
 

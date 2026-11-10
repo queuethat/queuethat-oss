@@ -62,27 +62,25 @@ describe('readConfig', () => {
   });
 
   describe('terms, privacy and support of whoever runs the install', () => {
-    it('uses the hosted pages and inbox when nothing is configured (hosted build, pnpm dev)', () => {
+    it('has none built in: unset means no link and no support form', () => {
       for (const runtime of [undefined, {}]) {
         const c = readConfig(runtime, env);
-        expect(c.termsUrl).toBe('https://queuethat.com/terms');
-        expect(c.privacyUrl).toBe('https://queuethat.com/privacy');
-        expect(c.supportEmail).toBe('support@queuethat.com');
+        expect([c.termsUrl, c.privacyUrl, c.supportEmail]).toEqual(['', '', '']);
       }
     });
 
-    it('takes a build-time value over the hosted default', () => {
+    it('takes build-time values when there is no runtime config', () => {
       const c = readConfig(undefined, {
         ...env,
         VITE_TERMS_URL: 'https://fork.example/terms',
         VITE_SUPPORT_EMAIL: 'help@fork.example',
       });
       expect(c.termsUrl).toBe('https://fork.example/terms');
-      expect(c.privacyUrl).toBe('https://queuethat.com/privacy');
+      expect(c.privacyUrl).toBe('');
       expect(c.supportEmail).toBe('help@fork.example');
     });
 
-    it('a self-hosted install that sets none gets none, never the hosted ones', () => {
+    it('a self-hosted install that sets none gets none, whatever was baked into the build', () => {
       // The web image always writes the three keys, empty when unset.
       const c = readConfig(
         { TERMS_URL: '', PRIVACY_URL: '', SUPPORT_EMAIL: '' },

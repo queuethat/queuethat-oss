@@ -12,21 +12,15 @@ afterEach(async () => {
 
 describe('RetentionNotice', () => {
   it('names the business and the period, with a link to the privacy text', () => {
+    window.__APP_CONFIG__ = { PRIVACY_URL: 'https://shop.example/privacy' };
     render(<RetentionNotice business="Demo Barber" days={14} />);
     expect(screen.getByTestId('retention-notice').textContent).toContain(
       'Demo Barber keeps your visit details for 14 days.',
     );
-    expect(screen.getByRole('link').getAttribute('href')).toBe('https://queuethat.com/privacy');
-  });
-
-  it("links to a self-hosted install's own privacy notice", () => {
-    window.__APP_CONFIG__ = { PRIVACY_URL: 'https://shop.example/privacy' };
-    render(<RetentionNotice business="Demo Barber" days={14} />);
     expect(screen.getByRole('link').getAttribute('href')).toBe('https://shop.example/privacy');
   });
 
-  it('shows the sentence without a link when the install has published no privacy notice', () => {
-    window.__APP_CONFIG__ = { PRIVACY_URL: '' };
+  it('shows the sentence without a link when no privacy notice is configured', () => {
     render(<RetentionNotice business="Demo Barber" days={14} />);
     expect(screen.getByTestId('retention-notice').textContent).toContain('for 14 days.');
     expect(screen.queryByRole('link')).toBeNull();

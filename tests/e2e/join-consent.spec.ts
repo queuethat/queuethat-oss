@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { sha256Hex } from '../../packages/domain/src/consent.ts';
 import { demo } from '../fixtures/demo.ts';
 import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
-import { supabaseEnv } from './support/env.ts';
+import { operatorEnv, supabaseEnv } from './support/env.ts';
 import { enableDemoSms } from './support/sms.ts';
 
 // 3-CG6 (#331): the opt-in at join. The screenshot of the step is the 10DLC artifact.
@@ -63,11 +63,11 @@ test('AC2: a ticked opt-in stores the version and hash of the text on screen', a
   const legal = guest.getByTestId('sms-legal');
   await expect(legal.getByRole('link', { name: 'Terms of Service' })).toHaveAttribute(
     'href',
-    'https://queuethat.com/terms',
+    operatorEnv.VITE_TERMS_URL,
   );
   await expect(legal.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute(
     'href',
-    'https://queuethat.com/privacy',
+    operatorEnv.VITE_PRIVACY_URL,
   );
   await box.check();
   await expectNoSeriousA11yViolations(guest); // AC4

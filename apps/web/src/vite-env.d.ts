@@ -24,7 +24,7 @@ interface ImportMetaEnv {
    * Set it once Supabase Auth's CAPTCHA is on; unset sends no token and shows no widget.
    */
   readonly VITE_AUTH_TURNSTILE_SITE_KEY?: string;
-  /** Terms page, privacy notice and support inbox of whoever runs this build. Unset: the hosted service's. */
+  /** Terms page, privacy notice and support inbox of whoever runs this build. Unset: no link, no support form. */
   readonly VITE_TERMS_URL?: string;
   readonly VITE_PRIVACY_URL?: string;
   readonly VITE_SUPPORT_EMAIL?: string;

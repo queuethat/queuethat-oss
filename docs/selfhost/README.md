@@ -44,9 +44,8 @@ To look around without any of this, use [demo mode](#demo-mode).
 
 ### Your own terms, privacy notice and support inbox
 
-The hosted service links guests and staff to its own legal pages and support inbox. A self-hosted
-install never does: until you set these in `.env`, the links and the staff "Contact support" form
-are simply not shown.
+The app has no legal pages or support inbox built in. Until you set these in `.env`, the links
+and the staff "Contact support" form are simply not shown.
 
 | Variable        | Where it appears                                                                              |
 | --------------- | --------------------------------------------------------------------------------------------- |
