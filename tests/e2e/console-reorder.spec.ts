@@ -62,8 +62,13 @@ test('AC2: keyboard alone reorders (space, arrows, space) and announces it', asy
     .getByRole('button', { name: /^Drag .* to reorder$/ })
     .focus();
   await first.keyboard.press('Space');
-  // One arrow at a time: the sensor moves after each re-measure, so a fast second key is lost.
+  // One arrow at a time, each after the announcement that follows the last key. The keyboard
+  // sensor measures the rows after every step and drops an arrow pressed before it has (dnd-kit's
+  // sortableKeyboardCoordinates returns nothing without a measured rect). After Space that takes
+  // some tens of milliseconds, which a person does not beat and a script does. The row is
+  // announced as over its own position once the measuring is done.
   const announcer = first.locator('[role="status"][aria-live="assertive"]');
+  await expect(announcer).toContainText('is over position 3.');
   await first.keyboard.press('ArrowUp');
   await expect(announcer).toContainText('is over position 2.');
   await first.keyboard.press('ArrowUp');

@@ -101,8 +101,11 @@ test('AC1: when the code rotates the TV shows the new one within 5 s of valid_un
     { code: '1111', after: 0 },
     { code: '2222', after: 4_000 },
   ];
-  const started = Date.now();
+  // The clock starts at the first request, not here: pairing the TV first can take longer than
+  // the first code's 4 s on a busy runner, and the panel would then never show it.
+  let started: number | undefined;
   await display.route('**/rest/v1/rpc/display_onsite_code', async (route: Route) => {
+    started ??= Date.now();
     const next =
       answers.length > 1 && Date.now() - started >= answers[1]!.after ? answers[1]! : answers[0]!;
     // The first code is valid for 4 s from the first request, the second for two minutes.

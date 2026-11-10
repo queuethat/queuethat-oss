@@ -216,6 +216,15 @@ jobs:
           pnpm exec supabase start -x studio,imgproxy,logflare,vector,edge-runtime,supavisor
       - name: Playwright (core journeys)
         run: pnpm test:e2e:core
+      # A failed browser test often traces back to the stack (a sign-in that timed out, a slow
+      # query); the Playwright report alone cannot show which service stalled.
+      - name: Keep the stack's logs
+        if: failure()
+        run: |
+          mkdir -p test-results/stack-logs
+          for c in $(docker ps -a --format '{{.Names}}' | grep '^supabase_'); do
+            docker logs --timestamps "$c" > "test-results/stack-logs/$c.log" 2>&1 || true
+          done
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
@@ -268,6 +277,15 @@ jobs:
         run: |
           if [ "$FULL_MATRIX" = true ]; then pnpm test:e2e --shard="$SHARD"
           else pnpm test:e2e --project=desktop-chrome --project=iphone --shard="$SHARD"; fi
+      # A failed browser test often traces back to the stack (a sign-in that timed out, a slow
+      # query); the Playwright report alone cannot show which service stalled.
+      - name: Keep the stack's logs
+        if: failure()
+        run: |
+          mkdir -p test-results/stack-logs
+          for c in $(docker ps -a --format '{{.Names}}' | grep '^supabase_'); do
+            docker logs --timestamps "$c" > "test-results/stack-logs/$c.log" 2>&1 || true
+          done
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:

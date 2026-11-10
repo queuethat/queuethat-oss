@@ -9,10 +9,12 @@ test('a parent adds two children, double-taps Join, and gets two tabs and two vi
 }) => {
   const { guest, staff } = devices;
   const queue = await freshQueue();
-  const joins: string[] = [];
-  guest.on('response', async (response) => {
+  const pending: Promise<string>[] = [];
+  guest.on('response', (response) => {
     if (response.url().endsWith('/rpc/join_queue') && response.ok()) {
-      joins.push(((await response.json()) as { display_ticket: string }).display_ticket);
+      pending.push(
+        response.json().then((body) => (body as { display_ticket: string }).display_ticket),
+      );
     }
   });
 
@@ -42,6 +44,8 @@ test('a parent adds two children, double-taps Join, and gets two tabs and two vi
   await expect(guest.getByTestId('ticket')).not.toHaveText(parentTicket ?? '');
 
   // AC2: exactly three visits (the parent plus two children), however fast the taps.
+  // The page moves on as soon as an answer arrives, which can be before its body is read.
+  const joins = await Promise.all(pending);
   expect(new Set(joins).size).toBe(3);
   expect(joins).toHaveLength(3);
 
