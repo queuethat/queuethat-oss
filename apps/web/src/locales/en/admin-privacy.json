@@ -153,14 +153,12 @@
     },
     "incidents": {
       "title": "Incident log",
-      "explain": "Keep a record of every privacy or security incident, including ones that turned out harmless. Keep it for at least 24 months. Notices from the platform appear here already filled in.",
+      "explain": "Keep a record of every privacy or security incident, including ones that turned out harmless. Keep it for at least 24 months.",
       "none": "No incidents recorded.",
       "error": "Couldn't save or load. Try again.",
       "rateLimited": "Too many reports today. Contact support if this is urgent.",
       "export": "Export the log (CSV)",
       "saved": "Saved.",
-      "acknowledge": "I have read this notice",
-      "acknowledgedAt": "Confirmed read on {{at}}.",
       "description": "What happened",
       "people": "People affected (if known)",
       "actions": "What you did about it",
@@ -169,15 +167,9 @@
       "report": "Report a suspected incident",
       "kindLabel": "What kind of incident",
       "titleLabel": "Short title",
-      "tellPlatform": "Tell the QueueThat team so we can help and check other businesses",
-      "notAdvice": "Information, not advice. Reporting here does not notify a regulator or your guests; your privacy officer decides that.",
+      "notAdvice": "Information, not advice. Recording an incident here does not notify a regulator or your guests; your privacy officer decides that.",
       "submit": "Report incident",
-      "reported": "Reported. The QueueThat team has been told and it is in your log.",
       "logged": "Added to your log.",
-      "bannerLabel": "Security notice",
-      "banner_one": "QueueThat sent you a security notice. Please read it and confirm.",
-      "banner_other": "QueueThat sent you {{count}} security notices. Please read them and confirm.",
-      "bannerLink": "Open the notice",
       "kind": {
         "unauthorized_access": "Unauthorized access",
         "data_exposure": "Data exposure",
@@ -187,23 +179,15 @@
         "vendor_incident": "Vendor incident",
         "other": "Other"
       },
-      "source": {
-        "platform_notice": "Notice from QueueThat",
-        "reported": "Reported by you",
-        "manual": "Your own entry"
-      },
       "col": {
         "detected": "Detected",
         "kind": "Kind",
         "title": "Title",
-        "source": "Source",
         "description": "What happened",
         "categories": "Data involved",
         "people": "People affected",
         "actions": "What you did",
-        "regulator": "Told",
-        "noticeSent": "Notice sent",
-        "acknowledged": "Confirmed read"
+        "regulator": "Told"
       }
     },
     "guestNotice": {

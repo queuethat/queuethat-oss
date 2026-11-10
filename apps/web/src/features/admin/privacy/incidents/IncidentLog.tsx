@@ -1,4 +1,4 @@
-import { Button, Checkbox, Input, Select, Skeleton, Textarea, useToast } from '@qm/ui';
+import { Button, Input, Select, Skeleton, Textarea, useToast } from '@qm/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from '../../../../lib/translation.tsx';
@@ -7,7 +7,6 @@ import {
   KINDS,
   incidentLogQuery,
   logToCsv,
-  useAcknowledgeNotice,
   useReportIncident,
   useUpdateLogEntry,
   type LogEntry,
@@ -17,20 +16,16 @@ const HEADERS = [
   'detected',
   'kind',
   'title',
-  'source',
   'description',
   'categories',
   'people',
   'actions',
   'regulator',
-  'noticeSent',
-  'acknowledged',
 ] as const;
 
 /**
- * The business's incident log (C9, #1275): platform notices arrive prefilled and are confirmed
- * here, the business adds what it did, and "Report a suspected incident" tells the platform.
- * The export is the 24-month record. Information only: nothing here files a report with a regulator.
+ * The business's own incident log (C9, #1275): "Report a suspected incident" adds an entry, and
+ * the business records what it did about it. The export is the 24-month record. Information only: nothing here files a report with a regulator.
  */
 export function IncidentLog({
   orgId,
@@ -114,14 +109,12 @@ function Entry({
   when: Intl.DateTimeFormat;
 }) {
   const { t } = useTranslation('admin-privacy');
-  const ack = useAcknowledgeNotice(orgId);
   const update = useUpdateLogEntry(orgId);
   const toast = useToast();
   const [people, setPeople] = useState(entry.people_affected?.toString() ?? '');
   const [actions, setActions] = useState(entry.actions_taken ?? '');
   const [regulator, setRegulator] = useState(entry.regulator_notified ?? '');
   const [description, setDescription] = useState(entry.description ?? '');
-  const pending = entry.source === 'platform_notice' && !entry.acknowledged_at;
   const save = (event: FormEvent) => {
     event.preventDefault();
     update.mutate(
@@ -143,36 +136,15 @@ function Entry({
       <h3 className="font-semibold">{entry.title}</h3>
       <p className="text-muted">
         {when.format(new Date(entry.detected_at))} ·{' '}
-        {t(`privacy.incidents.kind.${entry.kind as 'other'}`)} ·{' '}
-        {t(`privacy.incidents.source.${entry.source as 'manual'}`)}
+        {t(`privacy.incidents.kind.${entry.kind as 'other'}`)}
       </p>
-      {entry.notice_body ? (
-        <p className="whitespace-pre-wrap" data-testid="notice-text">
-          {entry.notice_body}
-        </p>
-      ) : null}
-      {pending && canEdit ? (
-        <div>
-          <Button disabled={ack.isPending} onClick={() => ack.mutate(entry.id)}>
-            {t('privacy.incidents.acknowledge')}
-          </Button>
-        </div>
-      ) : entry.acknowledged_at ? (
-        <p>
-          {t('privacy.incidents.acknowledgedAt', {
-            at: when.format(new Date(entry.acknowledged_at)),
-          })}
-        </p>
-      ) : null}
       {canEdit ? (
         <form className="flex flex-col gap-2" onSubmit={save}>
-          {entry.source !== 'platform_notice' ? (
-            <Textarea
-              label={t('privacy.incidents.description')}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          ) : null}
+          <Textarea
+            label={t('privacy.incidents.description')}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
           <Input
             label={t('privacy.incidents.people')}
             type="number"
@@ -214,18 +186,15 @@ function Report({ orgId }: { orgId: string }) {
   const [kind, setKind] = useState<string>(KINDS[0]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [notify, setNotify] = useState(true);
   const submit = (event: FormEvent) => {
     event.preventDefault();
     report.mutate(
-      { kind, title, description, notifyPlatform: notify },
+      { kind, title, description },
       {
         onSuccess: () => {
           setTitle('');
           setDescription('');
-          toast.show({
-            message: t(notify ? 'privacy.incidents.reported' : 'privacy.incidents.logged'),
-          });
+          toast.show({ message: t('privacy.incidents.logged') });
         },
       },
     );
@@ -257,11 +226,6 @@ function Report({ orgId }: { orgId: string }) {
         label={t('privacy.incidents.description')}
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-      />
-      <Checkbox
-        label={t('privacy.incidents.tellPlatform')}
-        checked={notify}
-        onChange={(e) => setNotify(e.target.checked)}
       />
       <p className="text-muted">{t('privacy.incidents.notAdvice')}</p>
       <div>

@@ -19,26 +19,14 @@ vi.mock('../../../../lib/supabase.ts', () => {
 
 const entry = (over: Partial<LogEntry>): LogEntry => ({
   id: crypto.randomUUID(),
-  org_id: 'org-a',
-  source: 'platform_notice',
-  incident_id: null,
-  notice_id: null,
   kind: 'data_exposure',
-  title: 'Please read: log leak',
+  title: 'Tablet left unlocked',
   description: null,
   data_categories: ['contact'],
   detected_at: '2026-11-09T00:00:00Z',
   people_affected: null,
   actions_taken: null,
   regulator_notified: null,
-  notice_subject: 'Please read: log leak',
-  notice_body: 'Tokens were written to a log.',
-  notice_sent_at: '2026-11-09T01:00:00Z',
-  acknowledged_at: null,
-  acknowledged_by: null,
-  created_by: null,
-  created_at: '2026-11-09T01:00:00Z',
-  updated_at: '2026-11-09T01:00:00Z',
   ...over,
 });
 
@@ -64,21 +52,16 @@ afterEach(() => {
 });
 
 describe('IncidentLog', () => {
-  it('shows the platform notice text and acknowledges it through the RPC', async () => {
-    const e = entry({});
-    m.rows = [e];
+  it('lists an entry with its own description, with no notice to confirm', async () => {
+    m.rows = [entry({ description: 'A tablet was left unlocked.' })];
     setup();
-    expect(await screen.findByTestId('notice-text')).toHaveProperty(
-      'textContent',
-      'Tokens were written to a log.',
-    );
-    await userEvent.click(screen.getByRole('button', { name: 'I have read this notice' }));
-    await waitFor(() =>
-      expect(m.rpc).toHaveBeenCalledWith('acknowledge_incident_notice', { p_id: e.id }),
-    );
+    expect(await screen.findByRole('heading', { name: 'Tablet left unlocked' })).toBeTruthy();
+    const [first] = screen.getAllByLabelText('What happened');
+    expect((first as HTMLTextAreaElement).value).toBe('A tablet was left unlocked.');
+    expect(screen.queryByRole('button', { name: /read this notice/ })).toBeNull();
   });
 
-  it('reports a suspected incident for this business and says it is not a regulator report', async () => {
+  it('adds a suspected incident to the log of this business and says it is not a regulator report', async () => {
     setup();
     expect(await screen.findByTestId('incidents-none')).toBeTruthy();
     expect(screen.getByText(/does not notify a regulator/)).toBeTruthy();
@@ -93,7 +76,7 @@ describe('IncidentLog', () => {
         p_org_id: 'org-a',
         p_kind: 'unauthorized_access',
         p_title: 'Phone lost',
-        p_notify_platform: true,
+        p_notify_platform: false,
       },
     ]);
   });

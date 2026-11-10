@@ -10,7 +10,6 @@ import { ChangePasswordLink } from '../features/auth/ChangePasswordLink.tsx';
 import { SignOutButton } from '../features/auth/SignOutButton.tsx';
 import { MfaRequiredBanner } from '../features/auth/mfa/MfaRequiredBanner.tsx';
 import { AdminShell } from '../features/admin/layout/AdminShell.tsx';
-import { IncidentBanner } from '../features/admin/privacy/incidents/IncidentBanner.tsx';
 import { DeletionBanner } from '../features/admin/settings/danger/DeletionBanner.tsx';
 import { SuspendedBanner } from '../features/admin/support/SuspendedBanner.tsx';
 import { SupportBanner } from '../features/admin/support/SupportBanner.tsx';
@@ -35,7 +34,6 @@ export function StaffLayout({ area }: { area: 'staff' | 'admin' | 'onboarding' |
             {area === 'staff' || area === 'admin' ? (
               <>
                 {area === 'admin' ? <DeletionBanner /> : null}
-                {area === 'admin' ? <IncidentBanner /> : null}
                 <SuspendedBanner />
                 <SupportBanner />
                 <MfaRequiredBanner />
