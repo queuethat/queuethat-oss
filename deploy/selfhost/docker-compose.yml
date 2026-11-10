@@ -267,7 +267,7 @@ services:
   # Runs supabase/functions. The functions volume is filled by the migrate service (#209).
   functions:
     <<: *restart
-    image: ghcr.io/supabase/edge-runtime:v1.77.4@sha256:ad45164b7548bf5820ed7be714789c17ac2865edce79a09cfb4c3756c3d365a8
+    image: ghcr.io/supabase/edge-runtime:v1.78.1@sha256:362e9177660ae4d3affb6978480cc6161a8ea0764f1c2c7f738348eda1c3fbf2
     depends_on:
       kong: { condition: service_healthy }
       migrate: { condition: service_completed_successfully }
