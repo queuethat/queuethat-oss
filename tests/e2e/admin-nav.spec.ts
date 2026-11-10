@@ -127,7 +127,7 @@ test.describe('owner', () => {
       'aria-current',
       'page',
     );
-    for (const entry of ['Connections', 'Privacy and data', 'Support access']) {
+    for (const entry of ['Connections', 'Privacy and data', 'Help']) {
       await expect(nav.getByRole('link', { name: entry })).toBeVisible();
     }
     for (const folded of ['Webhooks', 'WhatsApp', 'Export data', 'Data requests']) {

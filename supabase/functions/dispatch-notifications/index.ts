@@ -15,7 +15,7 @@ import {
 import { smsSegments } from '@qm/domain';
 import { vapidFromEnv, webPushTransport } from '../_shared/web-push.ts';
 import { createObserver } from '../_shared/observe.ts';
-import { platformTwilioFromEnv, providerFactories } from './factories.ts';
+import { providerFactories } from './factories.ts';
 import { appOrigin, createDispatchHandler, oneClickEndpoint, type OutboxJob, type WhatsAppSend } from './handler.ts';
 
 function env(name: string): string {
@@ -104,7 +104,7 @@ Deno.serve(
     async reserve(outboxId) {
       const { data, error } = await api.rpc('reserve_send', { p_outbox_id: outboxId });
       if (error) throw new Error(error.message);
-      return (data as { decision: 'allowed' | 'cap_reached' | 'country_blocked' | 'budget_reached' | 'insufficient_credit' }).decision;
+      return (data as { decision: 'allowed' | 'cap_reached' | 'country_blocked' | 'budget_reached' }).decision;
     },
     // A fresh registry per run: org secrets are read once per (org, channel) and gone with it.
     // LOCAL_PROVIDERS_ONLY defaults to true, so real providers need an explicit 'false'.
@@ -120,7 +120,6 @@ Deno.serve(
         },
         factories: providerFactories({
           functionsUrl,
-          platformTwilio: platformTwilioFromEnv((k) => Deno.env.get(k)),
           apiBase: Object.fromEntries(
             ['twilio', 'telnyx', 'vonage', 'plivo', 'postmark', 'resend', 'meta'].flatMap((name) => {
               const origin = Deno.env.get(`PROVIDER_API_BASE_${name.toUpperCase()}`);

@@ -4,9 +4,23 @@ import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query
 import { supabase } from '../../../../lib/supabase.ts';
 
 // #1275 (C9): the business's incident log. Reads are plain RLS selects (admins and owners); every
-// write goes through an RPC, and the database decides what a platform notice row lets them change.
+// write goes through an RPC.
 
-export type LogEntry = Database['app']['Tables']['org_incident_log']['Row'];
+const COLUMNS =
+  'id, kind, title, description, data_categories, detected_at, people_affected, actions_taken, regulator_notified';
+
+export type LogEntry = Pick<
+  Database['app']['Tables']['org_incident_log']['Row'],
+  | 'id'
+  | 'kind'
+  | 'title'
+  | 'description'
+  | 'data_categories'
+  | 'detected_at'
+  | 'people_affected'
+  | 'actions_taken'
+  | 'regulator_notified'
+>;
 
 export const KINDS = [
   'unauthorized_access',
@@ -28,7 +42,7 @@ export const incidentLogQuery = (orgId: string) =>
       const { data, error } = await supabase
         .schema('app')
         .from('org_incident_log')
-        .select('*')
+        .select(COLUMNS)
         .eq('org_id', orgId)
         .order('detected_at', { ascending: false })
         .limit(500);
@@ -36,36 +50,6 @@ export const incidentLogQuery = (orgId: string) =>
       return data;
     },
   });
-
-/** Platform notices this business has not confirmed reading yet: the banner's only input. */
-export const unacknowledgedNoticesQuery = (orgId: string) =>
-  queryOptions({
-    queryKey: [...logKey(orgId), 'unacknowledged'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .schema('app')
-        .from('org_incident_log')
-        .select('id, notice_subject')
-        .eq('org_id', orgId)
-        .eq('source', 'platform_notice')
-        .is('acknowledged_at', null)
-        .order('notice_sent_at', { ascending: false });
-      if (error) throw new Error(errorCode(error));
-      return data;
-    },
-    refetchInterval: 5 * 60_000,
-  });
-
-export function useAcknowledgeNotice(orgId: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.rpc('acknowledge_incident_notice', { p_id: id });
-      if (error) throw new Error(errorCode(error));
-    },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: logKey(orgId) }),
-  });
-}
 
 export interface LogPatch {
   description?: string;
@@ -95,11 +79,9 @@ export interface Report {
   kind: string;
   title: string;
   description: string;
-  /** False keeps it in the business's own log without telling the platform. */
-  notifyPlatform: boolean;
 }
 
-/** Files a suspected incident: a log entry and, by default, a platform incident (72-hour clock). */
+/** Files a suspected incident as an entry in the business's own log. */
 export function useReportIncident(orgId: string) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -109,7 +91,8 @@ export function useReportIncident(orgId: string) {
         p_kind: r.kind,
         p_title: r.title,
         p_description: r.description,
-        p_notify_platform: r.notifyPlatform,
+        // The log is the business's own: nothing is sent to anyone else.
+        p_notify_platform: false,
         p_idempotency_key: crypto.randomUUID(),
       });
       if (error) throw new Error(errorCode(error));
@@ -132,14 +115,11 @@ export function logToCsv(headers: string[], rows: LogEntry[]): string {
       r.detected_at,
       r.kind,
       r.title,
-      r.source,
       r.description,
       r.data_categories.join(';'),
       r.people_affected,
       r.actions_taken,
       r.regulator_notified,
-      r.notice_sent_at,
-      r.acknowledged_at,
     ]
       .map(field)
       .join(','),

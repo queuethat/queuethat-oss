@@ -74,7 +74,6 @@ export const ERROR_CODES = [
   'channel_prerequisite_missing',
   'invalid_report_definition',
   'analytics_disabled',
-  'platform_mode_unavailable',
   'domain_taken',
   'plan_limit_reached',
   'slug_taken',

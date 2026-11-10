@@ -24,11 +24,6 @@
     "meta": "WhatsApp Business (Meta)",
     "stripe": "Stripe"
   },
-  "mode": {
-    "label": "Account",
-    "own": "My own account",
-    "platform": "Platform account"
-  },
   "fields": {
     "sender_email": "Sender email address",
     "region": "Region",
@@ -68,17 +63,14 @@
   "missing": {
     "title": "Before this channel can be turned on:",
     "compliance_gate": "This deployment has not passed its compliance check yet (see the pilot runbook).",
-    "hosted_legal_review": "The hosted service's legal review is not recorded yet.",
     "provider_settings": "Save this channel's provider settings first.",
     "provider_verified": "Send a signed test event from your provider's dashboard to the webhook URL above.",
     "daily_cap": "Set a daily message cap above zero.",
     "country_allowlist": "Choose at least one country you may text.",
-    "plan_allows_paid_channels": "Paid channels are not switched on for this business.",
     "campaign_ref": "Enter your 10DLC campaign reference (required for US numbers)."
   },
   "errors": {
     "unknown": "Something went wrong. Try again.",
-    "platform_mode_unavailable": "This deployment has no platform account. Use your own account.",
     "invalid_input": "Check the values and try again.",
     "permission_denied": "You are not allowed to do that."
   },

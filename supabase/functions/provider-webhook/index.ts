@@ -12,7 +12,6 @@ import { stripePaymentHandler } from './handlers/stripe.ts';
 import { createTelnyxHandler } from './handlers/telnyx.ts';
 import { createVonageHandler } from './handlers/vonage.ts';
 import { createTwilioInboundHandler } from './handlers/twilio.ts';
-import { twilioPlatformHandler } from './handlers/twilio-platform.ts';
 import { createTwilioVoiceHandler } from './handlers/twilio-voice.ts';
 
 function env(name: string): string {
@@ -49,16 +48,6 @@ const twilioVoice = createTwilioVoiceHandler(async (c) => {
   if (error) throw new Error(error.message);
   return data;
 });
-const twilioPlatform = twilioPlatformHandler(async (e) => {
-  const { error } = await api.rpc('apply_platform_sms_event', {
-    p_kind: e.kind, p_phone: e.phone ?? null, p_provider_message_id: e.providerMessageId ?? null,
-    p_status: e.status ?? null, p_error_code: e.errorCode ?? null,
-  });
-  if (error) throw new Error(error.message);
-});
-// The platform number has no org row: its one route and signing token come from the environment.
-const platformEndpoint = Deno.env.get('TWILIO_PLATFORM_WEBHOOK_ENDPOINT') ?? '';
-const platformToken = Deno.env.get('TWILIO_PLATFORM_WEBHOOK_TOKEN') ?? '';
 const meta = createMetaHandler({ ...db, applyStatus, log: observe.log });
 
 const stripePayments = stripePaymentHandler(async (a) => {
@@ -85,10 +74,7 @@ const suppressByMessage = async (orgId: string, provider: string, sid: string, r
 
 Deno.serve(
   observe.serve(createProviderWebhookHandler({
-    endpointSecrets: (provider, endpointId) =>
-      provider === 'twilio-platform'
-        ? Promise.resolve(platformToken && endpointId === platformEndpoint ? { orgId: null, secrets: [platformToken] } : null)
-        : db.endpointSecrets(provider, endpointId),
+    endpointSecrets: (provider, endpointId) => db.endpointSecrets(provider, endpointId),
     record: db.record,
     markProcessed: db.markProcessed,
     // WhatsApp handlers register here as 3-WA3 lands. A Twilio request is
@@ -103,7 +89,6 @@ Deno.serve(
         await twilioStatus(ctx);
         await twilioInbound(ctx);
       },
-      'twilio-platform': twilioPlatform,
       'twilio-voice': twilioVoice,
       meta,
       stripe: stripePayments,

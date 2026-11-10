@@ -67,9 +67,6 @@ export { solvePow, type SolveOptions } from './captcha/powSolver.ts';
 export { postmarkEmailChannel, type PostmarkOptions } from './email/postmark.ts';
 export { resendEmailChannel } from './email/resend.ts';
 export type { HttpEmailOptions } from './email/shared.ts';
-export type { BillingEvent, BillingProvider } from './billing.ts';
-export { FakeBillingProvider } from './billing/fake.ts';
-export { StripeBillingProvider, type StripeBillingOptions } from './billing/stripe.ts';
 export { LlmError, type LlmProvider, type LlmRequest } from './llm/contract.ts';
 export {
   ANTHROPIC_MESSAGES_URL,

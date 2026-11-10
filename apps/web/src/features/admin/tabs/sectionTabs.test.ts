@@ -81,6 +81,6 @@ describe('sectionAt', () => {
     expect(sectionAt('/admin/analytics-export')).toBeUndefined();
     expect(sectionAt('/admin')).toBeUndefined();
     expect(sectionAt('/admin/queues')).toBeUndefined();
-    expect(sectionAt('/admin/settings/support')).toBeUndefined();
+    expect(sectionAt('/admin/help')).toBeUndefined();
   });
 });

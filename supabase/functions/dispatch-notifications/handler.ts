@@ -55,7 +55,7 @@ export interface DispatchDeps {
   /** api.report_outbox_result */
   report(outboxId: string, result: OutboxReport): Promise<void>;
   /** api.reserve_send: the daily cap, country allowlist and budget check before a paid send. */
-  reserve(outboxId: string): Promise<'allowed' | 'paused' | 'cap_reached' | 'country_blocked' | 'budget_reached' | 'insufficient_credit'>;
+  reserve(outboxId: string): Promise<'allowed' | 'cap_reached' | 'country_blocked' | 'budget_reached'>;
   /**
    * api.get_whatsapp_send: how to send one whatsapp row (free text inside the window, else the
    * approved template). Without it WhatsApp messages carry no template, which Meta refuses

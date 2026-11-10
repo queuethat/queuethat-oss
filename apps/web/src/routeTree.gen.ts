@@ -44,6 +44,7 @@ import { Route as AdminFeedbackRouteImport } from './routes/admin/feedback'
 import { Route as AdminFormsRouteImport } from './routes/admin/forms'
 import { Route as AdminGoogleRouteImport } from './routes/admin/google'
 import { Route as AdminHeatmapRouteImport } from './routes/admin/heatmap'
+import { Route as AdminHelpRouteImport } from './routes/admin/help'
 import { Route as AdminIntegrationsRouteImport } from './routes/admin/integrations'
 import { Route as AdminJourneysRouteImport } from './routes/admin/journeys'
 import { Route as AdminLocationRouteImport } from './routes/admin/location'
@@ -103,7 +104,6 @@ import { Route as AdminReportsAskRouteImport } from './routes/admin/reports/ask'
 import { Route as AdminReportsCustomRouteImport } from './routes/admin/reports/custom'
 import { Route as AdminReportsSchedulesRouteImport } from './routes/admin/reports/schedules'
 import { Route as AdminSettingsDangerRouteImport } from './routes/admin/settings/danger'
-import { Route as AdminSettingsSupportRouteImport } from './routes/admin/settings/support'
 import { Route as AdminQueuesQueueIdIntakeRouteImport } from './routes/admin/queues/$queueId_.intake'
 import { Route as AdminQueuesQueueIdMessagesRouteImport } from './routes/admin/queues/$queueId_.messages'
 
@@ -280,6 +280,11 @@ const AdminGoogleRoute = AdminGoogleRouteImport.update({
 const AdminHeatmapRoute = AdminHeatmapRouteImport.update({
   id: '/heatmap',
   path: '/heatmap',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminHelpRoute = AdminHelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminIntegrationsRoute = AdminIntegrationsRouteImport.update({
@@ -579,11 +584,6 @@ const AdminSettingsDangerRoute = AdminSettingsDangerRouteImport.update({
   path: '/settings/danger',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminSettingsSupportRoute = AdminSettingsSupportRouteImport.update({
-  id: '/settings/support',
-  path: '/settings/support',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminQueuesQueueIdIntakeRoute =
   AdminQueuesQueueIdIntakeRouteImport.update({
     id: '/queues/$queueId_/intake',
@@ -632,6 +632,7 @@ export interface FileRoutesByFullPath {
   '/admin/forms': typeof AdminFormsRoute
   '/admin/google': typeof AdminGoogleRoute
   '/admin/heatmap': typeof AdminHeatmapRoute
+  '/admin/help': typeof AdminHelpRoute
   '/admin/integrations': typeof AdminIntegrationsRoute
   '/admin/journeys': typeof AdminJourneysRoute
   '/admin/location': typeof AdminLocationRoute
@@ -689,7 +690,6 @@ export interface FileRoutesByFullPath {
   '/admin/reports/custom': typeof AdminReportsCustomRoute
   '/admin/reports/schedules': typeof AdminReportsSchedulesRoute
   '/admin/settings/danger': typeof AdminSettingsDangerRoute
-  '/admin/settings/support': typeof AdminSettingsSupportRoute
   '/admin/guests/': typeof AdminGuestsIndexRoute
   '/admin/privacy/': typeof AdminPrivacyIndexRoute
   '/admin/queues/': typeof AdminQueuesIndexRoute
@@ -727,6 +727,7 @@ export interface FileRoutesByTo {
   '/admin/forms': typeof AdminFormsRoute
   '/admin/google': typeof AdminGoogleRoute
   '/admin/heatmap': typeof AdminHeatmapRoute
+  '/admin/help': typeof AdminHelpRoute
   '/admin/integrations': typeof AdminIntegrationsRoute
   '/admin/journeys': typeof AdminJourneysRoute
   '/admin/location': typeof AdminLocationRoute
@@ -784,7 +785,6 @@ export interface FileRoutesByTo {
   '/admin/reports/custom': typeof AdminReportsCustomRoute
   '/admin/reports/schedules': typeof AdminReportsSchedulesRoute
   '/admin/settings/danger': typeof AdminSettingsDangerRoute
-  '/admin/settings/support': typeof AdminSettingsSupportRoute
   '/admin/guests': typeof AdminGuestsIndexRoute
   '/admin/privacy': typeof AdminPrivacyIndexRoute
   '/admin/queues': typeof AdminQueuesIndexRoute
@@ -827,6 +827,7 @@ export interface FileRoutesById {
   '/admin/forms': typeof AdminFormsRoute
   '/admin/google': typeof AdminGoogleRoute
   '/admin/heatmap': typeof AdminHeatmapRoute
+  '/admin/help': typeof AdminHelpRoute
   '/admin/integrations': typeof AdminIntegrationsRoute
   '/admin/journeys': typeof AdminJourneysRoute
   '/admin/location': typeof AdminLocationRoute
@@ -884,7 +885,6 @@ export interface FileRoutesById {
   '/admin/reports/custom': typeof AdminReportsCustomRoute
   '/admin/reports/schedules': typeof AdminReportsSchedulesRoute
   '/admin/settings/danger': typeof AdminSettingsDangerRoute
-  '/admin/settings/support': typeof AdminSettingsSupportRoute
   '/admin/guests/': typeof AdminGuestsIndexRoute
   '/admin/privacy/': typeof AdminPrivacyIndexRoute
   '/admin/queues/': typeof AdminQueuesIndexRoute
@@ -928,6 +928,7 @@ export interface FileRouteTypes {
     | '/admin/forms'
     | '/admin/google'
     | '/admin/heatmap'
+    | '/admin/help'
     | '/admin/integrations'
     | '/admin/journeys'
     | '/admin/location'
@@ -985,7 +986,6 @@ export interface FileRouteTypes {
     | '/admin/reports/custom'
     | '/admin/reports/schedules'
     | '/admin/settings/danger'
-    | '/admin/settings/support'
     | '/admin/guests/'
     | '/admin/privacy/'
     | '/admin/queues/'
@@ -1023,6 +1023,7 @@ export interface FileRouteTypes {
     | '/admin/forms'
     | '/admin/google'
     | '/admin/heatmap'
+    | '/admin/help'
     | '/admin/integrations'
     | '/admin/journeys'
     | '/admin/location'
@@ -1080,7 +1081,6 @@ export interface FileRouteTypes {
     | '/admin/reports/custom'
     | '/admin/reports/schedules'
     | '/admin/settings/danger'
-    | '/admin/settings/support'
     | '/admin/guests'
     | '/admin/privacy'
     | '/admin/queues'
@@ -1122,6 +1122,7 @@ export interface FileRouteTypes {
     | '/admin/forms'
     | '/admin/google'
     | '/admin/heatmap'
+    | '/admin/help'
     | '/admin/integrations'
     | '/admin/journeys'
     | '/admin/location'
@@ -1179,7 +1180,6 @@ export interface FileRouteTypes {
     | '/admin/reports/custom'
     | '/admin/reports/schedules'
     | '/admin/settings/danger'
-    | '/admin/settings/support'
     | '/admin/guests/'
     | '/admin/privacy/'
     | '/admin/queues/'
@@ -1455,6 +1455,13 @@ declare module '@tanstack/react-router' {
       path: '/heatmap'
       fullPath: '/admin/heatmap'
       preLoaderRoute: typeof AdminHeatmapRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/help': {
+      id: '/admin/help'
+      path: '/help'
+      fullPath: '/admin/help'
+      preLoaderRoute: typeof AdminHelpRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/integrations': {
@@ -1870,13 +1877,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsDangerRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/settings/support': {
-      id: '/admin/settings/support'
-      path: '/settings/support'
-      fullPath: '/admin/settings/support'
-      preLoaderRoute: typeof AdminSettingsSupportRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/queues/$queueId_/intake': {
       id: '/admin/queues/$queueId_/intake'
       path: '/queues/$queueId/intake'
@@ -1922,6 +1922,7 @@ interface AdminRouteRouteChildren {
   AdminFormsRoute: typeof AdminFormsRoute
   AdminGoogleRoute: typeof AdminGoogleRoute
   AdminHeatmapRoute: typeof AdminHeatmapRoute
+  AdminHelpRoute: typeof AdminHelpRoute
   AdminIntegrationsRoute: typeof AdminIntegrationsRoute
   AdminJourneysRoute: typeof AdminJourneysRoute
   AdminLocationRoute: typeof AdminLocationRoute
@@ -1957,7 +1958,6 @@ interface AdminRouteRouteChildren {
   AdminReportsCustomRoute: typeof AdminReportsCustomRoute
   AdminReportsSchedulesRoute: typeof AdminReportsSchedulesRoute
   AdminSettingsDangerRoute: typeof AdminSettingsDangerRoute
-  AdminSettingsSupportRoute: typeof AdminSettingsSupportRoute
   AdminGuestsIndexRoute: typeof AdminGuestsIndexRoute
   AdminPrivacyIndexRoute: typeof AdminPrivacyIndexRoute
   AdminQueuesIndexRoute: typeof AdminQueuesIndexRoute
@@ -1982,6 +1982,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminFormsRoute: AdminFormsRoute,
   AdminGoogleRoute: AdminGoogleRoute,
   AdminHeatmapRoute: AdminHeatmapRoute,
+  AdminHelpRoute: AdminHelpRoute,
   AdminIntegrationsRoute: AdminIntegrationsRoute,
   AdminJourneysRoute: AdminJourneysRoute,
   AdminLocationRoute: AdminLocationRoute,
@@ -2017,7 +2018,6 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminReportsCustomRoute: AdminReportsCustomRoute,
   AdminReportsSchedulesRoute: AdminReportsSchedulesRoute,
   AdminSettingsDangerRoute: AdminSettingsDangerRoute,
-  AdminSettingsSupportRoute: AdminSettingsSupportRoute,
   AdminGuestsIndexRoute: AdminGuestsIndexRoute,
   AdminPrivacyIndexRoute: AdminPrivacyIndexRoute,
   AdminQueuesIndexRoute: AdminQueuesIndexRoute,

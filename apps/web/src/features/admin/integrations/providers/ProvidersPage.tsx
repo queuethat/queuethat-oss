@@ -20,7 +20,6 @@ import {
 interface Row {
   kind: string;
   provider: string;
-  mode: string;
   config: unknown;
   secret_hints: unknown;
   endpoint_id: string;
@@ -29,7 +28,7 @@ interface Row {
   enabled: boolean;
 }
 
-const SAVE_ERRORS = ['platform_mode_unavailable', 'invalid_input', 'permission_denied'];
+const SAVE_ERRORS = ['invalid_input', 'permission_denied'];
 
 /** `/admin/integrations` (3-PV3, #342): provider credentials, webhook URL, verification and the enable switch. */
 export function ProvidersPage() {
@@ -77,7 +76,6 @@ function ChannelCard({
   const hints = (row?.secret_hints as Record<string, string> | undefined) ?? {};
   const [provider, setProvider] = useState(row?.provider ?? PROVIDERS[channel][0]!);
   const fields = fieldsFor(channel, provider);
-  const [mode, setMode] = useState(row?.mode ?? 'own');
   const [config, setConfig] = useState<Record<string, string>>(stored);
   const [secrets, setSecrets] = useState<Record<string, string>>({});
   const [copied, setCopied] = useState(false);
@@ -87,7 +85,7 @@ function ChannelCard({
     const given = Object.fromEntries(Object.entries(secrets).filter(([, v]) => v !== ''));
     const keep = Object.fromEntries(fields.config.map((k) => [k, config[k] ?? '']));
     save.mutate(
-      { kind: channel, provider, mode, config: keep, secrets: mode === 'own' ? given : {} },
+      { kind: channel, provider, mode: 'own', config: keep, secrets: given },
       { onSuccess: () => setSecrets({}) },
     );
   };
@@ -120,15 +118,6 @@ function ChannelCard({
             </option>
           ))}
         </Select>
-        <Select
-          label={t('mode.label')}
-          value={mode}
-          disabled={!editable}
-          onChange={(e) => setMode(e.target.value)}
-        >
-          <option value="own">{t('mode.own')}</option>
-          <option value="platform">{t('mode.platform')}</option>
-        </Select>
         {fields.config.map((key) => (
           <Input
             key={key}
@@ -138,23 +127,21 @@ function ChannelCard({
             onChange={(e) => setConfig({ ...config, [key]: e.target.value })}
           />
         ))}
-        {mode === 'own'
-          ? fields.secrets.map((key) => (
-              <Input
-                key={key}
-                type="password"
-                autoComplete="off"
-                label={t(`secretsBy.${provider}.${key}` as 'secrets.auth_token', {
-                  defaultValue: t(`secrets.${key}` as 'secrets.auth_token'),
-                })}
-                hint={hints[key] ? t('secretStored', { last4: hints[key] }) : t('secretEmpty')}
-                placeholder={hints[key] ? `****${hints[key]}` : ''}
-                readOnly={!editable}
-                value={secrets[key] ?? ''}
-                onChange={(e) => setSecrets({ ...secrets, [key]: e.target.value })}
-              />
-            ))
-          : null}
+        {fields.secrets.map((key) => (
+          <Input
+            key={key}
+            type="password"
+            autoComplete="off"
+            label={t(`secretsBy.${provider}.${key}` as 'secrets.auth_token', {
+              defaultValue: t(`secrets.${key}` as 'secrets.auth_token'),
+            })}
+            hint={hints[key] ? t('secretStored', { last4: hints[key] }) : t('secretEmpty')}
+            placeholder={hints[key] ? `****${hints[key]}` : ''}
+            readOnly={!editable}
+            value={secrets[key] ?? ''}
+            onChange={(e) => setSecrets({ ...secrets, [key]: e.target.value })}
+          />
+        ))}
         {failure ? <p role="alert">{t(`errors.${failure}` as 'errors.unknown')}</p> : null}
         {editable ? (
           <div>

@@ -547,11 +547,6 @@ verify_jwt = false
 # Owners and admins call it with their own JWT; the function re-checks the role and reads mappings as the caller.
 verify_jwt = true
 
-[functions.billing]
-# Stripe posts /webhook with no Supabase key (the Stripe-Signature HMAC is the gate, checked before any
-# write); pg_cron and pg_net call /jobs with DISPATCH_SECRET, which the handler checks.
-verify_jwt = false
-
 [functions.integration-sync]
 # Called by pg_net and pg_cron with DISPATCH_SECRET; the handler checks it (vendor tokens never leave the function).
 verify_jwt = false

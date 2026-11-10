@@ -57,11 +57,11 @@ describe('HelpArticles', () => {
 });
 
 describe('HelpLink', () => {
-  it('points at the help section of the Support page and is keyboard reachable', async () => {
+  it('points at the help section of the Help page and is keyboard reachable', async () => {
     const user = userEvent.setup();
     await view(<HelpLink />);
     const link = await screen.findByRole('link', { name: 'Help' });
-    expect(link.getAttribute('href')).toBe('/admin/settings/support#help');
+    expect(link.getAttribute('href')).toBe('/admin/help#help');
     await user.tab();
     expect(document.activeElement).toBe(link);
   });

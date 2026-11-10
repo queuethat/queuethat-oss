@@ -356,7 +356,7 @@ Deno.test('email and rows without consent are not reserved', async () => {
 });
 
 Deno.test('account mail can link into the app; guest mail and stored vars cannot', async () => {
-  const body = 'Pay.[ Open: {app_url}/admin/billing]';
+  const body = 'Usage.[ Open: {app_url}/admin/usage]';
   const { run, sent } = setup(
     [[
       job('acct', { visit_id: null, body }),
@@ -366,9 +366,9 @@ Deno.test('account mail can link into the app; guest mail and stored vars cannot
     { appUrl: 'https://app.test' },
   );
   await run();
-  assert.equal(sent.find((m) => m.outboxId === 'acct')!.text, 'Pay. Open: https://app.test/admin/billing' + SOURCE);
-  assert.equal(sent.find((m) => m.outboxId === 'guest')!.text, 'Pay.' + SOURCE, 'guest mail never gets the app link');
-  assert.equal(sent.find((m) => m.outboxId === 'acct2')!.text, 'Pay. Open: https://app.test/admin/billing' + SOURCE, 'a stored app_url is ignored');
+  assert.equal(sent.find((m) => m.outboxId === 'acct')!.text, 'Usage. Open: https://app.test/admin/usage' + SOURCE);
+  assert.equal(sent.find((m) => m.outboxId === 'guest')!.text, 'Usage.' + SOURCE, 'guest mail never gets the app link');
+  assert.equal(sent.find((m) => m.outboxId === 'acct2')!.text, 'Usage. Open: https://app.test/admin/usage' + SOURCE, 'a stored app_url is ignored');
 });
 
 Deno.test('an appointment email links to its one-off manage path; stored vars cannot', async () => {
@@ -388,9 +388,9 @@ Deno.test('an appointment email links to its one-off manage path; stored vars ca
 });
 
 Deno.test('without PUBLIC_URL the app link sentence is dropped', async () => {
-  const { run, sent } = setup([[job('acct', { visit_id: null, body: 'Pay.[ Open: {app_url}/admin/billing]' })]]);
+  const { run, sent } = setup([[job('acct', { visit_id: null, body: 'Usage.[ Open: {app_url}/admin/usage]' })]]);
   await run();
-  assert.equal(sent[0]!.text, 'Pay.' + SOURCE);
+  assert.equal(sent[0]!.text, 'Usage.' + SOURCE);
 });
 
 Deno.test('appOrigin keeps only an https origin', () => {
