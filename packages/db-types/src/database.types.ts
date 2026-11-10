@@ -19,9 +19,6 @@ export type Database = {
         isOneToOne: true
         isSetofReturn: false
       } },
-"acknowledge_incident_notice":
-{ Args: { "p_id": string }; Returns: undefined
-                           },
 "add_custom_domain":
 { Args: { "p_hostname": string,"p_idempotency_key": string,"p_location_id": string,"p_org_id": string }; Returns: Database["api"]['CompositeTypes']["custom_domain_row"]
                           SetofOptions: {
@@ -41,15 +38,6 @@ export type Database = {
         isOneToOne: true
         isSetofReturn: false
       } },
-"apply_billing_event":
-{ Args: { "p_created": string,"p_customer_id": string,"p_org_id": string,"p_period_end": string,"p_price_id": string,"p_quantity": number,"p_status": string,"p_subscription_id": string,"p_type": string }; Returns: string
-                           },
-"apply_bundle_grant":
-{ Args: { "p_created": string,"p_invoice_id": string,"p_subscription_id": string }; Returns: string
-                           },
-"apply_credit_topup":
-{ Args: { "p_amount_minor": number,"p_currency": string,"p_org_id": string,"p_session_id": string }; Returns: string
-                           },
 "apply_delivery_status":
 { Args: { "p_error_code"?: string,"p_org_id": string,"p_provider": string,"p_provider_message_id": string,"p_status": string }; Returns: boolean
                            },
@@ -63,9 +51,6 @@ export type Database = {
       } },
 "apply_payment_event":
 { Args: { "p_amount_minor": number,"p_customer_id": string,"p_meta_org": string,"p_object_id": string,"p_org_id": string,"p_payment_method_id": string,"p_provider": string,"p_type": string }; Returns: string
-                           },
-"apply_platform_sms_event":
-{ Args: { "p_error_code"?: string,"p_kind": string,"p_phone"?: string,"p_provider_message_id"?: string,"p_status"?: string }; Returns: boolean
                            },
 "apply_provider_price":
 { Args: { "p_currency": string,"p_notification_id": string,"p_org_id": string,"p_price": number }; Returns: undefined
@@ -119,11 +104,6 @@ export type Database = {
 "begin_pos_payment_by_code":
 { Args: { "p_code": string,"p_provider": string }; Returns: {
               "amount_minor": number,"cancel_cutoff_hours": number,"currency": string,"intent_id": string,"kind": string,"org_id": string,"payment_id": string,"ref_id": string,"release_after": string
-            }[]
-                           },
-"billing_session_info":
-{ Args: { "p_interval"?: string,"p_org_id": string }; Returns: {
-              "customer_id": string,"price_id": string,"quantity": number,"subscription_id": string
             }[]
                            },
 "block_from_visit":
@@ -182,11 +162,6 @@ export type Database = {
                            },
 "cancel_series_from":
 { Args: { "p_from": string,"p_idempotency_key": string,"p_series_id": string }; Returns: number
-                           },
-"claim_billing_jobs":
-{ Args: { "p_lease_seconds": number,"p_limit": number }; Returns: {
-              "attempts": number,"id": string,"org_id": string,"quantity": number,"stripe_subscription_id": string
-            }[]
                            },
 "claim_integration_jobs":
 { Args: { "p_lease_seconds": number,"p_limit": number }; Returns: Database["api"]['CompositeTypes']["integration_job"][]
@@ -838,11 +813,6 @@ export type Database = {
 "my_permissions":
 { Args: { "p_location_id"?: string,"p_org_id": string }; Returns: (string)[]
                            },
-"org_billing":
-{ Args: { "p_org_id": string }; Returns: {
-              "billing_interval": string,"currency": string,"current_period_end": string,"enabled": boolean,"grace_ends_at": string,"locations": number,"paid_channels": boolean,"plan_id": string,"plan_name": string,"plans": Json,"quantity": number,"status": string,"subscribed": boolean,"unit_price_minor": number
-            }[]
-                           },
 "org_entitlements":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
@@ -888,311 +858,6 @@ export type Database = {
 { Args: { "p_limit"?: number }; Returns: {
               "id": string,"org_id": string,"provider": string,"provider_message_id": string
             }[]
-                           },
-"platform_ack_attention":
-{ Args: { "p_hours": number,"p_org_id": string,"p_reason": string }; Returns: undefined
-                           },
-"platform_add_incident_note":
-{ Args: { "p_body": string,"p_id": string }; Returns: undefined
-                           },
-"platform_add_note":
-{ Args: { "p_body": string,"p_idempotency_key"?: string,"p_note_id"?: string,"p_org_id": string,"p_tags"?: (string)[] }; Returns: Database["api"]['CompositeTypes']["platform_org_note"]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_org_note"
-        isOneToOne: true
-        isSetofReturn: false
-      } },
-"platform_approve_notice":
-{ Args: { "p_id": string }; Returns: Database["api"]['CompositeTypes']["incident_notice"]
-                          SetofOptions: {
-        from: "*"
-        to: "incident_notice"
-        isOneToOne: true
-        isSetofReturn: false
-      } },
-"platform_attention":
-{ Args: { "p_limit"?: number }; Returns: Database["api"]['CompositeTypes']["platform_attention_row"][]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_attention_row"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
-"platform_audit_export":
-{ Args: { "p_action"?: string,"p_actor"?: string,"p_after"?: number,"p_from"?: string,"p_org_id"?: string,"p_to"?: string }; Returns: Database["api"]['CompositeTypes']["platform_audit_export"]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_audit_export"
-        isOneToOne: true
-        isSetofReturn: false
-      } },
-"platform_audit_search":
-{ Args: { "p_action"?: string,"p_actor"?: string,"p_after"?: number,"p_from"?: string,"p_limit"?: number,"p_org_id"?: string,"p_to"?: string }; Returns: Database["api"]['CompositeTypes']["platform_audit_row"][]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_audit_row"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
-"platform_billing_overview":
-{ Args: Record<PropertyKey, never>; Returns: Database["api"]['CompositeTypes']["platform_billing_overview"]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_billing_overview"
-        isOneToOne: true
-        isSetofReturn: false
-      } },
-"platform_block_contact":
-{ Args: { "p_expires_at": string,"p_kind": string,"p_reason": string,"p_value": string }; Returns: undefined
-                           },
-"platform_break_glass":
-{ Args: { "p_org_id": string,"p_reason": string }; Returns: Database["app"]['Tables']["support_grants"]['Row']
-                          SetofOptions: {
-        from: "*"
-        to: "support_grants"
-        isOneToOne: true
-        isSetofReturn: false
-      } },
-"platform_create_incident":
-{ Args: { "p_data_categories"?: (string)[],"p_description"?: string,"p_detected_at"?: string,"p_idempotency_key"?: string,"p_kind": string,"p_org_ids"?: (string)[],"p_record_count"?: number,"p_title": string }; Returns: Database["api"]['CompositeTypes']["platform_incident"]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_incident"
-        isOneToOne: true
-        isSetofReturn: false
-      } },
-"platform_delivery_summary":
-{ Args: { "p_from": string,"p_to": string }; Returns: Database["api"]['CompositeTypes']["platform_delivery_summary_row"][]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_delivery_summary_row"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
-"platform_funnel":
-{ Args: { "p_from"?: string,"p_limit"?: number,"p_offset"?: number,"p_stage"?: string,"p_to"?: string }; Returns: Database["api"]['CompositeTypes']["platform_funnel_result"]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_funnel_result"
-        isOneToOne: true
-        isSetofReturn: false
-      } },
-"platform_get_org":
-{ Args: { "p_org_id": string }; Returns: Database["api"]['CompositeTypes']["platform_org_detail"]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_org_detail"
-        isOneToOne: true
-        isSetofReturn: false
-      } },
-"platform_health":
-{ Args: Record<PropertyKey, never>; Returns: Database["api"]['CompositeTypes']["platform_health"]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_health"
-        isOneToOne: true
-        isSetofReturn: false
-      } },
-"platform_incident_break_glass":
-{ Args: { "p_id": string }; Returns: Database["api"]['CompositeTypes']["platform_incident_break_glass"][]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_incident_break_glass"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
-"platform_incident_tenants":
-{ Args: { "p_id": string }; Returns: Database["api"]['CompositeTypes']["platform_incident_tenant"][]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_incident_tenant"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
-"platform_list_announcements":
-{ Args: Record<PropertyKey, never>; Returns: {
-              "ends_at": string,"id": string,"message": string,"severity": Database["app"]['Enums']["announcement_severity"],"starts_at": string
-            }[]
-                           },
-"platform_list_incidents":
-{ Args: { "p_id"?: string,"p_status"?: Database["app"]['Enums']["incident_status"] }; Returns: Database["api"]['CompositeTypes']["platform_incident"][]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_incident"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
-"platform_list_notes":
-{ Args: { "p_include_history"?: boolean,"p_org_id": string }; Returns: Database["api"]['CompositeTypes']["platform_org_note"][]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_org_note"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
-"platform_list_notices":
-{ Args: { "p_incident_id": string }; Returns: Database["api"]['CompositeTypes']["incident_notice"][]
-                          SetofOptions: {
-        from: "*"
-        to: "incident_notice"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
-"platform_list_orgs":
-{ Args: { "p_after"?: string,"p_limit"?: number,"p_search": string,"p_status"?: Database["app"]['Enums']["org_status"] }; Returns: Database["api"]['CompositeTypes']["platform_org_row"][]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_org_row"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
-"platform_list_support_requests":
-{ Args: { "p_org_id": string,"p_status"?: string }; Returns: Database["api"]['CompositeTypes']["platform_support_request"][]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_support_request"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
-"platform_org_activation":
-{ Args: { "p_org_ids": (string)[] }; Returns: Database["api"]['CompositeTypes']["platform_activation"][]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_activation"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
-"platform_org_billing":
-{ Args: { "p_org_id": string }; Returns: Database["api"]['CompositeTypes']["platform_org_billing"]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_org_billing"
-        isOneToOne: true
-        isSetofReturn: false
-      } },
-"platform_org_deliveries":
-{ Args: { "p_after_at"?: string,"p_after_id"?: string,"p_channel"?: string,"p_from"?: string,"p_limit"?: number,"p_org_id": string,"p_status"?: string,"p_to"?: string }; Returns: Database["api"]['CompositeTypes']["platform_delivery_row"][]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_delivery_row"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
-"platform_revoke_devices":
-{ Args: { "p_org_id": string,"p_reason": string }; Returns: Json
-                           },
-"platform_revoke_role":
-{ Args: { "p_allow_last_operator"?: boolean,"p_user_id": string }; Returns: Json
-                           },
-"platform_save_notice":
-{ Args: { "p_body"?: string,"p_incident_id": string,"p_subject"?: string }; Returns: Database["api"]['CompositeTypes']["incident_notice"]
-                          SetofOptions: {
-        from: "*"
-        to: "incident_notice"
-        isOneToOne: true
-        isSetofReturn: false
-      } },
-"platform_search_visits":
-{ Args: { "p_limit"?: number,"p_org_id": string,"p_queue_id"?: string,"p_service_day"?: string,"p_status"?: Database["api"]['Enums']["visit_state"],"p_ticket"?: string }; Returns: Database["api"]['CompositeTypes']["platform_visit_hit"][]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_visit_hit"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
-"platform_send_notice":
-{ Args: { "p_id": string }; Returns: Database["api"]['CompositeTypes']["incident_notice"]
-                          SetofOptions: {
-        from: "*"
-        to: "incident_notice"
-        isOneToOne: true
-        isSetofReturn: false
-      } },
-"platform_set_entitlement":
-{ Args: { "p_key": string,"p_org_id": string,"p_reason": string,"p_value": Json }; Returns: undefined
-                           },
-"platform_set_org_status":
-{ Args: { "p_org_id": string,"p_reason": string,"p_status": Database["app"]['Enums']["org_status"] }; Returns: Database["api"]['CompositeTypes']["platform_org_row"]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_org_row"
-        isOneToOne: true
-        isSetofReturn: false
-      } },
-"platform_set_sms_pause":
-{ Args: { "p_org_id": string,"p_pause": boolean,"p_reason": string }; Returns: Json
-                           },
-"platform_set_support_request_status":
-{ Args: { "p_request_id": string,"p_status": string }; Returns: undefined
-                           },
-"platform_sign_out_members":
-{ Args: { "p_org_id": string,"p_reason": string }; Returns: Json
-                           },
-"platform_sms_analytics":
-{ Args: { "p_from": string,"p_org_id"?: string,"p_to": string }; Returns: Database["app"]['Tables']["platform_sms_daily"]['Row'][]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_sms_daily"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
-"platform_sms_health":
-{ Args: { "p_org_id": string }; Returns: Json
-                           },
-"platform_stats":
-{ Args: { "p_from": string,"p_to": string }; Returns: Database["app"]['Tables']["platform_daily_stats"]['Row'][]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_daily_stats"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
-"platform_tagged_orgs":
-{ Args: { "p_tags"?: (string)[] }; Returns: Database["api"]['CompositeTypes']["platform_tagged_org"][]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_tagged_org"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
-"platform_team":
-{ Args: Record<PropertyKey, never>; Returns: {
-              "email": string,"granted_at": string,"granted_by": string,"granted_by_email": string,"is_you": boolean,"last_sign_in_at": string,"mfa_enrolled": boolean,"role": Database["app"]['Enums']["platform_role"],"user_id": string
-            }[]
-                           },
-"platform_transfer_ownership":
-{ Args: { "p_new_owner_email": string,"p_org_id": string,"p_reason": string }; Returns: Database["api"]['CompositeTypes']["platform_org_row"]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_org_row"
-        isOneToOne: true
-        isSetofReturn: false
-      } },
-"platform_unblock_contact":
-{ Args: { "p_kind": string,"p_value": string }; Returns: undefined
-                           },
-"platform_update_incident":
-{ Args: { "p_containment"?: string,"p_data_categories"?: (string)[],"p_id": string,"p_lessons"?: string,"p_mark_notified"?: boolean,"p_org_ids"?: (string)[],"p_record_count"?: number,"p_root_cause"?: string,"p_status"?: Database["app"]['Enums']["incident_status"],"p_waive_reason"?: string }; Returns: Database["api"]['CompositeTypes']["platform_incident"]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_incident"
-        isOneToOne: true
-        isSetofReturn: false
-      } },
-"platform_upsert_announcement":
-{ Args: { "p_ends_at": string,"p_id"?: string,"p_message": string,"p_severity": Database["app"]['Enums']["announcement_severity"],"p_starts_at"?: string }; Returns: string
-                           },
-"platform_visit_timeline":
-{ Args: { "p_org_id": string,"p_visit_id": string }; Returns: Database["api"]['CompositeTypes']["platform_visit_timeline"]
-                          SetofOptions: {
-        from: "*"
-        to: "platform_visit_timeline"
-        isOneToOne: true
-        isSetofReturn: false
-      } },
-"platform_whoami":
-{ Args: Record<PropertyKey, never>; Returns: Database["app"]['Enums']["platform_role"]
                            },
 "process_inbound_message":
 { Args: { "p_body": string,"p_channel": string,"p_from": string,"p_org_id": string,"p_provider": string,"p_provider_message_id": string,"p_to": string }; Returns: Database["api"]['CompositeTypes']["inbound_result"]
@@ -1266,9 +931,6 @@ export type Database = {
         isOneToOne: true
         isSetofReturn: false
       } },
-"report_billing_result":
-{ Args: { "p_job_id": string,"p_result": Json }; Returns: undefined
-                           },
 "report_incident":
 { Args: { "p_data_categories"?: (string)[],"p_description"?: string,"p_detected_at"?: string,"p_idempotency_key"?: string,"p_kind": string,"p_notify_platform"?: boolean,"p_org_id": string,"p_title": string }; Returns: string
                            },
@@ -1777,8 +1439,6 @@ export type Database = {
                         "row_no": number | null,"outcome": string | null,"guest_id": string | null,"error": string | null
                       },"inbound_result": {
                         "inbound_id": string | null,"handled_as": string | null,"contact_id": string | null,"visit_id": string | null
-                      },"incident_notice": {
-                        "id": string | null,"incident_id": string | null,"subject": string | null,"body": string | null,"status": string | null,"approved_at": string | null,"sent_at": string | null,"org_count": number | null,"acknowledged_count": number | null,"updated_at": string | null
                       },"industry_template": {
                         "key": string | null,"name": string | null,"description": string | null,"health_tagged": boolean | null
                       },"integration_credentials": {
@@ -1829,46 +1489,6 @@ export type Database = {
                         "grp_id": string | null,"label": string | null,"served": number | null,"avg_service_sec": number | null,"avg_wait_sec": number | null,"no_shows": number | null
                       },"phone_verification": {
                         "state": string | null,"resend_after": string | null
-                      },"platform_activation": {
-                        "org_id": string | null,"org_status": Database["app"]['Enums']["org_status"] | null,"stage": string | null,"next_stage": string | null,"reached_at": string | null,"stuck_days": number | null,"is_stuck": boolean | null,"stages": Json | null
-                      },"platform_attention_row": {
-                        "org_id": string | null,"name": string | null,"org_status": Database["app"]['Enums']["org_status"] | null,"reason": string | null,"priority": number | null,"since": string | null,"detail": Json | null,"total": number | null
-                      },"platform_audit_export": {
-                        "csv": string | null,"row_count": number | null,"truncated": boolean | null,"next_after": number | null
-                      },"platform_audit_row": {
-                        "id": number | null,"at": string | null,"actor_id": string | null,"actor_email": string | null,"action": string | null,"org_id": string | null,"org_name": string | null,"reason": string | null,"support_grant_id": string | null,"break_glass_reason": string | null,"target": Json | null
-                      },"platform_billing_overview": {
-                        "billing_enabled": boolean | null,"past_due": number | null,"canceled_30d": number | null,"trials_ending_7d": number | null,"attention": Json | null
-                      },"platform_delivery_row": {
-                        "kind": string | null,"id": string | null,"org_id": string | null,"org_name": string | null,"created_at": string | null,"updated_at": string | null,"medium": string | null,"template_key": string | null,"status": string | null,"delivery_status": string | null,"error_code": string | null,"attempts": number | null,"provider": string | null,"suppression_reason": string | null,"recipient_masked": string | null
-                      },"platform_delivery_summary_row": {
-                        "medium": string | null,"provider": string | null,"sent": number | null,"failed": number | null,"suppressed": number | null,"pending": number | null,"failure_rate": number | null
-                      },"platform_funnel_result": {
-                        "from_date": string | null,"to_date": string | null,"stages": Json | null,"signups_without_business": number | null,"stuck_total": number | null,"stuck": Json | null
-                      },"platform_health": {
-                        "notifications_queued": number | null,"notifications_dead": number | null,"oldest_queued_seconds": number | null,"cron_jobs": Json | null,"orgs_active_today": number | null,"as_of": string | null
-                      },"platform_incident": {
-                        "id": string | null,"kind": string | null,"title": string | null,"description": string | null,"status": Database["app"]['Enums']["incident_status"] | null,"detected_at": string | null,"org_ids": (string)[] | null,"data_categories": (string)[] | null,"record_count": number | null,"containment": string | null,"root_cause": string | null,"lessons": string | null,"notified_at": string | null,"notice_waived_reason": string | null,"notify_due_at": string | null,"notify_state": string | null,"escalated": boolean | null,"created_at": string | null,"updated_at": string | null,"retain_until": string | null
-                      },"platform_incident_break_glass": {
-                        "at": string | null,"org_id": string | null,"org_name": string | null,"operator_email": string | null,"reason": string | null,"support_grant_id": string | null
-                      },"platform_incident_tenant": {
-                        "org_id": string | null,"org_name": string | null,"owners": Json | null,"breach_contact": Json | null
-                      },"platform_org_billing": {
-                        "billing_enabled": boolean | null,"org_status": Database["app"]['Enums']["org_status"] | null,"has_subscription": boolean | null,"plan_id": string | null,"plan_name": string | null,"effective_plan": string | null,"billing_interval": string | null,"status": string | null,"standing": string | null,"current_period_end": string | null,"locations_billed": number | null,"locations_wanted": number | null,"locations_actual": number | null,"grace_ends_at": string | null,"last_payment_failed_at": string | null,"grace_reminder_at": string | null,"stripe_customer_id": string | null,"entitlements": Json | null,"overrides": Json | null,"pending_jobs": Json | null
-                      },"platform_org_detail": {
-                        "org": Database["api"]['CompositeTypes']["platform_org_row"] | null,"suspended_reason": string | null,"suspended_at": string | null,"members": Json | null,"locations": Json | null,"devices": Json | null,"recent_audit": Json | null,"support_grant": Json | null
-                      },"platform_org_note": {
-                        "id": string | null,"version_id": string | null,"org_id": string | null,"author_id": string | null,"author_email": string | null,"body": string | null,"tags": (string)[] | null,"version": number | null,"created_at": string | null,"first_created_at": string | null
-                      },"platform_org_row": {
-                        "id": string | null,"name": string | null,"slug": string | null,"status": Database["app"]['Enums']["org_status"] | null,"created_at": string | null,"owner_email": string | null,"last_activity_at": string | null,"visits_7d": number | null,"notifications_sent_7d": number | null,"notifications_failed_7d": number | null,"members": number | null,"locations": number | null
-                      },"platform_support_request": {
-                        "id": string | null,"reference": string | null,"user_id": string | null,"user_email": string | null,"subject": string | null,"message": string | null,"context": Json | null,"status": string | null,"created_at": string | null,"closed_at": string | null
-                      },"platform_tagged_org": {
-                        "org_id": string | null,"org_name": string | null,"status": Database["app"]['Enums']["org_status"] | null,"tags": (string)[] | null,"needs_attention": boolean | null,"notes": number | null,"last_note_at": string | null
-                      },"platform_visit_hit": {
-                        "visit_id": string | null,"display_ticket": string | null,"queue_id": string | null,"queue_name": string | null,"location_id": string | null,"location_name": string | null,"service_day": string | null,"status": Database["api"]['Enums']["visit_state"] | null,"joined_at": string | null,"finished_at": string | null
-                      },"platform_visit_timeline": {
-                        "visit_id": string | null,"display_ticket": string | null,"status": Database["api"]['Enums']["visit_state"] | null,"queue_name": string | null,"location_name": string | null,"tz": string | null,"service_day": string | null,"source": string | null,"party_size": number | null,"call_count": number | null,"joined_at": string | null,"finished_at": string | null,"support_grant": Json | null,"events": Json | null,"notifications": Json | null
                       },"presence_row": {
                         "user_id": string | null,"location_id": string | null,"status": string | null,"counter_id": string | null,"since": string | null
                       },"provider_settings_row": {
@@ -2253,26 +1873,6 @@ isOneToOne: false
       referencedColumns: ["org_id","user_id"]
     }
                   ]
-                },"billing_jobs": {
-                  Row: {
-                    "attempts": number,"created_at": string,"id": string,"last_error": string | null,"locked_until": string | null,"next_attempt_at": string,"org_id": string,"status": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "attempts"?: number,"created_at"?: string,"id"?: string,"last_error"?: string | null,"locked_until"?: string | null,"next_attempt_at"?: string,"org_id": string,"status"?: string
-                  }
-                  Update: {
-                    "attempts"?: number,"created_at"?: string,"id"?: string,"last_error"?: string | null,"locked_until"?: string | null,"next_attempt_at"?: string,"org_id"?: string,"status"?: string
-                  }
-                  Relationships: [
-                    {
-      foreignKeyName: "billing_jobs_org_id_fkey"
-      columns: ["org_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
-    }
-                  ]
                 },"blocked_identities": {
                   Row: {
                     "created_at": string,"created_by": string | null,"expires_at": string | null,"id": string,"kind": string,"org_id": string,"queue_id": string | null,"reason": string,"value_hash": string
@@ -2495,26 +2095,6 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "locations"
       referencedColumns: ["org_id","id"]
-    }
-                  ]
-                },"credit_ledger": {
-                  Row: {
-                    "amount_micros": number,"cost_micros": number,"created_at": string,"entry_type": string,"id": string,"margin_micros": number,"notification_id": string | null,"org_id": string,"stripe_ref": string | null
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "amount_micros": number,"cost_micros"?: number,"created_at"?: string,"entry_type": string,"id"?: string,"margin_micros"?: number,"notification_id"?: string | null,"org_id": string,"stripe_ref"?: string | null
-                  }
-                  Update: {
-                    "amount_micros"?: number,"cost_micros"?: number,"created_at"?: string,"entry_type"?: string,"id"?: string,"margin_micros"?: number,"notification_id"?: string | null,"org_id"?: string,"stripe_ref"?: string | null
-                  }
-                  Relationships: [
-                    {
-      foreignKeyName: "credit_ledger_org_id_fkey"
-      columns: ["org_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
     }
                   ]
                 },"custom_domains": {
@@ -3033,26 +2613,6 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "visits"
       referencedColumns: ["org_id","id"]
-    }
-                  ]
-                },"incident_notices": {
-                  Row: {
-                    "approved_at": string | null,"approved_by": string | null,"body": string,"created_at": string,"drafted_by": string | null,"id": string,"incident_id": string,"sent_at": string | null,"status": string,"subject": string,"updated_at": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "approved_at"?: string | null,"approved_by"?: string | null,"body": string,"created_at"?: string,"drafted_by"?: string | null,"id"?: string,"incident_id": string,"sent_at"?: string | null,"status"?: string,"subject": string,"updated_at"?: string
-                  }
-                  Update: {
-                    "approved_at"?: string | null,"approved_by"?: string | null,"body"?: string,"created_at"?: string,"drafted_by"?: string | null,"id"?: string,"incident_id"?: string,"sent_at"?: string | null,"status"?: string,"subject"?: string,"updated_at"?: string
-                  }
-                  Relationships: [
-                    {
-      foreignKeyName: "incident_notices_incident_id_fkey"
-      columns: ["incident_id"]
-isOneToOne: false
-      referencedRelation: "platform_incidents"
-      referencedColumns: ["id"]
     }
                   ]
                 },"intake_fields": {
@@ -3609,214 +3169,16 @@ isOneToOne: false
       referencedColumns: ["org_id","id"]
     }
                   ]
-                },"plan_entitlements": {
-                  Row: {
-                    "key": string,"plan_id": string,"value": NonNullable<Json>
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "key": string,"plan_id": string,"value": NonNullable<Json>
-                  }
-                  Update: {
-                    "key"?: string,"plan_id"?: string,"value"?: NonNullable<Json>
-                  }
-                  Relationships: [
-                    {
-      foreignKeyName: "plan_entitlements_key_fkey"
-      columns: ["key"]
-isOneToOne: false
-      referencedRelation: "entitlement_defaults"
-      referencedColumns: ["key"]
-    },{
-      foreignKeyName: "plan_entitlements_plan_id_fkey"
-      columns: ["plan_id"]
-isOneToOne: false
-      referencedRelation: "plans"
-      referencedColumns: ["id"]
-    }
-                  ]
-                },"plans": {
-                  Row: {
-                    "currency": string,"id": string,"name": string,"stripe_price_id": string | null,"stripe_price_id_annual": string | null,"unit_price_annual_minor": number | null,"unit_price_minor": number
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "currency"?: string,"id": string,"name": string,"stripe_price_id"?: string | null,"stripe_price_id_annual"?: string | null,"unit_price_annual_minor"?: number | null,"unit_price_minor"?: number
-                  }
-                  Update: {
-                    "currency"?: string,"id"?: string,"name"?: string,"stripe_price_id"?: string | null,"stripe_price_id_annual"?: string | null,"unit_price_annual_minor"?: number | null,"unit_price_minor"?: number
-                  }
-                  Relationships: [
-                    
-                  ]
-                },"platform_announcements": {
-                  Row: {
-                    "created_at": string,"created_by": string | null,"ends_at": string,"id": string,"message": string,"severity": Database["app"]['Enums']["announcement_severity"],"starts_at": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "created_at"?: string,"created_by"?: string | null,"ends_at": string,"id"?: string,"message": string,"severity": Database["app"]['Enums']["announcement_severity"],"starts_at"?: string
-                  }
-                  Update: {
-                    "created_at"?: string,"created_by"?: string | null,"ends_at"?: string,"id"?: string,"message"?: string,"severity"?: Database["app"]['Enums']["announcement_severity"],"starts_at"?: string
-                  }
-                  Relationships: [
-                    
-                  ]
-                },"platform_attention_acks": {
-                  Row: {
-                    "acked_at": string,"acked_by": string | null,"org_id": string,"reason": string,"snooze_until": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "acked_at"?: string,"acked_by"?: string | null,"org_id": string,"reason": string,"snooze_until": string
-                  }
-                  Update: {
-                    "acked_at"?: string,"acked_by"?: string | null,"org_id"?: string,"reason"?: string,"snooze_until"?: string
-                  }
-                  Relationships: [
-                    {
-      foreignKeyName: "platform_attention_acks_org_id_fkey"
-      columns: ["org_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
-    }
-                  ]
-                },"platform_audit": {
-                  Row: {
-                    "action": string,"actor_id": string | null,"at": string,"id": number,"org_id": string | null,"reason": string | null,"target": NonNullable<Json>
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "action": string,"actor_id"?: string | null,"at"?: string,"id"?: never,"org_id"?: string | null,"reason"?: string | null,"target"?: NonNullable<Json>
-                  }
-                  Update: {
-                    "action"?: string,"actor_id"?: string | null,"at"?: string,"id"?: never,"org_id"?: string | null,"reason"?: string | null,"target"?: NonNullable<Json>
-                  }
-                  Relationships: [
-                    
-                  ]
-                },"platform_blocks": {
-                  Row: {
-                    "contact_hash": string,"created_at": string,"created_by": string | null,"expires_at": string | null,"kind": Database["app"]['Enums']["contact_channel"],"reason": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "contact_hash": string,"created_at"?: string,"created_by"?: string | null,"expires_at"?: string | null,"kind": Database["app"]['Enums']["contact_channel"],"reason": string
-                  }
-                  Update: {
-                    "contact_hash"?: string,"created_at"?: string,"created_by"?: string | null,"expires_at"?: string | null,"kind"?: Database["app"]['Enums']["contact_channel"],"reason"?: string
-                  }
-                  Relationships: [
-                    
-                  ]
-                },"platform_daily_stats": {
-                  Row: {
-                    "cancelled": number,"computed_at": string,"day": string,"joins": number,"no_shows": number,"notifications_failed": number,"notifications_sent": number,"org_id": string,"served": number
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "cancelled"?: number,"computed_at"?: string,"day": string,"joins"?: number,"no_shows"?: number,"notifications_failed"?: number,"notifications_sent"?: number,"org_id": string,"served"?: number
-                  }
-                  Update: {
-                    "cancelled"?: number,"computed_at"?: string,"day"?: string,"joins"?: number,"no_shows"?: number,"notifications_failed"?: number,"notifications_sent"?: number,"org_id"?: string,"served"?: number
-                  }
-                  Relationships: [
-                    
-                  ]
                 },"platform_flags": {
                   Row: {
-                    "billing_enabled": boolean,"compliance_gate_passed_at": string | null,"credit_low_micros": number,"hosted_legal_reviewed_at": string | null,"max_retention_days": number,"singleton": boolean,"sms_bundle_grant_micros": number,"sms_margin_bps": number,"support_inbox": string
+                    "compliance_gate_passed_at": string | null,"hosted_legal_reviewed_at": string | null,"max_retention_days": number,"singleton": boolean,"support_inbox": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "billing_enabled"?: boolean,"compliance_gate_passed_at"?: string | null,"credit_low_micros"?: number,"hosted_legal_reviewed_at"?: string | null,"max_retention_days"?: number,"singleton"?: boolean,"sms_bundle_grant_micros"?: number,"sms_margin_bps"?: number,"support_inbox"?: string
+                    "compliance_gate_passed_at"?: string | null,"hosted_legal_reviewed_at"?: string | null,"max_retention_days"?: number,"singleton"?: boolean,"support_inbox"?: string
                   }
                   Update: {
-                    "billing_enabled"?: boolean,"compliance_gate_passed_at"?: string | null,"credit_low_micros"?: number,"hosted_legal_reviewed_at"?: string | null,"max_retention_days"?: number,"singleton"?: boolean,"sms_bundle_grant_micros"?: number,"sms_margin_bps"?: number,"support_inbox"?: string
-                  }
-                  Relationships: [
-                    
-                  ]
-                },"platform_incident_events": {
-                  Row: {
-                    "actor_id": string | null,"body": string | null,"created_at": string,"id": string,"incident_id": string,"kind": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"id"?: string,"incident_id": string,"kind": string
-                  }
-                  Update: {
-                    "actor_id"?: string | null,"body"?: string | null,"created_at"?: string,"id"?: string,"incident_id"?: string,"kind"?: string
-                  }
-                  Relationships: [
-                    {
-      foreignKeyName: "platform_incident_events_incident_id_fkey"
-      columns: ["incident_id"]
-isOneToOne: false
-      referencedRelation: "platform_incidents"
-      referencedColumns: ["id"]
-    }
-                  ]
-                },"platform_incidents": {
-                  Row: {
-                    "containment": string | null,"created_at": string,"created_by": string | null,"data_categories": (string)[],"description": string | null,"detected_at": string,"id": string,"idempotency_key": string | null,"kind": string,"lessons": string | null,"notice_waived_reason": string | null,"notified_at": string | null,"org_ids": (string)[],"record_count": number | null,"root_cause": string | null,"status": Database["app"]['Enums']["incident_status"],"title": string,"updated_at": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "containment"?: string | null,"created_at"?: string,"created_by"?: string | null,"data_categories"?: (string)[],"description"?: string | null,"detected_at"?: string,"id"?: string,"idempotency_key"?: string | null,"kind": string,"lessons"?: string | null,"notice_waived_reason"?: string | null,"notified_at"?: string | null,"org_ids"?: (string)[],"record_count"?: number | null,"root_cause"?: string | null,"status"?: Database["app"]['Enums']["incident_status"],"title": string,"updated_at"?: string
-                  }
-                  Update: {
-                    "containment"?: string | null,"created_at"?: string,"created_by"?: string | null,"data_categories"?: (string)[],"description"?: string | null,"detected_at"?: string,"id"?: string,"idempotency_key"?: string | null,"kind"?: string,"lessons"?: string | null,"notice_waived_reason"?: string | null,"notified_at"?: string | null,"org_ids"?: (string)[],"record_count"?: number | null,"root_cause"?: string | null,"status"?: Database["app"]['Enums']["incident_status"],"title"?: string,"updated_at"?: string
-                  }
-                  Relationships: [
-                    
-                  ]
-                },"platform_org_notes": {
-                  Row: {
-                    "author_id": string | null,"body": string,"created_at": string,"id": string,"idempotency_key": string | null,"org_id": string,"root_id": string,"tags": (string)[],"version": number
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "author_id"?: string | null,"body": string,"created_at"?: string,"id"?: string,"idempotency_key"?: string | null,"org_id": string,"root_id": string,"tags"?: (string)[],"version": number
-                  }
-                  Update: {
-                    "author_id"?: string | null,"body"?: string,"created_at"?: string,"id"?: string,"idempotency_key"?: string | null,"org_id"?: string,"root_id"?: string,"tags"?: (string)[],"version"?: number
-                  }
-                  Relationships: [
-                    {
-      foreignKeyName: "platform_org_notes_org_id_fkey"
-      columns: ["org_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
-    }
-                  ]
-                },"platform_roles": {
-                  Row: {
-                    "granted_at": string,"granted_by": string | null,"role": Database["app"]['Enums']["platform_role"],"user_id": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "granted_at"?: string,"granted_by"?: string | null,"role": Database["app"]['Enums']["platform_role"],"user_id": string
-                  }
-                  Update: {
-                    "granted_at"?: string,"granted_by"?: string | null,"role"?: Database["app"]['Enums']["platform_role"],"user_id"?: string
-                  }
-                  Relationships: [
-                    
-                  ]
-                },"platform_sms_daily": {
-                  Row: {
-                    "billed_micros": number,"computed_at": string,"cost_micros": number,"country": string,"day": string,"delivered": number,"failed": number,"filtered": number,"helps": number,"locale": string,"messages": number,"optins": number,"org_id": string,"otp_sent": number,"otp_verified": number,"segments": number,"stops": number,"suppressed": number,"template_key": string,"undelivered": number
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "billed_micros"?: number,"computed_at"?: string,"cost_micros"?: number,"country"?: string,"day": string,"delivered"?: number,"failed"?: number,"filtered"?: number,"helps"?: number,"locale"?: string,"messages"?: number,"optins"?: number,"org_id": string,"otp_sent"?: number,"otp_verified"?: number,"segments"?: number,"stops"?: number,"suppressed"?: number,"template_key"?: string,"undelivered"?: number
-                  }
-                  Update: {
-                    "billed_micros"?: number,"computed_at"?: string,"cost_micros"?: number,"country"?: string,"day"?: string,"delivered"?: number,"failed"?: number,"filtered"?: number,"helps"?: number,"locale"?: string,"messages"?: number,"optins"?: number,"org_id"?: string,"otp_sent"?: number,"otp_verified"?: number,"segments"?: number,"stops"?: number,"suppressed"?: number,"template_key"?: string,"undelivered"?: number
+                    "compliance_gate_passed_at"?: string | null,"hosted_legal_reviewed_at"?: string | null,"max_retention_days"?: number,"singleton"?: boolean,"support_inbox"?: string
                   }
                   Relationships: [
                     
@@ -4315,32 +3677,6 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "memberships"
       referencedColumns: ["org_id","user_id"]
-    }
-                  ]
-                },"subscriptions": {
-                  Row: {
-                    "billing_interval": string,"current_period_end": string | null,"desired_quantity": number,"grace_ends_at": string | null,"last_event_at": string | null,"org_id": string,"plan_id": string,"quantity": number,"status": string,"stripe_customer_id": string | null,"stripe_subscription_id": string | null,"updated_at": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "billing_interval"?: string,"current_period_end"?: string | null,"desired_quantity"?: number,"grace_ends_at"?: string | null,"last_event_at"?: string | null,"org_id": string,"plan_id"?: string,"quantity"?: number,"status"?: string,"stripe_customer_id"?: string | null,"stripe_subscription_id"?: string | null,"updated_at"?: string
-                  }
-                  Update: {
-                    "billing_interval"?: string,"current_period_end"?: string | null,"desired_quantity"?: number,"grace_ends_at"?: string | null,"last_event_at"?: string | null,"org_id"?: string,"plan_id"?: string,"quantity"?: number,"status"?: string,"stripe_customer_id"?: string | null,"stripe_subscription_id"?: string | null,"updated_at"?: string
-                  }
-                  Relationships: [
-                    {
-      foreignKeyName: "subscriptions_org_id_fkey"
-      columns: ["org_id"]
-isOneToOne: true
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
-    },{
-      foreignKeyName: "subscriptions_plan_id_fkey"
-      columns: ["plan_id"]
-isOneToOne: false
-      referencedRelation: "plans"
-      referencedColumns: ["id"]
     }
                   ]
                 },"support_grants": {
@@ -4848,21 +4184,7 @@ isOneToOne: false
                 }
           }
           Views: {
-            "credit_balance": {
-                  Row: {
-                    "balance_micros": number | null,"org_id": string
-                  }
-                  ComputedFields: never
-                  Relationships: [
-                    {
-      foreignKeyName: "credit_ledger_org_id_fkey"
-      columns: ["org_id"]
-isOneToOne: false
-      referencedRelation: "organizations"
-      referencedColumns: ["id"]
-    }
-                  ]
-                },"staff_visits": {
+            "staff_visits": {
                   Row: {
                     "allowed_actions": (Database["api"]['Enums']["visit_action"])[] | null,"arrival_early_until": string | null,"arrival_late_after": string | null,"arrive_after": string | null,"assigned_counter_id": string | null,"assigned_staff_id": string | null,"call_count": number,"called_at": string | null,"contact_id": string | null,"counter_id": string | null,"display_ticket": string,"eta_quoted_high": number | null,"eta_quoted_low": number | null,"finished_at": string | null,"group_key": string | null,"guest_email": string | null,"guest_id": string | null,"guest_name": string | null,"guest_phone_e164": string | null,"id": string,"joined_at": string,"journey_id": string | null,"journey_next_queue_id": string | null,"locale": string,"location_id": string,"notes": string | null,"on_the_way": boolean | null,"org_id": string,"party_size": number,"priority_class_id": string | null,"queue_id": string,"scheduled_at": string | null,"service_day": string,"service_id": string | null,"serving_at": string | null,"sort_key": number,"source": string,"status": Database["api"]['Enums']["visit_state"],"tags": (string)[],"ticket_number": number,"ticket_prefix": string,"version": number
                   }
@@ -4935,7 +4257,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "actor_kind": "staff"|"guest"|"device"|"system"|"platform"|"api_key","announcement_severity": "info"|"warning"|"maintenance","appointment_status": "booked"|"cancelled"|"checked_in"|"no_show"|"completed"|"offered"|"pending_payment","assignment_strategy": "none"|"round_robin"|"least_busy","availability_kind": "unavailable"|"extra","capacity_scope": "slot"|"day","contact_channel": "phone"|"email"|"telegram","device_kind": "display"|"kiosk","event_status": "scheduled"|"cancelled","incident_status": "suspected"|"contained"|"resolved","intake_field_type": "text"|"select"|"checkbox"|"phone"|"number"|"date","intake_sensitivity": "normal"|"personal"|"sensitive","intake_visibility": "guest"|"staff_only","join_restriction": "none"|"onsite_code"|"geofence","member_role": "staff"|"manager"|"admin"|"owner","message_category": "transactional"|"marketing","notification_channel": "push"|"email"|"sms"|"whatsapp"|"console"|"telegram","notification_status": "queued"|"claimed"|"sent"|"failed"|"dead"|"suppressed","org_status": "active"|"suspended"|"pending_deletion","payment_status": "created"|"held"|"captured"|"released"|"failed","platform_role": "support"|"operator","priority_condition": "source"|"intake_answer","resource_kind": "counter"|"desk"|"room"|"table"|"chair"|"staff","signage_kind": "image"|"text","single_active_scope": "off"|"location"|"org","support_scope": "read"|"act","waitlist_status": "waiting"|"offered"|"claimed"|"expired"|"cancelled"
+            "actor_kind": "staff"|"guest"|"device"|"system"|"platform"|"api_key","appointment_status": "booked"|"cancelled"|"checked_in"|"no_show"|"completed"|"offered"|"pending_payment","assignment_strategy": "none"|"round_robin"|"least_busy","availability_kind": "unavailable"|"extra","capacity_scope": "slot"|"day","contact_channel": "phone"|"email"|"telegram","device_kind": "display"|"kiosk","event_status": "scheduled"|"cancelled","intake_field_type": "text"|"select"|"checkbox"|"phone"|"number"|"date","intake_sensitivity": "normal"|"personal"|"sensitive","intake_visibility": "guest"|"staff_only","join_restriction": "none"|"onsite_code"|"geofence","member_role": "staff"|"manager"|"admin"|"owner","message_category": "transactional"|"marketing","notification_channel": "push"|"email"|"sms"|"whatsapp"|"console"|"telegram","notification_status": "queued"|"claimed"|"sent"|"failed"|"dead"|"suppressed","org_status": "active"|"suspended"|"pending_deletion","payment_status": "created"|"held"|"captured"|"released"|"failed","priority_condition": "source"|"intake_answer","resource_kind": "counter"|"desk"|"room"|"table"|"chair"|"staff","signage_kind": "image"|"text","single_active_scope": "off"|"location"|"org","support_scope": "read"|"act","waitlist_status": "waiting"|"offered"|"claimed"|"expired"|"cancelled"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -5055,7 +4377,7 @@ export const Constants = {
           }
         },"app": {
           Enums: {
-            "actor_kind": ["staff", "guest", "device", "system", "platform", "api_key"],"announcement_severity": ["info", "warning", "maintenance"],"appointment_status": ["booked", "cancelled", "checked_in", "no_show", "completed", "offered", "pending_payment"],"assignment_strategy": ["none", "round_robin", "least_busy"],"availability_kind": ["unavailable", "extra"],"capacity_scope": ["slot", "day"],"contact_channel": ["phone", "email", "telegram"],"device_kind": ["display", "kiosk"],"event_status": ["scheduled", "cancelled"],"incident_status": ["suspected", "contained", "resolved"],"intake_field_type": ["text", "select", "checkbox", "phone", "number", "date"],"intake_sensitivity": ["normal", "personal", "sensitive"],"intake_visibility": ["guest", "staff_only"],"join_restriction": ["none", "onsite_code", "geofence"],"member_role": ["staff", "manager", "admin", "owner"],"message_category": ["transactional", "marketing"],"notification_channel": ["push", "email", "sms", "whatsapp", "console", "telegram"],"notification_status": ["queued", "claimed", "sent", "failed", "dead", "suppressed"],"org_status": ["active", "suspended", "pending_deletion"],"payment_status": ["created", "held", "captured", "released", "failed"],"platform_role": ["support", "operator"],"priority_condition": ["source", "intake_answer"],"resource_kind": ["counter", "desk", "room", "table", "chair", "staff"],"signage_kind": ["image", "text"],"single_active_scope": ["off", "location", "org"],"support_scope": ["read", "act"],"waitlist_status": ["waiting", "offered", "claimed", "expired", "cancelled"]
+            "actor_kind": ["staff", "guest", "device", "system", "platform", "api_key"],"appointment_status": ["booked", "cancelled", "checked_in", "no_show", "completed", "offered", "pending_payment"],"assignment_strategy": ["none", "round_robin", "least_busy"],"availability_kind": ["unavailable", "extra"],"capacity_scope": ["slot", "day"],"contact_channel": ["phone", "email", "telegram"],"device_kind": ["display", "kiosk"],"event_status": ["scheduled", "cancelled"],"intake_field_type": ["text", "select", "checkbox", "phone", "number", "date"],"intake_sensitivity": ["normal", "personal", "sensitive"],"intake_visibility": ["guest", "staff_only"],"join_restriction": ["none", "onsite_code", "geofence"],"member_role": ["staff", "manager", "admin", "owner"],"message_category": ["transactional", "marketing"],"notification_channel": ["push", "email", "sms", "whatsapp", "console", "telegram"],"notification_status": ["queued", "claimed", "sent", "failed", "dead", "suppressed"],"org_status": ["active", "suspended", "pending_deletion"],"payment_status": ["created", "held", "captured", "released", "failed"],"priority_condition": ["source", "intake_answer"],"resource_kind": ["counter", "desk", "room", "table", "chair", "staff"],"signage_kind": ["image", "text"],"single_active_scope": ["off", "location", "org"],"support_scope": ["read", "act"],"waitlist_status": ["waiting", "offered", "claimed", "expired", "cancelled"]
           }
         }
 } as const
