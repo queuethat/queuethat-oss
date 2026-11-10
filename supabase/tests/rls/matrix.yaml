@@ -8,8 +8,6 @@
 #   owner, admin, manager, staff   members of org A
 #   display, kiosk  paired devices of org A's location
 #   other_owner     owner of org B. Can only be listed on global_tables: cross-tenant access is always denied.
-#   platform        platform operator with an aal2 session and no membership. A platform role grants
-#                   no tenant data; support access comes only through support grants (PLT3).
 #
 # Per table:
 #   where:   SQL predicate selecting one org A fixture row (probed by select/update/delete)
@@ -22,19 +20,8 @@ global_tables:
   - app.dial_codes # calling codes, the same for every tenant
   - app.organizations # the tenant root: its id is the org_id
   - app.visit_transitions # the state machine, identical for every tenant
-  - app.platform_roles # operators belong to the platform, not to a tenant
-  - app.platform_audit # operator-wide log; org_id is the optional subject, not the owning tenant
-  - app.platform_incidents # operator-only register; org_ids name the affected tenants, no tenant owns a row
-  - app.platform_incident_events # timeline of a platform incident
-  - app.incident_notices # operator-only breach notice drafts; sent copies live in each business's app.org_incident_log
-  - app.entitlement_defaults # platform-wide flag defaults, the same for every tenant
-  - app.platform_daily_stats # operator-wide counts; org_id is the subject, not the owning tenant
-  - app.platform_sms_daily # operator-wide SMS counts; org_id is the subject, not the owning tenant
-  - app.platform_announcements # shown to every tenant's staff; no tenant owns one
-  - app.platform_blocks # platform-wide abuse list; no tenant owns it
+  - app.entitlement_defaults # deployment-wide limits and flag defaults, the same for every tenant
   - app.platform_flags # deployment gate flags, written only by the deploy runbook as service_role
-  - app.plans # the price list, identical for every tenant and written only by migrations
-  - app.plan_entitlements # plan defaults for entitlement keys; read only by the resolver
   - app.consent_texts # published opt-in copy, identical for every tenant and append-only
   - app.sms_footers # opt-out wording per locale, identical for every tenant and written only by migrations
   - app.sms_guard_terms # the SMS blocklist, identical for every tenant and written only by migrations
@@ -302,7 +289,7 @@ tables:
     update: to_status = to_status
     insert: (from_status, action, to_status) values ('served', 'call', 'called')
     allow:
-      select: [owner, admin, manager, staff, display, kiosk, other_owner, platform] # the state machine is public to every signed-in user
+      select: [owner, admin, manager, staff, display, kiosk, other_owner] # the state machine is public to every signed-in user
 
   app.visits:
     where: id = tests.id('visit_a')
@@ -530,39 +517,6 @@ tables:
     allow:
       select: [owner, admin, manager, staff]
 
-  app.plans:
-    where: id = 'standard'
-    update: name = name
-    insert: (id, name) values ('fixture_plan', 'x')
-    allow:
-      select: [owner, admin, manager, staff, display, kiosk, other_owner, platform] # the price list is public to signed-in users
-
-  app.plan_entitlements:
-    where: plan_id = 'free'
-    update: value = value
-    insert: (plan_id, key, value) values ('free', 'fixture.flag', 'true')
-    allow: {} # read only through private.entitlement
-
-  app.subscriptions:
-    where: org_id = tests.id('org_a')
-    update: status = status
-    insert: (org_id) values (tests.id('org_a'))
-    allow:
-      select: [owner] # written only by the billing functions
-
-  app.credit_ledger:
-    where: org_id = tests.id('org_a')
-    update: entry_type = entry_type
-    insert: (org_id, entry_type, amount_micros) values (tests.id('org_a'), 'adjustment', 0)
-    allow:
-      select: [owner, admin] # appended only by the billing and dispatcher functions
-
-  app.billing_jobs:
-    where: org_id = tests.id('org_a')
-    update: status = status
-    insert: (org_id) values (tests.id('org_a'))
-    allow: {} # service role only
-
   app.dev_inbox:
     where: org_id = tests.id('org_a')
     update: body = body
@@ -619,21 +573,6 @@ tables:
     allow:
       select: [owner, admin, manager, staff]
 
-  # ---------------------------------------------------------------- PLT1 (#407) platform
-  app.platform_roles:
-    where: user_id = tests.id('platform')
-    update: role = role
-    insert: (user_id, role) values (tests.id('staff'), 'support')
-    allow:
-      select: [platform] # each user reads only their own row; written with the service role
-
-  app.platform_audit:
-    where: action = 'platform_role.grant' and target ->> 'user_id' = tests.id('platform')::text
-    update: reason = reason
-    insert: (action) values ('fixture.insert')
-    allow:
-      select: [platform] # operators with aal2; append-only for every role
-
   # ---------------------------------------------------------------- PLT3 (#409) support grants
   app.support_grants:
     where: id = tests.id('grant_a')
@@ -649,14 +588,6 @@ tables:
     insert: (org_id, user_id, subject, message) values (tests.id('org_a'), tests.id('staff'), 'x', 'x')
     allow:
       select: [owner, admin, staff] # admins read the org's requests, anyone else only their own; written by api.contact_support alone
-
-  # ---------------------------------------------------------------- #1132 platform attention
-  app.platform_attention_acks:
-    where: org_id = tests.id('org_a')
-    update: reason = reason
-    insert: (org_id, reason, snooze_until) values (tests.id('org_a'), 'plan_limit', now())
-    allow:
-      select: [platform] # operators with aal2 read it; written by api.platform_ack_attention alone
 
   # ---------------------------------------------------------------- 2P-RPT4 (#200) export tickets
   app.data_exports:
@@ -699,47 +630,13 @@ tables:
     where: key = 'fixture.flag'
     update: value = value
     insert: (key, value, description) values ('fixture.other', 'true', 'x')
-    allow:
-      select: [platform] # tenants read resolved values through api.org_entitlements()
+    allow: {} # set with SQL by whoever runs the deployment; tenants read resolved values through api.org_entitlements()
 
   app.org_entitlements:
     where: org_id = tests.id('org_a') and key = 'fixture.flag'
     update: value = value
     insert: (org_id, key, value, reason) values (tests.id('org_a'), 'fixture.flag', 'false', 'x')
-    allow:
-      select: [platform] # overrides carry operator reasons; written only by platform_set_entitlement
-
-  # ---------------------------------------------------------------- PLT7 (#413) platform stats
-  app.platform_daily_stats:
-    where: day = '2026-01-01' and org_id = tests.id('org_a')
-    update: joins = joins
-    insert: (day, org_id) values ('2026-01-02', tests.id('org_a'))
-    allow:
-      select: [platform] # support and operators; written only by the nightly tick
-
-  # ---------------------------------------------------------------- A1 (#1222) SMS rollup
-  app.platform_sms_daily:
-    where: day = '2026-01-01' and org_id = tests.id('org_a')
-    update: messages = messages
-    insert: (day, org_id) values ('2026-01-02', tests.id('org_a'))
-    allow:
-      select: [platform] # support and operators; written only by the hourly tick
-
-  # ---------------------------------------------------------------- PLT9 (#415) announcements
-  app.platform_announcements:
-    where: message = 'fixture announcement'
-    update: message = message
-    insert: (severity, message, ends_at) values ('info', 'x', now() + interval '1 hour')
-    allow:
-      select: [owner, admin, manager, staff, display, kiosk, other_owner, platform] # every signed-in user, active rows only; written only by platform_upsert_announcement
-
-  # ---------------------------------------------------------------- PLT8 (#414) platform blocks
-  app.platform_blocks:
-    where: reason = 'fixture'
-    update: reason = reason
-    insert: (contact_hash, kind, reason) values (extensions.digest('x', 'sha256'), 'email', 'x')
-    allow:
-      select: [platform] # support and operators; written only through the operator RPCs
+    allow: {} # set with SQL by whoever runs the deployment; tenants read resolved values through api.org_entitlements()
 
   # ---------------------------------------------------------------- 3-CG5 (#330) consent copy
   app.consent_texts:
@@ -747,7 +644,7 @@ tables:
     update: body = body
     insert: (channel, purpose, locale, version, body) values ('sms', 'transactional', 'fr', 1, 'x')
     allow:
-      select: [owner, admin, manager, staff, display, kiosk, other_owner, platform] # published copy is public to signed-in users; no one writes it
+      select: [owner, admin, manager, staff, display, kiosk, other_owner] # published copy is public to signed-in users; no one writes it
 
   # ---------------------------------------------------------------- S1 (#1218) locked SMS frame
   app.sms_footers:
@@ -755,14 +652,14 @@ tables:
     update: text = text
     insert: (locale, version, text) values ('fr', 1, 'STOP')
     allow:
-      select: [owner, admin, manager, staff, display, kiosk, other_owner, platform] # public wording; no one writes it
+      select: [owner, admin, manager, staff, display, kiosk, other_owner] # public wording; no one writes it
 
   app.sms_guard_terms:
     where: term = 'sale'
     update: reason = reason
     insert: (term, reason) values ('zzz', 'promo')
     allow:
-      select: [owner, admin, manager, staff, display, kiosk, other_owner, platform] # the list is shown in save errors; no one writes it
+      select: [owner, admin, manager, staff, display, kiosk, other_owner] # the list is shown in save errors; no one writes it
 
   # ---------------------------------------------------------------- 2P-APT1 (#157) booking config
   app.booking_policies:
@@ -969,50 +866,23 @@ tables:
     allow:
       select: [owner, admin]
 
-  # ---------------------------------------------------------------- #1135 platform org notes
-  app.platform_org_notes:
-    where: body = 'fixture note'
-    update: body = body
-    insert: (org_id, root_id, version, body) values (tests.id('org_a'), gen_random_uuid(), 1, 'x')
-    allow:
-      select: [platform] # support and operators with aal2; written only by api.platform_add_note
-
-  # ---------------------------------------------------------------- #1274 platform incident register
-  app.platform_incidents:
-    where: title = 'fixture incident'
-    update: title = title
-    insert: (kind, title) values ('other', 'x')
-    allow:
-      select: [platform] # operators with aal2; written only by api.platform_*_incident
-  app.incident_notices: # C9 (#1275): drafted, approved and sent only through api.platform_*_notice
-    where: subject = 'fixture notice'
-    update: subject = subject
-    insert: (incident_id, subject, body) values (tests.id('incident_a'), 'x', 'x')
-    allow:
-      select: [platform]
+  # ---------------------------------------------------------------- #1274 incident log and guest notices
   app.guest_notices: # C10 (#1276): drafted, approved and sent only through api.*_guest_notice
     where: subject = 'fixture guest notice'
     update: subject = subject
     insert: (org_id, log_id, subject, body, window_from, window_to) values (tests.id('org_a'), (select id from app.org_incident_log where title = 'fixture incident log'), 'x', 'x', now() - interval '1 day', now())
     allow:
       select: [owner, admin]
-  app.org_incident_log: # C9 (#1275): the business's own record; written only by api.report_incident and the notice send
+  app.org_incident_log: # C9 (#1275): the business's own record; written only by api.report_incident and api.update_incident_log_entry
     where: title = 'fixture incident log'
     update: title = title
     insert: (org_id, source, kind, title, detected_at) values (tests.id('org_a'), 'manual', 'other', 'x', now())
     allow:
       select: [owner, admin]
-  app.platform_incident_events:
-    where: body = 'fixture event'
-    update: body = body
-    insert: (incident_id, kind, body) values (tests.id('incident_a'), 'note', 'x')
-    allow:
-      select: [platform] # operators with aal2; append-only through api.platform_add_incident_note
-
   # ---------------------------------------------------------------- T1 (#1295) template catalog
   app.template_catalog:
     where: key = 'barber' and version = 1
     update: tier = tier
     insert: (key, version, payload, tier, mode) values ('probe', 1, '{}'::jsonb, 1, 'walk_in')
     allow:
-      select: [owner, admin, manager, staff, display, kiosk, other_owner, platform] # public content; no tenant writes it
+      select: [owner, admin, manager, staff, display, kiosk, other_owner] # public content; no tenant writes it

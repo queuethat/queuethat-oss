@@ -34,10 +34,6 @@ api.outbox_still_relevant
 api.report_outbox_result
 api.unsubscribe_outbox
 
-# PLT1 (#407) platform core
-private.is_platform
-private.audit_platform_role
-
 # D1 (#48) devices
 api.create_pairing_code
 api.revoke_device
@@ -49,47 +45,16 @@ api.register_device
 # PLT3 (#409) support grants
 api.grant_support_access
 api.revoke_support_access
-api.platform_break_glass
 
 # PLT6 (#412) entitlements
 private.entitlement
 api.org_entitlements
-api.platform_set_entitlement
-api.platform_sms_health
-api.platform_set_sms_pause
-
-# PLT4 (#410) platform tenant RPCs
-api.platform_list_orgs
-api.platform_get_org
-api.platform_set_org_status
-api.platform_transfer_ownership
-
-# #1136 visit lookup under a support grant
-api.platform_search_visits
-api.platform_visit_timeline
-# #1129 platform activation funnel
-api.platform_org_activation
-api.platform_funnel
-
-# PLT7 (#413) platform stats
-api.platform_health
-api.platform_stats
-
-# A1 (#1222) SMS analytics
-api.platform_sms_analytics
 
 # V9 (#38) realtime signals
 private.note_visit_event_change
 private.note_queue_change
 private.flush_realtime_changes
 private.can_follow_location
-
-# PLT9 (#415) platform announcements
-private.audit_platform_announcement
-api.platform_upsert_announcement
-
-# PLT13 (#419) platform ops pages
-api.platform_list_announcements
 
 # O6 (#77) observability
 api.health_report
@@ -99,14 +64,6 @@ private.note_location_display_change
 
 # Turnstile join pass (#482 follow-up)
 api.issue_join_pass
-
-# PLT5 (#411) end a tenant's sessions
-api.platform_sign_out_members
-api.platform_revoke_devices
-
-# PLT8 (#414) platform blocks
-api.platform_block_contact
-api.platform_unblock_contact
 
 # 2A-API1 (#87) guest, kiosk and display stubs
 api.get_visit_info       anon
@@ -367,7 +324,6 @@ private.enqueue_usage_alert
 
 # 3-EM2 (#348)
 api.suppress_by_message
-api.apply_platform_sms_event
 
 # 3-CG13 (#338) channel gate
 private.channel_missing
@@ -403,20 +359,11 @@ api.my_permissions
 
 # 4-AI1 (#394) natural-language analytics
 api.ask_analytics_reserve
-# 4-BILL1 (#377) billing
-private.billing_enabled
-private.org_plan
-private.sync_subscription_quantity
-private.sync_quantity_on_location
-api.claim_billing_jobs
-api.report_billing_result
-ops.kick_billing_jobs_if_due
-api.apply_billing_event
+# payment policies need a connected processor
 private.payments_connected
 private.require_processor_for_policy
 
-api.org_billing
-api.billing_session_info
+# limits from app.entitlement_defaults and app.org_entitlements
 private.enforce_plan_limit
 private.enforce_retention_cap
 
@@ -434,14 +381,7 @@ api.consume_integration_state
 api.save_integration_tokens
 api.revoke_integration
 private.forbid_ledger_change
-private.credit_balance
-private.uses_platform_credit
-private.check_credit_low
 private.check_country_allowlist
-private.credit_margin
-private.debit_credit
-api.apply_credit_topup
-api.apply_bundle_grant
 api.staff_request_payment
 api.begin_pos_payment
 private.enqueue_pos_receipt
@@ -461,30 +401,7 @@ api.org_setup_state
 private.live_holds
 api.create_location
 
-# #1083 payment-failed email (not anon)
-private.enqueue_payment_email
-ops.send_payment_grace_reminders
-
-# #1133 platform audit search and export
-api.platform_audit_search
-api.platform_audit_export
-# #1135 platform org notes
-api.platform_add_note
-api.platform_list_notes
-api.platform_tagged_orgs
-# #1274 platform incident register (operator only)
-api.platform_create_incident
-api.platform_update_incident
-api.platform_add_incident_note
-api.platform_list_incidents
-api.platform_incident_tenants
-api.platform_incident_break_glass
-# #1275 tenant breach notices and incident log
-api.platform_save_notice
-api.platform_approve_notice
-api.platform_send_notice
-api.platform_list_notices
-api.acknowledge_incident_notice
+# #1275 a business's own incident log
 api.update_incident_log_entry
 api.report_incident
 # #1276 guest breach notices (owner-approved, outbox)
@@ -493,30 +410,12 @@ api.approve_guest_notice
 api.send_guest_notice
 api.list_guest_notices
 private.guest_notice_row
-# #1134 platform team list and revoke (revoke is service_role only)
-api.platform_team
-api.platform_revoke_role
-
-
-# #1130 platform delivery log
-api.platform_org_deliveries
-api.platform_delivery_summary
-# #1131 platform billing panel
-api.platform_org_billing
-api.platform_billing_overview
 
 # #1138 in-app contact support
 private.support_inbox
 api.contact_support
-api.platform_list_support_requests
-api.platform_set_support_request_status
 
-# #1132 platform attention queue
-api.platform_attention
-api.platform_ack_attention
-private.notify_sms_paused
 private.enforce_send_window_bounds
-private.notify_sms_warning
 
 # F5 (#1281) forms admin
 api.save_form_draft

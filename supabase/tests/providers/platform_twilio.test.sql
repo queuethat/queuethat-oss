@@ -1,8 +1,9 @@
--- Platform Twilio SMS: sms/twilio in mode platform is verified and carries the platform campaign on save,
--- and still passes every other gate (paid plan, compliance, legal review, country allowlist).
+-- Platform Twilio SMS (the deployment's shared sender): sms/twilio in mode platform is verified and
+-- carries the platform campaign on save. The shared sender was paid for through the hosted service's
+-- billing, which this build does not have, so the channel can be configured but never switched on.
 begin;
 \ir ../helpers/_setup.psql
-select plan(14);
+select plan(15);
 
 select tests.create_world();
 
@@ -40,26 +41,25 @@ select is(tests.error_of($$select api.set_channel_enabled(tests.id('org_a'), 'sm
   'P0001 channel_prerequisite_missing [hosted_legal_review,platform_requires_billing]', 'it still needs the hosted legal review');
 select tests.as_postgres();
 update app.platform_flags set hosted_legal_reviewed_at = now();
-select tests.as_postgres();
-update app.platform_flags set billing_enabled = true;
 select tests.act_as('owner');
-select is(tests.error_of($$select api.set_channel_enabled(tests.id('org_a'), 'sms', true, gen_random_uuid())$$) like '%platform_requires_billing%', false, 'billing on: that gate is met');
+select is(tests.error_of($$select api.set_channel_enabled(tests.id('org_a'), 'sms', true, gen_random_uuid())$$),
+  'P0001 channel_prerequisite_missing [platform_requires_billing]', 'with the review done it still cannot be switched on: nobody would be charged');
 select tests.as_postgres();
-update app.platform_flags set billing_enabled = false;
-select ok('platform_requires_billing' = any (private.channel_missing(tests.id('org_a'), 'sms')), 'with billing off, platform SMS is unavailable (nobody would be charged)');
-update app.platform_flags set billing_enabled = true;
-select tests.act_as('owner');
-select is((select (r).enabled from (select api.set_channel_enabled(tests.id('org_a'), 'sms', true, gen_random_uuid()) r) x), true,
-  'with the review the org can enable platform sms without a test event or campaign of its own');
-
--- the kill switch also stops orgs that are already enabled
-select tests.as_postgres();
-update private.deployment_settings set platform_messaging_enabled = false;
-select ok('platform_messaging' = any (private.channel_missing(tests.id('org_a'), 'sms')), 'turning platform messaging off blocks an enabled org');
+select is((select enabled from app.provider_settings where org_id = tests.id('org_a') and channel = 'sms'), false, 'and the channel stays off');
 select tests.as_service();
-select is((api.get_channel_config(tests.id('org_a'), 'sms')).enabled, false, 'and the dispatcher gets no config');
+select is((api.get_channel_config(tests.id('org_a'), 'sms')).enabled, false, 'the dispatcher gets no config');
+
+-- the kill switch is still reported, also for a row switched on behind the gate
+select tests.as_postgres();
+update app.provider_settings set enabled = true where org_id = tests.id('org_a') and channel = 'sms';
+update private.deployment_settings set platform_messaging_enabled = false;
+select ok('platform_messaging' = any (private.channel_missing(tests.id('org_a'), 'sms')), 'turning platform messaging off is a missing prerequisite');
+select tests.as_service();
+select is((api.get_channel_config(tests.id('org_a'), 'sms')).enabled, false, 'and the dispatcher gets no config even for a row marked enabled');
 select tests.as_postgres();
 update private.deployment_settings set platform_messaging_enabled = true;
+select tests.as_service();
+select is((api.get_channel_config(tests.id('org_a'), 'sms')).enabled, false, 'nor with platform messaging back on');
 
 -- an org cannot pick the platform campaign for its own account or skip verification
 select tests.as_postgres();
@@ -75,10 +75,10 @@ select api.set_provider_settings(tests.id('org_a'), 'sms', 'twilio', 'own', '{"f
 select tests.as_postgres();
 select is((select messaging_campaign_ref from app.provider_settings where channel = 'sms'), null, 'an org cannot claim the platform campaign by name');
 
--- the platform sender is a paid channel: with billing on, a free-plan org lacks the plan
+-- SMS is a paid channel: an org without the paid_channels entitlement lacks it
 select tests.as_postgres();
-update app.platform_flags set billing_enabled = true;
-select ok('plan_allows_paid_channels' = any (private.channel_missing(tests.id('org_b'), 'sms')), 'a free org cannot use the platform sender');
+update app.entitlement_defaults set value = 'false' where key = 'paid_channels';
+select ok('plan_allows_paid_channels' = any (private.channel_missing(tests.id('org_b'), 'sms')), 'an org without paid_channels cannot use SMS');
 
 select * from finish();
 rollback;

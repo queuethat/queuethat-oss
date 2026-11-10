@@ -89,7 +89,7 @@ update app.memberships set role = 'manager' where user_id = tests.id('scoped');
 select tests.as_postgres();
 select is((select queue_ids from app.memberships where user_id = tests.id('scoped')), null, 'promotion clears the scope');
 
--- No queue cap: eight queues at one location create fine (billing counts locations).
+-- No queue cap: eight queues at one location create fine (the location limit counts locations).
 insert into app.queues (org_id, location_id, name, ticket_prefix)
   select tests.id('org_a'), tests.id('loc_a'), 'Line ' || n, chr(64 + n) from generate_series(3, 10) n;
 select is((select count(*)::int from app.queues where location_id = tests.id('loc_a') and archived_at is null), 10,

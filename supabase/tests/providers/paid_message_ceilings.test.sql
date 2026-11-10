@@ -1,4 +1,4 @@
--- Paid-message ceilings: operator entitlements bound what an org's own channel_limits allow.
+-- Paid-message ceilings: the deployment's entitlements bound what an org's own channel_limits allow.
 begin;
 \ir ../helpers/_setup.psql
 select plan(11);
@@ -43,18 +43,19 @@ select tests.as_service();
 select is((select decision from api.reserve_send(tests.id('n4'))), 'budget_reached', 'a null own budget falls back to the ceiling');
 select tests.as_postgres();
 
--- Only an operator raises a ceiling, and the raise applies to that org alone.
+-- Only whoever runs the deployment raises a ceiling (with SQL), and a per-org raise applies to that org alone.
 select tests.act_as('owner');
-select throws_ok($$ select api.platform_set_entitlement(tests.id('org_a'), 'messaging.new_org_daily_cap', '500', 'self raise') $$,
-  '42501', 'permission_denied', 'an org owner cannot raise its own ceiling');
-select tests.act_as('platform');
-select api.platform_set_entitlement(tests.id('org_a'), 'messaging.new_org_daily_cap', '150', 'verified pilot');
+select throws_ok($$ insert into app.org_entitlements (org_id, key, value, reason)
+                    values (tests.id('org_a'), 'messaging.new_org_daily_cap', '500', 'self raise') $$,
+  '42501', null, 'an org owner cannot raise its own ceiling');
+select throws_ok($$ update app.entitlement_defaults set value = '500' where key = 'messaging.new_org_daily_cap' $$,
+  '42501', null, 'nor the deployment''s default');
 select tests.as_postgres();
-select is(private.messaging_daily_ceiling(tests.id('org_a')), 150, 'an operator raise lifts the young org ceiling');
-select is((select count(*)::int from app.org_entitlements where org_id = tests.id('org_b') and key like 'messaging.%'), 0,
-  'the raise created no override for org B');
-select is((select count(*)::int from app.platform_audit where org_id = tests.id('org_a') and action = 'entitlement.set'), 1,
-  'the raise is audited');
+insert into app.org_entitlements (org_id, key, value, reason)
+values (tests.id('org_a'), 'messaging.new_org_daily_cap', '150', 'verified pilot');
+select is(private.messaging_daily_ceiling(tests.id('org_a')), 150, 'a per-org override lifts the young org ceiling');
+update app.organizations set created_at = now() - interval '2 days' where id = tests.id('org_b');
+select is(private.messaging_daily_ceiling(tests.id('org_b')), 25, 'and leaves org B at the default');
 
 select * from finish();
 rollback;

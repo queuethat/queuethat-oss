@@ -1,4 +1,4 @@
--- #443: account emails through the outbox, starting with the break-glass notice to owners.
+-- #443: account emails through the outbox: one per owner of the org, to their sign-in address.
 begin;
 \ir ../helpers/_setup.psql
 select plan(12);
@@ -8,19 +8,19 @@ select tests.create_world();
 select tests.create_user('owner2');
 insert into app.memberships (org_id, user_id, role) values (tests.id('org_a'), tests.id('owner2'), 'owner');
 
-select tests.as_user(tests.id('platform'), '{"aal":"aal2"}');
-create temp table bg as select * from api.platform_break_glass(tests.id('org_a'), 'Legal request 7');
-grant select on bg to authenticated;
-select api.platform_break_glass(tests.id('org_a'), 'again');
-select tests.as_postgres();
+-- The waiver-records reminder is an account email; queueing it twice in the same scope sends it once.
+select private.enqueue_account_email(tests.id('org_a'), 'waiver_records_expiring',
+  jsonb_build_object('org', 'Org A', 'count', '7', 'first_date', 'January 1, 2027 UTC'), 'fixture-scope');
+select private.enqueue_account_email(tests.id('org_a'), 'waiver_records_expiring',
+  jsonb_build_object('org', 'Org A', 'count', '8', 'first_date', 'January 1, 2027 UTC'), 'fixture-scope');
 
 select results_eq(
-  $$ select recipient_ref, channel::text, category::text, template_key, vars ->> 'reason', vars ->> 'org'
+  $$ select recipient_ref, channel::text, category::text, template_key, vars ->> 'count', vars ->> 'org'
      from app.notifications where visit_id is null order by recipient_ref $$,
-  $$ select * from (values (tests.id('owner'), 'email', 'transactional', 'support.break_glass', 'Legal request 7', 'Org A'),
-                           (tests.id('owner2'), 'email', 'transactional', 'support.break_glass', 'Legal request 7', 'Org A')) x
+  $$ select * from (values (tests.id('owner'), 'email', 'transactional', 'waiver_records_expiring', '7', 'Org A'),
+                           (tests.id('owner2'), 'email', 'transactional', 'waiver_records_expiring', '7', 'Org A')) x
      order by 1 $$,
-  'AC1: break-glass queues one account email per owner of the org, once');
+  'AC1: an account email is queued once per owner of the org');
 select is((select count(*) from app.notifications where visit_id is null and org_id = tests.id('org_b')), 0::bigint,
   'other orgs'' owners get nothing');
 
@@ -33,8 +33,8 @@ select is((select count(*)::int from tests.jobs), 3, 'claim_outbox returns the a
 select results_eq(
   $$ select recipient, has_consent, is_suppressed, location_tz, locale, subject from tests.jobs
      where visit_id is null order by recipient ->> 'value' collate "C" desc $$,
-  $$ values ('{"kind": "address", "value": "owner@test.local"}'::jsonb, true, false, null::text, 'en', 'Emergency support access to {org}'),
-            ('{"kind": "address", "value": "owner2@test.local"}'::jsonb, true, false, null::text, 'en', 'Emergency support access to {org}') $$,
+  $$ values ('{"kind": "address", "value": "owner@test.local"}'::jsonb, true, false, null::text, 'en', '{org}: waiver records will be deleted soon'),
+            ('{"kind": "address", "value": "owner2@test.local"}'::jsonb, true, false, null::text, 'en', '{org}: waiver records will be deleted soon') $$,
   'AC1: claim_outbox resolves the owner''s sign-in email, consent, locale and template');
 select is((select recipient ->> 'kind' from tests.jobs where visit_id = tests.id('visit_a')), 'push',
   'AC2: the visit notification still claims as before');
@@ -58,7 +58,7 @@ select is((select is_suppressed from tests.jobs where recipient ->> 'value' = 'o
 -- Visibility and shape.
 select tests.act_as('staff');
 select is((select count(*) from app.notifications where visit_id is null), 0::bigint,
-  'staff do not see account mail (it can carry operator reasons)');
+  'staff do not see account mail');
 select is((select count(*) from app.notifications where visit_id = tests.id('visit_a')), 1::bigint,
   'staff still see visit notifications');
 select tests.act_as('admin');
