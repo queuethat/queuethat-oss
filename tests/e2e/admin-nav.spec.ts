@@ -207,7 +207,6 @@ test.describe('staff', () => {
       'Webhooks',
       'Custom domains',
       'Export data',
-      'Billing',
       'Data requests',
     ]) {
       await expect(nav.getByRole('link', { name: hidden })).toHaveCount(0);

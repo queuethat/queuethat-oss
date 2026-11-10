@@ -73,7 +73,7 @@
     "provider_verified": "Send a signed test event from your provider's dashboard to the webhook URL above.",
     "daily_cap": "Set a daily message cap above zero.",
     "country_allowlist": "Choose at least one country you may text.",
-    "plan_allows_paid_channels": "Your plan does not include paid channels. Upgrade under Billing.",
+    "plan_allows_paid_channels": "Paid channels are not switched on for this business.",
     "campaign_ref": "Enter your 10DLC campaign reference (required for US numbers)."
   },
   "errors": {

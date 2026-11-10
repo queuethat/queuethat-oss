@@ -85,7 +85,7 @@
     "manager": "Manager",
     "frontdesk": "Front desk",
     "help": {
-      "owner": "Everything, including billing and other owners.",
+      "owner": "Everything, including other owners.",
       "manager": "Runs the day: pauses queues, sees reports and switches in other staff.",
       "frontdesk": "Calls, serves and adds guests at their locations."
     }

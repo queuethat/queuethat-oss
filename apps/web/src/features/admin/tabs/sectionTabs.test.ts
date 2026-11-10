@@ -5,7 +5,6 @@ const ids = (tabs: { id: string }[]) => tabs.map((t) => t.id);
 const access = (extra: Partial<TabAccess> = {}): TabAccess => ({
   admin: true,
   multiLocation: false,
-  billing: false,
   ...extra,
 });
 const tabsAt = (pathname: string, extra: Partial<TabAccess> = {}) =>
@@ -60,13 +59,12 @@ describe('account sections', () => {
     expect(ids(tabsAt('/admin/account/calendar'))).toContain('calendar');
     expect(ids(tabsAt('/admin/domains'))).toEqual(['apiKeys', 'webhooks', 'chatAlerts', 'domains']);
     expect(ids(tabsAt('/admin/export'))).toEqual(['privacy', 'requests', 'export']);
-    expect(ids(tabsAt('/admin/usage', { billing: true }))).toEqual(['billing', 'usage']);
+    expect(ids(tabsAt('/admin/usage'))).toEqual(['usage']);
   });
 
-  it('leaves developers to admins and billing to owners on a billing deployment', () => {
+  it('leaves developers to admins', () => {
     expect(tabsAt('/admin/developers/webhooks', { admin: false })).toEqual([]);
     expect(ids(tabsAt('/admin/privacy', { admin: false }))).toEqual(['privacy']);
-    expect(ids(tabsAt('/admin/usage'))).toEqual(['usage']);
   });
 
   it('marks Data requests, not Privacy, on the requests page', () => {
@@ -80,7 +78,6 @@ describe('sectionAt', () => {
   it('finds the section of a page, and none for lookalikes or other pages', () => {
     expect(sectionAt('/admin/reports/schedules')?.id).toBe('insights');
     expect(sectionAt('/admin/developers/api-keys')?.id).toBe('developers');
-    expect(sectionAt('/admin/billing')?.id).toBe('plan');
     expect(sectionAt('/admin/analytics-export')).toBeUndefined();
     expect(sectionAt('/admin')).toBeUndefined();
     expect(sectionAt('/admin/queues')).toBeUndefined();

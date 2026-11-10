@@ -64,11 +64,7 @@ export function SectionFrame({ children }: { children: ReactNode }) {
   const section = sectionAt(pathname);
   if (!section) return children;
   const admin = filter.role === 'owner' || filter.role === 'admin';
-  const tabs = section.tabs({
-    admin,
-    multiLocation: filter.multiLocation,
-    billing: filter.role === 'owner' && filter.billing,
-  });
+  const tabs = section.tabs({ admin, multiLocation: filter.multiLocation });
   const current = currentTabId(tabs, pathname);
   return (
     <div className={`mx-auto flex ${section.width} flex-col gap-6`}>

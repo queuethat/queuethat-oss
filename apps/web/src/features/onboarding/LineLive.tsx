@@ -1,10 +1,8 @@
 import { Button, Card, Icon, iconCheck, iconCopy, LinkButton, Spinner } from '@qm/ui';
-import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from '../../lib/translation.tsx';
-import { orgBillingQuery } from '../admin/billing/api.ts';
-import { useCurrentLocation, useCurrentOrg } from '../auth/current.ts';
+import { useCurrentLocation } from '../auth/current.ts';
 import { JoinQr } from '../admin/poster/JoinQr.tsx';
 import { publicJoinUrl } from '../admin/poster/url.ts';
 import type { Created } from './api.ts';
@@ -18,12 +16,6 @@ import type { Created } from './api.ts';
 export function LineLive({ created }: { created: Created }) {
   const { t } = useTranslation('onboarding');
   const { location } = useCurrentLocation();
-  const org = useCurrentOrg();
-  // Same query (and cache entry) the admin nav already runs for owners; no new request.
-  const billing = useQuery({
-    ...orgBillingQuery(org?.id ?? ''),
-    enabled: org?.role === 'owner',
-  }).data;
   const heading = useRef<HTMLHeadingElement>(null);
   const [copied, setCopied] = useState(false);
   useEffect(() => heading.current?.focus(), [location?.id]);
@@ -157,11 +149,6 @@ export function LineLive({ created }: { created: Created }) {
           <li>{t('live.alerts.phone')}</li>
           <li>{t('live.alerts.browser')}</li>
           <li>{t('live.alerts.tv')}</li>
-          {billing?.enabled ? (
-            <li>
-              {billing.paidChannels ? t('live.alerts.textsPaid') : t('live.alerts.textsFree')}
-            </li>
-          ) : null}
         </ul>
       </Card>
 

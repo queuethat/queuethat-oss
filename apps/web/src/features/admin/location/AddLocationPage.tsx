@@ -4,15 +4,13 @@ import { useState, type FormEvent } from 'react';
 import { useTranslation } from '../../../lib/translation.tsx';
 import { useCurrentOrg } from '../../auth/current.ts';
 import { browserTimeZone, timeZones } from '../../onboarding/api.ts';
-import { isPlanLimit, PlanLimitNotice } from '../billing/planLimit.tsx';
 import { useAddLocation } from './addApi.ts';
 
 const KNOWN_ERRORS = ['invalid_timezone', 'invalid_input', 'slug_taken', 'permission_denied'];
 
 /**
  * Adds a location to the current organization (#1080). Admins and owners only; the database
- * enforces that, the free plan's one-location limit and the subscription quantity. The limit is
- * shown as a plan message with a way to /admin/billing, never as a raw error.
+ * enforces that.
  */
 export function AddLocationPage() {
   const { t } = useTranslation('admin');
@@ -27,7 +25,6 @@ export function AddLocationPage() {
   const zoneInvalid = !zones.includes(timeZone);
 
   const code = add.error ? add.error.message : null;
-  const limitReached = isPlanLimit(add.error);
   const failure = code
     ? `addLocation.errors.${KNOWN_ERRORS.includes(code) ? code : 'unknown'}`
     : null;
@@ -47,13 +44,9 @@ export function AddLocationPage() {
         title={t('addLocation.title')}
         description={canAdd ? t('addLocation.intro') : t('addLocation.adminsOnly')}
       />
-      {limitReached ? (
-        <PlanLimitNotice kind="locations" error={add.error} memberRole={org?.role} />
-      ) : (
-        <p role="alert" className="font-medium text-danger-strong empty:hidden">
-          {failure ? t(failure as 'addLocation.errors.unknown') : null}
-        </p>
-      )}
+      <p role="alert" className="font-medium text-danger-strong empty:hidden">
+        {failure ? t(failure as 'addLocation.errors.unknown') : null}
+      </p>
       <form className="flex flex-col gap-4" onSubmit={submit}>
         <Input
           label={t('location.name')}
