@@ -120,7 +120,7 @@ services:
 
   rest:
     <<: *restart
-    image: postgrest/postgrest:v14.18@sha256:c7cd7e265a85b05248abf53f4473fcec7e327c282d0bd0cf60f1551996d09fcf
+    image: postgrest/postgrest:v16.5@sha256:1347d7552b88f17832912c06afbf7c43209af6eeeb60834b04aae12c9bd9d5cc
     depends_on:
       db: { condition: service_healthy }
     environment:
