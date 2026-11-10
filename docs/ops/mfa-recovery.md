@@ -19,4 +19,3 @@ Supabase TOTP has no recovery codes. Two ways out of a lost authenticator:
    as the database owner, then sign in and enrol.
 
 `api.set_require_mfa` needs an aal2 session, so an owner can never switch the requirement on without a working factor.
-Hosted tenants contact the platform operator, who can clear a factor from the console.
