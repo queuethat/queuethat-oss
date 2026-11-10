@@ -16,7 +16,7 @@ x-restart: &restart
 services:
   db:
     <<: *restart
-    image: ghcr.io/supabase/postgres:17.6.1.136@sha256:f371b5f3f2ac0a05703f33d6e6134515fb2498cab708fb948a0aeb7481467c00
+    image: ghcr.io/supabase/postgres:17.11.0.018@sha256:7c31363a3f7434ff14945f1b8a4880e6eca8b362e197e88b87c476c77aa3cf8c
     command:
       [
         'postgres',
