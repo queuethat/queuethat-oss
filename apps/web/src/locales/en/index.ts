@@ -46,7 +46,6 @@ import guestStatus from './guest-status.json';
 import kiosk from './kiosk.json';
 import marketing from './marketing.json';
 import onboarding from './onboarding.json';
-import platform from './platform.json';
 import staff from './staff.json';
 
 /**
@@ -104,7 +103,6 @@ export const en = {
   kiosk,
   marketing,
   onboarding,
-  platform,
   eta,
 };
 

@@ -330,7 +330,6 @@ services:
       AUTH_TURNSTILE_SITE_KEY: ${AUTH_TURNSTILE_SITE_KEY:-}
       PUBLIC_JOIN: ${PUBLIC_JOIN:-}
       SENTRY_DSN: ${SENTRY_DSN:-}
-      SENTRY_ISSUES_URL: ${SENTRY_ISSUES_URL:-}
       # Your own legal pages and support inbox. Empty: no link and no support form.
       TERMS_URL: ${TERMS_URL:-}
       PRIVACY_URL: ${PRIVACY_URL:-}

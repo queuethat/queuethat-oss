@@ -17,7 +17,8 @@ const GUEST_ROUTE_PREFIXES = [
   'src/routes/a/',
   'src/routes/o/',
 ];
-// PLT10 (#416): operator console code must never ship to guests.
+// The hosted service's operator console is not part of this repository. If it is ever added
+// back under these paths, it must never ship to guests.
 const FORBIDDEN_PREFIXES = [
   'src/routes/platform/',
   'src/features/platform/',

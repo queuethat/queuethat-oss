@@ -31,8 +31,6 @@
     "gen:consent": "node scripts/gen-consent.ts",
     "db:compile-tests": "node scripts/compile-rls-matrix.mjs",
     "ci:local": "bash scripts/ci-local.sh",
-    "platform:grant": "node scripts/platform-grant.ts",
-    "platform:revoke": "node scripts/platform-revoke.ts",
     "openapi:v1": "node scripts/export-openapi.ts",
     "simulate:day": "node scripts/simulate-day.ts",
     "test:selfhost": "bats deploy/selfhost/tests && bash deploy/selfhost/tests/check-compose.sh"

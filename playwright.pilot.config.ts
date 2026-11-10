@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 // Runs the day-in-the-shop journey against the live pilot: `pnpm test:e2e:pilot`
-// (docs/ops/pilot-runbook.md, section 5). Unlike playwright.config.ts it starts no servers and has
+// Unlike playwright.config.ts it starts no servers and has
 // no global setup, so it never resets a database. The journey creates one queue and one TV
 // pairing in the shop and removes both at the end.
 //

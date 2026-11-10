@@ -14,9 +14,6 @@ export interface AppConfig {
   /** The Telegram bot's username (public). Empty hides "Get updates on Telegram". */
   telegramBot: string;
   sentryDsn: string;
-  sentryIssuesUrl: string;
-  /** Stripe dashboard base for "Open in Stripe" in the support console. Empty: the live dashboard. */
-  stripeDashboardUrl: string;
   authTurnstileSiteKey: string;
   /** Which CAPTCHA the public-join function uses: turnstile, pow or dev. Empty: join directly. */
   publicJoin: string;
@@ -39,8 +36,6 @@ export type RuntimeConfig = Partial<
     | 'VAPID_PUBLIC_KEY'
     | 'TELEGRAM_BOT'
     | 'SENTRY_DSN'
-    | 'SENTRY_ISSUES_URL'
-    | 'STRIPE_DASHBOARD_URL'
     | 'AUTH_TURNSTILE_SITE_KEY'
     | 'PUBLIC_JOIN'
     | 'DEMO_MODE'
@@ -84,8 +79,6 @@ export function readConfig(
     vapidPublicKey: pick('VAPID_PUBLIC_KEY', 'VITE_VAPID_PUBLIC_KEY'),
     telegramBot: pick('TELEGRAM_BOT', 'VITE_TELEGRAM_BOT').replace(/^@/, ''),
     sentryDsn: pick('SENTRY_DSN', 'VITE_SENTRY_DSN'),
-    sentryIssuesUrl: pick('SENTRY_ISSUES_URL', 'VITE_SENTRY_ISSUES_URL'),
-    stripeDashboardUrl: pick('STRIPE_DASHBOARD_URL', 'VITE_STRIPE_DASHBOARD_URL'),
     authTurnstileSiteKey: pick('AUTH_TURNSTILE_SITE_KEY', 'VITE_AUTH_TURNSTILE_SITE_KEY'),
     publicJoin: pick('PUBLIC_JOIN', 'VITE_PUBLIC_JOIN'),
     demoMode: (runtime?.DEMO_MODE ?? '').trim().toLowerCase() === 'true',

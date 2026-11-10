@@ -9,10 +9,6 @@ interface ImportMetaEnv {
   readonly VITE_TELEGRAM_BOT?: string;
   /** Sentry (or GlitchTip) DSN for error reports (O6). Public by design; unset sends nothing. */
   readonly VITE_SENTRY_DSN?: string;
-  /** Sentry (or GlitchTip) issues page, linked from /platform/health. Unset hides the link. */
-  readonly VITE_SENTRY_ISSUES_URL?: string;
-  /** Stripe dashboard base for "Open in Stripe" on /platform: https://dashboard.stripe.com/test for a sandbox. Unset: live. */
-  readonly VITE_STRIPE_DASHBOARD_URL?: string;
   /** The address guests use, printed on QR posters (G7). Unset uses the admin page's origin. */
   readonly VITE_PUBLIC_URL?: string;
   /** "true" ships the /dev/inbox fake SMS inbox (also on in `pnpm dev`). Never in production. */

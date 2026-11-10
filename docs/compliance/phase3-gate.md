@@ -1,8 +1,8 @@
 # Phase 3 compliance gate
 
 Passing this suite on the branch you deploy is the precondition for setting
-`app.platform_flags.compliance_gate_passed_at` (the runbook step in
-[pilot-runbook.md](../ops/pilot-runbook.md)). Until that column is set the database refuses to
+`app.platform_flags.compliance_gate_passed_at` (the step in the
+[self-host guide](../selfhost/README.md#turning-on-sms-whatsapp-or-payments)). Until that column is set the database refuses to
 switch any paid channel on (`channel_prerequisite_missing`).
 
 The suite encodes every bullet of `docs/compliance/security-review.md` section 9 "Phase 3". It
