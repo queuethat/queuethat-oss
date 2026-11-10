@@ -27,6 +27,28 @@ export default async function globalSetup(): Promise<void> {
   }
   await enforcePrivateOnly();
   await pinLocationClocks();
+  if (process.env.CI) await logSlowStatements();
+}
+
+/**
+ * On CI, has Postgres log every statement that takes over 250 ms and every wait for a lock.
+ * Browser shards have failed on a few seconds in which the API answered nothing while the
+ * database log stayed empty; with this, the log uploaded for a failed job says whether the
+ * database was the slow part. `db reset` recreates the container, so it is set after it.
+ */
+async function logSlowStatements(): Promise<void> {
+  const sql = postgres(
+    process.env.E2E_ADMIN_DATABASE_URL ??
+      'postgresql://supabase_admin:postgres@127.0.0.1:55322/postgres',
+    { max: 1, onnotice: () => {} },
+  );
+  try {
+    await sql.unsafe(`alter system set log_min_duration_statement = '250ms'`);
+    await sql.unsafe(`alter system set log_lock_waits = on`);
+    await sql`select pg_reload_conf()`;
+  } finally {
+    await sql.end();
+  }
 }
 
 /**
