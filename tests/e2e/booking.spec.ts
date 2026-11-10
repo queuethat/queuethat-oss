@@ -14,10 +14,10 @@ test('a double tap on Confirm books exactly one appointment, shown in the locati
 }) => {
   const { guest } = devices;
   const { slug } = await bookableLocation('Europe/Berlin');
-  const booked: string[] = [];
-  guest.on('response', async (response) => {
+  const pending: Promise<string>[] = [];
+  guest.on('response', (response) => {
     if (!response.url().endsWith('/rpc/book_appointment') || !response.ok()) return;
-    booked.push(((await response.json()) as { token: string }).token);
+    pending.push(response.json().then((body) => (body as { token: string }).token));
   });
 
   await guest.goto(`/b/${slug}`);
@@ -36,6 +36,8 @@ test('a double tap on Confirm books exactly one appointment, shown in the locati
   await expect(guest).toHaveURL(/\/a\/[\w-]+$/);
   await expect(guest.getByTestId('appointment')).toContainText('Consultation');
   await expect(guest.getByTestId('appointment')).toContainText('Central European');
+  // The page moves on as soon as the answer arrives, which can be before its body is read.
+  const booked = await Promise.all(pending);
   expect(new Set(booked).size).toBe(1);
 });
 

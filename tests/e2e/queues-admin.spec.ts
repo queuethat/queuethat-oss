@@ -39,15 +39,19 @@ test.describe('as an owner', () => {
     await staff.getByRole('button', { name: 'Save queue' }).click();
     await expect(staff.getByTestId('queue')).toContainText('Tickets B001 · Up to 20 waiting');
 
-    const tickets: string[] = [];
-    guest.on('response', async (response) => {
+    const pending: Promise<string>[] = [];
+    guest.on('response', (response) => {
       if (!response.url().endsWith('/rpc/join_queue') || !response.ok()) return;
-      tickets.push(((await response.json()) as { display_ticket: string }).display_ticket);
+      pending.push(
+        response.json().then((body) => (body as { display_ticket: string }).display_ticket),
+      );
     });
     await guest.goto(`/q/${slug}`);
     await guest.getByLabel('First name').fill('Sam');
     await guest.getByRole('button', { name: 'Join the queue' }).click();
     await expect(guest).toHaveURL(/\/v\/[\w-]+$/);
+    // The page moves on as soon as the answer arrives, which can be before its body is read.
+    const tickets = await Promise.all(pending);
     expect(tickets).toEqual(['B001']);
   });
 

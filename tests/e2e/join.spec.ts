@@ -11,10 +11,10 @@ import { testUsers } from './support/users.ts';
 // G2 (#52): a guest joins from the poster link on a phone and lands on their status page.
 test('a double tap on Join creates exactly one visit @core', async ({ devices }) => {
   const { guest } = devices;
-  const tickets: string[] = [];
-  guest.on('response', async (response) => {
+  const joins: Promise<string>[] = [];
+  guest.on('response', (response) => {
     if (!response.url().endsWith('/rpc/join_queue') || !response.ok()) return;
-    tickets.push(((await response.json()) as { display_ticket: string }).display_ticket);
+    joins.push(response.json().then((body) => (body as { display_ticket: string }).display_ticket));
   });
 
   await guest.goto(`/q/${demo.locationSlug}`);
@@ -35,6 +35,8 @@ test('a double tap on Join creates exactly one visit @core', async ({ devices })
   await guest.getByRole('button', { name: 'Join the queue' }).dblclick();
 
   await expect(guest).toHaveURL(/\/v\/[\w-]+$/);
+  // The page moves on as soon as the first answer arrives, which can be before its body is read.
+  const tickets = await Promise.all(joins);
   expect(tickets.length).toBeGreaterThanOrEqual(1);
   expect(new Set(tickets).size).toBe(1);
 });

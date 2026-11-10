@@ -73,10 +73,12 @@ test('a phone that joins again lands on its existing visit, not a second ticket'
 }) => {
   const { guest } = devices;
   const queue = await freshQueue();
-  const tickets: string[] = [];
-  guest.on('response', async (response) => {
+  const pending: Promise<string>[] = [];
+  guest.on('response', (response) => {
     if (!response.url().endsWith('/rpc/join_queue') || !response.ok()) return;
-    tickets.push(((await response.json()) as { display_ticket: string }).display_ticket);
+    pending.push(
+      response.json().then((body) => (body as { display_ticket: string }).display_ticket),
+    );
   });
 
   await guest.goto(`/q/${demo.locationSlug}`);
@@ -117,5 +119,7 @@ test('a phone that joins again lands on its existing visit, not a second ticket'
   await guest.getByLabel('First name').fill('Dana');
   await guest.getByRole('button', { name: 'Join the queue' }).click();
   await expect(guest).toHaveURL(statusUrl);
+  // The page moves on as soon as the answer arrives, which can be before its body is read.
+  const tickets = await Promise.all(pending);
   expect(new Set(tickets).size).toBe(1);
 });
