@@ -146,7 +146,7 @@ services:
     <<: *restart
     # The container name looks odd but is required: Realtime derives its tenant id from the subdomain.
     container_name: realtime-dev.queue-realtime
-    image: ghcr.io/supabase/realtime:v2.143.3@sha256:768b559241dd234c4e8852c5c0f504e598b80f1df2ad4dd78d5486fbed2f17a2
+    image: ghcr.io/supabase/realtime:v2.156.0@sha256:cb6ca7b8a474454b6eeb7756c19e8180c69b2df87f6ca06c6416f2229658a356
     depends_on:
       db: { condition: service_healthy }
     environment:
