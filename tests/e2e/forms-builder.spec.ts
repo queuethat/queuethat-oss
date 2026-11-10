@@ -49,6 +49,10 @@ async function addByTap(page: Page, type: string, question: string) {
 test('build and publish a form with the keyboard alone', async ({ devices }) => {
   const { staff } = devices;
   test.skip(isPhone(staff), 'Phone width has no drag handle; the buttons are covered below');
+  // Every control is reached by pressing Tab, a few hundred key presses in all. On a CI runner
+  // that takes about 25 s in Chromium and more than the default 30 s in WebKit. A control the
+  // keyboard cannot reach still fails: tabTo gives up after 120 presses.
+  test.slow();
   const email = await openNewForm(staff);
 
   await tabTo(staff, staff.getByLabel('Form name'));
