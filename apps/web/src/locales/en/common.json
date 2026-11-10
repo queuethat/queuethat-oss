@@ -23,24 +23,10 @@
     "reload": "Reload",
     "later": "Later"
   },
-  "announcement": {
-    "severity": {
-      "info": "Notice",
-      "warning": "Warning",
-      "maintenance": "Maintenance"
-    },
-    "dismiss": "Dismiss"
-  },
   "toast": {
     "region": "Notifications",
     "dismiss": "Dismiss",
     "undo": "Undo"
-  },
-  "supportBanner": {
-    "label": "Support access",
-    "breakGlass": "Emergency support access",
-    "read": "Our support team can see this business (read only) until {{until}}. Reason: {{reason}}",
-    "act": "Our support team can see and change this business until {{until}}. Reason: {{reason}}"
   },
   "mfaBanner": {
     "label": "Two-step sign-in required",
@@ -63,7 +49,7 @@
     "guestWarning": "Don't paste guests' names, phone numbers or emails.",
     "count": "{{count}} of {{max}} characters",
     "includePage": "Include the page I'm on",
-    "includePageHint": "We also receive your business, role, plan, app version, browser and window size. Never guest details.",
+    "includePageHint": "We also receive your business, role, app version, browser and window size. Never guest details.",
     "send": "Send message",
     "sending": "Sending…",
     "sent": "Sent. Your reference is {{reference}}. We emailed you a confirmation.",

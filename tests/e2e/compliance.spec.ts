@@ -14,7 +14,7 @@ const TARGETS =
 
 /** A t() key that rendered as itself, e.g. "join.phone" (an unloaded namespace or a typo). */
 const RAW_KEY =
-  /\b(?:common|guest|staff|admin|auth|display|kiosk|onboarding|eta|console|join|status|location|queues|counters|devices|poster|support|toast|announcement)\.[a-zA-Z_]+/;
+  /\b(?:common|guest|staff|admin|auth|display|kiosk|onboarding|eta|console|join|status|location|queues|counters|devices|poster|support|toast)\.[a-zA-Z_]+/;
 
 async function expectCompliant(page: Page, { wide = false } = {}) {
   await page.waitForLoadState('networkidle');
@@ -62,7 +62,7 @@ const ownerPaths = [
   '/admin/devices',
   '/admin/location',
   '/admin/poster',
-  '/admin/settings/support',
+  '/admin/help',
 ];
 
 for (const locale of ['en-US', 'de-DE']) {

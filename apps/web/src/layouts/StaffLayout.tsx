@@ -2,7 +2,6 @@ import { ToastProvider } from '@qm/ui';
 import { Outlet } from '@tanstack/react-router';
 import { useTranslation } from '../lib/translation.tsx';
 import { BrandLink } from './BrandLink.tsx';
-import { Announcements } from '../features/announcements/Announcements.tsx';
 import { LocationSwitcher } from '../features/auth/LocationSwitcher.tsx';
 import { OperatorChip } from '../features/operator/OperatorChip.tsx';
 import { SessionLimits } from '../features/auth/SessionLimits.tsx';
@@ -12,7 +11,6 @@ import { MfaRequiredBanner } from '../features/auth/mfa/MfaRequiredBanner.tsx';
 import { AdminShell } from '../features/admin/layout/AdminShell.tsx';
 import { DeletionBanner } from '../features/admin/settings/danger/DeletionBanner.tsx';
 import { SuspendedBanner } from '../features/admin/support/SuspendedBanner.tsx';
-import { SupportBanner } from '../features/admin/support/SupportBanner.tsx';
 import { HelpLink } from '../features/admin/support/HelpLink.tsx';
 import { ContactSupportButton } from '../features/admin/support/ContactSupport.tsx';
 
@@ -30,12 +28,10 @@ export function StaffLayout({ area }: { area: 'staff' | 'admin' | 'onboarding' |
         {area === 'auth' ? null : (
           // Printed pages (the QR poster) are just the page.
           <div className="print:hidden">
-            <Announcements />
             {area === 'staff' || area === 'admin' ? (
               <>
                 {area === 'admin' ? <DeletionBanner /> : null}
                 <SuspendedBanner />
-                <SupportBanner />
                 <MfaRequiredBanner />
               </>
             ) : null}

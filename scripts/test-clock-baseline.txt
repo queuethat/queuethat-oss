@@ -4,7 +4,6 @@ admin-booking-settings.spec.ts
 admin-hours-exceptions.spec.ts
 admin-report-schedules.spec.ts
 admin-usage.spec.ts
-announcements.spec.ts
 appointment-manage.spec.ts
 appointment-search.spec.ts
 appointments-agenda.spec.ts
@@ -29,4 +28,3 @@ platform-ops.spec.ts
 recurring-appointments.spec.ts
 shifts.spec.ts
 slot-waitlist.spec.ts
-support-access.spec.ts

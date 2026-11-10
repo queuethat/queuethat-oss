@@ -15,7 +15,7 @@ export const HELP_ARTICLE_IDS = [
 export const HELP_ANCHOR = 'help';
 
 /**
- * Short self-serve answers shown on the Support page. A contents list links to each article by
+ * Short self-serve answers shown on the Help page. A contents list links to each article by
  * anchor; the text lives in the lazy `admin-support` namespace so no route or guest bytes are added.
  */
 export function HelpArticles() {

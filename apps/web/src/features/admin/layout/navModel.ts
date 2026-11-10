@@ -229,7 +229,7 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
         hidden: true,
         under: 'privacy',
       },
-      { to: '/admin/settings/support', key: 'support', icon: iconHelp },
+      { to: '/admin/help', key: 'help', icon: iconHelp },
     ],
   },
   {

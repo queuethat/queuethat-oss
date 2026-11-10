@@ -1,9 +1,8 @@
-import type { Database } from '@qm/db-types';
 import { Button } from './Button.tsx';
 import { cx } from './cx.ts';
 
-/** Platform announcement severities, owned by the database (PLT9, #415). */
-export type AnnouncementSeverity = Database['app']['Enums']['announcement_severity'];
+/** How loud a banner is; it picks the colours. */
+export type AnnouncementSeverity = 'info' | 'warning' | 'maintenance';
 
 const tones: Record<AnnouncementSeverity, string> = {
   info: 'bg-info-soft text-info-strong',
@@ -15,16 +14,16 @@ export interface AnnouncementBannerProps {
   severity: AnnouncementSeverity;
   /** The t() name of the severity, shown before the message so colour is never the only signal. */
   label: string;
-  /** The operator's text, shown as written. */
+  /** The notice itself, shown as written. */
   message: string;
   dismissLabel: string;
-  /** Only `info` announcements can be dismissed; for the others this is ignored. */
+  /** Only `info` banners can be dismissed; for the others this is ignored. */
   onDismiss?: () => void;
 }
 
 /**
- * A platform-wide notice across the top of staff pages. Warning and maintenance notices can't be
- * dismissed, so nobody misses planned downtime; remembering a dismissal is the caller's job.
+ * A notice across the top of staff pages. Warning and maintenance notices can't be dismissed;
+ * remembering a dismissal is the caller's job.
  */
 export function AnnouncementBanner({
   severity,

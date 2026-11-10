@@ -438,55 +438,6 @@
     "textToJoin": "Or text {{keyword}} to {{number}}",
     "telegram": "Or open Telegram:"
   },
-  "support": {
-    "title": "Support access",
-    "loading": "Loading support access",
-    "intro": "Let our support team look into a problem with your account. Access ends by itself, and everyone on your team sees a notice while it is open.",
-    "ownersOnly": "Only owners can give or end support access.",
-    "scope": {
-      "read": "Read only",
-      "act": "Read and change"
-    },
-    "now": {
-      "title": "Right now",
-      "none": "Support has no access.",
-      "read": "Support can see this business (read only) until {{until}}.",
-      "act": "Support can see and change this business until {{until}}.",
-      "breakGlass": "A platform operator opened emergency read-only access until {{until}}. You can end it below."
-    },
-    "revoke": {
-      "trigger": "End support access",
-      "title": "End support access now?",
-      "description": "Support loses access at once, including any emergency access. You can give access again later.",
-      "confirm": "Yes, end access",
-      "cancel": "Keep access"
-    },
-    "grant": {
-      "title": "Give support access",
-      "scope": "What support can do",
-      "hours": "For how many hours",
-      "hoursHint": "1 to 72. Access ends by itself after this.",
-      "reason": "Reason",
-      "reasonHint": "What should support look at? Your team sees this.",
-      "submit": "Give access",
-      "replace": "Replace current access",
-      "saving": "Saving…"
-    },
-    "history": {
-      "title": "History",
-      "empty": "Support has never had access.",
-      "breakGlass": "Emergency",
-      "reason": "Reason: {{reason}}",
-      "revoked": "Ended by an owner {{at}}",
-      "ends": "Ends {{at}}",
-      "expired": "Expired {{at}}"
-    },
-    "errors": {
-      "permission_denied": "Only owners can change support access.",
-      "invalid_input": "Choose 1 to 72 hours and give a reason.",
-      "unknown": "Couldn’t change support access. Try again."
-    }
-  },
   "signage": {
     "title": "Signage",
     "intro": "Slides your waiting-room TV shows between calls. Calls always stay on screen.",

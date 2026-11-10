@@ -56,7 +56,7 @@ const PREVIOUS = [
   '/admin/branding',
   '/admin/signage',
   '/admin/account/calendar',
-  '/admin/settings/support',
+  '/admin/help',
   '/admin/settings/danger',
 ];
 
@@ -172,7 +172,7 @@ describe('admin nav model', () => {
     expect(palette).toEqual(['heatmap']);
   });
 
-  it('shows one Account entry per section, named for the section, plus support access', () => {
+  it('shows one Account entry per section, named for the section, plus help', () => {
     const entries = (role: string, extra = {}) =>
       sidebarGroups(build(role, extra)).find((g) => g.id === 'account')!.items;
     expect(entries('owner').map((i) => i.id)).toEqual([
@@ -180,21 +180,16 @@ describe('admin nav model', () => {
       'integrations',
       'apiKeys',
       'privacy',
-      'support',
+      'help',
     ]);
     expect(entries('owner').map((i) => i.label)).toEqual([
       'plan',
       'connections',
       'developers',
       'privacy',
-      'support',
+      'help',
     ]);
-    expect(entries('staff').map((i) => i.id)).toEqual([
-      'usage',
-      'integrations',
-      'privacy',
-      'support',
-    ]);
+    expect(entries('staff').map((i) => i.id)).toEqual(['usage', 'integrations', 'privacy', 'help']);
   });
 
   it('keeps each account page searchable under its own name', () => {
@@ -212,7 +207,7 @@ describe('admin nav model', () => {
     expect(at('/admin/domains')).toBe('apiKeys');
     expect(at('/admin/privacy/requests')).toBe('privacy');
     expect(at('/admin/export')).toBe('privacy');
-    expect(at('/admin/settings/support')).toBe('support');
+    expect(at('/admin/help')).toBe('help');
   });
 
   it('marks the sidebar entry a tabbed page sits under', () => {
