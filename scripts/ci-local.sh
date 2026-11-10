@@ -15,7 +15,7 @@ bash scripts/ci-static.sh
 
 echo "=== db"
 if ! pnpm exec supabase status >/dev/null 2>&1; then
-  pnpm exec supabase start -x studio,imgproxy,logflare,vector,edge-runtime,supavisor
+  bash scripts/retry-on-deadlock.sh pnpm exec supabase start -x studio,imgproxy,logflare,vector,edge-runtime,supavisor
 fi
 bash scripts/ci-db.sh
 
