@@ -121,7 +121,7 @@ jobs:
           # The stack's ports (55320-55329) sit in Linux's ephemeral range, so an outbound connection
           # (an image pull, say) can be handed one of them first and the container then fails to bind.
           sudo sysctl -qw net.ipv4.ip_local_reserved_ports=55320-55329
-          pnpm exec supabase start -x studio,imgproxy,logflare,vector,storage-api,edge-runtime,supavisor,mailpit
+          bash scripts/retry-on-deadlock.sh pnpm exec supabase start -x studio,imgproxy,logflare,vector,storage-api,edge-runtime,supavisor,mailpit
       - name: Database checks (same script as pnpm ci:local)
         run: bash scripts/ci-db.sh
 
@@ -145,7 +145,7 @@ jobs:
           # The stack's ports (55320-55329) sit in Linux's ephemeral range, so an outbound connection
           # (an image pull, say) can be handed one of them first and the container then fails to bind.
           sudo sysctl -qw net.ipv4.ip_local_reserved_ports=55320-55329
-          pnpm exec supabase start -x studio,imgproxy,logflare,vector,storage-api,edge-runtime,supavisor,mailpit
+          bash scripts/retry-on-deadlock.sh pnpm exec supabase start -x studio,imgproxy,logflare,vector,storage-api,edge-runtime,supavisor,mailpit
       - name: Phase 3 compliance gate (pgTAP)
         # helpers/ is passed too: the CLI mounts only the paths it is given, and every test
         # includes ../helpers/_setup.psql (a .psql file, so pg_prove does not run it as a test).
@@ -179,15 +179,25 @@ jobs:
             echo "SKIP_UPGRADE=1" >> "$GITHUB_ENV"
             exit 0
           fi
-          npx --yes supabase@2.122.0 start -x studio,imgproxy,logflare,vector,storage-api,edge-runtime,supavisor,mailpit
-          npx --yes supabase@2.122.0 db reset
+          # pg_cron runs its jobs while the migrations are replayed, and one can deadlock with a
+          # migration (scripts/retry-on-deadlock.sh has the story). That script is not used here
+          # because the base branch's checkout may not have it.
+          retry() {
+            for attempt in 1 2 3; do
+              if "$@" 2>&1 | tee "$RUNNER_TEMP/migrate.log"; then return 0; fi
+              grep -q 'deadlock detected' "$RUNNER_TEMP/migrate.log" && [ "$attempt" -lt 3 ] || return 1
+              echo "Deadlock between a scheduled job and a migration; running it again." >&2
+            done
+          }
+          retry npx --yes supabase@2.122.0 start -x studio,imgproxy,logflare,vector,storage-api,edge-runtime,supavisor,mailpit
+          retry npx --yes supabase@2.122.0 db reset
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         if: env.SKIP_UPGRADE != '1'
         with:
           clean: false
       - name: Apply this PR's migrations on top
         if: env.SKIP_UPGRADE != '1'
-        run: npx --yes supabase@2.122.0 migration up --local
+        run: bash scripts/retry-on-deadlock.sh npx --yes supabase@2.122.0 migration up --local
 
   e2e-core:
     # The pull request's browser tests: the tests tagged @core, on desktop Chrome, in one job.
@@ -213,7 +223,7 @@ jobs:
           # The stack's ports (55320-55329) sit in Linux's ephemeral range, so an outbound connection
           # (an image pull, say) can be handed one of them first and the container then fails to bind.
           sudo sysctl -qw net.ipv4.ip_local_reserved_ports=55320-55329
-          pnpm exec supabase start -x studio,imgproxy,logflare,vector,edge-runtime,supavisor
+          bash scripts/retry-on-deadlock.sh pnpm exec supabase start -x studio,imgproxy,logflare,vector,edge-runtime,supavisor
       - name: Playwright (core journeys)
         run: |
           vmstat -t 1 > "$RUNNER_TEMP/vmstat.log" 2>&1 &
@@ -273,7 +283,7 @@ jobs:
           # The stack's ports (55320-55329) sit in Linux's ephemeral range, so an outbound connection
           # (an image pull, say) can be handed one of them first and the container then fails to bind.
           sudo sysctl -qw net.ipv4.ip_local_reserved_ports=55320-55329
-          pnpm exec supabase start -x studio,imgproxy,logflare,vector,edge-runtime,supavisor
+          bash scripts/retry-on-deadlock.sh pnpm exec supabase start -x studio,imgproxy,logflare,vector,edge-runtime,supavisor
       - name: Playwright
         env:
           FULL_MATRIX: ${{ github.event_name == 'schedule' }}
