@@ -105,8 +105,8 @@ sections below; this is the order and the pass/fail check.
     `config.toml` key for it, so the local stack never returns 429, whatever `[auth.rate_limit]`
     says. #509 has the evidence: the script fails on the CLI stack, passes against the same
     GoTrue behind an overwriting proxy, and fails behind a pass-through proxy.
-- [ ] **Authenticator-app MFA is on, and wrong codes lock the account** (PLT11, #417). Platform
-      operators need aal2 for every `api.platform_*` call, which they reach at `/platform/mfa`.
+- [ ] **Authenticator-app MFA is on, and wrong codes lock the account** (PLT11, #417). A business
+      that requires MFA of its owners and admins treats them as managers until their session is aal2.
   - Under Authentication → Multi-Factor, enable TOTP (app authenticator) for enrolment and
     verification, to match `[auth.mfa.totp]` in `supabase/config.toml`.
   - **Per-account lockout.** A TOTP code is 6 digits and Auth accepts the codes either side of

@@ -1,8 +1,11 @@
--- #1204 (messaging review M3): over the shared number a staff-typed number is texted only after its
--- owner replies YES to a one-time confirmation.
+-- #1204 (messaging review M3): over the deployment's shared number a staff-typed number gets one
+-- confirmation text and no alerts until its owner has confirmed it. The YES reply was handled by the
+-- hosted service's shared-number webhook, which this build does not have (and the shared sender
+-- cannot be switched on here, see providers/platform_twilio.test.sql), so only the sending side is
+-- covered: one text, capped, and nothing to an unconfirmed number.
 begin;
 \ir ../helpers/_setup.psql
-select plan(16);
+select plan(11);
 select tests.create_world();
 select tests.new_id(n) from unnest(array['k1', 'k2']) n;
 
@@ -26,18 +29,10 @@ select lives_ok($$ select api.staff_capture_consent(tests.id('sv'), 'sms', true,
 select tests.as_postgres();
 select is((select count(*)::int from app.notifications where template_key = 'reply_confirm_number'), 1, 'does not text it twice');
 
--- A YES from a different number, or before the confirmation went out, confirms nothing.
-select tests.as_service();
-select ok(not api.apply_platform_sms_event('confirm', '+14155550177'), 'a YES before the confirmation was sent confirms nothing');
-select tests.as_postgres();
+-- Once the text has gone out the number still gets no alerts: only its owner's reply confirms it.
 update app.notifications set status = 'sent', sent_at = now() where template_key = 'reply_confirm_number';
-select tests.as_service();
-select ok(not api.apply_platform_sms_event('confirm', '+14155550199'), 'a YES from another number confirms nothing');
-select ok(api.apply_platform_sms_event('confirm', '+14155550177'), 'a YES from the number we asked confirms it');
-select throws_ok($$ select api.apply_platform_sms_event('confirm', 'not-a-phone') $$, 'P0001', 'invalid_input', 'a malformed number is refused');
-select tests.as_postgres();
 select is((select count(*)::int from private.visit_recipients((select v from app.visits v where v.id = tests.id('sv')), 'called') r
-           where r.channel = 'sms'), 1, 'after YES the number receives alerts');
+           where r.channel = 'sms'), 0, 'a sent confirmation text alone confirms nothing');
 
 -- Caps: 2 per number per day across orgs, 20 per org per hour.
 insert into app.guests (id, org_id, first_name) values (tests.new_id('gc2'), tests.id('org_a'), 'C');
@@ -61,10 +56,6 @@ values (tests.id('org_b'), tests.id('gb'), 'phone', '+14155550177', 'staff');
 select is((select verified_at is null from app.guest_contacts where org_id = tests.id('org_b') and value = '+14155550177'), true,
   'org B''s contact for the same number stays unverified');
 select is(private.platform_sms_mode(tests.id('org_b')), false, 'org B does not send over the platform number');
-
-select tests.act_as('anon');
-select throws_ok($$ select api.apply_platform_sms_event('confirm', '+14155550177') $$, '42501', null, 'anon cannot call it');
-select tests.as_postgres();
 
 select * from finish();
 rollback;

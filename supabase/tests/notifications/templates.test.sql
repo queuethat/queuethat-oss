@@ -33,7 +33,7 @@ select throws_ok($$ insert into app.notification_templates (org_id, trigger, cha
   values (tests.id('org_a'), 'called', 'sms', 'Sale!', 'marketing') $$,
   'P0001', 'invalid_category', 'marketing templates are not editable');
 select throws_ok($$ insert into app.notification_templates (org_id, trigger, channel, body)
-  values (tests.id('org_a'), 'support.break_glass', 'email', 'x') $$,
+  values (tests.id('org_a'), 'support_confirmation', 'email', 'x') $$,
   'P0001', 'invalid_trigger', 'account mail wording is not overridable');
 select throws_ok($$ insert into app.notification_templates (org_id, trigger, channel, body)
   values (tests.id('org_a'), 'broadcast', 'sms', 'Late {{counter}}') $$,

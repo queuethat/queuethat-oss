@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { createClient } from '@supabase/supabase-js';
 
 // 2P-OPS6 (#212): a stack started with DEMO_MODE=true shows the banner and the seeded Demo Barber
-// organization, signs in with the generated DEMO_PASSWORD only, and has no platform operator.
+// organization and signs in with the generated DEMO_PASSWORD only.
 // Env: SELFHOST_DEMO=1, SELFHOST_DEMO_PASSWORD, plus the variables of smoke.spec.ts.
 
 const url = process.env.SELFHOST_URL!;
@@ -18,7 +18,7 @@ test('the banner shows and the demo shop takes guests', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Join the queue' })).toBeVisible();
 });
 
-test('the generated password works; password123 and the operator account do not', async () => {
+test('the generated password works; password123 does not', async () => {
   const auth = createClient(url, anonKey, noSession).auth;
   const ok = await auth.signInWithPassword({ email: 'owner@demo.test', password });
   expect(ok.error).toBeNull();
@@ -27,8 +27,6 @@ test('the generated password works; password123 and the operator account do not'
     password: 'password123',
   });
   expect(shared.error).not.toBeNull();
-  const ops = await auth.signInWithPassword({ email: 'ops@demo.test', password });
-  expect(ops.error).not.toBeNull();
 });
 
 test('the owner signs in and reaches the demo shop', async ({ page }) => {

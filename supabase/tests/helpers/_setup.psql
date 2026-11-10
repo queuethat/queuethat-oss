@@ -196,8 +196,7 @@ end $$;
 /**
  * Builds the shared fixture world and registers its actors for the RLS matrix:
  *   org A ("org_a", location "loc_a") with owner, admin, manager, staff, a display and a kiosk;
- *   org B ("org_b", location "loc_b") with its owner, registered as actor other_owner;
- *   a platform operator with an aal2 (MFA) session and no membership, registered as platform.
+ *   org B ("org_b", location "loc_b") with its owner, registered as actor other_owner.
  * Every table migration adds one org A fixture row here so the matrix can probe it.
  * Runs as postgres, so RLS does not apply while building.
  */
@@ -206,7 +205,6 @@ language plpgsql as $$
 declare
   r text;
   uid uuid;
-  note_id uuid;
 begin
   insert into app.organizations (id, name) values
     (tests.new_id('org_a'), 'Org A'), (tests.new_id('org_b'), 'Org B');
@@ -225,11 +223,6 @@ begin
   insert into app.memberships (org_id, user_id, role) values (tests.id('org_b'), uid, 'owner');
   insert into tests.actors values ('other_owner', 'authenticated',
     jsonb_build_object('sub', uid, 'role', 'authenticated', 'aud', 'authenticated'));
-
-  uid := tests.create_user('platform');
-  insert into app.platform_roles (user_id, role) values (uid, 'operator');
-  insert into tests.actors values ('platform', 'authenticated',
-    jsonb_build_object('sub', uid, 'role', 'authenticated', 'aud', 'authenticated', 'aal', 'aal2'));
 
   foreach r in array array['display', 'kiosk'] loop
     uid := tests.create_user(r, jsonb_build_object('kind', r, 'org_id', tests.id('org_a'),
@@ -476,7 +469,7 @@ begin
   insert into app.queue_broadcasts (id, org_id, queue_id, body)
   values (tests.new_id('broadcast_a'), tests.id('org_a'), tests.id('queue_a'), 'fixture');
 
-  -- PLT3 (#409) support grants: revoked, so the platform actor still has no access to org A
+  -- PLT3 (#409) support grants: one revoked row (a grant gives nobody access in this build)
   insert into app.support_grants (id, org_id, granted_by, scope, reason, expires_at, revoked_at)
   values (tests.new_id('grant_a'), tests.id('org_a'), tests.id('owner'), 'read', 'fixture',
           now() + interval '1 hour', now());
@@ -484,10 +477,6 @@ begin
   -- #1138 support requests: one filed by the staff member
   insert into app.support_requests (id, org_id, user_id, subject, message)
   values (tests.new_id('support_request_a'), tests.id('org_a'), tests.id('staff'), 'Fixture', 'Fixture message');
-
-  -- #1132 an attention ack that has already expired, so it hides nothing
-  insert into app.platform_attention_acks (org_id, reason, acked_by, snooze_until)
-  values (tests.id('org_a'), 'no_recent_visits', tests.id('platform'), now() - interval '1 day');
 
   -- 2P-RPT4 (#200) export ticket, started by the owner
   insert into app.data_exports (id, org_id, actor, format, idempotency_key, created_at, expires_at)
@@ -510,40 +499,7 @@ begin
   insert into app.org_entitlements (org_id, key, value, reason)
   values (tests.id('org_a'), 'fixture.flag', 'true', 'fixture');
 
-  -- 4-BILL1 (#377) billing (the platform flag stays off, so no trigger fires in other tests)
-  insert into app.subscriptions (org_id, plan_id, status, quantity, desired_quantity)
-  values (tests.id('org_a'), 'standard', 'active', 1, 1);
-  insert into app.plan_entitlements (plan_id, key, value) values ('free', 'fixture.flag', 'false');
-  insert into app.billing_jobs (id, org_id) values (tests.new_id('billing_job_a'), tests.id('org_a'));
-
-  -- 4-BILL4 (#380) SMS credits (a zero adjustment: the balance starts at nothing)
-  insert into app.credit_ledger (id, org_id, entry_type, amount_micros)
-  values (tests.new_id('credit_a'), tests.id('org_a'), 'adjustment', 0);
-
-  -- PLT7 (#413) platform stats
-  insert into app.platform_daily_stats (day, org_id, joins) values ('2026-01-01', tests.id('org_a'), 1);
-  insert into app.platform_sms_daily (day, org_id, messages) values ('2026-01-01', tests.id('org_a'), 1);
-
-  -- PLT9 (#415) platform announcements: active now
-  insert into app.platform_announcements (severity, message, ends_at)
-  values ('maintenance', 'fixture announcement', now() + interval '1 hour');
-
-  -- PLT8 (#414) platform blocks
-  insert into app.platform_blocks (contact_hash, kind, reason)
-  values (extensions.digest('fixture-block', 'sha256'), 'phone', 'fixture');
-
-  -- #1135 platform org notes
-  note_id := tests.new_id('org_note_a');
-  insert into app.platform_org_notes (id, org_id, root_id, version, body)
-  values (note_id, tests.id('org_a'), note_id, 1, 'fixture note');
-
-  -- #1274 platform incident register
-  insert into app.platform_incidents (id, kind, title, org_ids)
-  values (tests.new_id('incident_a'), 'other', 'fixture incident', array[tests.id('org_a')]);
-  insert into app.platform_incident_events (incident_id, kind, body)
-  values (tests.id('incident_a'), 'note', 'fixture event');
-  insert into app.incident_notices (incident_id, subject, body)
-  values (tests.id('incident_a'), 'fixture notice', 'fixture body');
+  -- #1274 a business's own incident log and a notice to its guests
   insert into app.org_incident_log (org_id, source, kind, title, detected_at)
   values (tests.id('org_a'), 'manual', 'other', 'fixture incident log', now());
   insert into app.guest_notices (org_id, log_id, subject, body, window_from, window_to)

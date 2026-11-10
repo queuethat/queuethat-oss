@@ -6,8 +6,6 @@
 --   owner@e2e.test     owner of Demo Barber (Playwright)
 --   staff@e2e.test     staff at Demo Barber (Playwright)
 --   owner@other.test   owner of Other Salon (cross-tenant checks)
---   ops@demo.test      platform operator (no org). The console needs an aal2 session, so
---                      enrol a TOTP factor on first sign-in; platform_whoami works without one.
 -- Guests join at http://localhost:5173/q/demo-barber
 --
 -- Ids are fixed so tests, docs and tests/fixtures/demo.ts can refer to them.
@@ -32,10 +30,7 @@ select pg_temp.seed_user('00000000-0000-4000-8000-0000000000a2', 'staff@demo.tes
 select pg_temp.seed_user('00000000-0000-4000-8000-0000000000a3', 'owner@e2e.test');
 select pg_temp.seed_user('00000000-0000-4000-8000-0000000000a4', 'staff@e2e.test');
 select pg_temp.seed_user('00000000-0000-4000-8000-0000000000b1', 'owner@other.test');
--- The self-host demo (deploy/selfhost) sets qm.demo_password and qm.demo_ops=off: no shared
--- password, and no platform operator whose first sign-in would enrol the TOTP factor.
-select pg_temp.seed_user('00000000-0000-4000-8000-0000000000c1', 'ops@demo.test')
-  where current_setting('qm.demo_ops', true) is distinct from 'off';
+-- The self-host demo (deploy/selfhost) sets qm.demo_password, so there is no shared password.
 
 -- Demo Barber: one location in New York, two queues, three services, two counters.
 insert into app.organizations (id, name, created_by) values
@@ -82,8 +77,3 @@ insert into app.counters (id, org_id, location_id, label, sort_order) values
    '00000000-0000-4000-8000-00000000d101', 'Chair 1', 1),
   ('00000000-0000-4000-8000-00000000d402', '00000000-0000-4000-8000-00000000d001',
    '00000000-0000-4000-8000-00000000d101', 'Chair 2', 2);
-
--- PLT1 (#407): the demo operator. The audit trigger records the grant like any other.
-insert into app.platform_roles (user_id, role)
-select '00000000-0000-4000-8000-0000000000c1', 'operator'
-  where current_setting('qm.demo_ops', true) is distinct from 'off';

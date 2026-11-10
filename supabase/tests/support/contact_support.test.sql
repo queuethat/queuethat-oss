@@ -1,9 +1,8 @@
 -- #1138: in-app contact support. Members file requests with sanitised context; the support inbox and the
--- requester get one outbox email each; org A can never reach org B's requests; anon cannot call it;
--- platform staff list and close requests behind aal2.
+-- requester get one outbox email each; org A can never reach org B's requests; anon cannot call it.
 begin;
 \ir ../helpers/_setup.psql
-select plan(90);
+select plan(75);
 select tests.create_world();
 
 grant select on all tables in schema tests to anon, authenticated;
@@ -43,8 +42,7 @@ select is((select user_id from app.support_requests), tests.id('staff'), 'the us
 select is((select org_id from app.support_requests), tests.id('org_a'), 'the org is the one the caller belongs to');
 select is((select context ->> 'role' from app.support_requests), 'staff', 'the role comes from the membership');
 select is((select context ->> 'org_name' from app.support_requests), 'Org A', 'the org name comes from the database');
-select is((select context ->> 'plan' from app.support_requests), private.org_plan(tests.id('org_a')),
-  'the plan comes from the database');
+select is((select context ? 'plan' from app.support_requests), false, 'no plan is recorded: this build has none');
 select is((select status from app.support_requests), 'open', 'a new request is open');
 
 -- ---------------------------------------------------------------- tenancy
@@ -155,7 +153,7 @@ select is((select context ->> 'last_error_id' from app.support_requests), 'err_1
 select is((select context ->> 'org_name' from app.support_requests), 'Org A', 'a forged org name is ignored');
 select is((select context ->> 'role' from app.support_requests), 'staff', 'a forged role is ignored');
 select is((select (context - 'route' - 'app_version' - 'browser' - 'viewport' - 'online' - 'last_error_id'
-                   - 'org_name' - 'role' - 'plan')::text from app.support_requests), '{}',
+                   - 'org_name' - 'role')::text from app.support_requests), '{}',
   'nothing outside the whitelist is stored (no storage, tokens or ids)');
 select is(private.support_route('/v/abcdef'), null::text, 'a guest status path is refused');
 select is(private.support_route('/q/demo-barber?x=1'), null::text, 'a guest join path is refused');
@@ -193,49 +191,12 @@ select is((select private.notification_address(n.channel, n.visit_id, n.recipien
 select throws_ok($$ update app.platform_flags set support_inbox = 'not an address' $$, '23514', null,
   'the inbox must look like an address');
 
--- ---------------------------------------------------------------- platform console
-create temp table req as select id, 'SR-' || lpad(number::text, 6, '0') as ref from app.support_requests;
-grant select on req to authenticated;
-
-select tests.act_as('platform');
-select is((select count(*)::int from api.platform_list_support_requests(tests.id('org_a'))), 1,
-  'an operator lists the org''s requests');
-select is((select reference || '|' || subject || '|' || status from api.platform_list_support_requests(tests.id('org_a'), 'open')),
-  (select ref from req) || '|Context|open', 'with reference, subject and status');
-select is((select count(*)::int from api.platform_list_support_requests(tests.id('org_b'))), 0, 'another org lists nothing');
-select throws_ok($$ select * from api.platform_list_support_requests(tests.id('org_a'), 'bogus') $$, 'P0001', 'invalid_input',
-  'an unknown status filter is refused');
-select lives_ok($$ select api.platform_set_support_request_status((select id from req), 'closed') $$,
-  'an operator closes a request');
-select api.platform_set_support_request_status((select id from req), 'closed');
-select is((select count(*)::int from api.platform_list_support_requests(tests.id('org_a'), 'open')), 0, 'it is gone from the open list');
-select is((select count(*)::int from api.platform_list_support_requests(tests.id('org_a'), 'closed')), 1, 'and is on the closed list');
-select tests.as_postgres();
-select is((select status from app.support_requests), 'closed', 'the request is closed');
-select ok((select closed_at is not null and closed_by = tests.id('platform') from app.support_requests), 'with who and when');
-select is((select count(*)::int from app.platform_audit where action = 'support_request.close'), 1,
-  'closing twice is a no-op and is audited once');
-select tests.act_as('platform');
-select api.platform_set_support_request_status((select id from req), 'open');
-select tests.as_postgres();
-select ok((select status = 'open' and closed_at is null from app.support_requests), 'a request can be reopened');
-select tests.act_as('platform');
-select throws_ok($$ select api.platform_set_support_request_status(gen_random_uuid(), 'closed') $$, 'P0001', 'not_found',
-  'an unknown request is not_found');
-select throws_ok($$ select api.platform_set_support_request_status((select id from req), 'x') $$, 'P0001',
-  'invalid_input', 'an unknown status is refused');
-
-select tests.act_as('staff');
-select throws_ok($$ select * from api.platform_list_support_requests(tests.id('org_a')) $$, '42501', 'permission_denied',
-  'an org member without a platform role cannot list');
-select throws_ok($$ select api.platform_set_support_request_status((select id from req), 'closed') $$, '42501',
-  'permission_denied', 'nor close');
-select tests.set_claims('authenticated', (select a.claims || '{"aal":"aal1"}' from tests.actors a where a.name = 'platform'));
-select throws_ok($$ select * from api.platform_list_support_requests(tests.id('org_a')) $$, '42501', 'permission_denied',
-  'a platform user without an MFA session cannot list');
-select tests.as_anon();
-select throws_ok($$ select * from api.platform_list_support_requests(tests.id('org_a')) $$, '42501', null, 'anon cannot list');
-select tests.as_postgres();
+-- ---------------------------------------------------------------- the email names no plan and no operator console
+select ok((select not (vars ? 'plan') from app.notifications where template_key = 'support_request'),
+  'the support email carries no plan');
+select ok((select body not like '%{{plan}}%' and body not like '%/platform/%' from app.notification_templates
+           where trigger = 'support_request' and org_id is null),
+  'and its template mentions neither a plan nor an operator console page');
 
 select * from finish();
 rollback;

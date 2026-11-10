@@ -76,6 +76,47 @@ enables each channel under **Admin > Integrations** once its own prerequisites h
 attempt lists what is missing. Setting the column back to `null` closes every paid channel at
 once.
 
+### Limits
+
+Out of the box a business can have any number of locations and staff, and its paid messages
+(SMS, WhatsApp) are capped per day and per month. These limits are rows in the table
+`app.entitlement_defaults` and apply to every business on the install. There is no screen for
+them; you change them with SQL as the database owner.
+
+| Key | Shipped value | What it limits |
+| --- | --- | --- |
+| `limit.locations` | `-1` | Locations per business. `-1` means no limit. |
+| `limit.members` | `-1` | Staff accounts per business, owner included. `-1` means no limit. |
+| `paid_channels` | `true` | Whether a business may switch on SMS and WhatsApp. |
+| `messaging.daily_cap` | `200` | Most SMS (and, separately, WhatsApp) messages a business sends per UTC day. |
+| `messaging.new_org_daily_cap` | `25` | The same cap for a business younger than `messaging.new_org_days`. |
+| `messaging.new_org_days` | `14` | How many days a business counts as new. |
+| `messaging.monthly_budget_micros` | `20000000` | Most a business spends on SMS (and, separately, WhatsApp) per UTC month, in millionths of a currency unit (20000000 is 20.00). |
+
+A business can set a lower daily cap or budget for itself, never a higher one. When a location or staff limit is reached, adding one more is refused with
+`plan_limit_reached`; nothing that already exists is removed.
+
+To change a limit for every business:
+
+```sh
+cd deploy/selfhost
+docker compose exec db psql -U supabase_admin -d postgres \
+  -c "update app.entitlement_defaults set value = '500' where key = 'messaging.daily_cap';"
+```
+
+To give one business a different value, add a row to `app.org_entitlements`. It wins over the
+default for that business only. `reason` is a note for yourself and cannot be blank:
+
+```sh
+docker compose exec db psql -U supabase_admin -d postgres -c "
+  insert into app.org_entitlements (org_id, key, value, reason)
+  values ((select id from app.organizations where name = 'Demo Barber'), 'messaging.daily_cap', '1000', 'busy shop')
+  on conflict (org_id, key) do update set value = excluded.value, reason = excluded.reason;"
+```
+
+Delete the row to put the business back on the default. Values are JSON: numbers and `true` or
+`false`, in single quotes as above. Changes apply at once; nothing needs a restart.
+
 ### What the server needs to reach
 
 The `web` and `migrate` images are built on the server from this repository, so the first
@@ -133,9 +174,8 @@ for logs nobody reads on a one-shop box. Use `docker compose logs` or ship conta
 A clean install has zero organizations: the first sign-in leads to onboarding. To try the product
 with sample data instead, run `./setup.sh --demo`. It sets `DEMO_MODE=true` and generates
 `DEMO_PASSWORD`; `migrate` then seeds the Demo Barber organization once (guest page `/q/demo-barber`,
-sign in as `owner@demo.test` or `staff@demo.test`), and every page shows a "Demo mode" banner. The
-platform-operator account of the development seed is not created, and no password is ever
-`password123`. There is no nightly reset: visits are never deleted, so the honest reset is
+sign in as `owner@demo.test` or `staff@demo.test`), and every page shows a "Demo mode" banner. No
+password is ever `password123`. There is no nightly reset: visits are never deleted, so the honest reset is
 `docker compose down -v` and a fresh start. Turning `DEMO_MODE` off later hides the banner but keeps
 the demo organization; don't use demo mode for a real shop.
 

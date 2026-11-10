@@ -1,11 +1,8 @@
--- #1080: api.create_location adds a location to an org; slug derivation, plan limit and tenancy.
+-- #1080: api.create_location adds a location to an org; slug derivation, the location limit and tenancy.
 begin;
 \ir ../helpers/_setup.psql
 select plan(13);
 select tests.create_world();
-
-select tests.as_postgres();
-update app.platform_flags set billing_enabled = false;
 
 -- An admin adds a location; the slug is derived from the name and made unique.
 select tests.act_as('admin');
@@ -42,12 +39,12 @@ select tests.as_anon();
 select throws_ok($$select api.create_location(tests.id('org_a'), 'Nope', 'UTC', null)$$,
   '42501', null, 'anon cannot call it');
 
--- The plan limit applies: a free org with one location cannot add a second.
+-- The deployment's location limit applies: with a limit of one, an org with one location cannot add a second.
 select tests.as_postgres();
-update app.platform_flags set billing_enabled = true;
+update app.entitlement_defaults set value = '1' where key = 'limit.locations';
 select tests.act_as('other_owner');
 select throws_ok($$select api.create_location(tests.id('org_b'), 'Second', 'UTC', null)$$,
-  'P0001', 'plan_limit_reached', 'a free org gets plan_limit_reached for a second location');
+  'P0001', 'plan_limit_reached', 'an org at the location limit gets plan_limit_reached for a second location');
 
 select * from finish();
 rollback;

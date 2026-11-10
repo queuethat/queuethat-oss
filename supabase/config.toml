@@ -342,8 +342,8 @@ auth_token = "env(SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN)"
 # Control how many MFA factors can be enrolled at once per user.
 max_enrolled_factors = 10
 
-# Control MFA via App Authenticator (TOTP). PLT11 (#417): platform operators need aal2, and any
-# account may enrol (the phase 2a owner MFA reuses the same flow).
+# Control MFA via App Authenticator (TOTP). Any account may enrol; a business can require it of
+# its owners and admins (api.set_require_mfa).
 [auth.mfa.totp]
 enroll_enabled = true
 verify_enabled = true
