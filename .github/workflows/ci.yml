@@ -80,7 +80,11 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Start trimmed Supabase stack
-        run: pnpm exec supabase start -x studio,imgproxy,logflare,vector,storage-api,edge-runtime,supavisor,mailpit
+        run: |
+          # The stack's ports (55320-55329) sit in Linux's ephemeral range, so an outbound connection
+          # (an image pull, say) can be handed one of them first and the container then fails to bind.
+          sudo sysctl -qw net.ipv4.ip_local_reserved_ports=55320-55329
+          pnpm exec supabase start -x studio,imgproxy,logflare,vector,storage-api,edge-runtime,supavisor,mailpit
       - name: Database checks (same script as pnpm ci:local)
         run: bash scripts/ci-db.sh
 
@@ -100,7 +104,11 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Start trimmed Supabase stack
-        run: pnpm exec supabase start -x studio,imgproxy,logflare,vector,storage-api,edge-runtime,supavisor,mailpit
+        run: |
+          # The stack's ports (55320-55329) sit in Linux's ephemeral range, so an outbound connection
+          # (an image pull, say) can be handed one of them first and the container then fails to bind.
+          sudo sysctl -qw net.ipv4.ip_local_reserved_ports=55320-55329
+          pnpm exec supabase start -x studio,imgproxy,logflare,vector,storage-api,edge-runtime,supavisor,mailpit
       - name: Phase 3 compliance gate (pgTAP)
         # helpers/ is passed too: the CLI mounts only the paths it is given, and every test
         # includes ../helpers/_setup.psql (a .psql file, so pg_prove does not run it as a test).
@@ -172,7 +180,11 @@ jobs:
       # Storage and the mail catcher stay on, as in `pnpm ci:local`: the upload specs (branding,
       # signage) and the email specs (sign-in codes, report previews) need them.
       - name: Start Supabase stack
-        run: pnpm exec supabase start -x studio,imgproxy,logflare,vector,edge-runtime,supavisor
+        run: |
+          # The stack's ports (55320-55329) sit in Linux's ephemeral range, so an outbound connection
+          # (an image pull, say) can be handed one of them first and the container then fails to bind.
+          sudo sysctl -qw net.ipv4.ip_local_reserved_ports=55320-55329
+          pnpm exec supabase start -x studio,imgproxy,logflare,vector,edge-runtime,supavisor
       - name: Playwright
         env:
           FULL_MATRIX: ${{ github.event_name == 'schedule' }}
