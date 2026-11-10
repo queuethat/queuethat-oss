@@ -37,8 +37,7 @@ One folder per run, `backups/<UTC stamp>/`, with only `.age` files:
 | `db-config.tar.age` | the pgsodium key that decrypts the Vault secrets (the guest-link secret, etc.) |
 
 The Vault secrets are encrypted inside the dump, and their key lives in a Docker volume of its own,
-so it is in the backup too. This differs from the hosted pilot's backup (`docs/ops/backups.md`),
-which has to decrypt Vault because it cannot take the key. Here the backup is complete by itself.
+so it is in the backup too: the backup is complete by itself.
 
 ## Restore
 

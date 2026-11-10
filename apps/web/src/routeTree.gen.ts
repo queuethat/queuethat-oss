@@ -19,7 +19,6 @@ import { Route as KioskRouteImport } from './routes/kiosk'
 import { Route as ORouteRouteImport } from './routes/o/route'
 import { Route as OnboardingRouteRouteImport } from './routes/onboarding/route'
 import { Route as PayRouteRouteImport } from './routes/pay/route'
-import { Route as PlatformRouteRouteImport } from './routes/platform/route'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as QRouteRouteImport } from './routes/q/route'
 import { Route as StaffRouteRouteImport } from './routes/staff/route'
@@ -78,12 +77,6 @@ import { Route as DisplayCounterRouteImport } from './routes/display_.counter'
 import { Route as OTokenRouteImport } from './routes/o/$token'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
 import { Route as PayCodeRouteImport } from './routes/pay/$code'
-import { Route as PlatformIndexRouteImport } from './routes/platform/index'
-import { Route as PlatformSplatRouteImport } from './routes/platform/$'
-import { Route as PlatformFunnelRouteImport } from './routes/platform/funnel'
-import { Route as PlatformMessagesRouteImport } from './routes/platform/messages'
-import { Route as PlatformMfaRouteImport } from './routes/platform/mfa'
-import { Route as PlatformTeamRouteImport } from './routes/platform/team'
 import { Route as QLocationSlugRouteImport } from './routes/q/$locationSlug'
 import { Route as StaffIndexRouteImport } from './routes/staff/index'
 import { Route as StaffPlanningRouteImport } from './routes/staff/planning'
@@ -112,7 +105,6 @@ import { Route as AdminReportsCustomRouteImport } from './routes/admin/reports/c
 import { Route as AdminReportsSchedulesRouteImport } from './routes/admin/reports/schedules'
 import { Route as AdminSettingsDangerRouteImport } from './routes/admin/settings/danger'
 import { Route as AdminSettingsSupportRouteImport } from './routes/admin/settings/support'
-import { Route as PlatformOrgsOrgIdRouteImport } from './routes/platform/orgs/$orgId'
 import { Route as AdminQueuesQueueIdIntakeRouteImport } from './routes/admin/queues/$queueId_.intake'
 import { Route as AdminQueuesQueueIdMessagesRouteImport } from './routes/admin/queues/$queueId_.messages'
 
@@ -164,11 +156,6 @@ const OnboardingRouteRoute = OnboardingRouteRouteImport.update({
 const PayRouteRoute = PayRouteRouteImport.update({
   id: '/pay',
   path: '/pay',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlatformRouteRoute = PlatformRouteRouteImport.update({
-  id: '/platform',
-  path: '/platform',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -461,36 +448,6 @@ const PayCodeRoute = PayCodeRouteImport.update({
   path: '/$code',
   getParentRoute: () => PayRouteRoute,
 } as any)
-const PlatformIndexRoute = PlatformIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PlatformRouteRoute,
-} as any)
-const PlatformSplatRoute = PlatformSplatRouteImport.update({
-  id: '/$',
-  path: '/$',
-  getParentRoute: () => PlatformRouteRoute,
-} as any)
-const PlatformFunnelRoute = PlatformFunnelRouteImport.update({
-  id: '/funnel',
-  path: '/funnel',
-  getParentRoute: () => PlatformRouteRoute,
-} as any)
-const PlatformMessagesRoute = PlatformMessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
-  getParentRoute: () => PlatformRouteRoute,
-} as any)
-const PlatformMfaRoute = PlatformMfaRouteImport.update({
-  id: '/mfa',
-  path: '/mfa',
-  getParentRoute: () => PlatformRouteRoute,
-} as any)
-const PlatformTeamRoute = PlatformTeamRouteImport.update({
-  id: '/team',
-  path: '/team',
-  getParentRoute: () => PlatformRouteRoute,
-} as any)
 const QLocationSlugRoute = QLocationSlugRouteImport.update({
   id: '/$locationSlug',
   path: '/$locationSlug',
@@ -633,11 +590,6 @@ const AdminSettingsSupportRoute = AdminSettingsSupportRouteImport.update({
   path: '/settings/support',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const PlatformOrgsOrgIdRoute = PlatformOrgsOrgIdRouteImport.update({
-  id: '/orgs/$orgId',
-  path: '/orgs/$orgId',
-  getParentRoute: () => PlatformRouteRoute,
-} as any)
 const AdminQueuesQueueIdIntakeRoute =
   AdminQueuesQueueIdIntakeRouteImport.update({
     id: '/queues/$queueId_/intake',
@@ -660,7 +612,6 @@ export interface FileRoutesByFullPath {
   '/o': typeof ORouteRouteWithChildren
   '/onboarding': typeof OnboardingRouteRouteWithChildren
   '/pay': typeof PayRouteRouteWithChildren
-  '/platform': typeof PlatformRouteRouteWithChildren
   '/q': typeof QRouteRouteWithChildren
   '/staff': typeof StaffRouteRouteWithChildren
   '/v': typeof VRouteRouteWithChildren
@@ -718,11 +669,6 @@ export interface FileRoutesByFullPath {
   '/display/counter': typeof DisplayCounterRoute
   '/o/$token': typeof OTokenRoute
   '/pay/$code': typeof PayCodeRoute
-  '/platform/$': typeof PlatformSplatRoute
-  '/platform/funnel': typeof PlatformFunnelRoute
-  '/platform/messages': typeof PlatformMessagesRoute
-  '/platform/mfa': typeof PlatformMfaRoute
-  '/platform/team': typeof PlatformTeamRoute
   '/q/$locationSlug': typeof QLocationSlugRoute
   '/staff/planning': typeof StaffPlanningRoute
   '/staff/shifts': typeof StaffShiftsRoute
@@ -731,7 +677,6 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
-  '/platform/': typeof PlatformIndexRoute
   '/staff/': typeof StaffIndexRoute
   '/admin/account/calendar': typeof AdminAccountCalendarRoute
   '/admin/account/security': typeof AdminAccountSecurityRoute
@@ -752,7 +697,6 @@ export interface FileRoutesByFullPath {
   '/admin/reports/schedules': typeof AdminReportsSchedulesRoute
   '/admin/settings/danger': typeof AdminSettingsDangerRoute
   '/admin/settings/support': typeof AdminSettingsSupportRoute
-  '/platform/orgs/$orgId': typeof PlatformOrgsOrgIdRoute
   '/admin/guests/': typeof AdminGuestsIndexRoute
   '/admin/privacy/': typeof AdminPrivacyIndexRoute
   '/admin/queues/': typeof AdminQueuesIndexRoute
@@ -821,11 +765,6 @@ export interface FileRoutesByTo {
   '/display/counter': typeof DisplayCounterRoute
   '/o/$token': typeof OTokenRoute
   '/pay/$code': typeof PayCodeRoute
-  '/platform/$': typeof PlatformSplatRoute
-  '/platform/funnel': typeof PlatformFunnelRoute
-  '/platform/messages': typeof PlatformMessagesRoute
-  '/platform/mfa': typeof PlatformMfaRoute
-  '/platform/team': typeof PlatformTeamRoute
   '/q/$locationSlug': typeof QLocationSlugRoute
   '/staff/planning': typeof StaffPlanningRoute
   '/staff/shifts': typeof StaffShiftsRoute
@@ -834,7 +773,6 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/auth': typeof AuthIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
-  '/platform': typeof PlatformIndexRoute
   '/staff': typeof StaffIndexRoute
   '/admin/account/calendar': typeof AdminAccountCalendarRoute
   '/admin/account/security': typeof AdminAccountSecurityRoute
@@ -855,7 +793,6 @@ export interface FileRoutesByTo {
   '/admin/reports/schedules': typeof AdminReportsSchedulesRoute
   '/admin/settings/danger': typeof AdminSettingsDangerRoute
   '/admin/settings/support': typeof AdminSettingsSupportRoute
-  '/platform/orgs/$orgId': typeof PlatformOrgsOrgIdRoute
   '/admin/guests': typeof AdminGuestsIndexRoute
   '/admin/privacy': typeof AdminPrivacyIndexRoute
   '/admin/queues': typeof AdminQueuesIndexRoute
@@ -872,7 +809,6 @@ export interface FileRoutesById {
   '/o': typeof ORouteRouteWithChildren
   '/onboarding': typeof OnboardingRouteRouteWithChildren
   '/pay': typeof PayRouteRouteWithChildren
-  '/platform': typeof PlatformRouteRouteWithChildren
   '/q': typeof QRouteRouteWithChildren
   '/staff': typeof StaffRouteRouteWithChildren
   '/v': typeof VRouteRouteWithChildren
@@ -930,11 +866,6 @@ export interface FileRoutesById {
   '/display_/counter': typeof DisplayCounterRoute
   '/o/$token': typeof OTokenRoute
   '/pay/$code': typeof PayCodeRoute
-  '/platform/$': typeof PlatformSplatRoute
-  '/platform/funnel': typeof PlatformFunnelRoute
-  '/platform/messages': typeof PlatformMessagesRoute
-  '/platform/mfa': typeof PlatformMfaRoute
-  '/platform/team': typeof PlatformTeamRoute
   '/q/$locationSlug': typeof QLocationSlugRoute
   '/staff/planning': typeof StaffPlanningRoute
   '/staff/shifts': typeof StaffShiftsRoute
@@ -943,7 +874,6 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
-  '/platform/': typeof PlatformIndexRoute
   '/staff/': typeof StaffIndexRoute
   '/admin/account/calendar': typeof AdminAccountCalendarRoute
   '/admin/account/security': typeof AdminAccountSecurityRoute
@@ -964,7 +894,6 @@ export interface FileRoutesById {
   '/admin/reports/schedules': typeof AdminReportsSchedulesRoute
   '/admin/settings/danger': typeof AdminSettingsDangerRoute
   '/admin/settings/support': typeof AdminSettingsSupportRoute
-  '/platform/orgs/$orgId': typeof PlatformOrgsOrgIdRoute
   '/admin/guests/': typeof AdminGuestsIndexRoute
   '/admin/privacy/': typeof AdminPrivacyIndexRoute
   '/admin/queues/': typeof AdminQueuesIndexRoute
@@ -982,7 +911,6 @@ export interface FileRouteTypes {
     | '/o'
     | '/onboarding'
     | '/pay'
-    | '/platform'
     | '/q'
     | '/staff'
     | '/v'
@@ -1040,11 +968,6 @@ export interface FileRouteTypes {
     | '/display/counter'
     | '/o/$token'
     | '/pay/$code'
-    | '/platform/$'
-    | '/platform/funnel'
-    | '/platform/messages'
-    | '/platform/mfa'
-    | '/platform/team'
     | '/q/$locationSlug'
     | '/staff/planning'
     | '/staff/shifts'
@@ -1053,7 +976,6 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/auth/'
     | '/onboarding/'
-    | '/platform/'
     | '/staff/'
     | '/admin/account/calendar'
     | '/admin/account/security'
@@ -1074,7 +996,6 @@ export interface FileRouteTypes {
     | '/admin/reports/schedules'
     | '/admin/settings/danger'
     | '/admin/settings/support'
-    | '/platform/orgs/$orgId'
     | '/admin/guests/'
     | '/admin/privacy/'
     | '/admin/queues/'
@@ -1143,11 +1064,6 @@ export interface FileRouteTypes {
     | '/display/counter'
     | '/o/$token'
     | '/pay/$code'
-    | '/platform/$'
-    | '/platform/funnel'
-    | '/platform/messages'
-    | '/platform/mfa'
-    | '/platform/team'
     | '/q/$locationSlug'
     | '/staff/planning'
     | '/staff/shifts'
@@ -1156,7 +1072,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/onboarding'
-    | '/platform'
     | '/staff'
     | '/admin/account/calendar'
     | '/admin/account/security'
@@ -1177,7 +1092,6 @@ export interface FileRouteTypes {
     | '/admin/reports/schedules'
     | '/admin/settings/danger'
     | '/admin/settings/support'
-    | '/platform/orgs/$orgId'
     | '/admin/guests'
     | '/admin/privacy'
     | '/admin/queues'
@@ -1193,7 +1107,6 @@ export interface FileRouteTypes {
     | '/o'
     | '/onboarding'
     | '/pay'
-    | '/platform'
     | '/q'
     | '/staff'
     | '/v'
@@ -1251,11 +1164,6 @@ export interface FileRouteTypes {
     | '/display_/counter'
     | '/o/$token'
     | '/pay/$code'
-    | '/platform/$'
-    | '/platform/funnel'
-    | '/platform/messages'
-    | '/platform/mfa'
-    | '/platform/team'
     | '/q/$locationSlug'
     | '/staff/planning'
     | '/staff/shifts'
@@ -1264,7 +1172,6 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/auth/'
     | '/onboarding/'
-    | '/platform/'
     | '/staff/'
     | '/admin/account/calendar'
     | '/admin/account/security'
@@ -1285,7 +1192,6 @@ export interface FileRouteTypes {
     | '/admin/reports/schedules'
     | '/admin/settings/danger'
     | '/admin/settings/support'
-    | '/platform/orgs/$orgId'
     | '/admin/guests/'
     | '/admin/privacy/'
     | '/admin/queues/'
@@ -1302,7 +1208,6 @@ export interface RootRouteChildren {
   ORouteRoute: typeof ORouteRouteWithChildren
   OnboardingRouteRoute: typeof OnboardingRouteRouteWithChildren
   PayRouteRoute: typeof PayRouteRouteWithChildren
-  PlatformRouteRoute: typeof PlatformRouteRouteWithChildren
   QRouteRoute: typeof QRouteRouteWithChildren
   StaffRouteRoute: typeof StaffRouteRouteWithChildren
   VRouteRoute: typeof VRouteRouteWithChildren
@@ -1387,13 +1292,6 @@ declare module '@tanstack/react-router' {
       path: '/pay'
       fullPath: '/pay'
       preLoaderRoute: typeof PayRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/platform': {
-      id: '/platform'
-      path: '/platform'
-      fullPath: '/platform'
-      preLoaderRoute: typeof PlatformRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -1802,48 +1700,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PayCodeRouteImport
       parentRoute: typeof PayRouteRoute
     }
-    '/platform/': {
-      id: '/platform/'
-      path: '/'
-      fullPath: '/platform/'
-      preLoaderRoute: typeof PlatformIndexRouteImport
-      parentRoute: typeof PlatformRouteRoute
-    }
-    '/platform/$': {
-      id: '/platform/$'
-      path: '/$'
-      fullPath: '/platform/$'
-      preLoaderRoute: typeof PlatformSplatRouteImport
-      parentRoute: typeof PlatformRouteRoute
-    }
-    '/platform/funnel': {
-      id: '/platform/funnel'
-      path: '/funnel'
-      fullPath: '/platform/funnel'
-      preLoaderRoute: typeof PlatformFunnelRouteImport
-      parentRoute: typeof PlatformRouteRoute
-    }
-    '/platform/messages': {
-      id: '/platform/messages'
-      path: '/messages'
-      fullPath: '/platform/messages'
-      preLoaderRoute: typeof PlatformMessagesRouteImport
-      parentRoute: typeof PlatformRouteRoute
-    }
-    '/platform/mfa': {
-      id: '/platform/mfa'
-      path: '/mfa'
-      fullPath: '/platform/mfa'
-      preLoaderRoute: typeof PlatformMfaRouteImport
-      parentRoute: typeof PlatformRouteRoute
-    }
-    '/platform/team': {
-      id: '/platform/team'
-      path: '/team'
-      fullPath: '/platform/team'
-      preLoaderRoute: typeof PlatformTeamRouteImport
-      parentRoute: typeof PlatformRouteRoute
-    }
     '/q/$locationSlug': {
       id: '/q/$locationSlug'
       path: '/$locationSlug'
@@ -2039,13 +1895,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/settings/support'
       preLoaderRoute: typeof AdminSettingsSupportRouteImport
       parentRoute: typeof AdminRouteRoute
-    }
-    '/platform/orgs/$orgId': {
-      id: '/platform/orgs/$orgId'
-      path: '/orgs/$orgId'
-      fullPath: '/platform/orgs/$orgId'
-      preLoaderRoute: typeof PlatformOrgsOrgIdRouteImport
-      parentRoute: typeof PlatformRouteRoute
     }
     '/admin/queues/$queueId_/intake': {
       id: '/admin/queues/$queueId_/intake'
@@ -2275,30 +2124,6 @@ const PayRouteRouteWithChildren = PayRouteRoute._addFileChildren(
   PayRouteRouteChildren,
 )
 
-interface PlatformRouteRouteChildren {
-  PlatformSplatRoute: typeof PlatformSplatRoute
-  PlatformFunnelRoute: typeof PlatformFunnelRoute
-  PlatformMessagesRoute: typeof PlatformMessagesRoute
-  PlatformMfaRoute: typeof PlatformMfaRoute
-  PlatformTeamRoute: typeof PlatformTeamRoute
-  PlatformIndexRoute: typeof PlatformIndexRoute
-  PlatformOrgsOrgIdRoute: typeof PlatformOrgsOrgIdRoute
-}
-
-const PlatformRouteRouteChildren: PlatformRouteRouteChildren = {
-  PlatformSplatRoute: PlatformSplatRoute,
-  PlatformFunnelRoute: PlatformFunnelRoute,
-  PlatformMessagesRoute: PlatformMessagesRoute,
-  PlatformMfaRoute: PlatformMfaRoute,
-  PlatformTeamRoute: PlatformTeamRoute,
-  PlatformIndexRoute: PlatformIndexRoute,
-  PlatformOrgsOrgIdRoute: PlatformOrgsOrgIdRoute,
-}
-
-const PlatformRouteRouteWithChildren = PlatformRouteRoute._addFileChildren(
-  PlatformRouteRouteChildren,
-)
-
 interface QRouteRouteChildren {
   QLocationSlugRoute: typeof QLocationSlugRoute
 }
@@ -2357,7 +2182,6 @@ const rootRouteChildren: RootRouteChildren = {
   ORouteRoute: ORouteRouteWithChildren,
   OnboardingRouteRoute: OnboardingRouteRouteWithChildren,
   PayRouteRoute: PayRouteRouteWithChildren,
-  PlatformRouteRoute: PlatformRouteRouteWithChildren,
   QRouteRoute: QRouteRouteWithChildren,
   StaffRouteRoute: StaffRouteRouteWithChildren,
   VRouteRoute: VRouteRouteWithChildren,

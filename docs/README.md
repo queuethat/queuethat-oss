@@ -38,13 +38,9 @@
 - Accessibility: [kiosk audit](accessibility/kiosk-audit.md) and a
   [draft statement](accessibility/statement.md). Both are drafts awaiting a hardware pass.
 
-## How the hosted service is run
+## Running on managed Supabase
 
-These describe app.queuethat.com on Supabase Cloud, not the self-host stack. They are published
-because they are the only worked example of running the product on managed infrastructure.
-
-- [Deploy checklist](ops/pilot-deploy.md) and [runbook](ops/pilot-runbook.md).
-- [Platform operator runbook](ops/platform-runbook.md), [platform SMS sender](ops/platform-twilio.md),
-  [hosted billing](ops/billing.md).
-- [Backups and restore drill](ops/backups.md), [data location](ops/data-location.md).
+- [Deployment checklist for Supabase Cloud](ops/pilot-deploy.md): the Auth, CAPTCHA, rate-limit and
+  email settings a production project needs. Written for the first hosted pilot, so it names
+  Vercel and Cloudflare; the settings apply to any managed deployment.
 - [Web push device test](ops/web-push-device-test.md).

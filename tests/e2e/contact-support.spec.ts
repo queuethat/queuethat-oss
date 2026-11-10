@@ -2,10 +2,9 @@ import { createClient } from '@supabase/supabase-js';
 import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
 import { ownerOfNewBusiness, readAs, signInTo } from './support/accounts.ts';
 import { supabaseEnv } from './support/env.ts';
-import { signedInOperator } from './support/totp.ts';
 
-// #1138: a signed-in owner contacts support from the app in two taps; the operator sees the request, with the
-// business, role, page and version beside it, on the tenant page and can close it.
+// A signed-in owner contacts support from the app in two taps; the request is stored with the
+// business, role, page and version beside it, and two emails are queued.
 test.use({ staffUser: null });
 
 const env = supabaseEnv();
@@ -13,10 +12,7 @@ const service = createClient(env.url, env.serviceRoleKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
-test('submit a request as an owner, then see and close it in the platform console (axe)', async ({
-  devices,
-  browser,
-}) => {
+test('submit a request as an owner (axe)', async ({ devices }) => {
   test.slow();
   const { staff: owner } = devices;
   const { email, slug } = await ownerOfNewBusiness();
@@ -64,23 +60,4 @@ test('submit a request as an owner, then see and close it in the platform consol
   expect(
     JSON.stringify(mail!.find((n) => n.template_key === 'support_confirmation')!.vars),
   ).not.toContain('nothing after I sign in');
-
-  // The operator opens the tenant page.
-  const context = await browser.newContext();
-  const operator = await context.newPage();
-  await signedInOperator(operator);
-  await operator.goto(`/platform/orgs/${org.id}`);
-  const card = operator.getByTestId(`support-request-${reference}`);
-  await expect(card).toBeVisible();
-  await expect(card).toContainText('Blank screen on the console');
-  await expect(card).toContainText('The staff console shows nothing after I sign in.');
-  await expect(card).toContainText(email);
-  await expect(card).toContainText('/admin');
-  await expect(card).toContainText('Open');
-  await expectNoSeriousA11yViolations(operator);
-
-  await card.getByRole('button', { name: 'Close request' }).click();
-  await expect(card).toContainText('Closed');
-  await expect(card.getByRole('button', { name: 'Reopen' })).toBeVisible();
-  await context.close();
 });

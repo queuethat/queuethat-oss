@@ -1,8 +1,7 @@
 # QueueThat self-host
 
 Run the whole product on one box with Docker: a pinned Supabase stack, the web app and Caddy. No
-telemetry leaves it. The pilot runs on Supabase Cloud instead
-([pilot-deploy.md](../ops/pilot-deploy.md)); this is the product for people who host it themselves.
+telemetry leaves it.
 
 ## Requirements
 
@@ -56,6 +55,26 @@ and the staff "Contact support" form are simply not shown.
 Apply a change with `docker compose up -d`. `./setup.sh --rotate` keeps all three. If you send
 text messages, carriers expect the opt-in to link to your terms and privacy notice, so set both
 before turning SMS on.
+
+### Turning on SMS, WhatsApp or payments
+
+Free channels (web push, email, Telegram) work as soon as they are configured. Channels that cost
+money or carry legal duties stay locked until you, the operator, say the install is ready. The
+database refuses to switch one on (`channel_prerequisite_missing`) until this has been run once
+as the database owner:
+
+```sh
+cd deploy/selfhost
+docker compose exec db psql -U supabase_admin -d postgres \
+  -c "update app.platform_flags set compliance_gate_passed_at = now();"
+```
+
+Run it only after the compliance checks pass for the version you deploy
+([phase3-gate.md](../compliance/phase3-gate.md)) and you have read
+[the SMS registration guide](../ops/10dlc-runbook.md) if you will text US numbers. An owner then
+enables each channel under **Admin > Integrations** once its own prerequisites hold; a refused
+attempt lists what is missing. Setting the column back to `null` closes every paid channel at
+once.
 
 ### What the server needs to reach
 

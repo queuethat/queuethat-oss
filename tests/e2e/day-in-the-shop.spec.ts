@@ -12,8 +12,7 @@ import type { TestUserRole } from './support/users.ts';
 // a mistaken no-show undone, a guest leaving, the queue closing under an open join page and,
 // last, the end of the day for the guests nobody finished: the service day rolls over.
 //
-// `pnpm test:e2e:pilot` runs the same journey against the live pilot (docs/ops/pilot-runbook.md,
-// section 5). support/shop.ts holds the differences: no service role or database there, so the
+// `pnpm test:e2e:pilot` runs the same journey against a deployed app. support/shop.ts holds the differences: no service role or database there, so the
 // outbox check is skipped and the day ends with staff removing the leftovers plus a look at the
 // health check's rollover heartbeat.
 

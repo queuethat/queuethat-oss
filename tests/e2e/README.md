@@ -11,7 +11,7 @@ E2E_SKIP_DB_RESET=1 pnpm test:e2e smoke         # keep data between local reruns
 ```
 
 `pnpm test:e2e:pilot` runs `day-in-the-shop.spec.ts` against a deployed app with no database
-access (docs/ops/pilot-runbook.md, section 5b). Code that spec reaches must not import the
+access. Code that spec reaches must not import the
 service-role modules at load time: `supabaseEnv()` throws on `serviceRoleKey` in pilot mode.
 
 Import `test` and `expect` from `./fixtures.ts`, not from `@playwright/test`.

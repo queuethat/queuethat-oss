@@ -111,8 +111,8 @@ monitor uses about 9k of them.
 ## Heartbeats for jobs outside the database (Healthchecks.io)
 
 Healthchecks.io (free) alerts when an expected ping doesn't arrive. Use it for jobs that run
-outside Postgres and can't show up in `health`. The first are the nightly backup and the weekly restore drill (O7, [backups.md](backups.md)):
-both ping on success and `/fail` on failure, and each check's period matches its schedule plus
+outside Postgres and can't show up in `health`. The self-host backup job is one ([backups](../selfhost/backups.md), `BACKUP_HEALTHCHECK_URL`):
+it pings on success and `/fail` on failure, and each check's period matches its schedule plus
 some grace.
 
 - [ ] Create one check per external job, alerting through the Healthchecks.io app or email.

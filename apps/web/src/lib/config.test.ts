@@ -16,19 +16,6 @@ describe('readConfig', () => {
     expect(c.demoMode).toBe(false);
   });
 
-  it('reads the Stripe dashboard base from the runtime config or the build env, empty by default', () => {
-    expect(readConfig(undefined, env).stripeDashboardUrl).toBe('');
-    expect(
-      readConfig(undefined, {
-        ...env,
-        VITE_STRIPE_DASHBOARD_URL: 'https://dashboard.stripe.com/test',
-      }).stripeDashboardUrl,
-    ).toBe('https://dashboard.stripe.com/test');
-    expect(
-      readConfig({ STRIPE_DASHBOARD_URL: 'https://run.example' }, env).stripeDashboardUrl,
-    ).toBe('https://run.example');
-  });
-
   it('falls back when the runtime config is the empty object the dev server serves', () => {
     expect(readConfig({}, env).supabaseUrl).toBe('http://build.test');
   });

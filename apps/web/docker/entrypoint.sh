@@ -18,7 +18,7 @@ export SUPABASE_URL
 # brackets and anything non-printable are refused (not escaped), checked before anything is
 # written, so a value can never end the literal and run as code.
 DEMO_MODE=${DEMO_MODE:-false}
-for name in SUPABASE_URL ANON_KEY PUBLIC_URL DEMO_MODE VAPID_PUBLIC_KEY SENTRY_DSN SENTRY_ISSUES_URL AUTH_TURNSTILE_SITE_KEY PUBLIC_JOIN TERMS_URL PRIVACY_URL SUPPORT_EMAIL; do
+for name in SUPABASE_URL ANON_KEY PUBLIC_URL DEMO_MODE VAPID_PUBLIC_KEY SENTRY_DSN AUTH_TURNSTILE_SITE_KEY PUBLIC_JOIN TERMS_URL PRIVACY_URL SUPPORT_EMAIL; do
   value=$(printenv "$name" || true)
   case $value in
     *[!\ -~]* | *\"* | *\\* | *\<*)
@@ -38,7 +38,6 @@ window.__APP_CONFIG__ = {
   DEMO_MODE: $(js_string "$DEMO_MODE"),
   VAPID_PUBLIC_KEY: $(js_string "${VAPID_PUBLIC_KEY:-}"),
   SENTRY_DSN: $(js_string "${SENTRY_DSN:-}"),
-  SENTRY_ISSUES_URL: $(js_string "${SENTRY_ISSUES_URL:-}"),
   AUTH_TURNSTILE_SITE_KEY: $(js_string "${AUTH_TURNSTILE_SITE_KEY:-}"),
   PUBLIC_JOIN: $(js_string "${PUBLIC_JOIN:-}"),
   // Always written, even empty: an install that sets none links to no legal page and offers no

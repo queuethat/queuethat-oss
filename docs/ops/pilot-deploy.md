@@ -126,9 +126,6 @@ sections below; this is the order and the pass/fail check.
     `MFA_EMAIL=<test account> MFA_PASSWORD=... AUTH_URL=https://<ref>.supabase.co/auth/v1 APIKEY=<publishable key> node scripts/check-otp-rate-limit.mjs`.
     It must print two `ok` lines, each saying whether the per-account lockout or HTTP 429 stopped
     it. Locally it passes through the lockout; 429 never appears locally, for the reason above.
-  - **Granting a role.** `pnpm platform:grant` refuses an account without a verified
-    authenticator app. The new operator signs in, sets one up at `/platform/mfa`, and then the maintainer
-    runs the grant. So no one can claim a fresh operator account by enrolling first.
   - **Session time limit.** Removing the app asks for a fresh code, but that check is in the
     browser only, so a stolen signed-in browser must stop being useful. Everyone who signs in
     (owners, staff, operators) is signed out 12 hours after signing in, or after 30 minutes
@@ -139,15 +136,6 @@ sections below; this is the order and the pass/fail check.
     `config.toml` covers local and self-host), or an ended session's access token stays valid for
     up to an hour. Check: sign in, leave the tab alone for 35 minutes, and the next click
     returns to sign-in.
-  - **Recovery (lost phone).** There are no recovery codes. After confirming who is asking
-    through a channel other than email, the maintainer removes the platform role first and then the factor,
-    with `pnpm platform:revoke <email>` (add `--allow-last-operator` if they are the only
-    operator), then the factor in the Supabase SQL editor:
-    `delete from auth.mfa_factors where user_id = (select id from auth.users where email = '<email>');`
-    The role removal is audited in `app.platform_audit` and ends their sessions; the factor removal isn't, so note it in
-    the ops log. The operator signs in, sets up the app again, and the maintainer runs `pnpm platform:grant`
-    again. Removing the role first means a factor set up by whoever took the phone or password
-    never comes with operator access.
 
 Local development matches production. The CLI's `config.toml` has no setting for this, so e2e
 global setup turns on `private_only` for the local Realtime tenant

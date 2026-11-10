@@ -25,15 +25,7 @@ describe('isGuestPath', () => {
   it('allows guest surfaces only', () => {
     for (const p of ['/q/demo', '/v/abc', '/u', '/b/x', '/o/t', '/a/t', '/w/x'])
       expect(isGuestPath(p)).toBe(true);
-    for (const p of [
-      '/staff',
-      '/admin/domains',
-      '/auth/sign-in',
-      '/display',
-      '/kiosk',
-      '/quiet',
-      '/platform',
-    ]) {
+    for (const p of ['/staff', '/admin/domains', '/auth/sign-in', '/display', '/kiosk', '/quiet']) {
       expect(isGuestPath(p)).toBe(false);
     }
   });
