@@ -94,7 +94,7 @@ test.describe('owner', () => {
     await staff.setViewportSize({ width: 1280, height: 900 });
     await staff.goto('/admin/usage');
     await expect(staff.getByRole('main')).toBeVisible();
-    await expect(staff.getByRole('navigation', { name: 'Plan and usage' })).toHaveCount(0);
+    await expect(staff.getByRole('navigation', { name: 'Usage' })).toHaveCount(0);
   });
 });
 

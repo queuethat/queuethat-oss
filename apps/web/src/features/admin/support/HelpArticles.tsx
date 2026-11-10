@@ -6,7 +6,6 @@ export const HELP_ARTICLE_IDS = [
   'callNext',
   'qr',
   'sms',
-  'billing',
   'staff',
   'hours',
   'data',

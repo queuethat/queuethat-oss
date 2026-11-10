@@ -4,8 +4,8 @@ import { buildGroups, currentItemId, sidebarGroups } from './navModel.ts';
 
 const label = (key: string) => key;
 const group = (id: string) => id;
-const build = (role: string, extra: Partial<{ billing: boolean; multiLocation: boolean }> = {}) =>
-  buildGroups({ role, billing: false, multiLocation: false, ...extra }, label, group, group);
+const build = (role: string, extra: Partial<{ multiLocation: boolean }> = {}) =>
+  buildGroups({ role, multiLocation: false, ...extra }, label, group, group);
 const ids = (groups: ReturnType<typeof build>) => groups.flatMap((g) => g.items.map((i) => i.id));
 
 // The routes of the flat menu this replaced: nothing may disappear or move URL.
@@ -43,7 +43,6 @@ const PREVIOUS = [
   '/admin/journeys',
   '/admin/notifications/failed',
   '/admin/usage',
-  '/admin/billing',
   '/admin/export',
   '/admin/domains',
   '/admin/reports/schedules',
@@ -65,14 +64,14 @@ const SURFACED = ['/staff', '/admin/routing', '/admin/queues/priority'];
 
 describe('admin nav model', () => {
   it('keeps every previous destination and surfaces the live queue, routing and priority', () => {
-    const all = build('owner', { billing: true, multiLocation: true })
+    const all = build('owner', { multiLocation: true })
       .flatMap((g) => g.items)
       .map((i) => String(i.to));
     expect(all.sort()).toEqual([...PREVIOUS, ...SURFACED].sort());
   });
 
   it('leads with Run, open by default, then four collapsed groups named for the owner’s jobs', () => {
-    const groups = build('owner', { billing: true });
+    const groups = build('owner');
     expect(groups[0]!.id).toBe('run');
     expect(groups[0]!.defaultOpen).toBe(true);
     expect(groups[0]!.items.map((i) => i.id)).toEqual([
@@ -134,14 +133,10 @@ describe('admin nav model', () => {
       'reports',
       'requests',
       'comparison',
-      'billing',
     ]) {
       expect(staff).not.toContain(hidden);
     }
     expect(ids(build('admin'))).toContain('apiKeys');
-    expect(ids(build('admin'))).not.toContain('billing');
-    expect(ids(build('owner'))).not.toContain('billing'); // billing off on this deployment
-    expect(ids(build('owner', { billing: true }))).toContain('billing');
     expect(ids(build('admin'))).not.toContain('comparison');
     expect(ids(build('admin', { multiLocation: true }))).toContain('comparison');
   });
@@ -180,7 +175,7 @@ describe('admin nav model', () => {
   it('shows one Account entry per section, named for the section, plus support access', () => {
     const entries = (role: string, extra = {}) =>
       sidebarGroups(build(role, extra)).find((g) => g.id === 'account')!.items;
-    expect(entries('owner', { billing: true }).map((i) => i.id)).toEqual([
+    expect(entries('owner').map((i) => i.id)).toEqual([
       'usage',
       'integrations',
       'apiKeys',
@@ -203,14 +198,13 @@ describe('admin nav model', () => {
   });
 
   it('keeps each account page searchable under its own name', () => {
-    const groups = build('owner', { billing: true });
+    const groups = build('owner');
     expect(filterPalette(groups, 'apikeys').map((r) => r.item.id)).toEqual(['apiKeys']);
     expect(filterPalette(groups, 'whatsapp').map((r) => r.item.id)).toEqual(['whatsapp']);
-    expect(filterPalette(groups, 'billing').map((r) => r.item.id)).toEqual(['billing']);
   });
 
   it('marks the entry an account page sits under', () => {
-    const owner = build('owner', { billing: true });
+    const owner = build('owner');
     const at = (path: string) => currentItemId(owner, path);
     expect(at('/admin/whatsapp')).toBe('integrations');
     expect(at('/admin/account/calendar')).toBe('integrations');
@@ -218,7 +212,6 @@ describe('admin nav model', () => {
     expect(at('/admin/domains')).toBe('apiKeys');
     expect(at('/admin/privacy/requests')).toBe('privacy');
     expect(at('/admin/export')).toBe('privacy');
-    expect(at('/admin/billing')).toBe('usage');
     expect(at('/admin/settings/support')).toBe('support');
   });
 

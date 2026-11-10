@@ -39,26 +39,16 @@
         "body": [
           "Guests only get texts when they gave a phone number and agreed to be messaged.",
           "Edit the wording of each message in Messages. Keep it short and say who it is from.",
-          "Texts are only sent on a paid plan. The Free plan shows guests their place on the page instead.",
+          "Texts need an SMS provider connected under Connections. Without one, guests see their place on the page instead.",
           "If a guest replies STOP they get no more texts from you.",
           "Failed messages are listed under Message activity so you can follow up by phone."
-        ]
-      },
-      "billing": {
-        "title": "Billing and plans",
-        "body": [
-          "Open Billing to see your plan, your next invoice and your payment method.",
-          "You pay per location each month, or choose annual billing for a discount.",
-          "Add or remove a location and the next invoice adjusts. Only owners can change billing.",
-          "If a payment fails we email you so you can update the card.",
-          "Invoices and receipts are available from Billing for your accountant."
         ]
       },
       "staff": {
         "title": "Add staff and set roles",
         "body": [
           "Open Team and invite people by email. They get a link that lets them set a password.",
-          "Owners can change everything, including billing. Admins manage lines and people. Staff run the queue.",
+          "Owners can change everything. Admins manage lines and people. Staff run the queue.",
           "Pick the role when you invite someone. You can change it later from the same page.",
           "Remove someone when they leave. They lose access straight away.",
           "Open Roles to see exactly what each role can do."

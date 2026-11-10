@@ -29,7 +29,7 @@ describe('SupportPage', () => {
       </QueryClientProvider>,
     );
     expect(await screen.findByRole('heading', { name: 'Help articles' })).toBeTruthy();
-    expect(screen.getAllByRole('article')).toHaveLength(8);
+    expect(screen.getAllByRole('article')).toHaveLength(7);
     expect(screen.getByRole('heading', { name: 'Support access' })).toBeTruthy();
     const results = await axe.run(container);
     expect(results.violations).toEqual([]);

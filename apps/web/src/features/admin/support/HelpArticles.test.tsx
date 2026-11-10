@@ -25,9 +25,9 @@ async function view(ui: React.ReactNode) {
 }
 
 describe('HelpArticles', () => {
-  it('renders the eight articles, each with 5 to 8 lines, linked from a contents list', async () => {
+  it('renders the seven articles, each with 5 to 8 lines, linked from a contents list', async () => {
     await view(<HelpArticles />);
-    expect(HELP_ARTICLE_IDS).toHaveLength(8);
+    expect(HELP_ARTICLE_IDS).toHaveLength(7);
     const contents = await screen.findByRole('navigation', { name: 'Articles' });
     const links = within(contents).getAllByRole('link');
     expect(links.map((a) => a.textContent)).toEqual([
@@ -35,7 +35,6 @@ describe('HelpArticles', () => {
       'Call the next guest',
       'Share the QR code',
       'Text messages (SMS)',
-      'Billing and plans',
       'Add staff and set roles',
       'Opening hours',
       'Delete guest or account data',

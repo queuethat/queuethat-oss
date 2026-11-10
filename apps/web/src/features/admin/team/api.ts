@@ -2,7 +2,6 @@ import type { Database } from '@qm/db-types';
 import { ERROR_CODES, errorCode } from '@qm/domain';
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../../lib/supabase.ts';
-import { PlanLimitError } from '../billing/planLimit.tsx';
 
 export type MemberRole = Database['app']['Enums']['member_role'];
 
@@ -107,13 +106,7 @@ export interface InviteInput {
 async function inviteError(error: unknown): Promise<Error> {
   const response = (error as { context?: unknown } | null)?.context;
   if (response instanceof Response) {
-    const body = (await response.json().catch(() => null)) as {
-      error?: string;
-      limit?: unknown;
-    } | null;
-    if (body?.error === 'plan_limit_reached') {
-      return new PlanLimitError(typeof body.limit === 'number' ? body.limit : undefined);
-    }
+    const body = (await response.json().catch(() => null)) as { error?: string } | null;
     if (body?.error === 'send_failed') return new Error('send_failed');
     if (body?.error && (ERROR_CODES as readonly string[]).includes(body.error)) {
       return new Error(body.error);

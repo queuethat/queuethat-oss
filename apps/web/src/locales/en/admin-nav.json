@@ -15,7 +15,7 @@
     "connections": "Connections",
     "developers": "Developers",
     "privacy": "Privacy and data",
-    "plan": "Plan and usage"
+    "plan": "Usage"
   },
   "insights": {
     "reportsLabel": "Reports",
@@ -72,7 +72,6 @@
     "performance": "Performance",
     "etaAccuracy": "ETA accuracy",
     "usage": "Usage and limits",
-    "billing": "Billing",
     "planning": "Planning",
     "overview": "All locations",
     "shifts": "Shifts",
