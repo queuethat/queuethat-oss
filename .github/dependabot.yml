@@ -24,6 +24,7 @@ updates:
       # document.createElement('select'); no code of ours sets an inline style), which fails
       # csp.spec.ts on the iPhone project. Lift this once a later WebKit build passes that spec.
       - dependency-name: '@playwright/test'
+      - dependency-name: 'playwright-core'
 
   - package-ecosystem: github-actions
     directory: /

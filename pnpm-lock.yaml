@@ -10,7 +10,7 @@ importers:
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.14.0
-        version: 4.14.0(playwright-core@1.64.1)
+        version: 4.14.0(playwright-core@1.63.0)
       '@eslint/js':
         specifier: ^9.39.5
         version: 9.39.5
@@ -56,6 +56,9 @@ importers:
       jsqr:
         specifier: 1.4.0
         version: 1.4.0
+      playwright-core:
+        specifier: 1.63.0
+        version: 1.63.0
       postgres:
         specifier: ^4.0.0
         version: 4.0.0
@@ -2777,11 +2780,6 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
-  playwright-core@1.64.1:
-    resolution: {integrity: sha512-BC4s8y6SEVA6Q1rSxZTto8hI1KUI3xXlHGZgvGqP4IqPdI/a6FX9H29IDNz7vKo9l21b6LfYosScPL6M3xxyDQ==}
-    engines: {node: '>=20'}
-    hasBin: true
-
   playwright@1.63.0:
     resolution: {integrity: sha512-+7ziBLidS4NaNCdt57SUDT+wYmmd5fmiQejUic/kb+YsYSCPyOOE9sebzMjNmQrsnNpDJqd4WHvV/8lfKfUDUg==}
     engines: {node: '>=20'}
@@ -3514,10 +3512,10 @@ snapshots:
       is-potential-custom-element-name: 1.0.1
       lru-cache: 11.5.3
 
-  '@axe-core/playwright@4.14.0(playwright-core@1.64.1)':
+  '@axe-core/playwright@4.14.0(playwright-core@1.63.0)':
     dependencies:
       axe-core: 4.14.0
-      playwright-core: 1.64.1
+      playwright-core: 1.63.0
 
   '@babel/code-frame@7.29.7':
     dependencies:
@@ -6119,8 +6117,6 @@ snapshots:
   picomatch@4.0.7: {}
 
   playwright-core@1.63.0: {}
-
-  playwright-core@1.64.1: {}
 
   playwright@1.63.0:
     dependencies:
