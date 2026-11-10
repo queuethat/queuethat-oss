@@ -413,7 +413,7 @@ services:
   cloudflared:
     <<: *restart
     profiles: [tunnel]
-    image: cloudflare/cloudflared:2026.10.0@sha256:9b49eed8f62806d5d45ddf59ecefb5710429598ea6d3fcccd2af938f621b2b07
+    image: cloudflare/cloudflared:2026.10.7@sha256:4955524aeaa379e154023d5a027c250f7b35041a2e7e950cf13f144bc9b9c5ba
     command: ['tunnel', '--no-autoupdate', 'run']
     # With a token, the tunnel's public hostname is set in Cloudflare (Zero Trust > Tunnels) to
     # http://web:80 and nothing else; cloudflared/config.yml is the same rule as a local file.
