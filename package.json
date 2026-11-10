@@ -54,7 +54,7 @@
     "fake-indexeddb": "^6.2.7",
     "globals": "^17.14.0",
     "jsqr": "1.4.0",
-    "postgres": "^3.4.9",
+    "postgres": "^4.0.0",
     "prettier": "^3.9.10",
     "supabase": "2.122.0",
     "typescript": "^6.0.3",
