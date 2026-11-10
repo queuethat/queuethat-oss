@@ -51,6 +51,9 @@ cp -r /safe/place/backups .            # or only the folder you want
 ./restore.sh --identity /safe/place/qm-backup.key          # newest backup; or --backup backups/<stamp>
 ```
 
+Backup folders are written by the backup container as root and are readable by root only, so run
+`restore.sh` as root (`sudo ./restore.sh ...`) unless you already are.
+
 It puts the Vault key back, restores the database and the uploaded files, and starts the stack.
 It refuses a database that already holds an organization unless you pass `--yes`, because the
 restore replaces it. Use the old `.env`: its JWT keys must match, or signed-in sessions and paired

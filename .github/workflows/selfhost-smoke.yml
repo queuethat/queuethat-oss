@@ -89,7 +89,9 @@ jobs:
           sudo apt-get install -y --no-install-recommends age
           age-keygen -o "$RUNNER_TEMP/qm-backup.key" 2>/dev/null
           echo "BACKUP_AGE_RECIPIENT=$(age-keygen -y "$RUNNER_TEMP/qm-backup.key")" >> .env
-          QM_BACKUP_KEY="$RUNNER_TEMP/qm-backup.key" bash tests/check-backup.sh
+          # The backup container writes ./backups as root with mode 700 (it holds guest data), so the
+          # check reads it, and restores from it, as root too.
+          sudo QM_BACKUP_KEY="$RUNNER_TEMP/qm-backup.key" bash tests/check-backup.sh
           cd ../..
           set -a; . deploy/selfhost/.env; set +a
           export SELFHOST_URL=http://localhost SELFHOST_ANON_KEY=$ANON_KEY SELFHOST_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY
