@@ -54,6 +54,17 @@ if [ "${DEMO_MODE:-false}" = true ]; then
   fi
 fi
 
+# The staff "Contact support" form emails app.platform_flags.support_inbox, which a migration
+# defaults to the hosted service's inbox. This install's own address replaces it; with none set the
+# web app hides the form (apps/web/src/lib/config.ts), so nothing is ever sent to that default.
+if [ -n "${SUPPORT_EMAIL:-}" ]; then
+  echo "migrate: setting the support inbox"
+  psql_q -o /dev/null <<'SQL'
+\set inbox `printenv SUPPORT_EMAIL`
+update app.platform_flags set support_inbox = :'inbox';
+SQL
+fi
+
 echo "migrate: configuring the dispatcher"
 # The database tells the dispatch function to run through these two Vault secrets
 # (supabase/seeds/01_local_dispatcher.sql does the same for the local stack).

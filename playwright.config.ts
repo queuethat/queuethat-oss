@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { supabaseEnv } from './tests/e2e/support/env.ts';
+import { operatorEnv, supabaseEnv } from './tests/e2e/support/env.ts';
 
 // F10 (#20). Needs the local stack (`pnpm db:start`); global setup resets it before each run.
 // Pull requests run `desktop-chrome` and `iphone`; the nightly CI run uses every project.
@@ -41,7 +41,11 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
       timeout: 60_000,
       // Only public values reach the browser bundle.
-      env: { VITE_SUPABASE_URL: supabase.url, VITE_SUPABASE_ANON_KEY: supabase.anonKey },
+      env: {
+        VITE_SUPABASE_URL: supabase.url,
+        VITE_SUPABASE_ANON_KEY: supabase.anonKey,
+        ...operatorEnv,
+      },
     },
     {
       // The production build behind `vite preview`, which sends public/_headers. csp.spec.ts
@@ -50,7 +54,11 @@ export default defineConfig({
       url: `http://localhost:${previewPort}`,
       reuseExistingServer: !process.env.CI,
       timeout: 180_000,
-      env: { VITE_SUPABASE_URL: supabase.url, VITE_SUPABASE_ANON_KEY: supabase.anonKey },
+      env: {
+        VITE_SUPABASE_URL: supabase.url,
+        VITE_SUPABASE_ANON_KEY: supabase.anonKey,
+        ...operatorEnv,
+      },
     },
   ],
 });

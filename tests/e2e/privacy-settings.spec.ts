@@ -2,7 +2,7 @@ import { demo } from '../fixtures/demo.ts';
 import { DEMO_PASSWORD } from '../fixtures/demo.ts';
 import { expect, expectNoSeriousA11yViolations, signInAs, test } from './fixtures.ts';
 import { createMember } from './support/members.ts';
-import { supabaseEnv } from './support/env.ts';
+import { operatorEnv, supabaseEnv } from './support/env.ts';
 import { createClient } from '@supabase/supabase-js';
 
 // 2P-PRV2 (#189): admins set how long guest details are kept; guests are told.
@@ -41,7 +41,7 @@ test.describe('as an owner', () => {
     );
     await expect(guest.getByRole('link', { name: 'How your details are used' })).toHaveAttribute(
       'href',
-      /queuethat\.com\/privacy/,
+      operatorEnv.VITE_PRIVACY_URL,
     );
   });
 

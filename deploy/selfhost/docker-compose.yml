@@ -74,6 +74,8 @@ services:
       REALTIME_DB_ENC_KEY: ${REALTIME_DB_ENC_KEY}
       DEMO_MODE: ${DEMO_MODE:-false}
       DEMO_PASSWORD: ${DEMO_PASSWORD:-}
+      # Where the staff "Contact support" form sends its email (app.platform_flags.support_inbox).
+      SUPPORT_EMAIL: ${SUPPORT_EMAIL:-}
     volumes:
       - functions:/functions
 
@@ -329,6 +331,10 @@ services:
       PUBLIC_JOIN: ${PUBLIC_JOIN:-}
       SENTRY_DSN: ${SENTRY_DSN:-}
       SENTRY_ISSUES_URL: ${SENTRY_ISSUES_URL:-}
+      # Your own legal pages and support inbox. Empty: no link and no support form.
+      TERMS_URL: ${TERMS_URL:-}
+      PRIVACY_URL: ${PRIVACY_URL:-}
+      SUPPORT_EMAIL: ${SUPPORT_EMAIL:-}
     volumes:
       - caddy-data:/data
       - caddy-config:/config

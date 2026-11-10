@@ -1,6 +1,6 @@
 import { consentText, type ConsentBusiness } from '@qm/domain';
 import { Checkbox } from '@qm/ui';
-import { LEGAL_URLS } from '../marketing/company.ts';
+import { legalUrls } from '../marketing/company.ts';
 import { useTranslation } from '../../lib/translation.tsx';
 
 const legalLink = 'inline-flex min-h-target items-center underline';
@@ -24,6 +24,7 @@ export function ConsentOptIn({
   const { t } = useTranslation('guest');
   const shown = consentText('sms', locale, business) ?? consentText('sms', 'en', business);
   if (!shown) return null;
+  const { terms, privacy } = legalUrls();
   return (
     <div className="flex flex-col">
       <Checkbox
@@ -32,17 +33,27 @@ export function ConsentOptIn({
         onChange={(e) => onChange(e.target.checked)}
         data-testid="sms-consent"
       />
-      {/* Beside the opt-in, not inside it: the hashed words stay the same on a self-hosted domain. */}
-      <p className="flex flex-wrap items-center gap-x-1 text-sm text-muted" data-testid="sms-legal">
-        {t('join.consentLinks.prefix')}
-        <a href={LEGAL_URLS.terms} target="_blank" rel="noreferrer" className={legalLink}>
-          {t('join.consentLinks.terms')}
-        </a>
-        {t('join.consentLinks.and')}
-        <a href={LEGAL_URLS.privacy} target="_blank" rel="noreferrer" className={legalLink}>
-          {t('join.consentLinks.privacy')}
-        </a>
-      </p>
+      {/* Beside the opt-in, not inside it: the hashed words stay the same on a self-hosted domain.
+          An install that has published neither page shows no line at all. */}
+      {terms || privacy ? (
+        <p
+          className="flex flex-wrap items-center gap-x-1 text-sm text-muted"
+          data-testid="sms-legal"
+        >
+          {t('join.consentLinks.prefix')}
+          {terms ? (
+            <a href={terms} target="_blank" rel="noreferrer" className={legalLink}>
+              {t('join.consentLinks.terms')}
+            </a>
+          ) : null}
+          {terms && privacy ? t('join.consentLinks.and') : null}
+          {privacy ? (
+            <a href={privacy} target="_blank" rel="noreferrer" className={legalLink}>
+              {t('join.consentLinks.privacy')}
+            </a>
+          ) : null}
+        </p>
+      ) : null}
     </div>
   );
 }

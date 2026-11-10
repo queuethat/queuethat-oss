@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { supabaseEnv } from './tests/e2e/support/env.ts';
+import { operatorEnv, supabaseEnv } from './tests/e2e/support/env.ts';
 
 // DS-5 (#1009): screenshot baselines for the design tokens. `pnpm test:visual` compares, and
 // `pnpm test:visual:update` rewrites the baselines (docs/ops/visual-regression.md). It is its own
@@ -36,6 +36,10 @@ export default defineConfig({
     url: `http://localhost:${port}`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
-    env: { VITE_SUPABASE_URL: supabase.url, VITE_SUPABASE_ANON_KEY: supabase.anonKey },
+    env: {
+      VITE_SUPABASE_URL: supabase.url,
+      VITE_SUPABASE_ANON_KEY: supabase.anonKey,
+      ...operatorEnv,
+    },
   },
 });

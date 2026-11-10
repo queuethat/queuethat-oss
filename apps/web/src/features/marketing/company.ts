@@ -1,8 +1,18 @@
-/** Support contact, shown in the app. */
-export const SUPPORT_EMAIL = 'support@queuethat.com';
+import { appConfig } from '../../lib/config.ts';
 
-/** Terms and Privacy live on the marketing site; Stripe and Twilio forms reference these URLs. */
-export const LEGAL_URLS = {
-  terms: 'https://queuethat.com/terms',
-  privacy: 'https://queuethat.com/privacy',
-} as const;
+/**
+ * The support inbox of whoever runs this install, shown in the app. Empty when none is
+ * configured: callers then show no support entry point.
+ */
+export function supportEmail(): string {
+  return appConfig().supportEmail;
+}
+
+/**
+ * Terms and Privacy pages of whoever runs this install. Either is empty when it is not
+ * configured: callers then show no link.
+ */
+export function legalUrls(): { terms: string; privacy: string } {
+  const { termsUrl, privacyUrl } = appConfig();
+  return { terms: termsUrl, privacy: privacyUrl };
+}

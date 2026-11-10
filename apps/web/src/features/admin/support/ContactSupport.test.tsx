@@ -50,14 +50,24 @@ beforeEach(() => {
   m.rpc.mockResolvedValue({ data: 'SR-000042', error: null });
   m.session.current = { user: { id: 'u1' } };
   m.org.current = { id: 'org-1', name: 'Demo Barber', role: 'staff' };
+  window.__APP_CONFIG__ = { SUPPORT_EMAIL: 'support@shop.example' };
   setOnline(true);
   window.history.pushState({}, '', '/admin/queues?token=SECRET#frag');
 });
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  delete window.__APP_CONFIG__;
+});
 
 describe('ContactSupportButton', () => {
   it('renders nothing for a signed-out visitor', () => {
     m.session.current = null;
+    show();
+    expect(screen.queryByRole('button', { name: 'Contact support' })).toBeNull();
+  });
+
+  it('renders nothing when no support inbox is configured', () => {
+    delete window.__APP_CONFIG__;
     show();
     expect(screen.queryByRole('button', { name: 'Contact support' })).toBeNull();
   });
@@ -197,8 +207,8 @@ describe('ContactSupportButton', () => {
     show();
     const dialog = await openDialog(user);
     expect(within(dialog).queryByLabelText('Subject')).toBeNull();
-    const link = within(dialog).getByRole('link', { name: 'support@queuethat.com' });
-    expect(link.getAttribute('href')).toBe('mailto:support@queuethat.com');
+    const link = within(dialog).getByRole('link', { name: 'support@shop.example' });
+    expect(link.getAttribute('href')).toBe('mailto:support@shop.example');
     expect(m.rpc).not.toHaveBeenCalled();
   });
 

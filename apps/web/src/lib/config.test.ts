@@ -60,4 +60,50 @@ describe('readConfig', () => {
     expect(readConfig({ DEMO_MODE: 'false' }, {}).demoMode).toBe(false);
     expect(readConfig({ DEMO_MODE: '1' }, {}).demoMode).toBe(false);
   });
+
+  describe('terms, privacy and support of whoever runs the install', () => {
+    it('has none built in: unset means no link and no support form', () => {
+      for (const runtime of [undefined, {}]) {
+        const c = readConfig(runtime, env);
+        expect([c.termsUrl, c.privacyUrl, c.supportEmail]).toEqual(['', '', '']);
+      }
+    });
+
+    it('takes build-time values when there is no runtime config', () => {
+      const c = readConfig(undefined, {
+        ...env,
+        VITE_TERMS_URL: 'https://fork.example/terms',
+        VITE_SUPPORT_EMAIL: 'help@fork.example',
+      });
+      expect(c.termsUrl).toBe('https://fork.example/terms');
+      expect(c.privacyUrl).toBe('');
+      expect(c.supportEmail).toBe('help@fork.example');
+    });
+
+    it('a self-hosted install that sets none gets none, whatever was baked into the build', () => {
+      // The web image always writes the three keys, empty when unset.
+      const c = readConfig(
+        { TERMS_URL: '', PRIVACY_URL: '', SUPPORT_EMAIL: '' },
+        {
+          ...env,
+          VITE_TERMS_URL: 'https://build.example/terms',
+        },
+      );
+      expect([c.termsUrl, c.privacyUrl, c.supportEmail]).toEqual(['', '', '']);
+    });
+
+    it('a self-hosted install uses its own values', () => {
+      const c = readConfig(
+        {
+          TERMS_URL: 'https://shop.example/terms',
+          PRIVACY_URL: ' https://shop.example/privacy ',
+          SUPPORT_EMAIL: 'help@shop.example',
+        },
+        env,
+      );
+      expect(c.termsUrl).toBe('https://shop.example/terms');
+      expect(c.privacyUrl).toBe('https://shop.example/privacy');
+      expect(c.supportEmail).toBe('help@shop.example');
+    });
+  });
 });

@@ -3,7 +3,7 @@ import { useState, type FormEvent } from 'react';
 import { useTranslation } from '../../../lib/translation.tsx';
 import { useCurrentOrg } from '../../auth/current.ts';
 import { useSession } from '../../auth/api.ts';
-import { SUPPORT_EMAIL } from '../../marketing/company.ts';
+import { supportEmail } from '../../marketing/company.ts';
 import { useContactSupport } from './api.ts';
 
 export const SUBJECT_MAX = 120;
@@ -20,13 +20,14 @@ const ERRORS = [
 /**
  * "Contact support" in the staff and admin header (#1138). Opens a dialog that sends a message
  * to QueueThat support with the business, page and app version attached. Renders nothing when
- * signed out: guests and signed-out visitors never see it.
+ * signed out: guests and signed-out visitors never see it. Also nothing when the install has no
+ * support inbox configured, so a self-hosted install never offers a form that writes to someone else.
  */
 export function ContactSupportButton() {
   const { t } = useTranslation('common');
   const session = useSession();
   const [open, setOpen] = useState(false);
-  if (!session.data) return null;
+  if (!session.data || !supportEmail()) return null;
   return (
     <>
       <Button
@@ -58,6 +59,7 @@ function ContactSupportForm({ onClose }: { onClose: () => void }) {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [includePage, setIncludePage] = useState(true);
+  const email = supportEmail();
 
   const closeButton = (
     <Button variant="secondary" onClick={onClose}>
@@ -69,12 +71,12 @@ function ContactSupportForm({ onClose }: { onClose: () => void }) {
   if (!org) {
     return (
       <div className="flex flex-col gap-4">
-        <p>{t('contactSupport.noOrg', { email: SUPPORT_EMAIL })}</p>
+        <p>{t('contactSupport.noOrg', { email })}</p>
         <a
           className="inline-flex min-h-target items-center font-medium underline"
-          href={`mailto:${SUPPORT_EMAIL}`}
+          href={`mailto:${email}`}
         >
-          {SUPPORT_EMAIL}
+          {email}
         </a>
         <div className="flex justify-end">{closeButton}</div>
       </div>
@@ -133,7 +135,7 @@ function ContactSupportForm({ onClose }: { onClose: () => void }) {
       />
       {send.isError ? (
         <p role="alert" className="font-medium text-danger-strong">
-          {t(`contactSupport.errors.${errorKey}`, { email: SUPPORT_EMAIL })}
+          {t(`contactSupport.errors.${errorKey}`, { email })}
         </p>
       ) : null}
       <div className="flex flex-wrap justify-end gap-3">
