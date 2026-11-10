@@ -35,7 +35,7 @@ test('AC1 + AC2: idle warns at 45 s and extends on request, and 65 s later the f
   await expect(kiosk.getByLabel('First name')).toHaveValue('');
 });
 
-test('a guest checks in, gets a ticket and a QR code, and the screen clears itself', async ({
+test('a guest checks in, gets a ticket and a QR code, and the screen clears itself @core', async ({
   devices,
 }) => {
   const { staff: kiosk } = devices;

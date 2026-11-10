@@ -47,7 +47,9 @@ async function staffToken(): Promise<string> {
   return ((await response.json()) as { access_token: string }).access_token;
 }
 
-test('position updates within 3 s when staff call the guest ahead (AC1)', async ({ devices }) => {
+test('position updates within 3 s when staff call the guest ahead (AC1) @core', async ({
+  devices,
+}) => {
   const { guest } = devices;
   await join('Ahead');
   const { token } = await join('Behind');
@@ -92,7 +94,7 @@ test('after 2 minutes offline the estimate greys out with "as of" (AC2)', async 
   await guest.context().setOffline(false);
 });
 
-test('an unknown link says it has expired', async ({ devices }) => {
+test('an unknown link says it has expired @core', async ({ devices }) => {
   const { guest } = devices;
   await guest.goto('/v/not-a-real-token');
   await expect(guest.getByText('This link has expired')).toBeVisible();

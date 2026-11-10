@@ -65,7 +65,7 @@ test.afterEach(async () => {
   await opened?.cleanup();
 });
 
-test('a day in the shop on two tablets, the TV and the guests’ phones', async ({
+test('a day in the shop on two tablets, the TV and the guests’ phones @core', async ({
   devices,
   browser,
 }) => {

@@ -18,7 +18,7 @@ async function workingLocation(page: Page): Promise<string> {
 test.describe('signed out', () => {
   test.use({ staffUser: null });
 
-  test('AC1: /staff sends you to sign-in and back after signing in', async ({ devices }) => {
+  test('AC1: /staff sends you to sign-in and back after signing in @core', async ({ devices }) => {
     const { staff } = devices;
     await staff.goto('/admin?tab=queues');
     await expect(staff).toHaveURL(/\/auth\/sign-in\?next=/);
@@ -52,7 +52,7 @@ test('a member opening onboarding goes to the staff console', async ({ devices }
   await expect(staff.getByRole('heading', { name: 'Staff console' })).toBeVisible();
 });
 
-test('staff see only their own organization’s location', async ({ devices }) => {
+test('staff see only their own organization’s location @core', async ({ devices }) => {
   const { staff } = devices;
   await staff.goto('/staff');
   expect(await workingLocation(staff)).toContain('Demo Barber Main Street');

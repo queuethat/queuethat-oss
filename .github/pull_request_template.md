@@ -32,7 +32,7 @@ Reviewer, answer each:
 
 ## Definition of done
 
-- [ ] `pnpm ci:local` passes (paste the `ci:local PASSED at <sha>` line); PR size ≤ 400 lines is a guideline, not a gate
+- [ ] `pnpm ci:local` passes (paste the `ci:local PASSED at <sha>` line); it runs the whole browser suite, which CI on the pull request does not. PR size ≤ 400 lines is a guideline, not a gate
 - [ ] Every acceptance criterion maps to a named test or a screenshot above
 - [ ] New tables have RLS and `supabase/tests/rls/matrix.yaml` entries; new RPCs have a cross-tenant denial test
 - [ ] User-facing strings via `t()`, only `packages/ui` components, no new axe serious/critical violations

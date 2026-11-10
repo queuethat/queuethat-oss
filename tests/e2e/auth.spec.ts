@@ -25,7 +25,7 @@ test('a new email signs up, opens the emailed link and lands signed in', async (
   await expect(staff.getByRole('button', { name: 'Sign out' })).toBeVisible();
 });
 
-test('a staff member signs in with a password, then signs out', async ({ devices }) => {
+test('a staff member signs in with a password, then signs out @core', async ({ devices }) => {
   const { staff } = devices;
   await staff.goto('/auth/sign-in');
   await expectNoSeriousA11yViolations(staff);
@@ -40,7 +40,7 @@ test('a staff member signs in with a password, then signs out', async ({ devices
   await expect(staff.getByRole('button', { name: 'Sign out' })).toHaveCount(0);
 });
 
-test('a wrong password shows an error and stays on sign-in', async ({ devices }) => {
+test('a wrong password shows an error and stays on sign-in @core', async ({ devices }) => {
   const { staff } = devices;
   await staff.goto('/auth/sign-in');
   await staff.getByLabel('Email').fill(demoUsers.owner.email);

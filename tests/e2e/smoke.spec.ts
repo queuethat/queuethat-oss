@@ -4,7 +4,7 @@ import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
 // The always-on happy-path recording that CI uploads with every run.
 test.use({ video: 'on' });
 
-test('guest, staff and display open the app with no serious axe violations', async ({
+test('guest, staff and display open the app with no serious axe violations @core', async ({
   devices,
 }) => {
   const { guest, staff, display } = devices;
