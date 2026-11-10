@@ -63,7 +63,8 @@ jobs:
 
       - name: Web image, routing and headers
         run: |
-          bash tests/check-web-image.sh --no-build
+          # The stack above built the image as queue-web:local.
+          QM_WEB_IMAGE=queue-web:local bash tests/check-web-image.sh --no-build
           bash tests/check-routing.sh
 
       - name: Smoke journey
