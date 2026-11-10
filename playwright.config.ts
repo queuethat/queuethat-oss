@@ -18,10 +18,18 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   // No retries: "nobody gets lost" is a reliability claim, so a flaky cross-device test is a bug.
+  // The one exception is CI's full suite after a merge, which passes --retries=1 and lists what
+  // needed it in the run summary (.github/workflows/ci.yml, job `e2e`).
   retries: 0,
   workers: process.env.CI ? 2 : undefined,
   reporter: process.env.CI
-    ? [['github'], ['html', { open: 'never' }], ['list']]
+    ? [
+        ['github'],
+        ['html', { open: 'never' }],
+        ['list'],
+        // Read by scripts/e2e-flaky-summary.mjs.
+        ['json', { outputFile: 'test-results/results.json' }],
+      ]
     : [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: `http://localhost:${port}`,

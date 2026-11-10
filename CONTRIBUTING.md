@@ -69,7 +69,9 @@ as before, but of the browser tests only the core journeys on desktop Chrome
 (`pnpm test:e2e:core`, a few minutes), and none for a change that only touches documentation.
 The whole browser suite runs on `main` after the merge and every night. So a green pull request
 does not prove that nothing outside the core journeys broke: that shows up as a red run on
-`main`. `pnpm ci:local` is how you find out before merging.
+`main`. `pnpm ci:local` is how you find out before merging. That run on `main` retries a failed
+browser test once and lists the ones that then passed as "flaky" in its summary; a test that keeps
+appearing there is a bug to fix.
 
 ## Generated files
 
