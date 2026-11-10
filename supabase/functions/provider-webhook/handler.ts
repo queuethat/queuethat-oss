@@ -134,20 +134,13 @@ export function createProviderWebhookHandler(deps: ProviderWebhookDeps): (req: R
       return json(403, { error: reason });
     }
 
+    // Only a JSON body is kept. A form body (Twilio, Plivo) carries guests' phone numbers and texts
+    // and is not stored (I-13).
     let payload: unknown = null;
-    if (form) payload = Object.fromEntries(form);
-    // The platform number's events carry guests' phone numbers and texts; keep only what ops needs (I-13).
-    if (provider === 'twilio-platform' && form) {
-      payload = Object.fromEntries(
-        ['MessageSid', 'MessageStatus', 'ErrorCode', 'OptOutType'].flatMap((k) => (form.has(k) ? [[k, form.get(k)]] : [])),
-      );
-    }
-    else {
-      try {
-        payload = JSON.parse(new TextDecoder().decode(rawBody));
-      } catch {
-        payload = null;
-      }
+    try {
+      payload = JSON.parse(new TextDecoder().decode(rawBody));
+    } catch {
+      payload = null;
     }
 
     const handler = Object.hasOwn(deps.handlers, provider) ? deps.handlers[provider] : undefined;

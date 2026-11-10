@@ -15,7 +15,7 @@ import {
 import { smsSegments } from '@qm/domain';
 import { vapidFromEnv, webPushTransport } from '../_shared/web-push.ts';
 import { createObserver } from '../_shared/observe.ts';
-import { platformTwilioFromEnv, providerFactories } from './factories.ts';
+import { providerFactories } from './factories.ts';
 import { appOrigin, createDispatchHandler, oneClickEndpoint, type OutboxJob, type WhatsAppSend } from './handler.ts';
 
 function env(name: string): string {
@@ -120,7 +120,6 @@ Deno.serve(
         },
         factories: providerFactories({
           functionsUrl,
-          platformTwilio: platformTwilioFromEnv((k) => Deno.env.get(k)),
           apiBase: Object.fromEntries(
             ['twilio', 'telnyx', 'vonage', 'plivo', 'postmark', 'resend', 'meta'].flatMap((name) => {
               const origin = Deno.env.get(`PROVIDER_API_BASE_${name.toUpperCase()}`);
