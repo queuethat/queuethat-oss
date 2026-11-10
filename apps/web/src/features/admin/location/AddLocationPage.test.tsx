@@ -26,7 +26,7 @@ vi.mock('../../auth/current.ts', () => ({
 }));
 vi.mock('../../../lib/supabase.ts', () => ({ supabase: { rpc: m.rpc } }));
 
-beforeAll(() => loadNamespaces('admin', 'admin-billing'));
+beforeAll(() => loadNamespaces('admin'));
 beforeEach(() => {
   m.role = 'owner';
   m.rpc.mockReset();
@@ -58,22 +58,6 @@ describe('AddLocationPage', () => {
       p_slug: undefined,
     });
     expect(m.select).toHaveBeenCalledWith('loc-2');
-  });
-
-  it('turns plan_limit_reached into a plan message with an upgrade link for the owner', async () => {
-    m.rpc.mockResolvedValue({
-      data: null,
-      error: { code: 'P0001', message: 'plan_limit_reached' },
-    });
-    renderPage();
-    await userEvent.type(screen.getByLabelText(/location name/i), 'Second');
-    await userEvent.click(screen.getByRole('button', { name: 'Add location' }));
-    expect(await screen.findByText(/no room for another location/i)).toBeTruthy();
-    expect(screen.getByRole('link', { name: 'Upgrade' }).getAttribute('href')).toBe(
-      '/admin/billing',
-    );
-    expect(screen.queryByText(/plan_limit_reached/)).toBeNull();
-    expect(m.navigate).not.toHaveBeenCalled();
   });
 
   it('explains a taken slug in words', async () => {

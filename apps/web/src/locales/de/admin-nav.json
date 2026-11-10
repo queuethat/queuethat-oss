@@ -15,7 +15,7 @@
     "connections": "Verbindungen",
     "developers": "Entwickler",
     "privacy": "Datenschutz und Daten",
-    "plan": "Tarif und Nutzung"
+    "plan": "Nutzung"
   },
   "insights": {
     "reportsLabel": "Berichte",
@@ -72,7 +72,6 @@
     "performance": "Leistung",
     "etaAccuracy": "Genauigkeit der Wartezeit",
     "usage": "Nutzung und Limits",
-    "billing": "Abrechnung",
     "planning": "Planung",
     "overview": "Alle Standorte",
     "shifts": "Schichten",

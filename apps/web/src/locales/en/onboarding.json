@@ -100,9 +100,7 @@
       "title": "How guests know it's their turn",
       "phone": "Guests see their place in line on their phone and it updates by itself.",
       "browser": "They get a browser alert when you call them. On iPhone they must first tap Share, then Add to Home Screen.",
-      "tv": "A TV in your waiting room shows the number being called.",
-      "textsFree": "Text messages are not sent on your current plan. They come with a paid plan.",
-      "textsPaid": "Your plan can also send text messages to guests who share a phone number and agree to texts."
+      "tv": "A TV in your waiting room shows the number being called."
     }
   }
 }

@@ -19,8 +19,6 @@ export interface SectionTab {
 export interface TabAccess {
   admin: boolean;
   multiLocation: boolean;
-  /** An owner on a deployment with billing switched on. */
-  billing: boolean;
 }
 
 interface Section {
@@ -116,11 +114,8 @@ const SECTIONS: Section[] = [
   {
     id: 'plan',
     width: 'max-w-4xl',
-    prefixes: ['/admin/billing', '/admin/usage'],
-    tabs: ({ billing }) => [
-      ...(billing ? [tab('billing', '/admin/billing', 'items.billing')] : []),
-      tab('usage', '/admin/usage', 'items.usage'),
-    ],
+    prefixes: ['/admin/usage'],
+    tabs: () => [tab('usage', '/admin/usage', 'items.usage')],
   },
 ];
 

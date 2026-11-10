@@ -42,12 +42,6 @@
     "read": "Our support team can see this business (read only) until {{until}}. Reason: {{reason}}",
     "act": "Our support team can see and change this business until {{until}}. Reason: {{reason}}"
   },
-  "pastDueBanner": {
-    "label": "Payment failed",
-    "pastDue": "We could not charge your card. Paid features end on {{date}} unless you update it; your data is never deleted.",
-    "unpaid": "Your subscription is unpaid and you are on the free plan. Your data is kept.",
-    "link": "Update your payment method"
-  },
   "mfaBanner": {
     "label": "Two-step sign-in required",
     "message": "Your business requires 2FA for owners and admins. Until you add an authenticator app you can run the queue but not change settings.",

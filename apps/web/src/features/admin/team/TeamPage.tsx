@@ -17,7 +17,6 @@ import { useState, type FormEvent, type ReactNode } from 'react';
 import { useTranslation } from '../../../lib/translation.tsx';
 import { ScreenEmpty } from '../../../components/ScreenEmpty.tsx';
 import { useSession } from '../../auth/api.ts';
-import { isPlanLimit, PlanLimitNotice } from '../billing/planLimit.tsx';
 import { useCurrentLocation, useCurrentOrg } from '../../auth/current.ts';
 import {
   customRolesQuery,
@@ -494,13 +493,9 @@ function InviteDialog({ orgId, role }: { orgId: string; role: string }) {
               allLabel={t('invite.allLocations')}
             />
           </Advanced>
-          {isPlanLimit(invite.error) ? (
-            <PlanLimitNotice kind="members" error={invite.error} memberRole={role} />
-          ) : (
-            <p role="alert" className="font-medium text-danger-strong empty:hidden">
-              {failure ? t(failure) : null}
-            </p>
-          )}
+          <p role="alert" className="font-medium text-danger-strong empty:hidden">
+            {failure ? t(failure) : null}
+          </p>
           <div className="flex justify-end gap-3">
             <Button variant="secondary" onClick={close}>
               {t('invite.cancel')}

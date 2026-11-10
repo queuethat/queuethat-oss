@@ -31,7 +31,6 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin/analytics'
 import { Route as AdminAppointmentsRouteImport } from './routes/admin/appointments'
 import { Route as AdminAvailabilityRouteImport } from './routes/admin/availability'
-import { Route as AdminBillingRouteImport } from './routes/admin/billing'
 import { Route as AdminBlocksRouteImport } from './routes/admin/blocks'
 import { Route as AdminBrandingRouteImport } from './routes/admin/branding'
 import { Route as AdminComparisonRouteImport } from './routes/admin/comparison'
@@ -216,11 +215,6 @@ const AdminAppointmentsRoute = AdminAppointmentsRouteImport.update({
 const AdminAvailabilityRoute = AdminAvailabilityRouteImport.update({
   id: '/availability',
   path: '/availability',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminBillingRoute = AdminBillingRouteImport.update({
-  id: '/billing',
-  path: '/billing',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminBlocksRoute = AdminBlocksRouteImport.update({
@@ -625,7 +619,6 @@ export interface FileRoutesByFullPath {
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/availability': typeof AdminAvailabilityRoute
-  '/admin/billing': typeof AdminBillingRoute
   '/admin/blocks': typeof AdminBlocksRoute
   '/admin/branding': typeof AdminBrandingRoute
   '/admin/comparison': typeof AdminComparisonRoute
@@ -721,7 +714,6 @@ export interface FileRoutesByTo {
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/availability': typeof AdminAvailabilityRoute
-  '/admin/billing': typeof AdminBillingRoute
   '/admin/blocks': typeof AdminBlocksRoute
   '/admin/branding': typeof AdminBrandingRoute
   '/admin/comparison': typeof AdminComparisonRoute
@@ -822,7 +814,6 @@ export interface FileRoutesById {
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/availability': typeof AdminAvailabilityRoute
-  '/admin/billing': typeof AdminBillingRoute
   '/admin/blocks': typeof AdminBlocksRoute
   '/admin/branding': typeof AdminBrandingRoute
   '/admin/comparison': typeof AdminComparisonRoute
@@ -924,7 +915,6 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/appointments'
     | '/admin/availability'
-    | '/admin/billing'
     | '/admin/blocks'
     | '/admin/branding'
     | '/admin/comparison'
@@ -1020,7 +1010,6 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/appointments'
     | '/admin/availability'
-    | '/admin/billing'
     | '/admin/blocks'
     | '/admin/branding'
     | '/admin/comparison'
@@ -1120,7 +1109,6 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/appointments'
     | '/admin/availability'
-    | '/admin/billing'
     | '/admin/blocks'
     | '/admin/branding'
     | '/admin/comparison'
@@ -1376,13 +1364,6 @@ declare module '@tanstack/react-router' {
       path: '/availability'
       fullPath: '/admin/availability'
       preLoaderRoute: typeof AdminAvailabilityRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/billing': {
-      id: '/admin/billing'
-      path: '/billing'
-      fullPath: '/admin/billing'
-      preLoaderRoute: typeof AdminBillingRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/blocks': {
@@ -1928,7 +1909,6 @@ interface AdminRouteRouteChildren {
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminAppointmentsRoute: typeof AdminAppointmentsRoute
   AdminAvailabilityRoute: typeof AdminAvailabilityRoute
-  AdminBillingRoute: typeof AdminBillingRoute
   AdminBlocksRoute: typeof AdminBlocksRoute
   AdminBrandingRoute: typeof AdminBrandingRoute
   AdminComparisonRoute: typeof AdminComparisonRoute
@@ -1989,7 +1969,6 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminAppointmentsRoute: AdminAppointmentsRoute,
   AdminAvailabilityRoute: AdminAvailabilityRoute,
-  AdminBillingRoute: AdminBillingRoute,
   AdminBlocksRoute: AdminBlocksRoute,
   AdminBrandingRoute: AdminBrandingRoute,
   AdminComparisonRoute: AdminComparisonRoute,

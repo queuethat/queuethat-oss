@@ -4,7 +4,6 @@ import {
   iconCalendar,
   iconChart,
   iconClock,
-  iconCreditCard,
   iconHelp,
   iconHome,
   iconLink,
@@ -20,12 +19,10 @@ import {
   type NavGroup,
   type NavItem,
 } from '@qm/ui';
-import { useQuery } from '@tanstack/react-query';
 import type { LinkProps } from '@tanstack/react-router';
 import { useTranslation } from '../../../lib/translation.tsx';
 import type { en } from '../../../locales/en/index.ts';
 import { useCurrentLocation, useCurrentOrg } from '../../auth/current.ts';
-import { orgBillingQuery } from '../billing/api.ts';
 import type { SectionId } from '../tabs/sectionTabs.ts';
 
 export interface AdminNavItem extends NavItem {
@@ -49,7 +46,6 @@ interface Entry {
   icon: IconDef;
   exact?: boolean;
   adminOnly?: boolean;
-  ownerOnly?: boolean;
   multiLocation?: boolean;
   hidden?: boolean;
   under?: ItemKey;
@@ -157,14 +153,6 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
   {
     id: 'account',
     entries: [
-      {
-        to: '/admin/billing',
-        key: 'billing',
-        icon: iconCreditCard,
-        ownerOnly: true,
-        hidden: true,
-        under: 'usage',
-      },
       { to: '/admin/usage', key: 'usage', icon: iconChart, sidebarLabel: 'plan' },
       {
         to: '/admin/integrations',
@@ -252,8 +240,6 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
 
 export interface NavFilter {
   role: string | undefined;
-  /** An owner on a deployment with billing switched on. */
-  billing: boolean;
   multiLocation: boolean;
 }
 
@@ -270,12 +256,7 @@ export function buildGroups(
     label: id === 'danger' ? undefined : groupLabel(id),
     defaultOpen: id === 'run' ? true : undefined,
     items: entries
-      .filter(
-        (e) =>
-          (!e.adminOnly || admin) &&
-          (!e.ownerOnly || (filter.role === 'owner' && filter.billing)) &&
-          (!e.multiLocation || filter.multiLocation),
-      )
+      .filter((e) => (!e.adminOnly || admin) && (!e.multiLocation || filter.multiLocation))
       .map((e) => ({
         id: e.key,
         to: e.to,
@@ -319,13 +300,12 @@ export function currentItemId(
   return (shown?.find((i) => i.id === best.item.under) ?? shown?.[0])?.id;
 }
 
-/** What this member's role, billing and location count allow them to see. */
+/** What this member's role and location count allow them to see. */
 export function useNavFilter(): NavFilter {
   const org = useCurrentOrg();
   const role = org?.role;
-  const billing = useQuery({ ...orgBillingQuery(org?.id ?? ''), enabled: role === 'owner' });
   const { locations } = useCurrentLocation();
-  return { role, billing: billing.data?.enabled === true, multiLocation: locations.length > 1 };
+  return { role, multiLocation: locations.length > 1 };
 }
 
 /** The groups this member may see, translated. */

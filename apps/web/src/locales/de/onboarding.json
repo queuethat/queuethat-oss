@@ -100,9 +100,7 @@
       "title": "So erfahren Gäste, dass sie dran sind",
       "phone": "Gäste sehen ihren Platz in der Warteschlange auf dem Handy; er aktualisiert sich von selbst.",
       "browser": "Sie erhalten eine Browser-Benachrichtigung, wenn du sie aufrufst. Auf dem iPhone müssen sie zuerst auf Teilen und dann auf Zum Home-Bildschirm tippen.",
-      "tv": "Ein Fernseher im Wartebereich zeigt die aufgerufene Nummer.",
-      "textsFree": "Mit deinem aktuellen Tarif werden keine SMS gesendet. SMS gibt es mit einem kostenpflichtigen Tarif.",
-      "textsPaid": "Dein Tarif kann auch SMS an Gäste senden, die eine Telefonnummer angeben und SMS zustimmen."
+      "tv": "Ein Fernseher im Wartebereich zeigt die aufgerufene Nummer."
     }
   }
 }
