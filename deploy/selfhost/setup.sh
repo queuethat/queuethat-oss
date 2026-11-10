@@ -136,7 +136,12 @@ jwt() { # jwt ROLE: HS256 token valid for 10 years, signed with the new secret
 # VAPID: a P-256 key pair; the public key is the raw 65-byte point, the private one the 32-byte scalar.
 vapid_pem=$(openssl ecparam -name prime256v1 -genkey -noout 2>/dev/null)
 vapid_public=$(printf '%s' "$vapid_pem" | openssl ec -pubout -outform DER 2>/dev/null | tail -c 65 | b64url)
-vapid_private=$(printf '%s' "$vapid_pem" | openssl ec -outform DER 2>/dev/null | tail -c +8 | head -c 32 | b64url)
+# The private scalar is bytes 8 to 39 of the DER. It is cut out of a hex copy rather than with
+# `tail | head`: head stops reading early, and under pipefail that occasionally killed the
+# script with SIGPIPE (exit 141) on an otherwise good run.
+vapid_der_hex=$(printf '%s' "$vapid_pem" | openssl ec -outform DER 2>/dev/null | od -An -v -tx1 | tr -d ' \n')
+# shellcheck disable=SC2059 # the format is the escaped bytes themselves
+vapid_private=$(printf "$(printf '%s' "${vapid_der_hex:14:64}" | sed 's/../\\x&/g')" | b64url)
 vapid_subject="mailto:${smtp_from:-admin@localhost}"
 
 tmp=$(mktemp "$env_file.XXXXXX")

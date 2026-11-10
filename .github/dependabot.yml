@@ -19,6 +19,12 @@ updates:
         update-types: [version-update:semver-major]
       - dependency-name: '@eslint/js'
         update-types: [version-update:semver-major]
+      # Held at 1.63.0. The WebKit build that ships with 1.64 reports a style-src-attr violation
+      # of the report-only CSP for every <select> the page creates (raised at React's
+      # document.createElement('select'); no code of ours sets an inline style), which fails
+      # csp.spec.ts on the iPhone project. Lift this once a later WebKit build passes that spec.
+      - dependency-name: '@playwright/test'
+      - dependency-name: 'playwright-core'
 
   - package-ecosystem: github-actions
     directory: /

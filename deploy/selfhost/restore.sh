@@ -60,6 +60,21 @@ fi
 # services start on the restored data afterwards and find nothing left to migrate.
 docker compose up -d --wait db
 
+# A dump carries no roles. Every role but one comes with the database image; Realtime creates
+# `supabase_realtime_admin` itself the first time it starts. The restored data tells Realtime its
+# set-up already ran, so it would never create the role again, and without it the dump's grants on
+# the realtime schema are skipped: staff consoles, displays and guest pages then stop updating.
+# Create it here, as Realtime does, before the dump is loaded.
+docker compose exec -T -e PGPASSWORD db psql -h localhost -U supabase_admin -d postgres -X -q -v ON_ERROR_STOP=1 <<'SQL'
+do $$
+begin
+  if not exists (select from pg_roles where rolname = 'supabase_realtime_admin') then
+    create role supabase_realtime_admin with noinherit nologin noreplication;
+  end if;
+end $$;
+grant anon, authenticated, service_role to supabase_realtime_admin;
+SQL
+
 echo "restore: database"
 # pg_restore's messages can quote rows (a failed COPY names the line), so they stay in a private
 # temp file that is deleted on exit, and only the count is shown.

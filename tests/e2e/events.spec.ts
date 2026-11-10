@@ -55,9 +55,10 @@ test('AC1: booking the last seats shows Full to the next visitor', async ({ devi
     .last()
     .click();
   await expect(guest).toHaveURL(/\/a\//);
-  // The app can still be loading /a/ when the URL first matches; a goto sent now is aborted on
-  // WebKit ("interrupted by another navigation").
-  await guest.waitForLoadState('networkidle');
+  // The URL matches before WebKit has committed the app's own navigation to /a/, and a goto sent
+  // in that gap is aborted ("interrupted by another navigation"). The booking card only renders
+  // once that navigation has finished and the appointment has loaded.
+  await expect(guest.getByTestId('appointment')).toBeVisible();
 
   await guest.goto(`/b/${slug}`);
   await guest.getByRole('tab', { name: 'Events' }).click();

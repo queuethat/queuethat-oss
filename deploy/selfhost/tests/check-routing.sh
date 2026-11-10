@@ -36,5 +36,10 @@ for i in $(seq 1 40); do
 done
 ((hits >= 8)) || bad "spoofed X-Forwarded-For dodged the join rate limit (only $hits of 40 were 429)"
 
+# The loop above used up this address's join allowance for the current minute. Kong counts in
+# fixed one-minute windows, so wait for the next one: otherwise whatever joins next from this
+# machine (the smoke journey's first guest) is refused with 429.
+sleep $((61 - 10#$(date +%S)))
+
 [[ $fail == 0 ]] && echo "check-routing: ok"
 exit $fail
