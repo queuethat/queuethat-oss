@@ -16,7 +16,7 @@ x-restart: &restart
 services:
   db:
     <<: *restart
-    image: ghcr.io/supabase/postgres:17.6.1.136@sha256:f371b5f3f2ac0a05703f33d6e6134515fb2498cab708fb948a0aeb7481467c00
+    image: ghcr.io/supabase/postgres:17.11.0.018@sha256:7c31363a3f7434ff14945f1b8a4880e6eca8b362e197e88b87c476c77aa3cf8c
     command:
       [
         'postgres',
@@ -211,7 +211,7 @@ services:
 
   imgproxy:
     <<: *restart
-    image: ghcr.io/imgproxy/imgproxy:v3.31.4@sha256:73c5dda13199745b0d2d00e4149d4a589c5b2e205dbf335ca05eca8276b54712
+    image: ghcr.io/imgproxy/imgproxy:v4.0.23@sha256:1e9718a2c940157b2bc400729497a78bde93738a859d0ffcdde185f019b3991b
     environment:
       IMGPROXY_BIND: ':5001'
       IMGPROXY_LOCAL_FILESYSTEM_ROOT: /
@@ -267,7 +267,7 @@ services:
   # Runs supabase/functions. The functions volume is filled by the migrate service (#209).
   functions:
     <<: *restart
-    image: ghcr.io/supabase/edge-runtime:v1.77.4@sha256:ad45164b7548bf5820ed7be714789c17ac2865edce79a09cfb4c3756c3d365a8
+    image: ghcr.io/supabase/edge-runtime:v1.78.1@sha256:362e9177660ae4d3affb6978480cc6161a8ea0764f1c2c7f738348eda1c3fbf2
     depends_on:
       kong: { condition: service_healthy }
       migrate: { condition: service_completed_successfully }
@@ -352,7 +352,7 @@ services:
   studio:
     <<: *restart
     profiles: [studio]
-    image: ghcr.io/supabase/studio:2026.10.12-sha-3699278@sha256:948770ec467f00e6ae34c35018ef7cb23d7b30eb806b42c2cc0d7bcfdcf8a7a8
+    image: ghcr.io/supabase/studio:2026.11.09-sha-1567384@sha256:09990d7831762e788b6d14bee7be40d452d45433b51a1592aaf3105bb126bbe2
     depends_on:
       meta: { condition: service_started }
     ports:
