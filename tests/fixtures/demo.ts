@@ -10,8 +10,6 @@ export const demoUsers = {
   e2eOwner: { id: '00000000-0000-4000-8000-0000000000a3', email: 'owner@e2e.test' },
   e2eStaff: { id: '00000000-0000-4000-8000-0000000000a4', email: 'staff@e2e.test' },
   otherOwner: { id: '00000000-0000-4000-8000-0000000000b1', email: 'owner@other.test' },
-  /** Platform operator with no org membership. Needs an aal2 session for api.platform_*. */
-  operator: { id: '00000000-0000-4000-8000-0000000000c1', email: 'ops@demo.test' },
 } as const;
 
 export const demo = {

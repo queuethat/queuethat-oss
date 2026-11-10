@@ -49,8 +49,8 @@ if [ "${DEMO_MODE:-false}" = true ]; then
     echo "migrate: demo organization already present"
   else
     echo "migrate: seeding the demo organization"
-    # The shared seed reads its password from this setting; the operator account is left out.
-    PGOPTIONS="-c qm.demo_password=$DEMO_PASSWORD -c qm.demo_ops=off" psql_q -o /dev/null -f demo-seed.sql
+    # The shared seed reads its password from this setting.
+    PGOPTIONS="-c qm.demo_password=$DEMO_PASSWORD" psql_q -o /dev/null -f demo-seed.sql
   fi
 fi
 
