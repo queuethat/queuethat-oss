@@ -9,7 +9,7 @@ function dateIn(tz: string, offsetDays: number) {
   return new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(d);
 }
 
-test('a double tap on Confirm books exactly one appointment, shown in the location clock', async ({
+test('a double tap on Confirm books exactly one appointment, shown in the location clock @core', async ({
   devices,
 }) => {
   const { guest } = devices;
@@ -39,7 +39,7 @@ test('a double tap on Confirm books exactly one appointment, shown in the locati
   expect(new Set(booked).size).toBe(1);
 });
 
-test('a slot taken by someone else shows a friendly message and fresh times', async ({
+test('a slot taken by someone else shows a friendly message and fresh times @core', async ({
   devices,
 }) => {
   const { guest } = devices;

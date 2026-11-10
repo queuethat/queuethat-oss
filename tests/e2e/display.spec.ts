@@ -69,7 +69,7 @@ async function pairTv(display: Page) {
   await expect(display.getByRole('heading', { name: 'Now serving' })).toBeVisible();
 }
 
-test('AC1: a call on the tablet highlights the ticket on the TV within 3 s', async ({
+test('AC1: a call on the tablet highlights the ticket on the TV within 3 s @core', async ({
   devices,
 }) => {
   const { display } = devices;

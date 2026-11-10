@@ -9,7 +9,7 @@ import { freshQueue } from './support/queues.ts';
 import { testUsers } from './support/users.ts';
 
 // G2 (#52): a guest joins from the poster link on a phone and lands on their status page.
-test('a double tap on Join creates exactly one visit', async ({ devices }) => {
+test('a double tap on Join creates exactly one visit @core', async ({ devices }) => {
   const { guest } = devices;
   const tickets: string[] = [];
   guest.on('response', async (response) => {
@@ -56,7 +56,7 @@ test('every select on the join page is at least 48px tall', async ({ devices }) 
   }
 });
 
-test('the join page explains a missing name and an unknown link', async ({ devices }) => {
+test('the join page explains a missing name and an unknown link @core', async ({ devices }) => {
   const { guest } = devices;
   await guest.goto(`/q/${demo.locationSlug}`);
   await guest.getByRole('button', { name: 'Join the queue' }).click();

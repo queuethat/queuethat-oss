@@ -4,7 +4,7 @@ import { confirmedAccount, NEW_ACCOUNT_PASSWORD, readAs } from './support/accoun
 // A3 (#43): a new owner goes from an empty account to a business with a working queue.
 test.use({ staffUser: null });
 
-test('AC1: the wizard creates the org, location, owner membership and a default queue', async ({
+test('AC1: the wizard creates the org, location, owner membership and a default queue @core', async ({
   devices,
 }) => {
   const { staff } = devices;

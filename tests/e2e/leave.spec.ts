@@ -4,7 +4,7 @@ import { freshQueue } from './support/queues.ts';
 
 // G5 (#55): a waiting guest leaves with one confirmed action, and staff see it at once.
 
-test('AC1: a guest who confirms leaving is gone from the staff console within 3 s', async ({
+test('AC1: a guest who confirms leaving is gone from the staff console within 3 s @core', async ({
   devices,
 }) => {
   const { guest, staff } = devices;
@@ -46,7 +46,7 @@ test('AC1: a guest who confirms leaving is gone from the staff console within 3 
 });
 
 // #528: a guest who left by mistake gets their place back with one tap.
-test('a guest who left by mistake gets their place back', async ({ devices }) => {
+test('a guest who left by mistake gets their place back @core', async ({ devices }) => {
   const { guest } = devices;
   const queue = await freshQueue();
 

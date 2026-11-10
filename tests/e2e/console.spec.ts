@@ -143,7 +143,7 @@ async function openQueue(page: Page, queueId: string) {
   await expect(page.locator('[data-state="live"]')).toBeVisible({ timeout: LIVE_TIMEOUT_MS });
 }
 
-test('C3 AC1: two tablets that tap Call next together call two different guests', async ({
+test('C3 AC1: two tablets that tap Call next together call two different guests @core', async ({
   devices,
   browser,
 }) => {
@@ -249,7 +249,7 @@ test('C4 AC1: a single tap on Remove does nothing until a reason and confirm', a
   });
 });
 
-test('C4: a guest moves from called to serving to done, and a no-show can be reinstated', async ({
+test('C4: a guest moves from called to serving to done, and a no-show can be reinstated @core', async ({
   devices,
 }) => {
   const { staff } = devices;
@@ -285,7 +285,7 @@ test('C4: a guest moves from called to serving to done, and a no-show can be rei
   await expectNoSeriousA11yViolations(staff);
 });
 
-test('C6: staff add a walk-in in a few taps', async ({ devices }) => {
+test('C6: staff add a walk-in in a few taps @core', async ({ devices }) => {
   const { staff } = devices;
   const queue = await freshQueue();
   // Party size is off by default (#104): the queue stores 1 unless it is switched on.
@@ -338,7 +338,7 @@ test('C6 AC1: adding a guest to a closed queue explains that it is closed', asyn
   await expect(staff.getByTestId('visit').filter({ hasText: 'Too late' })).toHaveCount(0);
 });
 
-test('C5 AC1: a guest marked no-show by mistake gets their place back with Undo', async ({
+test('C5 AC1: a guest marked no-show by mistake gets their place back with Undo @core', async ({
   devices,
 }) => {
   const { staff } = devices;

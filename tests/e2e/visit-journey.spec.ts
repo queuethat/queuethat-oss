@@ -185,7 +185,7 @@ async function joinFromPhone(guest: Page, queueId: string, name: string, phone: 
   return decodeURIComponent(new URL(guest.url()).pathname.split('/').pop()!);
 }
 
-test('a guest joins on a phone, is called, undone and called again while the TV follows', async ({
+test('a guest joins on a phone, is called, undone and called again while the TV follows @core', async ({
   devices,
 }) => {
   const { guest, display } = devices;
@@ -391,7 +391,7 @@ async function transition(visitId: string, action: string, version: number) {
 // Run 5: the staff console (C1/C2), the guest's status page (G4) and the live layer (L1) follow
 // the same visit through call, recall, no-show and undo. Staff act through the RPCs the
 // console's buttons will call.
-test('the console and the guest follow a call, a recall, a no-show and its undo', async ({
+test('the console and the guest follow a call, a recall, a no-show and its undo @core', async ({
   devices,
 }) => {
   const { guest, staff } = devices;
