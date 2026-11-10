@@ -61,7 +61,14 @@ export function SortableList({
   className,
 }: SortableListProps) {
   const [message, setMessage] = useState('');
-  const [drag, setDrag] = useState<{ id: string; slot: number } | null>(null);
+  const [drag, setDragState] = useState<{ id: string; slot: number } | null>(null);
+  // The drop reads the slot from here, not from `drag`: a pointerup can arrive before React has
+  // rendered the last pointermove, and the handler it runs would still see the previous slot.
+  const latestDrag = useRef(drag);
+  const setDrag = (next: { id: string; slot: number } | null) => {
+    latestDrag.current = next;
+    setDragState(next);
+  };
   const grabbed = useRef<{ id: string; origin: string[] } | null>(null);
   const list = useRef<HTMLUListElement>(null);
   const controls = useRef(new Map<string, HTMLButtonElement>());
@@ -125,12 +132,13 @@ export function SortableList({
   }
 
   function onPointerMove(e: PointerEvent, id: string) {
-    if (drag?.id === id) setDrag({ id, slot: slotFor(id, e.clientY) });
+    if (latestDrag.current?.id === id) setDrag({ id, slot: slotFor(id, e.clientY) });
   }
 
   function endDrag(id: string, commit: boolean) {
-    if (drag?.id !== id) return;
-    const { slot } = drag;
+    const current = latestDrag.current;
+    if (current?.id !== id) return;
+    const { slot } = current;
     setDrag(null);
     if (!commit) return;
     if (slot !== ids.indexOf(id)) {
