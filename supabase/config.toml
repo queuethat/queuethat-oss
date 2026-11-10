@@ -483,6 +483,11 @@ verify_jwt = false
 # Signed-in owners and admins call it with their own JWT; api.create_invitation decides who may invite.
 verify_jwt = true
 
+[functions.pair-device]
+# An unpaired display or kiosk calls it with no Supabase session; the 6-digit pairing code is the
+# gate, and api.redeem_pairing_code rate-limits failed codes per client and overall.
+verify_jwt = false
+
 [functions.dev-sms-inbound]
 # Dev simulator for guest SMS replies. Signed-in staff only, and 404 unless DEV_INBOX_ENABLED=true.
 verify_jwt = true

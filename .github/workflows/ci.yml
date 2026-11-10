@@ -290,13 +290,20 @@ jobs:
           SHARD: ${{ matrix.shard }}/4
         run: |
           vmstat -t 1 > "$RUNNER_TEMP/vmstat.log" 2>&1 &
-          if [ "$FULL_MATRIX" = true ]; then pnpm test:e2e --shard="$SHARD"
-          else pnpm test:e2e --project=desktop-chrome --project=iphone --shard="$SHARD"; fi
+          # One retry, here only (`e2e-core` and local runs have none). A test that passes on its
+          # retry is "flaky" and does not fail the run; the next step lists those in the run summary.
+          if [ "$FULL_MATRIX" = true ]; then pnpm test:e2e --retries=1 --shard="$SHARD"
+          else pnpm test:e2e --retries=1 --project=desktop-chrome --project=iphone --shard="$SHARD"; fi
+      - name: List flaky and failed tests in the run summary
+        id: attempts
+        if: ${{ !cancelled() }}
+        run: node scripts/e2e-flaky-summary.mjs test-results/results.json "Browser tests, shard ${{ matrix.shard }} of 4"
       # A failed browser test often traces back to the stack (a sign-in that timed out, a slow
       # query); the Playwright report alone cannot show which service stalled. vmstat.log is the
       # runner's own load, second by second, to tell a stalled machine from a stalled service.
+      # Kept for a test that needed its retry as well, not only when the job fails.
       - name: Keep the stack's logs
-        if: failure()
+        if: failure() || steps.attempts.outputs.failed_attempt == 'true'
         run: |
           mkdir -p test-results/stack-logs
           for c in $(docker ps -a --format '{{.Names}}' | grep '^supabase_'); do

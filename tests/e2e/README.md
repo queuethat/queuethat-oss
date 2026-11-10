@@ -28,6 +28,11 @@ merge, as a red CI run on `main`, not before it. Whoever merged is expected to l
 and fix or revert. If your change is anywhere near a spec that is not in the core set, run that
 spec, or `pnpm ci:local`, before you open the pull request.
 
+The full suite on `main` and nightly gives a failed test one retry; pull requests and local runs
+have none. A test that passes on its retry is reported as "flaky" and does not fail the run. Each
+shard lists its flaky tests in the run summary on GitHub: read that list after a merge. A test
+that shows up there more than once is a bug to fix, in the test or in the app, not noise.
+
 ## The core journeys
 
 A test is in the core set when its title ends in `@core`. Playwright reads that as a tag, and
