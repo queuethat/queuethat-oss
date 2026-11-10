@@ -9,13 +9,18 @@ import { expect, type Page } from '@playwright/test';
 export async function expectNoSeriousA11yViolations(page: Page): Promise<void> {
   // A colour that is still transitioning (a tab that was just selected, say) is measured at
   // whatever shade it has reached, which can fall below the contrast threshold for a few frames.
+  // Capped: some screens run a long transition on purpose (the kiosk's idle countdown), and
+  // colour changes in the UI kit take well under the cap.
   await page.evaluate(() =>
-    Promise.all(
-      document
-        .getAnimations()
-        .filter((a) => a instanceof CSSTransition)
-        .map((a) => a.finished.catch(() => undefined)),
-    ),
+    Promise.race([
+      Promise.all(
+        document
+          .getAnimations()
+          .filter((a) => a instanceof CSSTransition)
+          .map((a) => a.finished.catch(() => undefined)),
+      ),
+      new Promise((resolve) => setTimeout(resolve, 500)),
+    ]),
   );
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
