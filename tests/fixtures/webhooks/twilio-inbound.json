@@ -1,0 +1,12 @@
+{
+  "secret": "twilio-auth-token",
+  "url": "https://example.test/functions/v1/provider-webhook/twilio/6f1c1f0e-8d5a-4c55-9a1e-2b9f3c4d5e6f",
+  "params": {
+    "AccountSid": "ACtest",
+    "Body": "STOP",
+    "From": "+14155550123",
+    "MessageSid": "SM1111",
+    "To": "+14155550000"
+  },
+  "signature": "4OHO97ENCi0Bm+P5pbkV0RDo4Wk="
+}

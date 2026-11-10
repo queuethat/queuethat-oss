@@ -1,0 +1,700 @@
+-- Shared pgTAP helpers (F11, #21). Every test file starts with:
+--
+--   begin;
+--   \ir ../helpers/_setup.psql
+--   select plan(n);
+--   ...
+--   select * from finish();
+--   rollback;
+--
+-- The file extension is .psql, not .sql, so pg_prove does not run it as a test. Everything it
+-- creates lives in schema `tests` inside the test transaction and is rolled back with it.
+
+create extension if not exists pgtap with schema extensions;
+set local search_path = extensions, public;
+
+create schema tests;
+grant usage on schema tests to anon, authenticated, service_role;
+
+\ir _generated.psql
+
+------------------------------------------------------------------------------------------------
+-- Named fixture ids. tests.id('org_a') returns the same uuid every time within a test run.
+------------------------------------------------------------------------------------------------
+create table tests.ids (name text primary key, id uuid not null default gen_random_uuid());
+grant select on tests.ids to anon, authenticated, service_role;
+
+create function tests.id(p_name text) returns uuid
+language sql stable as $$
+  select id from tests.ids where name = p_name
+$$;
+
+create function tests.new_id(p_name text) returns uuid
+language sql as $$
+  insert into tests.ids (name) values (p_name)
+  on conflict (name) do update set name = excluded.name
+  returning id
+$$;
+
+------------------------------------------------------------------------------------------------
+-- Acting as a caller. Each sets the role and JWT claims for the rest of the transaction (or
+-- until the next as_* call), exactly as PostgREST would for that request.
+------------------------------------------------------------------------------------------------
+create function tests.set_claims(p_role text, p_claims jsonb) returns void
+language plpgsql as $$
+begin
+  perform set_config('request.jwt.claims', p_claims::text, true);
+  perform set_config('request.jwt.claim.sub', coalesce(p_claims ->> 'sub', ''), true);
+  perform set_config('request.jwt.claim.role', p_role, true);
+  execute format('set local role %I', p_role);
+end $$;
+
+/** Anonymous caller (a guest with no session). */
+create function tests.as_anon() returns void
+language sql as $$ select tests.set_claims('anon', '{"role":"anon"}') $$;
+
+/** Signed-in user; extra claims are merged into the JWT (e.g. app_metadata). */
+create function tests.as_user(p_user_id uuid, p_claims jsonb default '{}') returns void
+language sql as $$
+  select tests.set_claims(
+    'authenticated',
+    jsonb_build_object('sub', p_user_id, 'role', 'authenticated', 'aud', 'authenticated') || p_claims
+  )
+$$;
+
+/** Paired display or kiosk: an auth user whose claims live in app_metadata (technical-design.md 5). */
+create function tests.as_device(
+  p_user_id uuid, p_kind text, p_org_id uuid, p_location_id uuid, p_scopes text[] default '{}'
+) returns void
+language sql as $$
+  select tests.as_user(p_user_id, jsonb_build_object('app_metadata', jsonb_build_object(
+    'kind', p_kind, 'org_id', p_org_id, 'location_id', p_location_id, 'scopes', to_jsonb(p_scopes))))
+$$;
+
+/** Edge Functions and the migration runner. */
+create function tests.as_service() returns void
+language sql as $$ select tests.set_claims('service_role', '{"role":"service_role"}') $$;
+
+/** Back to the superuser the test started as. */
+create function tests.as_postgres() returns void
+language plpgsql as $$
+begin
+  reset role;
+  perform set_config('request.jwt.claims', '', true);
+  perform set_config('request.jwt.claim.sub', '', true);
+end $$;
+
+------------------------------------------------------------------------------------------------
+-- Actors for the RLS matrix. tests.create_world() (below) fills this with two orgs' users.
+------------------------------------------------------------------------------------------------
+create table tests.actors (name text primary key, role text not null, claims jsonb not null);
+
+create function tests.act_as(p_actor text) returns void
+language plpgsql as $$
+declare a tests.actors;
+begin
+  reset role; -- tests.actors is readable only by the superuser the test started as
+  if p_actor = 'anon' then
+    perform tests.as_anon();
+    return;
+  end if;
+  select * into a from tests.actors where name = p_actor;
+  if not found then
+    raise exception 'unknown test actor %, did tests.create_world() run?', p_actor;
+  end if;
+  perform tests.set_claims(a.role, a.claims);
+end $$;
+
+/**
+ * Runs p_sql as p_actor and rolls back whatever it changed. p_sql must return one bigint:
+ * the number of rows it saw or changed. Returns 'allow' when that is > 0, 'deny' when it is 0
+ * or the statement raised insufficient_privilege (42501, which also covers RLS WITH CHECK
+ * violations). Any other error propagates so a broken fixture fails loudly.
+ */
+create function tests.probe(p_actor text, p_sql text) returns text
+language plpgsql as $$
+declare
+  n bigint;
+  outcome text;
+begin
+  begin
+    perform tests.act_as(p_actor);
+    execute p_sql into n;
+    outcome := case when coalesce(n, 0) > 0 then 'allow' else 'deny' end;
+    raise exception using errcode = 'QMPRB', message = outcome;
+  exception
+    when sqlstate 'QMPRB' then outcome := sqlerrm;
+    when insufficient_privilege then outcome := 'deny';
+  end;
+  return outcome;
+end $$;
+
+/** Creates an auth user the way GoTrue would, for fixtures. */
+create function tests.create_user(p_name text, p_app_metadata jsonb default '{}') returns uuid
+language plpgsql as $$
+declare uid uuid := tests.new_id(p_name);
+begin
+  insert into auth.users (id, instance_id, aud, role, email, encrypted_password,
+                          raw_app_meta_data, raw_user_meta_data, created_at, updated_at, email_confirmed_at)
+  values (uid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
+          p_name || '@test.local', '', p_app_metadata, '{}', now(), now(), now());
+  return uid;
+end $$;
+
+/**
+ * Inserts a waiting visit in a fixture queue as the system actor and names it p_name.
+ * Ticket numbers come from the real counter; the token hash is random.
+ */
+create function tests.new_visit(p_name text, p_queue text, p_guest_name text default 'Guest')
+returns uuid
+language plpgsql as $$
+declare
+  q app.queues;
+  day date;
+  n int;
+  vid uuid := tests.new_id(p_name);
+begin
+  select * into q from app.queues where id = tests.id(p_queue);
+  day := private.service_day(q.location_id);
+  n := private.next_ticket(q.id, q.ticket_prefix, day);
+  perform private.set_actor('system', null);
+  insert into app.visits (id, org_id, location_id, queue_id, service_day, ticket_prefix, ticket_number,
+                          display_ticket, status, sort_key, guest_name, guest_token_hash, source,
+                          idempotency_key)
+  values (vid, q.org_id, q.location_id, q.id, day, q.ticket_prefix, n,
+          q.ticket_prefix || lpad(n::text, 3, '0'), 'waiting', n * 1024, p_guest_name,
+          extensions.digest(gen_random_uuid()::text, 'sha256'), 'online', gen_random_uuid());
+  return vid;
+end $$;
+
+/**
+ * An expected visit (an appointment that has not checked in) at p_scheduled, with guest link
+ * token p_name || '-token'. It has no place in line until it is checked in.
+ */
+create function tests.make_expected_visit(p_name text, p_queue text, p_scheduled timestamptz, p_guest_name text default 'Guest')
+returns uuid
+language plpgsql as $$
+declare
+  q app.queues;
+  day date;
+  n int;
+  vid uuid := tests.new_id(p_name);
+begin
+  select * into q from app.queues where id = tests.id(p_queue);
+  day := private.service_day(q.location_id);
+  n := private.next_ticket(q.id, q.ticket_prefix, day);
+  perform private.set_actor('system', null);
+  insert into app.visits (id, org_id, location_id, queue_id, service_day, ticket_prefix, ticket_number,
+                          display_ticket, status, sort_key, guest_name, guest_token_hash, source,
+                          idempotency_key, scheduled_at)
+  values (vid, q.org_id, q.location_id, q.id, day, q.ticket_prefix, n,
+          q.ticket_prefix || lpad(n::text, 3, '0'), 'expected', n * 1024, p_guest_name,
+          private.token_hash(p_name || '-token'), 'appointment', gen_random_uuid(), p_scheduled);
+  return vid;
+end $$;
+
+/**
+ * Builds the shared fixture world and registers its actors for the RLS matrix:
+ *   org A ("org_a", location "loc_a") with owner, admin, manager, staff, a display and a kiosk;
+ *   org B ("org_b", location "loc_b") with its owner, registered as actor other_owner;
+ *   a platform operator with an aal2 (MFA) session and no membership, registered as platform.
+ * Every table migration adds one org A fixture row here so the matrix can probe it.
+ * Runs as postgres, so RLS does not apply while building.
+ */
+create function tests.create_world() returns void
+language plpgsql as $$
+declare
+  r text;
+  uid uuid;
+  note_id uuid;
+begin
+  insert into app.organizations (id, name) values
+    (tests.new_id('org_a'), 'Org A'), (tests.new_id('org_b'), 'Org B');
+  insert into app.locations (id, org_id, name, slug, tz) values
+    (tests.new_id('loc_a'), tests.id('org_a'), 'Location A', 'test-location-a', 'America/New_York'),
+    (tests.new_id('loc_b'), tests.id('org_b'), 'Location B', 'test-location-b', 'Europe/Berlin');
+
+  foreach r in array array['owner', 'admin', 'manager', 'staff'] loop
+    uid := tests.create_user(r);
+    insert into app.memberships (org_id, user_id, role) values (tests.id('org_a'), uid, r::app.member_role);
+    insert into tests.actors values (r, 'authenticated',
+      jsonb_build_object('sub', uid, 'role', 'authenticated', 'aud', 'authenticated'));
+  end loop;
+
+  uid := tests.create_user('other_owner');
+  insert into app.memberships (org_id, user_id, role) values (tests.id('org_b'), uid, 'owner');
+  insert into tests.actors values ('other_owner', 'authenticated',
+    jsonb_build_object('sub', uid, 'role', 'authenticated', 'aud', 'authenticated'));
+
+  uid := tests.create_user('platform');
+  insert into app.platform_roles (user_id, role) values (uid, 'operator');
+  insert into tests.actors values ('platform', 'authenticated',
+    jsonb_build_object('sub', uid, 'role', 'authenticated', 'aud', 'authenticated', 'aal', 'aal2'));
+
+  foreach r in array array['display', 'kiosk'] loop
+    uid := tests.create_user(r, jsonb_build_object('kind', r, 'org_id', tests.id('org_a'),
+                                                   'location_id', tests.id('loc_a')));
+    insert into app.devices (id, org_id, location_id, kind, name, auth_user_id)
+    values (tests.new_id(r || '_device'), tests.id('org_a'), tests.id('loc_a'), r::app.device_kind, r, uid);
+    insert into tests.actors values (r, 'authenticated', jsonb_build_object(
+      'sub', uid, 'role', 'authenticated', 'aud', 'authenticated',
+      'app_metadata', jsonb_build_object('kind', r, 'org_id', tests.id('org_a'), 'location_id', tests.id('loc_a'))));
+  end loop;
+
+  insert into app.business_hours (id, org_id, location_id, weekday, opens, closes)
+  values (tests.new_id('hours_a'), tests.id('org_a'), tests.id('loc_a'), 1, '09:00', '17:00');
+  insert into app.hours_exceptions (id, org_id, location_id, date, closed)
+  values (tests.new_id('exception_a'), tests.id('org_a'), tests.id('loc_a'), '2026-12-25', true);
+  insert into app.slug_redirects (old_slug, org_id, location_id)
+  values ('old-location-a', tests.id('org_a'), tests.id('loc_a'));
+
+  -- D1 (#48) devices
+  insert into app.device_pairing_codes (id, org_id, location_id, kind, code_hash, expires_at)
+  values (tests.new_id('pairing_code_a'), tests.id('org_a'), tests.id('loc_a'), 'display',
+          extensions.digest('fixture-code', 'sha256'), now() + interval '10 minutes');
+
+  -- 2B-I1 (#306) API keys
+  insert into app.api_keys (id, org_id, name, prefix, secret_hash, scopes)
+  values (tests.new_id('api_key_a'), tests.id('org_a'), 'Fixture key', '0badc0de',
+          extensions.digest('fixture-key', 'sha256'), array['queues:read']);
+
+  -- 3-DOM1 (#370) custom domains
+  insert into app.custom_domains (id, org_id, hostname, default_location_id)
+  values (tests.new_id('domain_a'), tests.id('org_a'), 'queue.fixture-a.org', tests.id('loc_a'));
+
+  -- 2B-I6 (#311) webhooks
+  insert into app.webhook_endpoints (id, org_id, url, event_types, vault_secret_id, active)
+  values (tests.new_id('webhook_a'), tests.id('org_a'), 'https://example.com/fixture', array['visit.called'], gen_random_uuid(), false);
+  insert into app.webhook_deliveries (id, org_id, endpoint_id, event_id, event_type, payload)
+  values (tests.new_id('webhook_delivery_a'), tests.id('org_a'), tests.id('webhook_a'), 'fixture', 'visit.called', '{}');
+
+  -- 3-WA2 (#359) WhatsApp template mapping
+  insert into app.notification_templates (id, org_id, trigger, channel, body)
+  values (tests.new_id('template_wa'), tests.id('org_a'), 'called', 'whatsapp', 'Your turn {ticket}');
+  insert into app.notification_templates (id, org_id, trigger, channel, body)
+  values (tests.new_id('template_wa2'), tests.id('org_a'), 'almost_up', 'whatsapp', 'Almost up {ticket}');
+  insert into app.whatsapp_templates (id, org_id, template_id, wa_name, wa_language, wa_category, status)
+  values (tests.new_id('wa_template_a'), tests.id('org_a'), tests.id('template_wa'), 'queue_called', 'en_US', 'utility', 'approved');
+
+  -- 3-PV1 (#340) provider settings
+  insert into app.provider_settings (id, org_id, channel, provider, mode)
+  values (tests.new_id('provider_settings_a'), tests.id('org_a'), 'payments', 'stripe', 'own');
+
+  -- 2P-PRV1 (#188) retention
+  insert into app.retention_runs (id, org_id, visits_anonymized, contacts_deleted, appointments_anonymized)
+  overriding system value values (900000001, tests.id('org_a'), 0, 0, 0);
+
+  -- 2P-PRV5 (#192) block list
+  insert into app.blocked_identities (id, org_id, kind, value_hash, reason)
+  values (tests.new_id('block_a'), tests.id('org_a'), 'phone_hash', '\xaa', 'fixture');
+
+  -- S2 (#23) queues
+  insert into app.queues (id, org_id, location_id, name, ticket_prefix)
+  values (tests.new_id('queue_a'), tests.id('org_a'), tests.id('loc_a'), 'Walk-ins', 'A');
+  insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes)
+  values (tests.new_id('service_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), 'Haircut', 20);
+  -- 4-RBAC1 (#373) custom roles, one per org
+  insert into app.custom_roles (id, org_id, name, permissions)
+  values (tests.new_id('role_a'), tests.id('org_a'), 'Greeter', array['visits.call']),
+         (tests.new_id('role_b'), tests.id('org_b'), 'Greeter', array['visits.call']);
+  insert into app.signage_slides (id, org_id, location_id, kind, body)
+  values (tests.new_id('slide_a'), tests.id('org_a'), tests.id('loc_a'), 'text', 'Welcome');
+  insert into app.counters (id, org_id, location_id, label)
+  values (tests.new_id('counter_a'), tests.id('org_a'), tests.id('loc_a'), 'Chair 1');
+  insert into app.counters (id, org_id, location_id, label)
+  values (tests.new_id('counter_pair'), tests.id('org_a'), tests.id('loc_a'), 'Chair 2');
+  insert into app.ticket_counters (org_id, queue_id, prefix, service_day, last_value)
+  values (tests.id('org_a'), tests.id('queue_a'), 'A', '2026-01-01', 5);
+
+  -- 2A-Q1 (#100) resources
+  insert into app.service_resources (org_id, location_id, service_id, counter_id)
+  values (tests.id('org_a'), tests.id('loc_a'), tests.id('service_a'), tests.id('counter_a'));
+
+  -- 2P-APT1 (#157) booking config
+  insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes, active)
+  values (tests.new_id('service_a2'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), 'Shave', 15, false);
+  insert into app.booking_policies (id, org_id, service_id, bookable)
+  values (tests.new_id('booking_policy_a'), tests.id('org_a'), tests.id('service_a'), true);
+  insert into app.availability_rules (id, org_id, location_id, weekday, starts, ends)
+  values (tests.new_id('availability_rule_a'), tests.id('org_a'), tests.id('loc_a'), 1, '09:00', '17:00');
+  insert into app.availability_exceptions (id, org_id, location_id, local_date, kind)
+  values (tests.new_id('availability_exception_a'), tests.id('org_a'), tests.id('loc_a'), '2026-12-24', 'unavailable');
+  insert into app.time_blocks (id, org_id, location_id, counter_id, during)
+  values (tests.new_id('time_block_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('counter_a'),
+          tstzrange('2026-12-24 09:00+00', '2026-12-24 10:00+00'));
+  insert into app.capacity_rules (id, org_id, service_id, scope, capacity)
+  values (tests.new_id('capacity_rule_a'), tests.id('org_a'), tests.id('service_a'), 'slot', 2);
+
+  -- 2B-Q8 (#233) journeys
+  insert into app.journeys (id, org_id, location_id, name)
+  values (tests.new_id('journey_a'), tests.id('org_a'), tests.id('loc_a'), 'Fixture journey');
+  insert into app.journeys (id, org_id, location_id, name)
+  values (tests.new_id('journey_b'), tests.id('org_a'), tests.id('loc_a'), 'Empty fixture journey');
+  insert into app.journey_steps (id, journey_id, org_id, step_no, queue_id)
+  values (tests.new_id('journey_step_a'), tests.id('journey_a'), tests.id('org_a'), 1, tests.id('queue_a'));
+
+  -- 2B-ORG5 (#269) staff shifts
+  insert into app.staff_shifts (id, org_id, location_id, user_id, during)
+  values (tests.new_id('shift_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('staff'),
+          tstzrange('2026-01-01 09:00+00', '2026-01-01 17:00+00'));
+
+  -- 2B-S1 (#271) presence
+  -- Stale on purpose: fresh presence would switch the location's ETA to presence counting.
+  insert into app.staff_presence (org_id, location_id, user_id, status, since, updated_at)
+  values (tests.id('org_a'), tests.id('loc_a'), tests.id('staff'), 'available', now() - interval '13 hours', now() - interval '13 hours');
+
+  -- 2P-APT15 (#171) calendar feeds
+  insert into app.calendar_feeds (id, org_id, user_id, token_hash)
+  values (tests.new_id('calendar_feed_a'), tests.id('org_a'), tests.id('staff'), extensions.digest('fixture-feed', 'sha256'));
+
+  -- S3 (#24) visits
+  perform private.set_actor('system', null);
+  perform tests.new_visit('visit_a', 'queue_a');
+  -- 2B-Q1 (#226) priority classes
+  insert into app.priority_classes (id, org_id, location_id, name, offset_minutes)
+  values (tests.new_id('prio_a'), tests.id('org_a'), tests.id('loc_a'), 'Priority', 15);
+  insert into app.priority_rules (id, org_id, location_id, priority_class_id, condition_kind, source)
+  values (tests.new_id('prule_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('prio_a'), 'source', 'kiosk');
+  insert into app.routing_rules (id, org_id, location_id, target_queue_id, active)
+  values (tests.new_id('route_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), false);
+  -- 2A-Q7 (#106) intake
+  insert into app.intake_fields (id, org_id, location_id, queue_id, key, label, type)
+  values (tests.new_id('intake_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), 'note', 'Note', 'text');
+  insert into app.visit_answers (org_id, location_id, visit_id, answers)
+  values (tests.id('org_a'), tests.id('loc_a'), tests.id('visit_a'), '{"note": "hello"}');
+  -- F1 (#1277) forms
+  insert into app.forms (id, org_id, location_id, name)
+  values (tests.new_id('form_a'), tests.id('org_a'), tests.id('loc_a'), 'Form A');
+  insert into app.form_versions (id, org_id, location_id, form_id, version, fields, published_at)
+  values (tests.new_id('form_version_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('form_a'), 1, '[]', now());
+  insert into app.form_targets (id, org_id, location_id, form_id, queue_id, channel)
+  values (tests.new_id('form_target_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('form_a'), tests.id('queue_a'), 'booking');
+  insert into app.form_responses (id, org_id, location_id, form_version_id, visit_id, answers)
+  values (tests.new_id('form_response_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('form_version_a'), tests.id('visit_a'), '{"note": "hello"}');
+  -- W2 (#1304) waiver evidence
+  insert into app.waiver_acceptances (id, org_id, location_id, form_response_id, form_version_id, field_key, text_hash, accepted_at,
+                                      typed_name, subject_kind, subject_id)
+  values (tests.new_id('waiver_acceptance_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('form_response_a'), tests.id('form_version_a'),
+          'terms', repeat('a', 64), now(), 'Ann Lee', 'visit', tests.id('visit_a'));
+  -- 2P-APT2 (#158) appointments
+  insert into app.appointments (id, org_id, location_id, service_id, queue_id, starts_at, ends_at, local_date,
+                                guest_name, source, idempotency_key)
+  values (tests.new_id('appointment_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('service_a'), tests.id('queue_a'),
+          '2026-12-21 15:00Z', '2026-12-21 15:20Z', '2026-12-21', 'Ann', 'staff', gen_random_uuid());
+  -- 4-APT1 (#385) appointment series
+  insert into app.appointment_series (id, org_id, location_id, service_id, rule, idempotency_key)
+  values (tests.new_id('series_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('service_a'),
+          '{"freq": "weekly", "interval": 1}', gen_random_uuid());
+  insert into app.appointment_slot_counts (org_id, service_id, slot_start)
+  values (tests.id('org_a'), tests.id('service_a'), '2026-12-21 15:00Z');
+  insert into app.appointment_day_counts (org_id, service_id, local_date)
+  values (tests.id('org_a'), tests.id('service_a'), '2026-12-21');
+  insert into app.idempotency_keys (org_id, actor_id, rpc, key)
+  values (tests.id('org_a'), tests.id('staff'), 'call_next', tests.new_id('idem_a'));
+  -- 2B-A1 (#276) slot waitlist
+  insert into app.slot_waitlist (id, org_id, location_id, service_id, wanted_day, name, guest_email, token_hash, idempotency_key)
+  values (tests.new_id('waitlist_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('service_a'), '2030-01-12', 'Fixture',
+          'wes@example.test', private.token_hash('tok-waitlist-a'), gen_random_uuid());
+  -- 2B-A3 (#278) events
+  insert into app.events (id, org_id, location_id, service_id, title, during, capacity, public)
+  values (tests.new_id('event_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('service_a'), 'Open day',
+          tstzrange('2030-01-12 10:00Z', '2030-01-12 11:00Z'), 10, true);
+
+  -- V2 (#318) payments
+  insert into app.payment_holds (id, org_id, provider, provider_hold_id, amount_minor, currency, idempotency_key)
+  values (tests.new_id('hold_a'), tests.id('org_a'), 'fake', 'hold_fixture', 500, 'usd', 'fixture');
+  insert into app.payment_events (provider, provider_event_id, org_id, type)
+  values ('fake', 'evt_fixture', tests.id('org_a'), 'hold_succeeded');
+
+  -- 3-PAY2 (#363) payments
+  -- The org's card processor is connected (paid bookings need one).
+  update app.provider_settings set enabled = true, verified_at = now() where org_id = tests.id('org_a') and channel = 'payments';
+  insert into app.payment_policies (id, org_id, service_id, mode, amount_minor)
+  values (tests.new_id('payment_policy_a'), tests.id('org_a'), tests.id('service_a'), 'hold', 500);
+  insert into app.payments (id, org_id, location_id, visit_id, provider, intent_id, kind, status, amount_minor, currency, idempotency_key)
+  values (tests.new_id('payment_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('visit_a'), 'fake', 'pi_fixture', 'hold', 'authorized', 500, 'usd', 'fixture-pay');
+  insert into app.payment_jobs (id, org_id, location_id, payment_id, action, dedupe_key)
+  values (tests.new_id('payment_job_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('payment_a'), 'release', 'fixture-job');
+
+  -- S4 (#25) messaging
+  insert into app.guests (id, org_id, first_name) values (tests.new_id('guest_a'), tests.id('org_a'), 'Gina');
+  insert into app.guest_contacts (id, org_id, guest_id, channel, value, created_source)
+  values (tests.new_id('contact_a'), tests.id('org_a'), tests.id('guest_a'), 'phone', '+14155550123', 'online');
+  insert into app.consents (id, org_id, contact_id, channel, purpose, status, source,
+                            consent_text_version, consent_text_hash)
+  values (tests.new_id('consent_a'), tests.id('org_a'), tests.id('contact_a'), 'sms', 'transactional',
+          'granted', 'online', 'v1', 'hash');
+  -- 2B-C1 (#300) guest tags and notes
+  insert into app.guest_tags (id, org_id, name) values (tests.new_id('gtag_a'), tests.id('org_a'), 'Regular');
+  insert into app.guest_tags (id, org_id, name) values (tests.new_id('gtag_b'), tests.id('org_a'), 'Spare');
+  insert into app.guest_tag_links (org_id, guest_id, tag_id)
+  values (tests.id('org_a'), tests.id('guest_a'), tests.id('gtag_a'));
+  insert into app.guest_notes (id, org_id, guest_id, author_user_id, body)
+  values (tests.new_id('gnote_a'), tests.id('org_a'), tests.id('guest_a'), tests.id('staff'), 'Prefers mornings');
+  insert into app.suppressions (id, org_id, channel, value, reason)
+  values (tests.new_id('suppression_a'), tests.id('org_a'), 'sms', '+14155550999', 'stop');
+  insert into app.notification_templates (id, org_id, trigger, channel, body)
+  values (tests.new_id('template_a'), tests.id('org_a'), 'called', 'push', 'Your turn {ticket}');
+  insert into app.push_subscriptions (id, org_id, visit_id, endpoint, p256dh, auth)
+  values (tests.new_id('push_a'), tests.id('org_a'), tests.id('visit_a'), 'https://push.example/1', 'k', 'a');
+  insert into app.notifications (id, org_id, visit_id, channel, recipient_ref, template_key,
+                                 template_version, dedupe_key)
+  values (tests.new_id('notification_a'), tests.id('org_a'), tests.id('visit_a'), 'push',
+          tests.id('push_a'), 'called', 1, 'fixture-a');
+  insert into app.channel_limits (org_id, channel, daily_cap, country_allowlist)
+  values (tests.id('org_a'), 'sms', 3, '{US}');
+  insert into app.org_privacy (org_id, officer_name, email, jurisdiction)
+  values (tests.id('org_a'), 'Pat Privacy', 'privacy@example.test', 'ca');
+  insert into app.usage_alerts (org_id, channel, day, threshold)
+  values (tests.id('org_a'), 'sms', date '2000-01-01', 80);
+  insert into app.report_schedules (id, org_id, location_id, frequency, send_at_local, enabled)
+  values (tests.new_id('report_schedule_a'), tests.id('org_a'), tests.id('loc_a'), 'daily', '08:00', false);
+  insert into app.report_definitions (id, org_id, name, definition)
+  values (tests.new_id('report_def_a'), tests.id('org_a'), 'Fixture', '{"measures": ["visits"]}');
+  insert into app.analytics_questions (org_id, question) values (tests.id('org_a'), 'fixture');
+
+  -- 4-INT1 (#395) a Square connection and one queued sync job
+  insert into app.provider_settings (id, org_id, channel, provider, mode) values (tests.new_id('integration_setting_a'), tests.id('org_a'), 'pos', 'square', 'own');
+  insert into app.integration_jobs (id, org_id, setting_id, visit_id, event_id)
+  values (tests.new_id('integration_job_a'), tests.id('org_a'), tests.id('integration_setting_a'), tests.id('visit_a'), 'fixture');
+  insert into app.usage_counters (org_id, channel, day, sent)
+  values (tests.id('org_a'), 'sms', date '2000-01-01', 1);
+  insert into app.provider_rates (id, org_id, provider, channel, micros_per_unit)
+  values (tests.new_id('rate_a'), tests.id('org_a'), 'twilio', 'sms', 7900);
+  insert into app.dev_inbox (org_id, channel, recipient, body)
+  values (tests.id('org_a'), 'console', 'fixture', 'hello');
+  insert into app.inbound_messages (org_id, from_value_e164, body)
+  values (tests.id('org_a'), '+14155550198', 'fixture');
+  insert into app.visit_feedback (org_id, location_id, visit_id, rating)
+  values (tests.id('org_a'), tests.id('loc_a'), tests.id('visit_a'), 5);
+  insert into app.visit_messages (org_id, location_id, visit_id, sender, body)
+  values (tests.id('org_a'), tests.id('loc_a'), tests.id('visit_a'), 'guest', 'fixture');
+  insert into app.visit_companions (org_id, visit_id, first_name)
+  values (tests.id('org_a'), tests.id('visit_a'), 'Fixture');
+  insert into app.alert_preferences (org_id, visit_id, triggers)
+  values (tests.id('org_a'), tests.id('visit_a'), default);
+  insert into app.queue_broadcasts (id, org_id, queue_id, body)
+  values (tests.new_id('broadcast_a'), tests.id('org_a'), tests.id('queue_a'), 'fixture');
+
+  -- PLT3 (#409) support grants: revoked, so the platform actor still has no access to org A
+  insert into app.support_grants (id, org_id, granted_by, scope, reason, expires_at, revoked_at)
+  values (tests.new_id('grant_a'), tests.id('org_a'), tests.id('owner'), 'read', 'fixture',
+          now() + interval '1 hour', now());
+
+  -- #1138 support requests: one filed by the staff member
+  insert into app.support_requests (id, org_id, user_id, subject, message)
+  values (tests.new_id('support_request_a'), tests.id('org_a'), tests.id('staff'), 'Fixture', 'Fixture message');
+
+  -- #1132 an attention ack that has already expired, so it hides nothing
+  insert into app.platform_attention_acks (org_id, reason, acked_by, snooze_until)
+  values (tests.id('org_a'), 'no_recent_visits', tests.id('platform'), now() - interval '1 day');
+
+  -- 2P-RPT4 (#200) export ticket, started by the owner
+  insert into app.data_exports (id, org_id, actor, format, idempotency_key, created_at, expires_at)
+  values (tests.new_id('export_a'), tests.id('org_a'), tests.id('owner'), 'csv', gen_random_uuid(),
+          now() - interval '2 days', now() - interval '2 days' + interval '15 minutes');
+
+  -- 2A-TM1 (#95) invitations
+  insert into app.invitations (id, org_id, email, role, token_hash, invited_by)
+  values (tests.new_id('invitation_a'), tests.id('org_a'), 'invitee-fixture@example.test', 'staff',
+          extensions.digest('fixture-invite-token', 'sha256'), tests.id('owner'));
+
+  -- 2A-TM4 (#98) operator switch: the admin's tablet, worked by the staff member
+  insert into app.operator_sessions (id, org_id, location_id, device_user_id, operator_user_id, token_hash)
+  values (tests.new_id('operator_session_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('admin'),
+          tests.id('staff'), extensions.digest('fixture-operator-token', 'sha256'));
+
+  -- PLT6 (#412) entitlements
+  insert into app.entitlement_defaults (key, value, description)
+  values ('fixture.flag', 'false', 'Test-only flag');
+  insert into app.org_entitlements (org_id, key, value, reason)
+  values (tests.id('org_a'), 'fixture.flag', 'true', 'fixture');
+
+  -- 4-BILL1 (#377) billing (the platform flag stays off, so no trigger fires in other tests)
+  insert into app.subscriptions (org_id, plan_id, status, quantity, desired_quantity)
+  values (tests.id('org_a'), 'standard', 'active', 1, 1);
+  insert into app.plan_entitlements (plan_id, key, value) values ('free', 'fixture.flag', 'false');
+  insert into app.billing_jobs (id, org_id) values (tests.new_id('billing_job_a'), tests.id('org_a'));
+
+  -- 4-BILL4 (#380) SMS credits (a zero adjustment: the balance starts at nothing)
+  insert into app.credit_ledger (id, org_id, entry_type, amount_micros)
+  values (tests.new_id('credit_a'), tests.id('org_a'), 'adjustment', 0);
+
+  -- PLT7 (#413) platform stats
+  insert into app.platform_daily_stats (day, org_id, joins) values ('2026-01-01', tests.id('org_a'), 1);
+  insert into app.platform_sms_daily (day, org_id, messages) values ('2026-01-01', tests.id('org_a'), 1);
+
+  -- PLT9 (#415) platform announcements: active now
+  insert into app.platform_announcements (severity, message, ends_at)
+  values ('maintenance', 'fixture announcement', now() + interval '1 hour');
+
+  -- PLT8 (#414) platform blocks
+  insert into app.platform_blocks (contact_hash, kind, reason)
+  values (extensions.digest('fixture-block', 'sha256'), 'phone', 'fixture');
+
+  -- #1135 platform org notes
+  note_id := tests.new_id('org_note_a');
+  insert into app.platform_org_notes (id, org_id, root_id, version, body)
+  values (note_id, tests.id('org_a'), note_id, 1, 'fixture note');
+
+  -- #1274 platform incident register
+  insert into app.platform_incidents (id, kind, title, org_ids)
+  values (tests.new_id('incident_a'), 'other', 'fixture incident', array[tests.id('org_a')]);
+  insert into app.platform_incident_events (incident_id, kind, body)
+  values (tests.id('incident_a'), 'note', 'fixture event');
+  insert into app.incident_notices (incident_id, subject, body)
+  values (tests.id('incident_a'), 'fixture notice', 'fixture body');
+  insert into app.org_incident_log (org_id, source, kind, title, detected_at)
+  values (tests.id('org_a'), 'manual', 'other', 'fixture incident log', now());
+  insert into app.guest_notices (org_id, log_id, subject, body, window_from, window_to)
+  values (tests.id('org_a'), (select id from app.org_incident_log where title = 'fixture incident log'),
+          'fixture guest notice', 'fixture body', now() - interval '1 day', now());
+end $$;
+
+------------------------------------------------------------------------------------------------
+-- Structural rules (technical-design.md 5). Each returns the offending objects; tests assert
+-- the result is empty, so a failure names exactly what broke the rule.
+------------------------------------------------------------------------------------------------
+
+/** Schemas we own. Supabase-managed schemas (auth, storage, realtime, ...) are not ours to police. */
+create function tests.own_schemas() returns name[]
+language sql immutable as $$ select array['api', 'app', 'private', 'ops', 'public']::name[] $$;
+
+/** Schemas PostgREST serves (config.toml [api] schemas, plus public as a tripwire). */
+create function tests.exposed_schemas() returns name[]
+language sql immutable as $$ select array['api', 'app', 'public']::name[] $$;
+
+create function tests.tables_without_rls() returns setof text
+language sql stable as $$
+  select format('%I.%I', n.nspname, c.relname)
+  from pg_class c join pg_namespace n on n.oid = c.relnamespace
+  where c.relkind in ('r', 'p') and n.nspname = any(tests.exposed_schemas())
+    and not c.relrowsecurity
+  order by 1
+$$;
+
+create function tests.tables_without_policies() returns setof text
+language sql stable as $$
+  select format('%I.%I', n.nspname, c.relname)
+  from pg_class c join pg_namespace n on n.oid = c.relnamespace
+  where c.relkind in ('r', 'p') and n.nspname = any(tests.exposed_schemas())
+    and not exists (select 1 from pg_policy p where p.polrelid = c.oid)
+  order by 1
+$$;
+
+create function tests.own_functions() returns table (oid oid, signature text, name text)
+language sql stable as $$
+  select p.oid, p.oid::regprocedure::text, format('%I.%I', n.nspname, p.proname)
+  from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+  where n.nspname = any(tests.own_schemas())
+    and not exists (
+      select 1 from pg_depend d
+      where d.classid = 'pg_proc'::regclass and d.objid = p.oid and d.deptype = 'e'
+    )
+$$;
+
+create function tests.definers_without_search_path() returns setof text
+language sql stable as $$
+  select f.signature
+  from tests.own_functions() f join pg_proc p on p.oid = f.oid
+  where p.prosecdef
+    and not exists (select 1 from unnest(p.proconfig) c where c like 'search_path=%')
+  order by 1
+$$;
+
+/** SECURITY DEFINER functions anon (directly or via PUBLIC) can execute, minus the allowlist. */
+create function tests.anon_definers_not_allowlisted() returns setof text
+language sql stable as $$
+  select f.signature
+  from tests.own_functions() f join pg_proc p on p.oid = f.oid
+  where p.prosecdef
+    and has_function_privilege('anon', f.oid, 'EXECUTE')
+    and f.name <> all(tests.anon_definer_allowlist())
+  order by 1
+$$;
+
+/** SECURITY DEFINER functions not listed in supabase/security-definer-allowlist.txt at all. */
+create function tests.definers_not_allowlisted() returns setof text
+language sql stable as $$
+  select f.signature
+  from tests.own_functions() f join pg_proc p on p.oid = f.oid
+  where p.prosecdef and f.name <> all(tests.definer_allowlist())
+  order by 1
+$$;
+
+create function tests.views_without_security_invoker() returns setof text
+language sql stable as $$
+  select format('%I.%I', n.nspname, c.relname)
+  from pg_class c join pg_namespace n on n.oid = c.relnamespace
+  where c.relkind = 'v' and n.nspname = any(tests.own_schemas())
+    and not coalesce('security_invoker=true' = any(c.reloptions)
+                     or 'security_invoker=on' = any(c.reloptions), false)
+  order by 1
+$$;
+
+create function tests.matviews_in_exposed_schemas() returns setof text
+language sql stable as $$
+  select format('%I.%I', n.nspname, c.relname)
+  from pg_class c join pg_namespace n on n.oid = c.relnamespace
+  where c.relkind = 'm' and n.nspname = any(tests.exposed_schemas())
+  order by 1
+$$;
+
+/** Any table, view or sequence privilege held by anon or PUBLIC in a schema we own. */
+create function tests.anon_relation_grants() returns setof text
+language sql stable as $$
+  select format('%I.%I: %s', n.nspname, c.relname, a.privilege_type)
+  from pg_class c
+  join pg_namespace n on n.oid = c.relnamespace
+  cross join lateral aclexplode(coalesce(c.relacl, acldefault(
+    case when c.relkind = 'S' then 's' else 'r' end::"char", c.relowner))) a
+  where n.nspname = any(tests.own_schemas())
+    and c.relkind in ('r', 'p', 'v', 'm', 'S', 'f')
+    and a.grantee in (0, 'anon'::regrole::oid)
+  order by 1
+$$;
+
+/** Tables in app without org_id, unless matrix.yaml lists them under global_tables. */
+create function tests.tenant_tables_without_org_id() returns setof text
+language sql stable as $$
+  select format('%I.%I', n.nspname, c.relname)
+  from pg_class c join pg_namespace n on n.oid = c.relnamespace
+  where c.relkind in ('r', 'p') and n.nspname = 'app'
+    and format('%I.%I', n.nspname, c.relname) <> all(tests.global_tables())
+    and not exists (
+      select 1 from pg_attribute a
+      where a.attrelid = c.oid and a.attname = 'org_id' and not a.attisdropped
+    )
+  order by 1
+$$;
+
+/** Tables in exposed schemas with no entry in supabase/tests/rls/matrix.yaml. */
+create function tests.tables_without_matrix_entry() returns setof text
+language sql stable as $$
+  select format('%I.%I', n.nspname, c.relname)
+  from pg_class c join pg_namespace n on n.oid = c.relnamespace
+  where c.relkind in ('r', 'p') and n.nspname = any(tests.exposed_schemas())
+    and format('%I.%I', n.nspname, c.relname) <> all(tests.matrix_tables())
+  order by 1
+$$;
+
+grant execute on all functions in schema tests to anon, authenticated, service_role;
+
+/**
+ * Negative-fixture check: runs p_ddl, then reports whether p_check returns p_expected, and
+ * rolls the DDL back. (A SAVEPOINT rollback would also roll back pgTAP's own counters.)
+ */
+create function tests.catches(p_ddl text, p_check text, p_expected text) returns boolean
+language plpgsql as $$
+declare caught boolean;
+begin
+  begin
+    execute p_ddl;
+    execute format('select %L in (select * from (%s) q)', p_expected, p_check) into caught;
+    raise exception using errcode = 'QMPRB', message = caught::text;
+  exception when sqlstate 'QMPRB' then
+    caught := sqlerrm::boolean;
+  end;
+  return caught;
+end $$;
+grant execute on function tests.catches(text, text, text) to anon, authenticated, service_role;

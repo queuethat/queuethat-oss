@@ -1,0 +1,6 @@
+{
+  "type": "https://developer.vonage.com/api-errors#unauthorized",
+  "title": "Unauthorized",
+  "detail": "You did not provide correct credentials.",
+  "instance": "bf0ca0bf927b3b52e3cb03217e1a1ddf"
+}

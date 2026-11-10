@@ -1,0 +1,4 @@
+<h2>{{ if .Data.invite_by }}{{ .Data.invite_by }} invited you to join {{ .Data.invite_org }} on QueueThat{{ else }}You have been invited to join {{ if .Data.invite_org }}{{ .Data.invite_org }}{{ else }}a team{{ end }} on QueueThat{{ end }}</h2>
+<p>QueueThat runs the waiting line at {{ if .Data.invite_org }}{{ .Data.invite_org }}{{ else }}this business{{ end }}. Accept the invitation to create your account and join the team.</p>
+<p><a href="{{ .ConfirmationURL }}">Accept the invitation</a></p>
+<p>The link works once and can be opened on any device. If you weren't expecting this, ignore this email: nothing happens unless you open the link.</p>

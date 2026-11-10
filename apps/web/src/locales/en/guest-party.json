@@ -1,0 +1,16 @@
+{
+  "title": "Your party",
+  "intro": "Add the people with you so staff can greet everyone. Optional.",
+  "none": "No one added yet.",
+  "add": "First name",
+  "addButton": "Add someone",
+  "remove": "Remove {{name}}",
+  "removeTitle": "Remove {{name}}?",
+  "removeBody": "They will no longer be listed with your party.",
+  "removeConfirm": "Yes, remove",
+  "removeCancel": "Keep",
+  "limit": "You can add up to 9 people.",
+  "tooBig": "This queue can't take a party that large.",
+  "failed": "Couldn't update your party. Check your connection and try again.",
+  "removeTrigger": "Remove"
+}

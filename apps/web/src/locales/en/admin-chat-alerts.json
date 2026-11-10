@@ -1,0 +1,50 @@
+{
+  "title": "Staff chat alerts",
+  "loading": "Loading chat alerts",
+  "adminsOnly": "Only admins and owners can manage chat alerts.",
+  "kind": { "slack": "Slack", "discord": "Discord", "teams": "Microsoft Teams" },
+  "host": { "slack": "hooks.slack.com", "discord": "discord.com", "teams": "webhook.office.com" },
+  "howTo": {
+    "slack": "In Slack, create an app with Incoming Webhooks, add it to a channel and copy the webhook URL.",
+    "discord": "In Discord, open the channel settings, choose Integrations, create a webhook and copy its URL.",
+    "teams": "In Teams, add a Workflows webhook to the channel and copy the URL it gives you."
+  },
+  "urlHint": {
+    "slack": "Starts with https://hooks.slack.com/",
+    "discord": "Starts with https://discord.com/api/webhooks/",
+    "teams": "An https address on webhook.office.com or logic.azure.com"
+  },
+  "alert": {
+    "joined": "A guest joined",
+    "queueLong": "The queue is long",
+    "deliveryFailed": "A guest message could not be delivered",
+    "queueClosed": "A queue was closed or reopened"
+  },
+  "connect": {
+    "title": "Connect a channel",
+    "app": "Chat app",
+    "url": "Webhook URL",
+    "alerts": "Send an alert when",
+    "threshold": "Queue is long when more than this many are waiting",
+    "thresholdHint": "You get at most one alert per queue every 30 minutes.",
+    "save": "Connect channel",
+    "saving": "Connecting",
+    "saved": "Connected. Send a test alert below."
+  },
+  "connected": {
+    "title": "Connected channels",
+    "empty": "No chat channel connected yet.",
+    "off": "Off",
+    "queueLongAt": "Queue over {{count}} waiting",
+    "test": "Send test alert",
+    "testing": "Sending",
+    "testSent": "Test alert queued. It arrives within a minute."
+  },
+  "errors": {
+    "invalid_url": "That is not a {{host}} webhook address for this app.",
+    "invalid_input": "Check the URL and the number, then try again.",
+    "permission_denied": "Only admins and owners can connect a channel.",
+    "not_found": "That channel no longer exists.",
+    "unknown": "Something went wrong. Try again."
+  }
+}

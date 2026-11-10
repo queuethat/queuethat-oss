@@ -1,0 +1,9 @@
+{
+  "errors": [
+    {
+      "code": "40300",
+      "title": "Blocked due to STOP message",
+      "detail": "Recipient has opted out."
+    }
+  ]
+}

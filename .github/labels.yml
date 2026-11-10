@@ -1,0 +1,56 @@
+# Label taxonomy from technical-design.md 11.4, synced by .github/workflows/labels.yml.
+# Phase 2 is split into 2a and 2b to match the issues. Only the maintainer applies agent:ready.
+- { name: 'type:epic', color: '3e4b9e', description: 'Parent issue grouping sub-issues' }
+- { name: 'type:feature', color: '1d76db', description: 'User-facing capability' }
+- { name: 'type:task', color: '5319e7', description: 'Implementation ticket' }
+- { name: 'type:spike', color: 'c5def5', description: 'Time-boxed investigation' }
+- { name: 'type:chore', color: 'bfd4f2', description: 'Maintenance with no behaviour change' }
+- { name: 'type:test', color: 'd4c5f9', description: 'Test-only work' }
+- { name: 'area:db', color: '0e8a16', description: 'Schema, RPCs, RLS, pgTAP' }
+- { name: 'area:web', color: '2ea44f', description: 'Web app and packages/ui' }
+- { name: 'area:infra', color: '5a9e6f', description: 'CI, repo, deploy' }
+- { name: 'area:providers', color: '89c79b', description: 'Notification and payment providers' }
+- { name: 'area:security', color: 'b60205', description: 'Security controls' }
+- { name: 'area:docs', color: 'c2e0c6', description: 'Documentation' }
+- { name: 'phase:0', color: 'fef2c0', description: 'Foundation' }
+- { name: 'phase:1', color: 'fbe28c', description: 'Local core' }
+- { name: 'phase:2a', color: 'f9d058', description: 'Second business' }
+- { name: 'phase:2b', color: 'f2c744', description: 'Waitwhile parity' }
+- { name: 'phase:3', color: 'e4b429', description: 'Paid integrations' }
+- { name: 'phase:4', color: 'c79a16', description: 'On demand' }
+- { name: 'pri:P0', color: 'b60205', description: 'Must have for the phase' }
+- { name: 'pri:P1', color: 'd93f0b', description: 'Should have' }
+- { name: 'pri:P2', color: 'e99695', description: 'Could have' }
+- { name: 'pri:P3', color: 'f9d0c4', description: 'Only on request' }
+- { name: 'size:S', color: 'ededed', description: 'Under a day' }
+- { name: 'size:M', color: 'cccccc', description: 'One to three days; anything bigger is split' }
+- {
+    name: 'size:override',
+    color: '000000',
+    description: 'Silences the advisory 400-line size warning',
+  }
+- {
+    name: 'agent:ready',
+    color: '0052cc',
+    description: 'Maintainer only: an agent may pick this up',
+  }
+- { name: 'agent:working', color: '006b75', description: 'An agent is working on it' }
+- { name: 'agent:blocked', color: 'e11d21', description: 'Agent stopped; see the last comment' }
+- { name: 'needs-human', color: 'd93f0b', description: 'Needs a human decision or review' }
+- { name: 'schema-change', color: 'fbca04', description: 'Adds a migration; one open at a time' }
+- { name: 'security-review', color: 'b60205', description: 'Needs a security-focused review' }
+- {
+    name: 'selfhost-broken',
+    color: 'b60205',
+    description: 'The self-host stack failed its nightly smoke test',
+  }
+- {
+    name: 'single-owner',
+    color: '5d4037',
+    description: 'Foundation work; no parallel agent touches these files',
+  }
+- {
+    name: 'status:icebox',
+    color: 'ffffff',
+    description: 'Not promoted yet; re-validate before starting',
+  }

@@ -1,0 +1,27 @@
+{
+  "guests": 500,
+  "joins_ok": 200,
+  "joins_failed": 0,
+  "socket_errors": 300,
+  "pulses_sent": 11,
+  "pulses_expected": 2200,
+  "pulses_received": 2200,
+  "drop_rate": 0,
+  "refetch_errors": 0,
+  "stale_reads": 0,
+  "pulse_delivery_ms": {
+    "p50": 12.131103515625,
+    "p95": 20.962890625,
+    "max": 26.010986328125
+  },
+  "refetch_ms": {
+    "p50": 2.5909665000000004,
+    "p95": 4.802450149999996,
+    "max": 41.217865
+  },
+  "event_to_refetch_ms": {
+    "p50": 760.2349853515625,
+    "p95": 1436.2313598632813,
+    "max": 1522.962890625
+  }
+}

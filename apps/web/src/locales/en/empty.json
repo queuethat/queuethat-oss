@@ -1,0 +1,49 @@
+{
+  "console": {
+    "title": "No one is waiting",
+    "why": "Share your line and guests will appear here.",
+    "copy": "Copy join link",
+    "copied": "Link copied.",
+    "qr": "Show QR code",
+    "qrTitle": "Scan to join",
+    "qrLabel": "QR code for {{url}}",
+    "close": "Close"
+  },
+  "queues": {
+    "title": "No queues yet",
+    "why": "A queue is a line guests can join.",
+    "add": "Add your first queue",
+    "template": "Use a template"
+  },
+  "counters": {
+    "title": "No counters yet",
+    "why": "A counter is a desk, chair or table where a guest is served.",
+    "add": "Add your first counter"
+  },
+  "team": {
+    "title": "It's just you",
+    "why": "Invite someone to run the line."
+  },
+  "devices": {
+    "title": "No screens paired",
+    "why": "Pair a TV to show who is next."
+  },
+  "guests": {
+    "title": "No guests yet",
+    "why": "This fills in after your first visits.",
+    "join": "Open your join page"
+  },
+  "analytics": {
+    "title": "No numbers yet",
+    "why": "This fills in after your first visits.",
+    "join": "Open your join page"
+  },
+  "feedback": {
+    "title": "No feedback yet",
+    "why": "This fills in after your first visits."
+  },
+  "developers": {
+    "title": "Nothing here yet",
+    "why": "Keys and webhooks let other software read and update your queues. Most businesses never need them."
+  }
+}

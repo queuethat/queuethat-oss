@@ -1,0 +1,23 @@
+{
+  "secret": "plivo-auth-token",
+  "t": 1761840000,
+  "url": "https://example.test/functions/v1/provider-webhook/plivo/6f1c1f0e-8d5a-4c55-9a1e-2b9f3c4d5e6f",
+  "nonce": "nonce-123456",
+  "params": {
+    "MessageUUID": "db3ce55a-7f1d-11e1-8ea7-1231380c0f0b",
+    "Status": "delivered",
+    "From": "15550000000",
+    "To": "15558675310",
+    "ErrorCode": ""
+  },
+  "signature": "58U813pMOpz24SRLcdEwrsDuo/vyNIxYzRxtQktG8Oo=",
+  "inboundParams": {
+    "MessageUUID": "in-1",
+    "From": "15558675310",
+    "To": "15550000000",
+    "Text": "STOP",
+    "Type": "sms"
+  },
+  "inboundSignature": "Tj1kpaMlJyZWToZ/U0t3pyCCJUryU26EpKNml7k642E=",
+  "wrongSecretSignature": "fpQWc7ASyIjD9/zyI8q4/c1Ltqi+vLcbenpwlme6ptI="
+}

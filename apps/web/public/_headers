@@ -1,0 +1,38 @@
+# Security headers for every response (X-7, #74; technical-design.md section 5).
+# Cloudflare Pages reads this file from dist/. `vite preview` serves the same headers, and
+# deploy/selfhost/Caddyfile must stay in step (scripts/static-headers.test.ts checks both).
+#
+# Referrer-Policy is no-referrer everywhere, not only on /q and /v: this is a single-page
+# app, so the policy comes from whichever URL the browser loaded first, and a guest who
+# lands on / and is routed to /v/<token> would otherwise leak the token in Referer.
+#
+# The full CSP is report-only for the pilot. Browsers ignore frame-ancestors in report-only
+# mode, so it is enforced, with object-src and base-uri, in its own header now.
+# There is no report-to endpoint yet (deferred to observability, O6), so violations only reach
+# the browser console; tests/e2e/csp.spec.ts fails on any, in Chromium and WebKit.
+/*
+  Content-Security-Policy: frame-ancestors 'none'; object-src 'none'; base-uri 'self'
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://js.stripe.com; frame-src https://challenges.cloudflare.com https://js.stripe.com https://hooks.stripe.com; style-src 'self'; img-src 'self' data: blob: https://*.supabase.co; font-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.sentry.io https://api.stripe.com; worker-src 'self'; manifest-src 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: no-referrer
+
+# The service worker must be revalidated on every update check, or new versions stall (O1, #72).
+/sw.js
+  Cache-Control: no-cache
+
+# Paired TVs and kiosks poll this to notice a new deploy (D3, #50), so it must never be cached.
+/version.json
+  Cache-Control: no-store
+
+# The embeddable join widget (J7, #245) is the one page meant to sit in someone else's iframe,
+# so it drops X-Frame-Options and allows any frame-ancestors. Everything else stays DENY.
+# `!` removes a header an earlier rule set (Cloudflare Pages syntax); vercel.json and the
+# Caddyfile express the same thing explicitly, and the tests check all three agree.
+/w/*
+  ! Content-Security-Policy
+  ! Content-Security-Policy-Report-Only
+  ! X-Frame-Options
+  Content-Security-Policy: frame-ancestors *; object-src 'none'; base-uri 'self'
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://js.stripe.com; frame-src https://challenges.cloudflare.com https://js.stripe.com https://hooks.stripe.com; style-src 'self'; img-src 'self' data: blob: https://*.supabase.co; font-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.sentry.io https://api.stripe.com; worker-src 'self'; manifest-src 'self'; form-action 'self'; frame-ancestors *; object-src 'none'; base-uri 'self'

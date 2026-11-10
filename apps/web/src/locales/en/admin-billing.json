@@ -1,0 +1,78 @@
+{
+  "title": "Billing",
+  "loading": "Loading billing",
+  "error": "Could not load billing.",
+  "ownersOnly": "Only the owner can see billing.",
+  "notAvailable": "Billing is not available on this deployment.",
+  "plan": "Plan",
+  "perLocation": "Price per location",
+  "price": {
+    "month": "{{amount}} per month",
+    "year": "{{amount}} per year"
+  },
+  "locations": "Locations",
+  "total": "Your monthly total",
+  "nextInvoice": "Next invoice",
+  "manage": "Manage billing",
+  "subscribe": "Subscribe",
+  "openError": "Could not open billing. Try again in a moment.",
+  "banner": {
+    "pastDue": "Your last payment failed. Update your card by {{date}}; until then nothing changes, and your data is never deleted.",
+    "unpaid": "Your subscription is unpaid. You are on the free plan; your data is kept.",
+    "canceled": "Your subscription is canceled. You are on the free plan; your data is kept.",
+    "incomplete": "Your subscription has not started yet. Finish the payment to activate it."
+  },
+  "credit": {
+    "title": "SMS credit",
+    "balance": "Balance: {{amount}}",
+    "note": "Text messages sent through our account use this credit at cost plus a small margin, shown separately below. It is never topped up automatically; sending stops at zero.",
+    "add": "Add {{amount}}",
+    "history": "Credit history",
+    "col": {
+      "date": "Date",
+      "type": "Type",
+      "cost": "Provider cost",
+      "margin": "Margin",
+      "amount": "Amount"
+    },
+    "type": {
+      "topup": "Top-up",
+      "debit": "Message",
+      "adjustment": "Price adjustment",
+      "addon_allowance": "Monthly text bundle"
+    }
+  },
+  "planLimit": {
+    "members": "Your plan includes {{count}} person. Upgrade to add more.",
+    "members_other": "Your plan includes {{count}} people. Upgrade to add more.",
+    "membersUnknown": "Your plan has no seats left for another person. Upgrade to add more.",
+    "locations": "Your plan includes {{count}} location. Upgrade to add more.",
+    "locations_other": "Your plan includes {{count}} locations. Upgrade to add more.",
+    "locationsUnknown": "Your plan has no room for another location. Upgrade to add more.",
+    "upgrade": "Upgrade",
+    "askOwner": "Only an owner can change the plan. Ask one to upgrade."
+  },
+  "subscribePrice": "Subscribe for {{price}}",
+  "pricePerLocation": {
+    "month": "{{amount}} per location per month",
+    "year": "{{amount}} per location per year"
+  },
+  "compare": {
+    "caption": "Compare plans",
+    "feature": "Feature",
+    "current": "Current plan",
+    "price": "Price",
+    "locations": "Locations",
+    "seats": "Staff seats",
+    "messages": "SMS and WhatsApp messages",
+    "unlimited": "Unlimited",
+    "included": "Included",
+    "notIncluded": "Not included"
+  },
+  "interval": {
+    "label": "Billing period",
+    "month": "Monthly",
+    "year": "Annual",
+    "save": "Save {{percent}}% with annual billing"
+  }
+}

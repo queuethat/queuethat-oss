@@ -1,0 +1,34 @@
+{
+  "title": "Get your line ready",
+  "count": "{{done}} of {{total}} done",
+  "doneLabel": "(done)",
+  "hide": "Hide checklist",
+  "steps": {
+    "line": {
+      "title": "Open your line",
+      "hint": "A queue is what guests join. Create one and your join link works.",
+      "action": "Add a queue"
+    },
+    "hours": {
+      "title": "Set your opening hours",
+      "hint": "Until you do, your line accepts guests at any time of day.",
+      "action": "Set hours"
+    },
+    "team": {
+      "title": "Invite a teammate",
+      "hint": "Staff call the next guest from their own phone.",
+      "action": "Invite staff"
+    },
+    "screen": {
+      "title": "Pair a screen",
+      "hint": "Show who is being called on a TV or tablet. Optional.",
+      "action": "Pair a screen"
+    },
+    "poster": {
+      "title": "Print the poster",
+      "hint": "Put the QR code where guests walk in.",
+      "action": "Open poster",
+      "markDone": "I've printed it"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "console": {
+    "title": "Niemand wartet",
+    "why": "Teile deine Warteschlange, dann erscheinen hier die Gäste.",
+    "copy": "Beitrittslink kopieren",
+    "copied": "Link kopiert.",
+    "qr": "QR-Code zeigen",
+    "qrTitle": "Zum Beitreten scannen",
+    "qrLabel": "QR-Code für {{url}}",
+    "close": "Schließen"
+  },
+  "queues": {
+    "title": "Noch keine Warteschlangen",
+    "why": "Eine Warteschlange ist eine Reihe, der Gäste beitreten können.",
+    "add": "Erste Warteschlange anlegen",
+    "template": "Vorlage verwenden"
+  },
+  "counters": {
+    "title": "Noch keine Schalter",
+    "why": "Ein Schalter ist ein Tisch, Stuhl oder Platz, an dem Gäste bedient werden.",
+    "add": "Ersten Schalter anlegen"
+  },
+  "team": {
+    "title": "Du bist allein",
+    "why": "Lade jemanden ein, die Warteschlange zu betreuen."
+  },
+  "devices": {
+    "title": "Kein Bildschirm gekoppelt",
+    "why": "Koppel einen Fernseher, der zeigt, wer als Nächstes dran ist."
+  },
+  "guests": {
+    "title": "Noch keine Gäste",
+    "why": "Das füllt sich nach den ersten Besuchen.",
+    "join": "Beitrittsseite öffnen"
+  },
+  "analytics": {
+    "title": "Noch keine Zahlen",
+    "why": "Das füllt sich nach den ersten Besuchen.",
+    "join": "Beitrittsseite öffnen"
+  },
+  "feedback": {
+    "title": "Noch kein Feedback",
+    "why": "Das füllt sich nach den ersten Besuchen."
+  },
+  "developers": {
+    "title": "Noch nichts vorhanden",
+    "why": "Schlüssel und Webhooks lassen andere Software deine Warteschlangen lesen und ändern. Die meisten Unternehmen brauchen sie nie."
+  }
+}

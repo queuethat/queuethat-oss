@@ -1,0 +1,12 @@
+{{ if .Data.invite_org }}
+<h2>{{ if .Data.invite_by }}{{ .Data.invite_by }} invited you to join {{ .Data.invite_org }} on QueueThat{{ else }}You have been invited to join {{ .Data.invite_org }} on QueueThat{{ end }}</h2>
+<p>You already have a QueueThat account. Open the link to sign in and join {{ .Data.invite_org }}.</p>
+<p><a href="{{ .ConfirmationURL }}">Accept the invitation</a></p>
+<p>The link works once and can be opened on any device. If you weren't expecting this, ignore this email: nothing happens unless you open the link.</p>
+{{ else }}
+<h2>Your QueueThat sign-in code</h2>
+<p>Enter this code on the sign-in screen where you asked for it:</p>
+<p style="font-size: 28px; font-weight: bold; letter-spacing: 6px">{{ .Token }}</p>
+<p>Or, on the same device and browser, <a href="{{ .ConfirmationURL }}">sign in with this link</a>.</p>
+<p>The code and link work once. If you didn't ask to sign in, ignore this email.</p>
+{{ end }}

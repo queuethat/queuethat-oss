@@ -1,0 +1,18 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.env
+.env.local
+apps/web/.env
+.DS_Store
+# supabase
+supabase/.branches/
+supabase/.temp/
+supabase/.env
+# playwright
+test-results/
+playwright-report/
+.vercel
+deploy/selfhost/backups/
+playwright-report-visual/

@@ -1,0 +1,75 @@
+{
+  "title": "Guests",
+  "loading": "Loading",
+  "duplicates": "Review duplicate guests",
+  "importExport": "Import or export guests",
+  "search": {
+    "label": "Search by name, phone or email",
+    "hint": "Type at least 3 characters.",
+    "empty": "No guests match.",
+    "idle": "Search for a guest to see their history.",
+    "failed": "Search failed. Try again.",
+    "results": "Search results",
+    "name": "Name",
+    "contact": "Contact",
+    "visits": "Visits",
+    "last": "Last visit",
+    "open": "Open {{name}}",
+    "noName": "No name"
+  },
+  "profile": {
+    "back": "All guests",
+    "notFound": "This guest is not available.",
+    "summary": "{{count}} visit since {{since}}",
+    "summary_other": "{{count}} visits since {{since}}",
+    "noVisits": "No visits yet.",
+    "contacts": "Contacts",
+    "noContacts": "No contact details.",
+    "visits": "Visits",
+    "appointments": "Appointments",
+    "noAppointments": "No appointments.",
+    "service": "No service"
+  },
+  "contact": {
+    "phone": "Phone",
+    "email": "Email",
+    "verified": "Verified",
+    "show": "Show",
+    "showFor": "Show {{channel}} for {{name}}",
+    "hide": "Hide",
+    "hideFor": "Hide {{channel}} for {{name}}",
+    "remove": "Remove",
+    "removeTitle": "Remove this contact?",
+    "removeDescription": "{{value}} stops receiving messages for this guest. This cannot be undone.",
+    "removeConfirm": "Remove contact",
+    "cancel": "Cancel"
+  },
+  "add": {
+    "trigger": "Add contact",
+    "title": "Add a contact",
+    "description": "Phone numbers need the country code, like +14155550123.",
+    "channel": "Type",
+    "value": "Phone number or email",
+    "save": "Save",
+    "saving": "Saving",
+    "cancel": "Cancel"
+  },
+  "status": {
+    "waiting": "Waiting",
+    "called": "Called",
+    "serving": "Being served",
+    "served": "Served",
+    "no_show": "No show",
+    "cancelled": "Cancelled",
+    "removed": "Removed",
+    "expired": "Expired",
+    "booked": "Booked",
+    "other": "Other"
+  },
+  "errors": {
+    "invalid_input": "That doesn't look right. Check the number or email.",
+    "contact_in_use": "Another guest already uses that contact.",
+    "not_found": "This guest is no longer available.",
+    "unknown": "Something went wrong. Try again."
+  }
+}

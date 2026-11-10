@@ -1,0 +1,10 @@
+pnpm-lock.yaml
+packages/db-types/src/database.types.ts
+apps/web/src/routeTree.gen.ts
+docs/
+supabase/
+LICENSE
+playwright-report/
+playwright-report-visual/
+test-results/
+packages/domain/src/generated/

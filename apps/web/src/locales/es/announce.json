@@ -1,0 +1,7 @@
+{
+  "call": "Turno {{ticket}}, {{counter}}",
+  "callTicket": "Turno {{ticket}}",
+  "callNamed": "Turno {{ticket}}, {{name}}, {{counter}}",
+  "callNamedTicket": "Turno {{ticket}}, {{name}}",
+  "test": "Turno A 1 2, ventanilla 3"
+}

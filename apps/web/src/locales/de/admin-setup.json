@@ -1,0 +1,34 @@
+{
+  "title": "Mach deine Warteschlange startklar",
+  "count": "{{done}} von {{total}} erledigt",
+  "doneLabel": "(erledigt)",
+  "hide": "Checkliste ausblenden",
+  "steps": {
+    "line": {
+      "title": "Warteschlange eröffnen",
+      "hint": "Gäste treten einer Warteschlange bei. Lege eine an, dann funktioniert dein Beitrittslink.",
+      "action": "Warteschlange anlegen"
+    },
+    "hours": {
+      "title": "Öffnungszeiten festlegen",
+      "hint": "Bis dahin nimmt deine Warteschlange rund um die Uhr Gäste an.",
+      "action": "Zeiten festlegen"
+    },
+    "team": {
+      "title": "Teammitglied einladen",
+      "hint": "Mitarbeitende rufen den nächsten Gast von ihrem eigenen Handy aus auf.",
+      "action": "Mitarbeitende einladen"
+    },
+    "screen": {
+      "title": "Bildschirm koppeln",
+      "hint": "Zeige auf einem Fernseher oder Tablet, wer aufgerufen wird. Optional.",
+      "action": "Bildschirm koppeln"
+    },
+    "poster": {
+      "title": "Plakat drucken",
+      "hint": "Häng den QR-Code dort auf, wo Gäste hereinkommen.",
+      "action": "Plakat öffnen",
+      "markDone": "Ist gedruckt"
+    }
+  }
+}

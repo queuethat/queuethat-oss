@@ -1,0 +1,13 @@
+*
+!package.json
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+!tsconfig.base.json
+!apps/web
+!packages
+!deploy/selfhost/Caddyfile
+!deploy/selfhost/check-secrets.sh
+!deploy/selfhost/known-demo-keys.sha256
+**/node_modules
+**/dist
+apps/web/.env*

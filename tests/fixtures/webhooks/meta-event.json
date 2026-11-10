@@ -1,0 +1,5 @@
+{
+  "secret": "meta-app-secret",
+  "body": "{\"entry\":[{\"changes\":[{\"value\":{\"messages\":[{\"id\":\"wamid.AAA\",\"from\":\"14155550123\",\"text\":{\"body\":\"hi\"}}],\"statuses\":[{\"id\":\"wamid.BBB\",\"status\":\"delivered\"}]}}]}]}",
+  "signature": "sha256=678cc907124a04f0c8d69fa65065733dbb4fb4216a932a63ff31f2679bbea344"
+}

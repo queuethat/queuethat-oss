@@ -1,0 +1,5 @@
+{
+  "errors": [
+    { "code": "10009", "title": "Authentication failed", "detail": "The API key is invalid." }
+  ]
+}

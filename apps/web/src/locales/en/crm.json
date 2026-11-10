@@ -1,0 +1,107 @@
+{
+  "tags": {
+    "title": "Tags",
+    "none": "No tags yet.",
+    "add": "Add a tag",
+    "save": "Add tag",
+    "saving": "Adding",
+    "remove": "Remove tag {{name}}",
+    "removeGlyph": "×",
+    "errors": {
+      "forbidden": "Only managers can create new tags. Pick an existing one.",
+      "unknown": "The tag could not be added. Try again."
+    }
+  },
+  "notes": {
+    "title": "Notes",
+    "none": "No notes yet.",
+    "add": "Add a note",
+    "save": "Add note",
+    "saving": "Adding",
+    "healthWarning": "Do not record health information in notes.",
+    "delete": "Delete",
+    "deleteFor": "Delete note: {{text}}",
+    "deleteTitle": "Delete this note?",
+    "deleteDescription": "The note is hidden from staff. An admin can still see that it existed.",
+    "deleteConfirm": "Delete note",
+    "cancel": "Keep note",
+    "error": "The note could not be saved. Try again."
+  },
+  "merge": {
+    "title": "Duplicate guests",
+    "back": "All guests",
+    "intro": "These profiles look like the same person. Pick the profile to keep: visits, contacts, consents, tags and notes move onto it.",
+    "loading": "Loading",
+    "failed": "Suggestions could not be loaded.",
+    "empty": "No duplicates found.",
+    "noName": "No name",
+    "noTags": "No tags",
+    "visits_one": "{{count}} visit",
+    "visits_other": "{{count}} visits",
+    "reason": {
+      "phone": "Similar phone number",
+      "email": "Similar email address"
+    },
+    "keep": "Keep this profile",
+    "keepFor": "Keep this profile, {{name}}, and merge the other one into it",
+    "confirmTitle": "Keep {{name}}?",
+    "confirmDescription": "{{other}} will be merged into {{name}}. This cannot be undone from here; the audit log records it.",
+    "confirm": "Merge profiles",
+    "cancel": "Cancel",
+    "done": "Profiles merged.",
+    "error": "The profiles could not be merged."
+  },
+  "transfer": {
+    "title": "Import and export guests",
+    "back": "All guests",
+    "noAccess": "Only owners and admins can import or export guests."
+  },
+  "export": {
+    "title": "Export",
+    "warning": "The file contains personal data: names, phone numbers, email addresses and notes. Store it securely and delete it when you no longer need it. Each export is logged; you can export up to five times a day.",
+    "button": "Export guests (CSV)",
+    "running": "Preparing",
+    "rateLimited": "You have reached today's export limit. Try again tomorrow.",
+    "failed": "The export failed. Try again."
+  },
+  "import": {
+    "title": "Import",
+    "intro": "Upload a CSV with a header row. Imported contacts get no marketing consent. A transactional consent is recorded only for rows marked yes, with the consent text version you give.",
+    "file": "CSV file",
+    "mapping": "Match columns",
+    "unmapped": "Not in the file",
+    "preview": "Preview",
+    "line": "Line",
+    "problem": "Problem",
+    "fields": {
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "country": "Country (for local phone numbers)",
+      "tags": "Tags (separated by ;)",
+      "consent": "Transactional consent (yes/no)",
+      "consentVersion": "Consent text version"
+    },
+    "rows_one": "{{count}} row.",
+    "rows_other": "{{count}} rows.",
+    "invalid_one": "{{count}} row will be skipped.",
+    "invalid_other": "{{count}} rows will be skipped.",
+    "problems": {
+      "noContact": "No phone or email",
+      "consentNeedsVersion": "Consent needs a text version"
+    },
+    "start_one": "Import {{count}} row",
+    "start_other": "Import {{count}} rows",
+    "running": "Importing",
+    "progress": "{{done}} of {{total}} rows processed",
+    "failed": "The import stopped. Rows already processed are saved; fix the file and import the rest.",
+    "results": "Results",
+    "created_one": "{{count}} created",
+    "created_other": "{{count}} created",
+    "matched_one": "{{count}} matched an existing guest",
+    "matched_other": "{{count}} matched existing guests",
+    "skipped_one": "{{count}} skipped",
+    "skipped_other": "{{count}} skipped",
+    "download": "Download results (CSV)"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "nowServing": {
+    "title": "Now serving"
+  },
+  "signage": {
+    "label": "Announcements",
+    "calling": "Now calling"
+  },
+  "kiosk": {
+    "title": "Kiosk"
+  },
+  "pair": {
+    "loading": "Loading",
+    "title": "Pair this screen",
+    "intro": "Ask an admin of your business for a pairing code and enter it here. Codes work once and expire after 10 minutes.",
+    "code": "Pairing code",
+    "submit": "Pair",
+    "pairing": "Pairing",
+    "errors": {
+      "not_found": "That code is wrong, used or expired. Ask for a new one.",
+      "rate_limited": "Too many wrong codes. Wait a few minutes, then try again.",
+      "invalid_input": "Enter the 6-digit code.",
+      "unknown": "Pairing didn't work. Try again."
+    }
+  },
+  "announce": {
+    "gate": "Tap to enable sound",
+    "testButton": "Test sound",
+    "mode": {
+      "label": "Sound",
+      "off": "Off",
+      "chime": "Chime",
+      "speech": "Chime and speech"
+    }
+  },
+  "onsite": {
+    "label": "Join code",
+    "hint": "Enter this code on your phone to join the line.",
+    "countdown": "Changes in {{seconds}} seconds"
+  },
+  "board": {
+    "called": "Called",
+    "reconnecting": "Reconnecting. The board may be a little behind.",
+    "error": "Can't load the board right now. Retrying.",
+    "asOf": "Updated {{time}}",
+    "noneCalled": "Nobody called yet",
+    "noneWaiting": "Nobody waiting",
+    "nextUp": "Next up",
+    "arrow": "→",
+    "atCounter": "at",
+    "state": {
+      "paused": "Paused",
+      "closed": "Closed"
+    }
+  },
+  "counter": {
+    "nowServing": "Now serving",
+    "idle": "Ready for the next guest",
+    "closed": "Closed",
+    "unbound": "This screen isn't assigned to a counter yet. Ask an admin to choose one under Screens."
+  }
+}

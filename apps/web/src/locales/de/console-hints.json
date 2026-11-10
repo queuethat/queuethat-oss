@@ -1,0 +1,17 @@
+{
+  "label": "Erste Schritte mit der Konsole",
+  "dismiss": "Verstanden",
+  "dismissAll": "Alle Hinweise ausblenden",
+  "callNext": {
+    "title": "Nächsten aufrufen.",
+    "body": "Holt den nächsten Gast nach vorn und sagt ihm, dass er dran ist."
+  },
+  "undo": {
+    "title": "Rückgängig.",
+    "body": "Nach jeder Aktion erscheint 10 Sekunden lang unten eine Meldung mit Rückgängig, ein Fehltipp ist also schnell behoben."
+  },
+  "shortcuts": {
+    "title": "Tastenkürzel.",
+    "body": "Drücke ?, um die Tastenkürzel zu sehen."
+  }
+}

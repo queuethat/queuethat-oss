@@ -1,0 +1,83 @@
+{
+  "title": "Message templates",
+  "loading": "Loading templates",
+  "intro": "What guests are sent, per alert and channel. Use the variable buttons to add a guest's details. SMS stays off for an alert until you write its text.",
+  "readOnly": "Only managers, admins and owners can change templates.",
+  "trigger": {
+    "called": "It's your turn",
+    "almost_up": "Almost up",
+    "position_changed": "Place in line changed",
+    "eta_changed": "Wait changed"
+  },
+  "channel": {
+    "push": "Push",
+    "email": "Email",
+    "sms": "SMS"
+  },
+  "state": {
+    "custom": "Custom",
+    "default": "Default",
+    "off": "Off"
+  },
+  "edit": "Edit",
+  "view": "View",
+  "editLabel": "Edit {{trigger}}, {{channel}}",
+  "viewLabel": "View {{trigger}}, {{channel}}",
+  "subject": "Subject",
+  "body": "Message",
+  "bodyHint": "Variables look like {{ticket}}. Put text in [square brackets] to drop it when a variable has no value.",
+  "variables": "Variables",
+  "insert": "Insert {{name}}",
+  "preview": "Preview with sample data",
+  "segments_one": "{{count}} text segment",
+  "segments_other": "{{count}} text segments",
+  "units": "{{count}} characters",
+  "encoding": {
+    "gsm7": "standard characters",
+    "ucs2": "includes special characters or emoji"
+  },
+  "save": "Save template",
+  "saving": "Saving",
+  "revert": "Revert to default",
+  "revertTitle": "Revert to the default wording?",
+  "revertDescription": "Your custom text is removed and the next message uses the default. Earlier versions stay in the history.",
+  "revertConfirm": "Revert",
+  "revertCancel": "Keep my text",
+  "history": "Version history",
+  "version": "Version {{n}}",
+  "error": {
+    "unknown_variable": "{{name}} isn't a variable this message can use.",
+    "permission_denied": "You don't have permission to change templates.",
+    "invalid_input": "Write a message before saving.",
+    "unknown": "The template was not saved. Try again."
+  },
+  "queue": {
+    "title": "Messages and look: {{name}}",
+    "back": "Back to queues",
+    "messages": "Messages for this queue",
+    "messagesIntro": "Reword what guests in this queue are sent. Anything you leave alone uses your organization's wording.",
+    "overridden": "Overridden",
+    "usesDefault": "Uses org default",
+    "look": "Look",
+    "saved": "Saved.",
+    "saveFailed": "We couldn't save that. Try again.",
+    "accent": {
+      "label": "Accent colour",
+      "hint": "Leave empty to use your organization's colour. Format #rrggbb.",
+      "invalid": "Use a colour like #0b6bcb.",
+      "low": "This colour is too light to read on a white page (it needs 4.5:1). Pick a darker one; {{text}} text would read on it, but the accent is also used for links and borders.",
+      "#ffffff": "white",
+      "#000000": "black",
+      "preview": "This is how the accent looks"
+    },
+    "welcome": {
+      "label": "Welcome text",
+      "hint": "Shown to guests joining this queue. {{count}} characters left."
+    },
+    "saveLook": "Save look"
+  },
+  "telegram": {
+    "configured": "Telegram updates are on through @{{bot}}.",
+    "notConfigured": "Telegram updates are off. Set up a bot to offer them: see docs/ops/telegram.md."
+  }
+}

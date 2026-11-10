@@ -1,0 +1,6 @@
+{
+  "status": 400,
+  "code": 30007,
+  "message": "Carrier violation",
+  "more_info": "https://www.twilio.com/docs/errors/30007"
+}

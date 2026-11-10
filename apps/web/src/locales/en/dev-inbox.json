@@ -1,0 +1,24 @@
+{
+  "title": "Dev SMS inbox",
+  "intro": "What guests would receive by SMS, and replies you type as them. Development only.",
+  "loading": "Loading messages",
+  "empty": "No messages yet. SMS appear here once the dispatcher runs with DEV_SMS_CONSOLE=true.",
+  "threads": "Conversations",
+  "thread": "Conversation with {{number}}",
+  "segments_one": "{{count}} segment",
+  "segments_other": "{{count}} segments",
+  "status": {
+    "queued": "queued",
+    "claimed": "sending",
+    "sent": "sent",
+    "failed": "failed",
+    "dead": "undeliverable",
+    "suppressed": "suppressed"
+  },
+  "fromGuest": "Guest reply",
+  "reply": "Reply as {{number}}",
+  "replyHint": "Try STOP or HELP.",
+  "send": "Send reply",
+  "sent": "Reply recorded: {{action}}",
+  "error": "The reply was not recorded ({{code}}). Is DEV_INBOX_ENABLED=true?"
+}

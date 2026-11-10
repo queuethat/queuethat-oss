@@ -1,0 +1,25 @@
+{
+  "unsubscribe": {
+    "title": "Stop these emails",
+    "body": "You'll get no more emails from this business about queue visits. If you join one of its queues again, you won't be emailed.",
+    "confirm": "Stop emails",
+    "done": {
+      "title": "You won't get these emails any more",
+      "body": "You can close this page."
+    },
+    "invalid": {
+      "title": "This link doesn't work",
+      "body": "Use the link from the most recent email, or reply to it and ask the business to stop."
+    },
+    "failed": "Something went wrong. Please try again."
+  },
+  "branding": {
+    "terms": "Terms",
+    "privacy": "Privacy policy",
+    "poweredBy": "Powered by {{name}}",
+    "source": "Source code"
+  },
+  "language": {
+    "label": "Language"
+  }
+}

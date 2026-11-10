@@ -1,0 +1,6 @@
+# The app is not a content site. Public join and booking pages may be crawled; everything else
+# (staff, admin, sign-in, and guest links that carry a token) stays out.
+User-agent: *
+Allow: /q/
+Allow: /b/
+Disallow: /

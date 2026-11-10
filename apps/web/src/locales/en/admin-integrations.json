@@ -1,0 +1,90 @@
+{
+  "title": "Integrations",
+  "loading": "Loading integrations",
+  "readOnly": "Only admins and owners can change provider settings. You can see this page, but nothing here is editable.",
+  "channels": {
+    "email": "Email",
+    "sms": "SMS",
+    "whatsapp": "WhatsApp",
+    "payments": "Payments"
+  },
+  "state": {
+    "enabled": "On",
+    "disabled": "Off"
+  },
+  "provider": "Provider",
+  "providers": {
+    "postmark": "Postmark",
+    "resend": "Resend",
+    "ses": "Amazon SES",
+    "twilio": "Twilio",
+    "telnyx": "Telnyx",
+    "vonage": "Vonage",
+    "plivo": "Plivo",
+    "meta": "WhatsApp Business (Meta)",
+    "stripe": "Stripe"
+  },
+  "mode": {
+    "label": "Account",
+    "own": "My own account",
+    "platform": "Platform account"
+  },
+  "fields": {
+    "sender_email": "Sender email address",
+    "region": "Region",
+    "account_sid": "Account SID",
+    "from_number": "Sending phone number",
+    "messaging_service_sid": "Messaging service SID",
+    "messaging_campaign_ref": "10DLC campaign reference (US numbers)",
+    "phone_number_id": "Phone number ID",
+    "sender_name": "Sender name",
+    "message_stream": "Message stream",
+    "messaging_profile_id": "Messaging profile ID",
+    "auth_id": "Auth ID"
+  },
+  "secrets": {
+    "api_key": "API key",
+    "webhook_secret": "Webhook signing secret",
+    "auth_token": "Auth token",
+    "access_token": "Access token",
+    "app_secret": "App secret",
+    "verify_token": "Webhook verify token",
+    "secret_key": "Secret key",
+    "api_secret": "API secret",
+    "signing_secret": "Webhook signature secret"
+  },
+  "secretStored": "Saved as ****{{last4}}. Leave empty to keep it, or type a new value to replace it.",
+  "secretEmpty": "Not set. The value is write-only: after saving you only see its last four characters.",
+  "save": "Save",
+  "saving": "Saving",
+  "webhook": {
+    "label": "Webhook URL",
+    "copy": "Copy",
+    "copied": "Copied",
+    "waiting": "Waiting for a signed test event from your provider.",
+    "verified": "Verified: a signed test event arrived."
+  },
+  "enable": "Turn this channel on",
+  "missing": {
+    "title": "Before this channel can be turned on:",
+    "compliance_gate": "This deployment has not passed its compliance check yet (see the pilot runbook).",
+    "hosted_legal_review": "The hosted service's legal review is not recorded yet.",
+    "provider_settings": "Save this channel's provider settings first.",
+    "provider_verified": "Send a signed test event from your provider's dashboard to the webhook URL above.",
+    "daily_cap": "Set a daily message cap above zero.",
+    "country_allowlist": "Choose at least one country you may text.",
+    "plan_allows_paid_channels": "Your plan does not include paid channels. Upgrade under Billing.",
+    "campaign_ref": "Enter your 10DLC campaign reference (required for US numbers)."
+  },
+  "errors": {
+    "unknown": "Something went wrong. Try again.",
+    "platform_mode_unavailable": "This deployment has no platform account. Use your own account.",
+    "invalid_input": "Check the values and try again.",
+    "permission_denied": "You are not allowed to do that."
+  },
+  "secretsBy": {
+    "telnyx": {
+      "webhook_secret": "Webhook public key"
+    }
+  }
+}

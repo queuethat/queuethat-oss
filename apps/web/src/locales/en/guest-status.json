@@ -1,0 +1,150 @@
+{
+  "status": {
+    "title": "Your place in line",
+    "group": {
+      "label": "People in your group",
+      "tab": "{{name}} · {{ticket}}"
+    },
+    "leave": {
+      "trigger": "Leave the line",
+      "title": "Leave the line?",
+      "body": "You'll lose your place. To come back, you'll need to join again at the end of the line.",
+      "confirm": "Yes, leave",
+      "cancel": "Stay in line",
+      "failed": "Couldn't leave the line. Check your connection and try again."
+    },
+    "undoLeave": {
+      "prompt": "Left by mistake? You can still get your place back.",
+      "action": "Get my place back",
+      "failed": "Couldn't put you back in line. If it's been a few minutes, join again."
+    },
+    "joinAgain": "Join again",
+    "alert": {
+      "soundHint": "Want a sound when it's your turn? Your phone needs one tap first.",
+      "enableSound": "Turn on sound alerts",
+      "soundOn": "Sound alerts are on. Keep this page open.",
+      "title": "It's your turn",
+      "goTo": "Go to {{counter}}",
+      "goToDesk": "Go to the front desk",
+      "dismiss": "Got it"
+    },
+    "loading": "Loading your place in line",
+    "notFound": {
+      "title": "This link has expired",
+      "body": "Links stop working 12 hours after a visit ends. Ask staff if you think you're still in line."
+    },
+    "loadFailed": {
+      "title": "Couldn't load your place in line",
+      "body": "Check your connection. This page keeps trying."
+    },
+    "ticket": "Your ticket",
+    "position_one": "You're number {{count}} in line",
+    "position_other": "You're number {{count}} in line",
+    "ahead_one": "{{count}} person ahead of you",
+    "ahead_other": "{{count}} people ahead of you",
+    "wait": "Estimated wait",
+    "asOf": "Last updated {{time}}. Reconnecting…",
+    "keepOpen": "Keep this page open. iPhones don't alert you when it's closed, so check back here.",
+    "textAlerts": {
+      "title": "Get a text when it's your turn",
+      "failed": "You joined, but text alerts are off. Tick the box and try again.",
+      "turnOn": "Turn on text alerts",
+      "turningOn": "Turning on text alerts",
+      "error": "Couldn't turn on text alerts. Try again."
+    },
+    "phoneVerify": {
+      "title": "Confirm your phone number",
+      "hint": "We'll text you a 6-digit code so we know alerts reach you.",
+      "send": "Text me a code",
+      "sending": "Sending the code",
+      "resend": "Send a new code",
+      "codeLabel": "6-digit code",
+      "confirm": "Confirm",
+      "confirming": "Checking the code",
+      "sent": "Code sent. It works for 10 minutes.",
+      "invalid": "That code didn't work. Check it, or send a new one.",
+      "verified": "Your phone number is confirmed.",
+      "waiting": "Preparing a security check. One moment.",
+      "errors": {
+        "rate_limited": "Too many tries. Please wait a while and try again.",
+        "captcha_failed": "The security check failed. Reload the page and try again.",
+        "consent_required": "Turn on text alerts first.",
+        "sms_unavailable": "This business isn't sending texts right now.",
+        "unknown": "Something went wrong. Try again."
+      }
+    },
+    "push": {
+      "enable": "Alert me when it's my turn",
+      "enabling": "Turning on alerts",
+      "on": "Alerts are on. We'll notify you when it's your turn, even with this page closed.",
+      "homeScreen": "On iPhone, alerts need this page on your Home Screen: tap Share, then Add to Home Screen, open it from there and tap Alert me. Or keep this page open and check back here.",
+      "denied": "Notifications are blocked for this site. Keep this page open, or allow notifications in your browser settings.",
+      "failed": "Couldn't turn on alerts. Keep this page open and check back here.",
+      "prompt": "Allow notifications in the browser prompt.",
+      "slow": "Still setting up alerts. This can take up to a minute.",
+      "timeout": "Alerts took too long to turn on. Tap Alert me to try again, or keep this page open and check back here."
+    },
+    "connection": {
+      "live": "Live",
+      "connecting": "Connecting",
+      "offline": "Offline"
+    },
+    "state": {
+      "expected": "Booked",
+      "waiting": "Waiting",
+      "called": "Called",
+      "serving": "Being served",
+      "served": "Done",
+      "no_show": "Missed",
+      "cancelled": "Left the line",
+      "removed": "Removed",
+      "expired": "Expired",
+      "scheduled": "Scheduled"
+    },
+    "message": {
+      "called": "It's your turn. Please go to {{counter}}.",
+      "calledNoCounter": "It's your turn. Please go to the front desk.",
+      "serving": "You're being served.",
+      "served": "Thanks for visiting {{location}}.",
+      "no_show": "We called you but couldn't find you. Ask staff if you're still here.",
+      "cancelled": "You left the line.",
+      "removed": "Staff removed you from the line. Ask them if this is a mistake.",
+      "expired": "This visit ended when {{location}} closed for the day.",
+      "expected": "You're booked. Check in when you arrive.",
+      "later": "You'll join the line at {{time}}. Until then you can leave from here."
+    },
+    "alerts": {
+      "toggle": "Choose your alerts",
+      "title": "Alerts",
+      "intro": "Pick what we message you about. Nothing else is sent.",
+      "saveFailed": "Couldn't save that change. Your alerts are as they were.",
+      "calledOffWarning": "Without this one you won't be told when it's your turn. Keep this page open and watch for your ticket.",
+      "trigger": {
+        "called": "It's my turn",
+        "almost_up": "I'm almost up",
+        "position_changed": "My place in line changes",
+        "eta_changed": "My wait estimate changes",
+        "broadcast": "Announcements from the venue",
+        "removed": "I'm removed from the line",
+        "served": "My visit is finished",
+        "joined": "I join the line",
+        "no_show_warning": "My place is about to be given away"
+      }
+    },
+    "telegram": {
+      "enable": "Get updates on Telegram",
+      "opening": "Opening Telegram",
+      "opened": "Telegram is open. Tap Start there and you'll get your updates in that chat. Send /stop any time to stop them.",
+      "unavailable": "Telegram updates aren't available right now. Keep this page open and check back here.",
+      "failed": "Couldn't open Telegram. Try again."
+    },
+    "nowIn": "You are now in {{queue}}.",
+    "pos": {
+      "paid": "Thank you. Your payment went through."
+    },
+    "offline": {
+      "title": "You're offline",
+      "body": "Your last position is still shown. It updates when you reconnect."
+    }
+  }
+}

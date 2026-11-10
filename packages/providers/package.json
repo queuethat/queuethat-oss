@@ -1,0 +1,20 @@
+{
+  "name": "@qm/providers",
+  "version": "0.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./contract": "./src/contract.ts",
+    "./payments/contract": "./src/payments/contract.ts",
+    "./captcha/contract": "./src/captcha/contract.ts",
+    "./captcha/powWorker": "./src/captcha/powWorker.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@qm/db-types": "workspace:*"
+  }
+}

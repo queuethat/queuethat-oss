@@ -1,0 +1,6 @@
+{
+  "secret": "whsec_test",
+  "t": 1761800000,
+  "body": "{\"id\":\"evt_test_1\",\"type\":\"payment_intent.succeeded\",\"data\":{\"object\":{\"id\":\"pi_1\"}}}",
+  "v1": "917a8d5eba3ffc9a545d6f20bb27e8e97b92647ab24889eb62f975b3eed8d9a4"
+}

@@ -1,0 +1,7 @@
+{
+  "call": "Senha {{ticket}}, {{counter}}",
+  "callTicket": "Senha {{ticket}}",
+  "callNamed": "Senha {{ticket}}, {{name}}, {{counter}}",
+  "callNamedTicket": "Senha {{ticket}}, {{name}}",
+  "test": "Senha A 1 2, guichê 3"
+}

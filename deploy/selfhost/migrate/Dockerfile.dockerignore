@@ -1,0 +1,11 @@
+# Send only what the image copies; the repository root is the build context.
+*
+!supabase/migrations
+!supabase/functions
+!supabase/seeds/10_demo_org.sql
+!packages/domain/src
+!deploy/selfhost/functions-main
+!deploy/selfhost/check-secrets.sh
+!deploy/selfhost/known-demo-keys.sha256
+!deploy/selfhost/migrate/entrypoint.sh
+**/*.test.ts

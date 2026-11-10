@@ -1,0 +1,76 @@
+{
+  "title": "API keys",
+  "loading": "Loading API keys",
+  "adminsOnly": "Only admins and owners can manage API keys.",
+  "list": {
+    "title": "Your keys",
+    "intro": "Keys let your own software read and change queues. Each key has only the permissions you give it.",
+    "empty": "No API keys yet.",
+    "allLocations": "All locations",
+    "revoked": "Revoked",
+    "expired": "Expired",
+    "lastUsed": "Last used {{date}}",
+    "neverUsed": "Never used",
+    "expires": "Expires {{date}}",
+    "noExpiry": "No expiry"
+  },
+  "scope": {
+    "queues_read": { "name": "Read queues", "help": "See queues, their state and who is waiting." },
+    "queues_write": { "name": "Change queues", "help": "Open, pause and close queues." },
+    "visits_read": {
+      "name": "Read visits",
+      "help": "See visits and their status. Guest names and contact details are never included."
+    },
+    "visits_write": {
+      "name": "Change visits",
+      "help": "Add guests and call, serve or remove visits."
+    },
+    "analytics_read": { "name": "Read analytics", "help": "See wait times and volume numbers." },
+    "webhooks_manage": {
+      "name": "Manage webhooks",
+      "help": "Add and remove webhook endpoints through the API."
+    }
+  },
+  "create": {
+    "open": "Create key",
+    "title": "Create an API key",
+    "name": "Name",
+    "nameHint": "What the key is for, e.g. Front desk display.",
+    "scopes": "What can this key do?",
+    "locations": "Which locations?",
+    "expiry": "Expires",
+    "expiryOption": {
+      "never": "Never",
+      "30": "In 30 days",
+      "90": "In 90 days",
+      "365": "In 1 year"
+    },
+    "submit": "Create key",
+    "creating": "Creating",
+    "cancel": "Cancel"
+  },
+  "shown": {
+    "title": "Copy your key now",
+    "description": "This is the only time the full key is shown. We keep only a fingerprint, so a lost key cannot be recovered; create a new one instead.",
+    "label": "Your new key",
+    "copy": "Copy key",
+    "copied": "Copied",
+    "stored": "I have stored this key",
+    "done": "Done"
+  },
+  "revoke": {
+    "trigger": "Revoke",
+    "triggerFor": "Revoke {{name}}",
+    "title": "Revoke {{name}}?",
+    "description": "Anything using this key stops working at once. This cannot be undone.",
+    "confirm": "Revoke key",
+    "cancel": "Keep key"
+  },
+  "errors": {
+    "invalid_input": "Check the name and expiry and try again.",
+    "invalid_scope": "That permission is not available.",
+    "permission_denied": "Only admins and owners can create keys.",
+    "not_found": "That organization or location was not found.",
+    "unknown": "Something went wrong. Try again."
+  }
+}

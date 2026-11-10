@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-05T17:30:00Z",
+  "title": "Design System: QueueThat",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "primary",
+        "displayName": "Ink",
+        "canonical": "#15171c",
+        "tonalRamp": [
+          "#15171c",
+          "#2b2f38",
+          "#4b5160",
+          "#686e7c",
+          "#868b96",
+          "#b4b8c0",
+          "#d9dad3",
+          "#f6f6f2"
+        ]
+      },
+      "lagoon": {
+        "role": "secondary",
+        "displayName": "Lagoon",
+        "canonical": "#0e5e55",
+        "tonalRamp": [
+          "#062f2b",
+          "#0a4a43",
+          "#0e5e55",
+          "#2f8176",
+          "#5fa89c",
+          "#8fc7bd",
+          "#c3e2dc",
+          "#e8f4f1"
+        ]
+      },
+      "signal-red": {
+        "role": "secondary",
+        "displayName": "Signal Red",
+        "canonical": "#b42318",
+        "tonalRamp": [
+          "#4a0f0a",
+          "#6e1810",
+          "#912018",
+          "#b42318",
+          "#d4574c",
+          "#e58a81",
+          "#f2bbb5",
+          "#fbe4e1"
+        ]
+      },
+      "porcelain": {
+        "role": "neutral",
+        "displayName": "Porcelain",
+        "canonical": "#f6f6f2",
+        "tonalRamp": [
+          "#c9c9c0",
+          "#d9dad3",
+          "#e8e8e1",
+          "#ecece6",
+          "#f1f1ec",
+          "#f6f6f2",
+          "#fafaf7",
+          "#ffffff"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Ticket numbers such as A012, in Geist Mono."
+      },
+      "headline": { "displayName": "Headline", "purpose": "Page titles." },
+      "title": { "displayName": "Title", "purpose": "Section and card titles." },
+      "body": { "displayName": "Body", "purpose": "Default reading text." },
+      "label": { "displayName": "Label", "purpose": "Badges, field labels and hints." }
+    },
+    "shadows": [
+      {
+        "name": "raised",
+        "value": "0 1px 2px rgb(21 23 28 / 0.06), 0 2px 8px rgb(21 23 28 / 0.08)",
+        "purpose": "Toasts. Proposed values; the token sheet names the level only."
+      },
+      {
+        "name": "overlay",
+        "value": "0 12px 32px rgb(21 23 28 / 0.18), 0 2px 6px rgb(21 23 28 / 0.1)",
+        "purpose": "Dialogs over a black 50% backdrop."
+      }
+    ],
+    "motion": [
+      {
+        "name": "duration-fast",
+        "value": "120ms",
+        "purpose": "Color transitions on buttons and tabs."
+      },
+      { "name": "duration-base", "value": "200ms", "purpose": "Default state transitions." },
+      { "name": "duration-slow", "value": "320ms", "purpose": "Larger surface changes." },
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Default easing; all durations are 0 under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      { "name": "staff-min", "value": "768px" },
+      { "name": "staff-max", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Default action; ink fill, at least 48px tall.",
+      "html": "<button class=\"ds-btn-primary\">Call next</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 16px; border: none; border-radius: 10px; background: #15171c; color: #f6f6f2; font: 600 16px Geist, system-ui, sans-serif; transition: background-color 120ms; } .ds-btn-primary:hover { background: #2b2f38; } .ds-btn-primary:focus-visible { outline: 3px solid #0e5e55; outline-offset: 2px; }"
+    },
+    {
+      "name": "Accent Button",
+      "kind": "button",
+      "refersTo": "button-accent",
+      "description": "Check in; the one place lagoon fills a control.",
+      "html": "<button class=\"ds-btn-accent\">Check in</button>",
+      "css": ".ds-btn-accent { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 16px; border: none; border-radius: 10px; background: #0e5e55; color: #ffffff; font: 600 16px Geist, system-ui, sans-serif; transition: background-color 120ms; } .ds-btn-accent:hover { background: #0a4a43; } .ds-btn-accent:focus-visible { outline: 3px solid #0e5e55; outline-offset: 2px; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Flat, hairline-bordered container for a visit row or queue summary.",
+      "html": "<div class=\"ds-card\"><strong>Maya · party of 2</strong><p>Waited 9 min</p></div>",
+      "css": ".ds-card { padding: 16px; border: 1px solid #d9dad3; border-radius: 16px; background: #ffffff; color: #15171c; font-family: Geist, system-ui, sans-serif; } .ds-card p { margin: 4px 0 0; color: #4b5160; }"
+    },
+    {
+      "name": "Status Badge (called)",
+      "kind": "chip",
+      "refersTo": "badge-called",
+      "description": "The loudest state; text label plus a triangle mark.",
+      "html": "<span class=\"ds-badge-called\">▲ Called</span>",
+      "css": ".ds-badge-called { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 9999px; background: #fbefc9; color: #6b3f00; font: 600 14px Geist, system-ui, sans-serif; }"
+    },
+    {
+      "name": "Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Text field with a 3:1 control border and lagoon focus ring.",
+      "html": "<input class=\"ds-input\" placeholder=\"First name\" aria-label=\"First name\">",
+      "css": ".ds-input { min-height: 48px; padding: 0 12px; border: 1px solid #868b96; border-radius: 10px; background: #ffffff; color: #15171c; font: 400 16px Geist, system-ui, sans-serif; } .ds-input:focus-visible { outline: 3px solid #0e5e55; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Counter",
+    "overview": "A well-run service counter: clear surfaces, plain words, a queue that is easy to read from across the room. Porcelain and ink do the work, one lagoon accent marks the few places that mean \"go\", and nothing raises its voice except the single thing that needs a person right now, a guest being called.",
+    "keyCharacteristics": [
+      "Flat and bordered; depth appears only for toasts and dialogs.",
+      "Ink is the primary action color; lagoon is reserved for check-in, links and focus.",
+      "One loud moment: the called state (amber, 2px edge, 5:1 text).",
+      "Three themes: Light (default), Dark, High contrast (kiosk).",
+      "48 px minimum targets, 56 px for staff console and kiosk.",
+      "No icons beyond the select chevron; Unicode and text labels instead."
+    ],
+    "rules": [
+      {
+        "name": "The One Loud Moment Rule",
+        "body": "Only the called state may use the amber edge and takeover. Everything else stays in ink, porcelain and stone.",
+        "section": "colors"
+      },
+      {
+        "name": "The Never Color Alone Rule",
+        "body": "Every state, badge and banner carries a text label, and each queue state a distinct shape mark.",
+        "section": "colors"
+      },
+      {
+        "name": "The Lagoon Is Rare Rule",
+        "body": "Lagoon marks check-in, links and focus. It is not a decorative or background color.",
+        "section": "colors"
+      },
+      {
+        "name": "The Sentence Case Rule",
+        "body": "Buttons, titles and labels are sentence case; no Title Case, no all caps.",
+        "section": "typography"
+      },
+      {
+        "name": "The Numbers Are Objects Rule",
+        "body": "Tickets, counts and times are set in Geist Mono.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat At Rest Rule",
+        "body": "A surface has no shadow until it floats over another.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use ink for primary actions and reserve lagoon for check-in, links and focus.",
+      "Do give every state a text label and a shape mark as well as a color.",
+      "Do keep targets at 48 px or more, and 56 px on the staff console and kiosk.",
+      "Do set ticket numbers and counts in Geist Mono.",
+      "Do use sentence case, contractions and plain, specific copy.",
+      "Do use ConfirmDestructive or offer undo for destructive actions."
+    ],
+    "donts": [
+      "Don't use gradients, textures, illustrations or emoji.",
+      "Don't use exclamation marks or marketing voice inside the product.",
+      "Don't add shadows to cards at rest.",
+      "Don't introduce icons; use text labels first and flag the need if one is unavoidable.",
+      "Don't use the called amber anywhere but the called state.",
+      "Don't use raw palette classes such as bg-white or bg-black; use the semantic tokens."
+    ]
+  }
+}

@@ -1,0 +1,740 @@
+{
+  "console": {
+    "title": "Staff console",
+    "loading": "Loading the console…",
+    "queues": "Queues",
+    "noQueues": "This location has no queues yet. An admin can add one under Queue setup.",
+    "state": {
+      "paused": "Paused",
+      "closed": "Closed",
+      "onlineFull": "Online full"
+    },
+    "onlineJoinsPaused": "Online joins paused: this queue reached its hourly limit. Add walk-ins here. Online joins reopen around {{time}}.",
+    "counter": {
+      "label": "My counter",
+      "placeholder": "Choose a counter",
+      "hint": "Pick where you serve from. This tablet remembers it."
+    },
+    "connection": {
+      "live": "Live",
+      "connecting": "Connecting…",
+      "offline": "Offline. Refreshing every 30 seconds."
+    },
+    "loadingList": "Loading the list…",
+    "waitingCount_one": "{{count}} waiting",
+    "waitingCount_other": "{{count}} waiting",
+    "section": {
+      "waiting": "Waiting ({{count}})",
+      "called": "Called ({{count}})",
+      "serving": "Serving ({{count}})",
+      "no_show": "No-shows ({{count}})",
+      "expected": "Expected ({{count}})",
+      "later": "Later today ({{count}})"
+    },
+    "empty": {
+      "waiting": "No one is waiting.",
+      "called": "No one has been called.",
+      "serving": "No one is being served.",
+      "no_show": "No no-shows in the last two hours.",
+      "expected": "No appointments are due.",
+      "later": "No one is joining later."
+    },
+    "noName": "No name given",
+    "group": "Group with {{tickets}}",
+    "onTheWay": "On the way",
+    "intake": {
+      "title": "Intake answers",
+      "staffOnly": "For staff only",
+      "none": "The guest gave no answers.",
+      "yes": "Yes",
+      "save": "Save answers",
+      "invalid": "Please check this answer.",
+      "stale": "This visit changed. Close the sheet and try again.",
+      "failed": "That did not save. Try again."
+    },
+    "party_one": "party of {{count}}",
+    "party_other": "party of {{count}}",
+    "since": {
+      "waiting_one": "Waited {{count}} min",
+      "waiting_other": "Waited {{count}} min",
+      "waitingNow": "Just joined",
+      "called_one": "Called {{count}} min ago",
+      "called_other": "Called {{count}} min ago",
+      "calledNow": "Just called",
+      "serving_one": "Serving for {{count}} min",
+      "serving_other": "Serving for {{count}} min",
+      "servingNow": "Just started",
+      "no_show_one": "No-show {{count}} min ago",
+      "no_show_other": "No-show {{count}} min ago",
+      "no_showNow": "Just marked"
+    },
+    "error": {
+      "title": "Couldn't load the list",
+      "body": "The console keeps trying every 30 seconds.",
+      "retry": "Try again"
+    },
+    "controls": {
+      "status": {
+        "open": "Open: guests can join",
+        "paused": "Paused: no new guests for now",
+        "closed": "Closed: no new guests"
+      },
+      "explain": {
+        "open": "Pause for a short break, or close when you are done for the day.",
+        "paused": "The join page asks people to check back soon. Everyone already waiting keeps their place.",
+        "closed": "The join page says the queue is closed until you open it again. Everyone already waiting stays in line until you serve or remove them."
+      },
+      "pause": "Pause",
+      "resume": "Resume",
+      "open": "Open queue",
+      "saving": "Saving…",
+      "close": "Close queue",
+      "closeTitle": "Close {{name}}?",
+      "closeDescription": "No one new can join until you open it again. Guests already waiting stay in line. Pause instead if this is a short break.",
+      "closeConfirm": "Yes, close",
+      "closeCancel": "Keep open",
+      "error": {
+        "org_suspended": "This business is suspended, so the queue can’t change. Contact support.",
+        "unknown": "Couldn’t change the queue. Check the connection and try again."
+      }
+    },
+    "callNext": "Call next",
+    "toolsTitle": "Queue controls",
+    "calling": "Calling…",
+    "called": "Called {{ticket}}.",
+    "calledTo": "Called {{ticket}} to {{counter}}.",
+    "nobodyWaiting": "No one is waiting.",
+    "stale": "Someone else just changed this guest. The list is up to date now.",
+    "actionFailed": "That didn't go through. Try again.",
+    "action": {
+      "call": "Call",
+      "start": "Start",
+      "complete": "Done",
+      "requeue": "Back to line",
+      "reinstate": "Reinstate",
+      "no_show": "No-show",
+      "remove": "Remove",
+      "recall": "Call again",
+      "check_in": "Check in"
+    },
+    "actionLabel": {
+      "call": "Call {{ticket}}",
+      "start": "Start {{ticket}}",
+      "complete": "Done with {{ticket}}",
+      "requeue": "Back to line {{ticket}}",
+      "reinstate": "Reinstate {{ticket}}",
+      "no_show": "No-show {{ticket}}",
+      "remove": "Remove {{ticket}}",
+      "recall": "Call again {{ticket}}",
+      "check_in": "Check in {{ticket}}"
+    },
+    "confirm": {
+      "cancel": "Keep",
+      "no_show": {
+        "title": "Mark {{ticket}} as a no-show?",
+        "body": "They leave the line. You can reinstate them for the next two hours.",
+        "confirm": "Mark no-show"
+      },
+      "remove": {
+        "title": "Remove {{ticket}} from the line?",
+        "body": "They lose their place. The reason is kept with the visit.",
+        "confirm": "Remove",
+        "reason": "Reason",
+        "reasonHint": "Required. For example: asked to leave, duplicate ticket."
+      }
+    },
+    "texts": {
+      "on": "Texts on",
+      "no_consent": "No consent",
+      "opted_out": "Opted out",
+      "retryBlocked": {
+        "opted_out": "This guest opted out of texts, so it can't be sent again.",
+        "no_consent": "This guest hasn't agreed to texts, so it can't be sent again."
+      }
+    },
+    "addGuest": {
+      "open": "Add guest",
+      "title": "Add a guest to {{queue}}",
+      "name": "Name (optional)",
+      "nameHint": "First name is enough. Staff call them by it.",
+      "service": "Service",
+      "party": "Party size",
+      "phone": "Mobile number (optional)",
+      "country": "Country code",
+      "phoneHint": "For a text when it is their turn.",
+      "cancel": "Cancel",
+      "submit": "Add to the line",
+      "adding": "Adding…",
+      "added": "Added {{ticket}} to the line.",
+      "attest": {
+        "v1": "The guest agreed to receive texts about this visit",
+        "hint": "Leave this unticked if they did not. They can still wait in line without texts.",
+        "failed": "Visit added; texts are off.",
+        "optedOut": "This number has opted out of texts. Visit added; texts are off.",
+        "offline": "Visit saved offline; texts are off."
+      },
+      "error": {
+        "notAccepting": {
+          "closed": "This queue is closed. Open it before adding guests.",
+          "paused": "This queue is paused. Resume it before adding guests.",
+          "outside_hours": "This queue is outside its opening hours, so it is not taking guests.",
+          "full": "This queue is full right now.",
+          "org_suspended": "This business is suspended, so queues are not taking guests.",
+          "other": "This queue is not taking guests right now."
+        },
+        "capacity_reached": "This queue just filled up.",
+        "invalid_input": "Check the name, party size and number.",
+        "unknown": "Couldn't add the guest. Check the connection and try again."
+      },
+      "phoneInvalid": "That isn't a full mobile number. Fix it, or clear it to add the guest without texts."
+    },
+    "done": {
+      "recall": "Called {{ticket}} again.",
+      "start": "Started {{ticket}}.",
+      "complete": "Done with {{ticket}}.",
+      "requeue": "{{ticket}} is back in line.",
+      "reinstate": "Reinstated {{ticket}}.",
+      "no_show": "Marked {{ticket}} as a no-show.",
+      "remove": "Removed {{ticket}}.",
+      "check_in": "Checked in {{ticket}}."
+    },
+    "undone": "Undone: {{ticket}} is back where they were.",
+    "undoTooLate": "Can't undo {{ticket}} any more: something changed since.",
+    "scan": {
+      "open": "Scan guest QR",
+      "title": "Scan a guest's QR",
+      "description": "Hold the guest's QR code in front of the camera, or type the code under it.",
+      "preview": "Camera preview",
+      "manual": "Or type the code",
+      "find": "Find",
+      "close": "Close",
+      "again": "Scan another",
+      "notFound": "Not found at this location",
+      "failed": "That didn't go through. Try again.",
+      "notOnList": "Found, but this guest is not on today's list.",
+      "camera": {
+        "denied": "Camera access is blocked. Allow the camera for this site in your browser settings, or type the code instead.",
+        "none": "No camera was found on this device. Type the code instead.",
+        "failed": "The camera could not start. Type the code instead."
+      }
+    },
+    "timeline": {
+      "view": "Console view",
+      "queueTab": "Queue",
+      "tab": "Timeline",
+      "label": "Today's timeline",
+      "empty": "Nothing is scheduled or waiting today.",
+      "now": "Now {{time}}",
+      "late": "Late",
+      "checkIn": "Check in",
+      "checkInFor": "Check in {{ticket}}",
+      "status": {
+        "expected": "Expected",
+        "waiting": "Waiting",
+        "called": "Called",
+        "serving": "Serving",
+        "no_show": "No-show"
+      }
+    },
+    "servingReminder": {
+      "region": "Serving too long",
+      "text": "Serving {{count}} min. Still with them?",
+      "text_other": "Serving {{count}} min. Still with them?",
+      "complete": "Complete {{ticket}}",
+      "still": "Still serving {{ticket}}"
+    },
+    "sound": {
+      "gate": "Sound is off. Tap below to hear a chime when someone joins.",
+      "enable": "Turn on sound",
+      "off": "Sound alerts",
+      "on": "Sound on: a chime plays when someone joins.",
+      "muted": "Sound muted.",
+      "test": "Test sound",
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "muteSwitch": "Didn't hear the test chime? Check the volume, and on iPad turn off the side mute switch or Silent mode."
+    },
+    "suspended": "This business is suspended, so the queue can’t change. Contact support.",
+    "broadcast": {
+      "open": "Message everyone",
+      "title": "Message everyone in {{name}}",
+      "description": "Sends one text to every guest who is waiting or has been called.",
+      "message": "Message",
+      "hint": "{{ticket}} and {{eta_range}} are filled in for each guest.",
+      "quick": "Quick messages",
+      "quickLate": "We're running about 15 minutes behind. Thank you for waiting.",
+      "quickBreak": "We're taking a short break and will be back soon.",
+      "quickNear": "Please stay close by: we'll call you soon.",
+      "count": "{{chars}} characters",
+      "segments_one": "{{count}} text segment",
+      "segments_other": "{{count}} text segments",
+      "review": "Review",
+      "back": "Back",
+      "cancel": "Cancel",
+      "confirmTitle": "Send to up to {{count}} guests?",
+      "confirmNote": "Guests who turned this alert off, or have no way to be reached, are skipped. You can't unsend it.",
+      "send": "Send message",
+      "sending": "Sending",
+      "sent": "Sent to {{recipients}}, skipped {{suppressed}}.",
+      "error": {
+        "rate_limited": "Too many messages to this queue in the last hour. Try again later.",
+        "unknown_variable": "That message uses a placeholder that doesn't exist.",
+        "invalid_input": "Write a message of 1 to 320 characters.",
+        "org_suspended": "This business is suspended, so messages can't be sent.",
+        "unknown": "The message was not sent. Try again."
+      },
+      "history": "Recent messages",
+      "historyEmpty": "Nothing sent in the last 24 hours.",
+      "historyItem": "Reached {{recipients}}, skipped {{suppressed}}"
+    },
+    "reorder": {
+      "grip": "Drag {{ticket}} to reorder",
+      "top": "Move {{ticket}} to the top",
+      "up": "Move {{ticket}} up",
+      "down": "Move {{ticket}} down",
+      "moved": "Moved {{ticket}}.",
+      "instructions": "To reorder, press space, then the arrow keys, then space again to drop. Escape cancels.",
+      "picked": "Picked up {{ticket}}.",
+      "over": "{{ticket}} is over position {{position}}.",
+      "dropped": "Dropped {{ticket}} at position {{position}}.",
+      "cancelled": "Reorder cancelled. {{ticket}} stays where it was.",
+      "gripGlyph": "⠿",
+      "topGlyph": "⤒",
+      "upGlyph": "↑",
+      "downGlyph": "↓"
+    },
+    "returning": {
+      "badge": "Returning ({{count}} visit)",
+      "badge_other": "Returning ({{count}} visits)",
+      "open": "Returning guest on {{ticket}}: {{label}}",
+      "title": "Returning guest on {{ticket}}",
+      "body": "{{count}} visit so far. Last visit: {{last}}.",
+      "body_other": "{{count}} visits so far. Last visit: {{last}}.",
+      "close": "Close",
+      "profile": "Open profile"
+    },
+    "contact": {
+      "whatsapp": "WhatsApp",
+      "whatsappText": "Hi, this is about your place in line, ticket {{ticket}}.",
+      "optedOut": "Opted out",
+      "noPhone": "This guest left no phone number.",
+      "failed": "Could not open WhatsApp. Try again."
+    },
+    "detail": {
+      "open": "Details for {{ticket}}",
+      "openLabel": "Details",
+      "title": "Details for {{ticket}}",
+      "privacy": "Staff only. Do not enter health details.",
+      "notes": "Notes",
+      "count": "{{count}} of {{max}} characters",
+      "tags": "Tags",
+      "newTag": "Add a tag",
+      "addTag": "Add",
+      "tagLimit": "Up to 10 tags.",
+      "suggestions": "Tags used today",
+      "removeTag": "Remove tag {{tag}}",
+      "removeGlyph": "×",
+      "hasNote": "Has a note",
+      "noteGlyph": "Note",
+      "save": "Save",
+      "cancel": "Cancel",
+      "saved": "Saved details for {{ticket}}."
+    },
+    "block": {
+      "trigger": "Remove and block",
+      "triggerFor": "Remove and block {{ticket}}",
+      "title": "Remove and block {{ticket}}?",
+      "body": "The visit is removed. Their phone, email and device can't join any queue of this business until the block ends. You can lift it under Blocks.",
+      "confirm": "Remove and block",
+      "reason": "Reason",
+      "reasonHint": "Your team sees this on the block list.",
+      "duration": "Block for",
+      "for": {
+        "day": "1 day",
+        "month": "30 days",
+        "forever": "Until I lift it"
+      },
+      "nothing": "This visit has no phone, email or device to block, so nothing was changed."
+    },
+    "history": {
+      "open": "History",
+      "openFor": "History of {{ticket}}",
+      "title": "History of {{ticket}}",
+      "close": "Close",
+      "loading": "Loading history",
+      "error": "The history could not be loaded. Try again.",
+      "done": "Done today ({{count}})",
+      "done_other": "Done today ({{count}})",
+      "undone": "Undone",
+      "undoneBy": "undone by {{name}}",
+      "status": {
+        "served": "Served",
+        "cancelled": "Left",
+        "removed": "Removed",
+        "expired": "Expired",
+        "no_show": "No-show"
+      },
+      "type": {
+        "joined": "Joined the line",
+        "call": "Called",
+        "recall": "Called again",
+        "start": "Started",
+        "complete": "Finished",
+        "requeue": "Put back in line",
+        "no_show": "Marked no-show",
+        "cancel": "Left the line",
+        "remove": "Removed",
+        "reinstate": "Reinstated",
+        "expire": "Expired",
+        "check_in": "Checked in",
+        "undo": "Undo",
+        "moved": "Moved in the line",
+        "transferred": "Transferred",
+        "renumbered": "Line renumbered",
+        "notes_updated": "Notes or tags changed",
+        "times_corrected": "Times corrected",
+        "notification": "Message"
+      },
+      "correctedBy": "times corrected by {{name}}"
+    },
+    "expectedAt": "Due {{time}}",
+    "arrival": {
+      "early": "Early",
+      "onTime": "On time",
+      "late": "Late"
+    },
+    "appointment": {
+      "badge": "Appointment"
+    },
+    "editTimes": {
+      "open": "Edit times",
+      "title": "Edit times of {{ticket}}",
+      "hint": "Times are on this location's clock. Leave a time alone to keep it.",
+      "field": {
+        "calledAt": "Called at",
+        "servingAt": "Started at",
+        "finishedAt": "Finished at"
+      },
+      "was": "Was {{time}}",
+      "reason": "Reason for the correction",
+      "save": "Save correction",
+      "cancel": "Cancel",
+      "error": {
+        "order": "Times must run in order: joined, called, started, finished.",
+        "future": "A time can't be in the future.",
+        "invalid_times": "Those times don't fit this visit. Check the order.",
+        "permission_denied": "Only managers, or the person who handled this visit today, can correct its times.",
+        "stale_visit": "This visit changed. Close this and try again.",
+        "unknown": "The correction was not saved. Try again."
+      }
+    },
+    "search": {
+      "label": "Search guests",
+      "hint": "Name, ticket or the last digits of a phone number.",
+      "filters": "Filters",
+      "clear": "Clear filters",
+      "results": "Search results",
+      "none": "No one matches that.",
+      "error": "The search failed. Try again in a moment.",
+      "open": "Open",
+      "status": {
+        "waiting": "Waiting",
+        "called": "Called",
+        "serving": "Serving",
+        "no_show": "No-shows",
+        "expected": "Expected"
+      },
+      "state": {
+        "waiting": "Waiting",
+        "called": "Called",
+        "serving": "Serving",
+        "served": "Served",
+        "no_show": "No-show",
+        "cancelled": "Left",
+        "removed": "Removed",
+        "expired": "Expired",
+        "expected": "Expected"
+      },
+      "section": "Search and filters",
+      "mine": "Mine"
+    },
+    "transfer": {
+      "open": "Transfer",
+      "openFor": "Transfer {{ticket}}",
+      "title": "Transfer {{ticket}}",
+      "place": "The guest keeps their place by join time, and their status link keeps working.",
+      "queue": "To queue",
+      "service": "Service",
+      "keepService": "Keep the current service",
+      "noService": "No service",
+      "serviceHint": "Pick the service they need in the other queue.",
+      "confirm": "Transfer",
+      "cancel": "Cancel",
+      "done": "Moved {{ticket}} to {{queue}}.",
+      "notAccepting": "That queue isn't taking guests right now."
+    },
+    "assign": {
+      "open": "Assign",
+      "openFor": "Assign {{ticket}}",
+      "title": "Assign {{ticket}}",
+      "hint": "The guest stays on everyone's list, but only that person's or counter's Call next picks them.",
+      "staff": "Person",
+      "counter": "Counter",
+      "anyone": "Anyone",
+      "anyCounter": "Any counter",
+      "confirm": "Assign",
+      "clear": "Unassign",
+      "cancel": "Cancel",
+      "badge": "For {{who}}",
+      "someone": "someone",
+      "done": "Assigned {{ticket}} to {{who}}.",
+      "cleared": "{{ticket}} is open to everyone again.",
+      "notCovered": "That person or counter can't take this guest."
+    },
+    "waitOverride": {
+      "open": "Set wait",
+      "title": "Current wait for {{name}}",
+      "hint": "Guests are told this wait until it runs out, instead of the usual estimate.",
+      "minutes": "Wait in minutes",
+      "pick": "{{minutes}} min",
+      "duration": "For",
+      "for30": "30 minutes",
+      "for60": "1 hour",
+      "forDay": "The rest of the day",
+      "save": "Set wait",
+      "cancel": "Cancel",
+      "clear": "Clear",
+      "active": "Wait set to about {{minutes}} min until {{time}}",
+      "error": "The wait was not saved. Try again."
+    },
+    "shortcuts": {
+      "title": "Keyboard shortcuts",
+      "description": "Single keys act on the selected guest. They are ignored while you type or a dialog is open.",
+      "close": "Close",
+      "enable": "Use single-key shortcuts",
+      "command": {
+        "callNext": "Call next",
+        "selectNext": "Select next guest",
+        "selectPrevious": "Select previous guest",
+        "start": "Start serving",
+        "complete": "Complete",
+        "recall": "Recall",
+        "noShow": "No-show (asks to confirm)",
+        "remove": "Remove (asks to confirm)",
+        "undo": "Undo last action",
+        "addGuest": "Add a guest",
+        "search": "Search",
+        "help": "Show this help"
+      }
+    },
+    "offline": {
+      "pending": "Pending",
+      "saved": "Saved offline: {{ticket}} will update when you are back online.",
+      "addSaved": "Saved offline: {{name}} will be added when you are back online.",
+      "guest": "the guest",
+      "unavailable": "This browser can't store actions offline. Anything you do now needs a connection, so check the Wi-Fi before you continue.",
+      "needsConnection": "You are offline. Actions on a guest are saved and sent when the connection returns. Calling the next guest and changing the queue state need a connection.",
+      "waiting_one": "Offline: {{count}} action waiting.",
+      "waiting_other": "Offline: {{count}} actions waiting.",
+      "sending_one": "Back online: sending {{count}} saved action…",
+      "sending_other": "Back online: sending {{count}} saved actions…",
+      "state": {
+        "waiting": "waiting",
+        "called": "called",
+        "serving": "being served",
+        "expected": "expected",
+        "no_show": "marked no-show"
+      },
+      "actionName": {
+        "call": "call",
+        "recall": "recall",
+        "start": "start",
+        "requeue": "put back",
+        "complete": "complete",
+        "no_show": "no-show",
+        "cancel": "cancel",
+        "remove": "remove",
+        "reinstate": "reinstate",
+        "check_in": "check-in",
+        "add": "add"
+      },
+      "review": {
+        "title_one": "Needs review: {{count}} saved action was not applied",
+        "title_other": "Needs review: {{count}} saved actions were not applied",
+        "what": "{{ticket}}: {{action}}",
+        "nowIn": "Another tablet changed this guest. They are now {{state}}.",
+        "gone": "Another tablet finished or removed this guest, so the action can't be applied.",
+        "addRefused": "The queue refused this guest when you came back online.",
+        "nothingApplied": "Not applied",
+        "apply": "Apply again",
+        "discard": "Discard",
+        "discardLabel": "Discard saved action for {{ticket}}",
+        "discardTitle": "Discard the saved action for {{ticket}}?",
+        "discardBody": "It will never be sent. The guest stays as they are now."
+      }
+    },
+    "print": {
+      "button": "Print ticket"
+    },
+    "partyEditor": {
+      "title": "People with this guest",
+      "add": "Add someone (first name)",
+      "addButton": "Add companion",
+      "remove": "Remove {{name}}",
+      "limit": "Up to 9 companions.",
+      "save": "Save party",
+      "stale": "This visit changed. Close and reopen the details, then try again.",
+      "failed": "Couldn't save the party. Try again."
+    },
+    "priority": {
+      "badge": "Priority: {{name}}",
+      "none": "No priority",
+      "pick": "Priority",
+      "open": "Priority",
+      "openFor": "Set priority for {{ticket}}",
+      "title": "Priority for {{ticket}}",
+      "hint": "Moves the guest ahead of those who joined shortly before them. A guest you moved by hand keeps their place.",
+      "cancel": "Cancel",
+      "save": "Save",
+      "done": "{{ticket}} is now {{name}}",
+      "cleared": "Priority cleared for {{ticket}}",
+      "addGuest": "Priority",
+      "addGuestNone": "None",
+      "failed": "Couldn't set the priority. The guest may have been called."
+    },
+    "messages": {
+      "title": "Messages",
+      "loading": "Loading messages",
+      "none": "No messages were sent for this visit.",
+      "warning": "Not reached",
+      "retry": "Retry",
+      "retryFailed": "Could not retry. Try again.",
+      "notRelevant": "Too late to retry: the guest has moved on.",
+      "failedTitle": "Failed messages",
+      "failedIntro": "Messages from the last day that did not reach a guest. Call them out loud, or retry a dead one.",
+      "failedNone": "Every message got through.",
+      "channel": {
+        "push": "Push",
+        "email": "Email",
+        "sms": "SMS",
+        "whatsapp": "WhatsApp",
+        "telegram": "Telegram",
+        "console": "Console"
+      },
+      "status": {
+        "queued": "Queued",
+        "claimed": "Sending",
+        "failed": "Retrying",
+        "sent": "Sent",
+        "delivered": "Delivered",
+        "suppressed": "Held back",
+        "dead": "Failed",
+        "unknown": "Unknown"
+      },
+      "reason": {
+        "no_consent": "The guest has not agreed to this channel.",
+        "suppressed": "The guest opted out of this channel.",
+        "quiet_hours": "Held during quiet hours.",
+        "bot_blocked": "The guest blocked the bot.",
+        "no_channel": "This channel is not set up.",
+        "recipient_deleted": "The guest's device is no longer registered.",
+        "lease_expired": "The sender stopped before finishing.",
+        "hard_bounce": "The address does not accept mail.",
+        "complaint": "The guest reported it as spam.",
+        "http": "The provider refused the message.",
+        "other": "It could not be delivered."
+      }
+    },
+    "chat": {
+      "title": "Chat with the guest",
+      "empty": "No messages yet.",
+      "from": {
+        "guest": "Guest",
+        "staff": "Staff"
+      },
+      "quick": {
+        "onOurWay": "On our way",
+        "comeToDesk": "Please come to the desk"
+      },
+      "message": "Message",
+      "count": "{{count}} of {{max}} characters",
+      "send": "Send",
+      "unread_one": "{{count}} unread message from the guest",
+      "unread_other": "{{count}} unread messages from the guest",
+      "disabled": "Chat is turned off for this queue.",
+      "failed": "Couldn't send. Try again.",
+      "badge": "{{count}} new"
+    },
+    "journey": {
+      "send": "Send to {{queue}}",
+      "sendLabel": "Send {{ticket}} to {{queue}}",
+      "done": "{{ticket}} sent to {{queue}}."
+    },
+    "waiver": {
+      "title": "Agreement",
+      "agreed": "Agreed v{{version}}, {{at}}, {{name}}",
+      "noName": "no typed name",
+      "guardian": "Guardian: {{name}}"
+    }
+  },
+  "planning": {
+    "title": "Planning",
+    "loading": "Loading the planning grid…",
+    "error": "Couldn't load the planning grid. Try again.",
+    "date": "Date",
+    "prev": "Previous",
+    "next": "Next",
+    "day": "Day",
+    "week": "Week",
+    "showTable": "Show as table",
+    "showGrid": "Show as grid",
+    "noResources": "This location has no resources yet. An admin can add them under Resources.",
+    "hint": "To block time, drag across the grid, or use the arrow keys to move, Shift plus arrows to select and Enter to confirm.",
+    "block": {
+      "title": "Block time",
+      "summary_one": "{{count}} resource, {{from}} to {{to}}",
+      "summary_other": "{{count}} resources, {{from}} to {{to}}",
+      "reason": "Reason (optional)",
+      "confirm": "Block time",
+      "cancel": "Cancel",
+      "conflicts_one": "{{count}} booking overlaps this time. It stays booked; contact the guest if needed.",
+      "conflicts_other": "{{count}} bookings overlap this time. They stay booked; contact the guests if needed.",
+      "done_one": "Blocked {{count}} slot.",
+      "done_other": "Blocked {{count}} slots.",
+      "error": {
+        "denied": "Only managers can block time.",
+        "failed": "Couldn't block that time. Try again."
+      }
+    },
+    "gridLabel": "Planning grid for {{day}}",
+    "nothing": "Nothing is booked, blocked or scheduled on this day.",
+    "unassigned": "No resource",
+    "blocked": "Blocked",
+    "onShift": "On shift",
+    "col": {
+      "resource": "Resource",
+      "time": "Time",
+      "item": "Item"
+    },
+    "kind": {
+      "appointment": "Appointment",
+      "block": "Block",
+      "shift": "Shift"
+    }
+  },
+  "presence": {
+    "label": "Your status",
+    "unset": "Set your status",
+    "failed": "Couldn't change your status. Try again.",
+    "team": "Team on shift",
+    "someone": "Someone",
+    "status": {
+      "available": "Available",
+      "break": "On break",
+      "away": "Away"
+    },
+    "breakFor_one": "On break for {{count}} minute",
+    "breakFor_other": "On break for {{count}} minutes",
+    "callDisabled": "You're on break. Set yourself to Available to call the next guest."
+  }
+}

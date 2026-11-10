@@ -1,0 +1,35 @@
+{
+  "calendar": {
+    "loading": "Loading your calendar links…",
+    "title": "Calendar feed",
+    "intro": "Subscribe your calendar app to your appointments. It updates itself.",
+    "names": "Show guest first names in event titles",
+    "namesHint": "Off by default. Phone numbers and emails are never included.",
+    "warning": "Anyone with the link can read your appointments. Don't share it, and revoke it if it leaks.",
+    "create": "Create a calendar link",
+    "creating": "Creating…",
+    "newTitle": "Your new link",
+    "newBody": "Copy it now. For your safety it can't be shown again.",
+    "webcal": "Subscribe link (webcal)",
+    "https": "Web link (https)",
+    "copyWebcal": "Copy subscribe link",
+    "copyHttps": "Copy web link",
+    "copied": "Copied.",
+    "active": "Your links",
+    "none": "No links yet.",
+    "masked": "••••••••••••",
+    "created": "Created {{date}}",
+    "lastUsed": "last used {{date}}",
+    "neverUsed": "never used",
+    "withNames": "with guest names",
+    "revoke": "Revoke",
+    "revokeTitle": "Revoke this link?",
+    "revokeBody": "Calendar apps using it stop updating right away.",
+    "revokeConfirm": "Revoke link",
+    "revokeKeep": "Keep it",
+    "error": {
+      "rate_limited": "You already have 10 links. Revoke one first.",
+      "unknown": "Something went wrong. Try again."
+    }
+  }
+}

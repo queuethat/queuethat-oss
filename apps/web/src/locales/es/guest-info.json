@@ -1,0 +1,21 @@
+{
+  "info": {
+    "title": "Sobre este lugar",
+    "directions": "Cómo llegar",
+    "call": "Llamar al {{phone}}",
+    "openUntil": "Abierto hasta las {{time}}",
+    "openUntilLater": "Abierto hasta el {{day}} a las {{time}}",
+    "opensAt": "Abre a las {{time}}",
+    "opensAtLater": "Abre el {{day}} a las {{time}}"
+  },
+  "qr": {
+    "title": "Muéstralo en el mostrador",
+    "hint": "El personal puede escanearlo para encontrar tu lugar. Nunca contiene tu enlace privado.",
+    "label": "Código QR del turno {{ticket}}"
+  },
+  "calendar": {
+    "add": "Añadir al calendario",
+    "summary": "Visita a {{place}}",
+    "note": "Consulta tu lugar en la fila con el enlace que te enviamos."
+  }
+}

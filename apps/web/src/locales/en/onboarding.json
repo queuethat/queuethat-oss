@@ -1,0 +1,108 @@
+{
+  "title": "Set up your business",
+  "back": "Back",
+  "next": "Next",
+  "finish": "Create my business",
+  "working": "Creating…",
+  "business": {
+    "heading": "Your business",
+    "name": "Business name",
+    "nameHint": "What customers know you as."
+  },
+  "location": {
+    "heading": "Your location",
+    "name": "Location name",
+    "nameHint": "For example, the street or neighbourhood. It becomes the address of your join page.",
+    "address": "Street address",
+    "addressHint": "Optional. Shown to customers on the join page.",
+    "timeZone": "Time zone",
+    "timeZoneHint": "Detected from this device. Start typing to search."
+  },
+  "queue": {
+    "heading": "Your first queue",
+    "intro": "You can add more queues and services later.",
+    "name": "Queue name",
+    "defaultName": "Walk-ins",
+    "service": "Service",
+    "defaultService": "General",
+    "minutes": "Usual minutes per customer"
+  },
+  "errors": {
+    "invalid_timezone": "Pick a time zone from the list.",
+    "invalid_input": "Fill in the names.",
+    "permission_denied": "This account can't create a business. Paired screens can't, for example.",
+    "unknown": "Something went wrong. Your progress is saved; try again.",
+    "hasVisits": "This location already has guests today, so a template can't be applied."
+  },
+  "templates": {
+    "heading": "Start from a template",
+    "blank": "Start blank",
+    "blankHint": "Name your own first queue and service.",
+    "privacyNote": "Privacy: guests appear by ticket number only. Names are never shown on screens.",
+    "names": {
+      "barber": "Barber or salon",
+      "clinic": "Clinic",
+      "restaurant": "Restaurant",
+      "dmv_counter": "Service counter",
+      "retail_repair": "Retail or repair",
+      "events": "Events and check-in"
+    },
+    "descriptions": {
+      "barber": "A walk-in queue with Haircut and Beard services and three chairs.",
+      "clinic": "Ticket numbers only, generic Appointment and Walk-in services and two rooms.",
+      "restaurant": "A waitlist with a table service and three tables.",
+      "dmv_counter": "Licences and Registrations in one queue with three counters.",
+      "retail_repair": "Drop-off and Pick-up services at two desks.",
+      "events": "A check-in queue with two desks and no wait estimates."
+    },
+    "summary_other": "Created {{count}} queues, {{services}} services and {{counters}} counters.",
+    "editQueues": "Edit queues and services",
+    "editCounters": "Edit counters",
+    "apply": "Apply a template",
+    "applyTitle": "Apply a template",
+    "applyIntro": "Adds queues, services and counters in one step. Anything with the same name is kept. Only possible before today's first guest.",
+    "applyConfirm": "Apply template",
+    "cancel": "Cancel",
+    "applied": "Template applied.",
+    "summary_one": "Created {{count}} queue, {{services}} services and {{counters}} counters."
+  },
+  "steps": {
+    "label": "Setup progress",
+    "business": "Business",
+    "location": "Location",
+    "queue": "First queue"
+  },
+  "live": {
+    "loading": "Opening your line…",
+    "badge": "Your line is live",
+    "title": "{{name}} is ready for its first guest.",
+    "intro": "Guests scan the code or open the link and join. Share it now and finish setup at your own pace.",
+    "shareTitle": "Share your join link",
+    "qr": "QR code for {{url}}",
+    "copy": "Copy link",
+    "copied": "Link copied.",
+    "poster": "Print poster",
+    "openPage": "Open join page",
+    "tryIt": "Scan this with your phone, join, then call yourself from the console.",
+    "nextTitle": "Finish setting up",
+    "hours": "Set your opening hours",
+    "hoursHint": "Until you set hours, your line accepts guests at any time of day.",
+    "hoursAction": "Set hours",
+    "team": "Invite your team",
+    "teamHint": "Staff call the next guest from their own phone.",
+    "teamAction": "Invite staff",
+    "tv": "Pair a TV in your waiting room",
+    "tvHint": "Show who is being called. Optional.",
+    "tvAction": "Pair a TV",
+    "console": "Open the staff console",
+    "dashboard": "Go to the dashboard",
+    "alerts": {
+      "title": "How guests know it's their turn",
+      "phone": "Guests see their place in line on their phone and it updates by itself.",
+      "browser": "They get a browser alert when you call them. On iPhone they must first tap Share, then Add to Home Screen.",
+      "tv": "A TV in your waiting room shows the number being called.",
+      "textsFree": "Text messages are not sent on your current plan. They come with a paid plan.",
+      "textsPaid": "Your plan can also send text messages to guests who share a phone number and agree to texts."
+    }
+  }
+}

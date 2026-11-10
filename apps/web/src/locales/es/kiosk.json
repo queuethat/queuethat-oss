@@ -1,0 +1,96 @@
+{
+  "title": "Registro",
+  "connection": {
+    "live": "En vivo",
+    "connecting": "Reconectando",
+    "offline": "Sin conexión"
+  },
+  "welcome": {
+    "title": "Bienvenido",
+    "start": "Registrarme"
+  },
+  "closed": {
+    "title": "Ahora no admitimos registros",
+    "org_suspended": "Este local no está disponible.",
+    "closed": "Estamos cerrados. Por favor vuelve en nuestro horario.",
+    "paused": "El registro está en pausa. Por favor pregunta al personal.",
+    "outside_hours": "Estamos cerrados. Por favor vuelve en nuestro horario.",
+    "full": "La fila está llena. Por favor pregunta al personal."
+  },
+  "form": {
+    "title": "Tus datos",
+    "queue": "¿Qué fila?",
+    "service": "¿Qué necesitas?",
+    "name": "Nombre",
+    "nameMissing": "Escribe tu nombre para que el personal pueda llamarte.",
+    "party": "¿Cuántas personas?",
+    "phone": "Número de móvil (opcional)",
+    "phoneHint": "Para un mensaje cuando sea tu turno.",
+    "country": "Código del país",
+    "phoneInvalid": "Revisa el número de móvil, o déjalo vacío.",
+    "submit": "Obtener mi turno",
+    "joining": "Registrándote",
+    "cancel": "Empezar de nuevo"
+  },
+  "error": {
+    "queue_not_accepting": "Esta fila dejó de admitir registros. Por favor pregunta al personal.",
+    "not_found": "Esta fila no está disponible aquí. Por favor pregunta al personal.",
+    "rate_limited": "Demasiados registros a la vez. Espera un momento e inténtalo de nuevo.",
+    "invalid_input": "Revisa tu nombre y número e inténtalo de nuevo.",
+    "party_size_out_of_range": "Esta fila no admite tantas personas a la vez. Por favor pregunta al personal.",
+    "too_many_active_visits": "Son más personas de las que un teléfono puede registrar. Por favor pregunta al personal.",
+    "unknown": "No se pudo registrarte. Inténtalo de nuevo, o pregunta al personal."
+  },
+  "done": {
+    "title": "Ya estás registrado",
+    "ticket": "Tu turno",
+    "scan": "Escanea para seguir tu lugar en la fila en tu teléfono.",
+    "qrAlt": "Código QR con el enlace a tu lugar en la fila",
+    "finish": "Listo",
+    "clears_one": "Esta pantalla se borra en {{count}} segundo.",
+    "clears_other": "Esta pantalla se borra en {{count}} segundos."
+  },
+  "idle": {
+    "title": "¿Sigues ahí?",
+    "body_one": "Esta pantalla empieza de nuevo en {{count}} segundo y se borra lo que escribiste.",
+    "body_other": "Esta pantalla empieza de nuevo en {{count}} segundos y se borra lo que escribiste.",
+    "more": "Necesito más tiempo"
+  },
+  "print": {
+    "setting": "Imprimir turno",
+    "off": "No",
+    "ask": "Preguntar al cliente",
+    "always": "Siempre",
+    "button": "Imprimir mi turno",
+    "slip": {
+      "ticket": "Tu turno",
+      "joined": "Registrado a las {{time}}",
+      "scan": "Escanea para seguir tu lugar en la fila."
+    }
+  },
+  "settings": {
+    "summary": "Ajustes del dispositivo"
+  },
+  "a11y": {
+    "button": "Accesibilidad",
+    "audio": "Guía por voz",
+    "screen": {
+      "welcome": "Bienvenido. Pulse Registrarse para empezar.",
+      "form": "Registro. Escriba su nombre y pulse Obtener mi turno.",
+      "done": "Su turno es {{ticket}}. Por favor, tome asiento."
+    }
+  },
+  "printer": {
+    "connect": "Conectar impresora",
+    "connected": "Impresora: {{name}}",
+    "none": "Sin impresora conectada. Los turnos se imprimen desde el navegador.",
+    "test": "Imprimir prueba",
+    "testQueue": "Turno de prueba"
+  },
+  "steps": {
+    "label": "Pasos del registro",
+    "start": "Inicio",
+    "details": "Tus datos",
+    "ticket": "Tu turno"
+  }
+}

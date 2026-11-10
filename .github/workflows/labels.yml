@@ -1,0 +1,32 @@
+# F4 (#14): creates or updates every label in .github/labels.yml. Labels missing from the file
+# are left alone, so nothing applied to an issue disappears.
+name: Sync labels
+
+on:
+  push:
+    branches: [main]
+    paths: [.github/labels.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Apply labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          yq -o=json -I=0 '.[]' .github/labels.yml | while read -r label; do
+            name=$(jq -r .name <<<"$label")
+            gh label create "$name" --repo "$GITHUB_REPOSITORY" --force \
+              --color "$(jq -r .color <<<"$label")" \
+              --description "$(jq -r '.description // ""' <<<"$label")"
+          done

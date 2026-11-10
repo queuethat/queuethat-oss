@@ -1,0 +1,96 @@
+{
+  "admin": {
+    "loading": "Loading payment settings",
+    "title": "Payments for {{service}}",
+    "close": "Close",
+    "readOnly": "Only managers can change payment settings.",
+    "mode": "When someone books",
+    "modes": {
+      "none": "Ask for no payment",
+      "deposit": "Charge a deposit",
+      "hold": "Hold the amount on their card"
+    },
+    "modeHint": {
+      "none": "Booking stays free.",
+      "deposit": "The guest pays the amount when they book. You can refund it from the console.",
+      "hold": "The amount is reserved on the guest's card and released when they show up. You can charge it if they do not."
+    },
+    "amount": "Amount",
+    "currency": "Currency",
+    "cutoff": "Free cancellation until (hours before)",
+    "cutoffHint": "Cancelling at least this many hours ahead releases the hold. Later than that, you may charge the fee.",
+    "releaseAfter": "Release the hold",
+    "release": {
+      "served": "Once the guest is served",
+      "checked_in": "Once the guest checks in"
+    },
+    "invalid": {
+      "amount": "Enter an amount above zero, such as 15 or 15.50.",
+      "cutoff": "Enter a whole number of hours from 0 to 720."
+    },
+    "errors": {
+      "permission_denied": "Only managers can change payment settings.",
+      "payments_not_connected": "Connect and enable a card processor under Integrations before asking guests to pay.",
+      "unknown": "Could not save. Try again."
+    },
+    "saving": "Saving",
+    "save": "Save payment settings",
+    "saved": "Saved."
+  },
+  "console": {
+    "title": "Payments",
+    "badge": {
+      "requires_action": "Awaiting payment",
+      "held": "Held",
+      "paid": "Paid",
+      "card_on_file": "Card on file",
+      "released": "Released",
+      "refunded": "Refunded",
+      "failed": "Failed"
+    },
+    "kind": {
+      "hold": "Card hold",
+      "deposit": "Deposit",
+      "card_on_file": "Saved card",
+      "no_show_fee": "No-show fee",
+      "pos": "Counter payment"
+    },
+    "refunded": "{{amount}} refunded",
+    "charge": {
+      "trigger": "Charge no-show fee",
+      "title": "Charge {{amount}}?",
+      "description": "This charges the guest's card {{amount}} for not showing up. It cannot be undone, only refunded.",
+      "confirm": "Charge {{amount}}",
+      "cancel": "Keep as is"
+    },
+    "refund": {
+      "trigger": "Refund",
+      "title": "Refund this payment?",
+      "description": "Up to {{amount}} can be refunded. A refund cannot be undone.",
+      "amount": "Amount to refund",
+      "reason": "Reason (optional)",
+      "confirm": "Refund {{amount}}",
+      "cancel": "Cancel",
+      "invalid": "Enter an amount up to {{max}}."
+    },
+    "queued": "Queued. The status updates when the payment provider confirms.",
+    "error": "That did not go through. Check the status and try again.",
+    "request": {
+      "amount": "Amount to request",
+      "currency": "Currency",
+      "submit": "Request payment",
+      "invalid": "Enter an amount above zero, such as 15 or 15.50.",
+      "error": "That did not go through. Check the visit and try again. If the guest already opened the request, refund it instead.",
+      "sent": "Requested. The guest sees it on their phone."
+    },
+    "payCode": {
+      "show": "Show pay QR",
+      "title": "Scan to pay {{amount}}",
+      "description": "The guest scans this with their own phone. It opens the card form for this payment only.",
+      "close": "Done",
+      "label": "QR code to pay {{amount}}",
+      "expires": "Valid for 10 minutes. Showing it again replaces this code.",
+      "error": "Could not make a code. Check that the payment is still unpaid and try again."
+    }
+  }
+}

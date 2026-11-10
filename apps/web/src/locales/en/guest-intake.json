@@ -1,0 +1,25 @@
+{
+  "title": "A few questions",
+  "optional": "optional",
+  "required": "required",
+  "choose": "Choose one",
+  "phoneHint": "Include the country code, for example +1 555 0100.",
+  "checkboxYes": "Yes",
+  "invalid": "Please check this answer.",
+  "booked": {
+    "title": "Your booking is confirmed",
+    "body": "One more step: the business needs a few answers before your visit.",
+    "save": "Save answers",
+    "saving": "Saving…",
+    "skip": "Continue without answering",
+    "failed": "We couldn't save your answers. Check your connection and try again."
+  },
+  "agreement": {
+    "accept": "I have read and agree"
+  },
+  "signature": {
+    "hint": "Type your full name.",
+    "guardian": "Parent or guardian name",
+    "guardianHint": "Only if you are signing for someone else or are under 18."
+  }
+}

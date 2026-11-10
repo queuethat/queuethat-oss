@@ -1,0 +1,25 @@
+{
+  "title": "Unas preguntas",
+  "optional": "opcional",
+  "required": "obligatorio",
+  "choose": "Elige una opción",
+  "phoneHint": "Incluye el código del país, por ejemplo +1 555 0100.",
+  "checkboxYes": "Sí",
+  "invalid": "Revisa esta respuesta.",
+  "booked": {
+    "title": "Tu reserva está confirmada",
+    "body": "Un paso más: el negocio necesita algunas respuestas antes de tu visita.",
+    "save": "Guardar respuestas",
+    "saving": "Guardando…",
+    "skip": "Continuar sin responder",
+    "failed": "No pudimos guardar tus respuestas. Revisa tu conexión e inténtalo de nuevo."
+  },
+  "agreement": {
+    "accept": "He leído y acepto"
+  },
+  "signature": {
+    "hint": "Escribe tu nombre completo.",
+    "guardian": "Nombre del padre, madre o tutor",
+    "guardianHint": "Solo si firmas por otra persona o eres menor de 18 años."
+  }
+}

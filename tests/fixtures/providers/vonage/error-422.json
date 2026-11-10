@@ -1,0 +1,6 @@
+{
+  "type": "https://developer.vonage.com/api-errors#invalid-params",
+  "title": "Invalid parameters",
+  "detail": "The `to` parameter is invalid.",
+  "instance": "bf0ca0bf927b3b52e3cb03217e1a1ddf"
+}

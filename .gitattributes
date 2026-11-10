@@ -1,0 +1,7 @@
+* text=auto eol=lf
+packages/db-types/** linguist-generated=true
+pnpm-lock.yaml linguist-generated=true
+apps/web/src/routeTree.gen.ts linguist-generated=true
+supabase/tests/helpers/_generated.psql linguist-generated=true
+supabase/tests/rls/matrix.test.sql linguist-generated=true
+deploy/load/results/** linguist-generated=true

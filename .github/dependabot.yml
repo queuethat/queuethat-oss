@@ -1,0 +1,38 @@
+# F4 (#14). Commit prefixes keep Dependabot PR titles valid for the semantic-title check
+# ("build(deps): bump ...", "ci(deps): bump ...").
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 5
+    cooldown: { default-days: 7 }
+    commit-message: { prefix: build, include: scope }
+    groups:
+      npm-minor-patch:
+        update-types: [minor, patch]
+    # TypeScript waits for typescript-eslint; ESLint waits for jsx-a11y (see PR #398).
+    ignore:
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      - dependency-name: eslint
+        update-types: [version-update:semver-major]
+      - dependency-name: '@eslint/js'
+        update-types: [version-update:semver-major]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly, day: monday }
+    cooldown: { default-days: 7 }
+    commit-message: { prefix: ci, include: scope }
+    groups:
+      actions:
+        patterns: ['*']
+
+  # Self-host stack (2P-OPS1, #207): bumps the tag and digest of every pinned image. The
+  # selfhost-smoke job (#213) boots the result before anything merges.
+  - package-ecosystem: docker-compose
+    directory: /deploy/selfhost
+    schedule: { interval: weekly, day: monday }
+    cooldown: { default-days: 7 }
+    commit-message: { prefix: build, include: scope }

@@ -1,0 +1,107 @@
+{
+  "title": "Team",
+  "loading": "Loading the team",
+  "readOnly": "Only admins and owners can invite people or change roles. You can see who is on the team.",
+  "members": {
+    "title": "People",
+    "you": "You",
+    "noName": "Unnamed",
+    "allLocations": "All locations",
+    "someLocations": "{{count}} location",
+    "someLocations_other": "{{count}} locations",
+    "pin": "PIN set"
+  },
+  "role": {
+    "staff": "Front desk",
+    "manager": "Manager",
+    "admin": "Admin",
+    "owner": "Owner"
+  },
+  "invite": {
+    "trigger": "Invite someone",
+    "title": "Invite to the team",
+    "description": "They get an email with a link that works once for 7 days.",
+    "email": "Email address",
+    "name": "Name",
+    "nameHint": "Shown to the team. They can change it later.",
+    "role": "Role",
+    "locations": "Locations",
+    "allLocations": "All locations",
+    "send": "Send invitation",
+    "sending": "Sending",
+    "cancel": "Cancel",
+    "sent": "Invitation sent to {{email}}."
+  },
+  "pending": {
+    "title": "Pending invitations",
+    "empty": "Nobody is waiting to join.",
+    "expires": "Expires {{date}}",
+    "resend": "Resend",
+    "resent": "A new invitation was sent to {{email}}.",
+    "revoke": "Revoke",
+    "revokeTitle": "Revoke the invitation to {{email}}?",
+    "revokeDescription": "The link in their email stops working. You can invite them again later.",
+    "revokeConfirm": "Revoke invitation",
+    "cancel": "Keep it"
+  },
+  "edit": {
+    "trigger": "Edit",
+    "triggerFor": "Edit {{name}}",
+    "title": "Edit {{name}}",
+    "description": "Changes apply the next time they open a page.",
+    "role": "Role",
+    "locations": "Locations",
+    "allLocations": "All locations",
+    "save": "Save changes",
+    "saving": "Saving",
+    "cancel": "Cancel",
+    "customRole": "Custom role",
+    "customRoleHint": "Limits or extends what this staff member can do. Create roles on the Roles page.",
+    "noCustomRole": "None (standard staff)"
+  },
+  "remove": {
+    "trigger": "Remove",
+    "triggerFor": "Remove {{name}}",
+    "title": "Remove {{name}}?",
+    "description": "They lose access at once and are signed out everywhere. Their past work stays in the history.",
+    "reason": "Reason",
+    "reasonHint": "Kept in the audit log, for example: left the company.",
+    "confirm": "Remove from team",
+    "cancel": "Keep them"
+  },
+  "errors": {
+    "forbidden_role": "Your role can't grant or change that role.",
+    "last_owner": "The organization needs at least one owner. Make someone else an owner first.",
+    "permission_denied": "You don't have permission to do that.",
+    "invalid_input": "Check the details. The person may already be on the team or invited.",
+    "rate_limited": "Too many invitations. Try again later.",
+    "send_failed": "The email could not be sent, so no invitation was created. Try again.",
+    "org_suspended": "This organization is suspended.",
+    "not_found": "That person is no longer on the team.",
+    "unknown": "Something went wrong. Try again."
+  },
+  "preset": {
+    "owner": "Owner",
+    "manager": "Manager",
+    "frontdesk": "Front desk",
+    "help": {
+      "owner": "Everything, including billing and other owners.",
+      "manager": "Runs the day: pauses queues, sees reports and switches in other staff.",
+      "frontdesk": "Calls, serves and adds guests at their locations."
+    }
+  },
+  "advanced": {
+    "title": "Advanced",
+    "admin": "Make this person an Admin",
+    "adminHint": "Also edits locations, hours, screens and the team (except owners)."
+  },
+  "lines": {
+    "title": "Lines and privacy",
+    "toggle": "Limit staff to their own lines",
+    "offHint": "Off: front desk staff see and serve every line at their locations, including each guest's answers.",
+    "onHint": "On: staff you assign to specific lines see only those lines' guests and answers. Staff set to all lines, managers, admins and owners still see everything.",
+    "pickerLabel": "Lines this person works",
+    "pickerHint": "Applies while \"Limit staff to their own lines\" is on. Pick at least one line, or all lines for front desk.",
+    "allLines": "All lines (front desk)"
+  }
+}

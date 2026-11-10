@@ -1,0 +1,50 @@
+{
+  "comment": "Walk-in ETA scenarios shared by supabase/tests/eta/appointments.test.sql (the database computes the numbers) and packages/domain/src/eta.test.ts (the label the guest sees). A guest joining now sits behind `walkins` waiting visits of `walkinMinutes` each. An appointment is an expected guest due `inMinutes` from now (negative = already due) booked for `minutes`. All queues have early check-in 10 min and no-show after 15 min.",
+  "scenarios": [
+    {
+      "name": "one server, appointment due inside the wait is added",
+      "servers": 1,
+      "walkins": 2,
+      "walkinMinutes": 10,
+      "reserve": true,
+      "appointments": [{ "inMinutes": 15, "minutes": 30 }],
+      "expect": { "state": "ok", "low": 40, "high": 60, "label": "About 40–60 min" }
+    },
+    {
+      "name": "queue does not reserve for appointments: same line, appointment ignored",
+      "servers": 1,
+      "walkins": 2,
+      "walkinMinutes": 10,
+      "reserve": false,
+      "appointments": [{ "inMinutes": 15, "minutes": 30 }],
+      "expect": { "state": "ok", "low": 10, "high": 30, "label": "About 10–30 min" }
+    },
+    {
+      "name": "appointment due long after the walk-in would start is ignored",
+      "servers": 1,
+      "walkins": 2,
+      "walkinMinutes": 10,
+      "reserve": true,
+      "appointments": [{ "inMinutes": 120, "minutes": 30 }],
+      "expect": { "state": "ok", "low": 10, "high": 30, "label": "About 10–30 min" }
+    },
+    {
+      "name": "appointment past its no-show grace is ignored",
+      "servers": 1,
+      "walkins": 2,
+      "walkinMinutes": 10,
+      "reserve": true,
+      "appointments": [{ "inMinutes": -60, "minutes": 30 }],
+      "expect": { "state": "ok", "low": 10, "high": 30, "label": "About 10–30 min" }
+    },
+    {
+      "name": "two servers, one appointment: its minutes are shared across both",
+      "servers": 2,
+      "walkins": 2,
+      "walkinMinutes": 10,
+      "reserve": true,
+      "appointments": [{ "inMinutes": 5, "minutes": 30 }],
+      "expect": { "state": "ok", "low": 20, "high": 30, "label": "About 20–30 min" }
+    }
+  ]
+}

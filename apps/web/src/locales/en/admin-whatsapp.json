@@ -1,0 +1,66 @@
+{
+  "title": "WhatsApp",
+  "loading": "Loading WhatsApp templates",
+  "readOnly": "You can see the mappings. Only admins and owners can change them.",
+  "list": {
+    "title": "Message templates",
+    "intro": "WhatsApp only allows a message that starts a conversation if it uses a template Meta approved. Create templates in Meta's WhatsApp Manager, then map each message below to its approved template.",
+    "empty": "No WhatsApp message templates yet.",
+    "unmapped": "Not mapped to a Meta template",
+    "rejectedHint": "Meta rejected this template. Remove the mapping and map a different template."
+  },
+  "triggers": {
+    "called": "You're called",
+    "almost_up": "Almost up",
+    "broadcast": "Announcement"
+  },
+  "category": {
+    "utility": "Utility",
+    "marketing": "Marketing"
+  },
+  "status": {
+    "approved": "Approved",
+    "pending": "Pending",
+    "paused": "Paused",
+    "rejected": "Rejected"
+  },
+  "warning": {
+    "called": "The \"You're called\" message has no approved template. WhatsApp guests will get nothing outside the 24 hour reply window."
+  },
+  "sync": {
+    "button": "Sync from Meta",
+    "running": "Syncing",
+    "done_one": "Updated {{count}} template.",
+    "done_other": "Updated {{count}} templates.",
+    "errors": {
+      "not_configured": "WhatsApp is not set up for this business yet.",
+      "unavailable": "Meta did not answer. Try again in a moment.",
+      "unknown": "Syncing failed. Try again."
+    }
+  },
+  "map": {
+    "open": "Map template",
+    "title": "Map to a Meta template",
+    "name": "Template name in Meta",
+    "nameHint": "Exactly as shown in WhatsApp Manager, for example queue_called.",
+    "language": "Language code",
+    "category": "Category in Meta",
+    "cancel": "Cancel",
+    "submit": "Save mapping",
+    "saving": "Saving"
+  },
+  "remove": {
+    "trigger": "Remove",
+    "triggerFor": "Remove the mapping to {{name}}",
+    "title": "Remove the mapping to {{name}}?",
+    "description": "This message will not go out on WhatsApp outside the 24 hour reply window until you map another template.",
+    "confirm": "Remove mapping",
+    "cancel": "Keep it"
+  },
+  "errors": {
+    "category_mismatch": "That category does not match this message. Utility templates carry service messages; marketing templates carry announcements.",
+    "invalid_template": "This message cannot be mapped.",
+    "permission_denied": "Only admins and owners can change mappings.",
+    "unknown": "Something went wrong. Try again."
+  }
+}

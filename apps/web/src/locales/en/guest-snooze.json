@@ -1,0 +1,15 @@
+{
+  "onMyWay": "I'm on my way",
+  "onMyWayDone": "On the way. The staff know.",
+  "needMoreTime": "I need more time",
+  "needMoreTimeLeft": "{{count}} extension left",
+  "needMoreTimeLeft_other": "{{count}} extensions left",
+  "needMoreTimeNone": "No more extensions",
+  "needMoreTimeHint": "You move back a few places.",
+  "failed": "That did not go through. Try again.",
+  "limit": "You have used all your extensions.",
+  "arriveBy": "Please arrive by {{time}}",
+  "warning": "Your place will be given away in {{count}} minute unless you arrive or ask for more time.",
+  "warning_other": "Your place will be given away in {{count}} minutes unless you arrive or ask for more time.",
+  "warningNow": "Your place is about to be given away. Please arrive now."
+}

@@ -1,0 +1,32 @@
+{
+  "sent": {
+    "status": 200,
+    "body": {
+      "To": "guest@example.test",
+      "SubmittedAt": "2026-10-30T21:00:00Z",
+      "MessageID": "0a129aee-e1cd-480d-b08d-4f48548ff48d",
+      "ErrorCode": 0,
+      "Message": "OK"
+    }
+  },
+  "rateLimited": { "status": 429, "body": { "ErrorCode": 429, "Message": "Rate limit exceeded." } },
+  "invalidAddress": {
+    "status": 422,
+    "body": { "ErrorCode": 300, "Message": "Invalid 'To' address: 'nope'." }
+  },
+  "inactiveRecipient": {
+    "status": 422,
+    "body": {
+      "ErrorCode": 406,
+      "Message": "You tried to send to a recipient that has been marked as inactive."
+    }
+  },
+  "badToken": {
+    "status": 401,
+    "body": {
+      "ErrorCode": 10,
+      "Message": "No Account or Server API tokens were supplied in the HTTP headers."
+    }
+  },
+  "unavailable": { "status": 503, "body": { "ErrorCode": 0, "Message": "Service unavailable" } }
+}

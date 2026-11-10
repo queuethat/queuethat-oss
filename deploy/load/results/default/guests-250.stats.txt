@@ -1,0 +1,12 @@
+supabase_analytics peak_cpu=14% mem=540.3MiB
+supabase_auth peak_cpu=4% mem=9.047MiB
+supabase_db  peak_cpu=15% mem=334.7MiB
+supabase_edge_runtime peak_cpu=0% mem=77.68MiB
+supabase_inbucket peak_cpu=4% mem=6.922MiB
+supabase_kong peak_cpu=14% mem=141.8MiB
+supabase_pg_meta peak_cpu=13% mem=109MiB
+supabase_realtime peak_cpu=6% mem=223.7MiB
+supabase_rest peak_cpu=22% mem=57.99MiB
+supabase_storage peak_cpu=3% mem=79.55MiB
+supabase_studio peak_cpu=12% mem=211.1MiB
+supabase_vector peak_cpu=8% mem=30.45MiB

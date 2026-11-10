@@ -1,0 +1,25 @@
+{
+  "unsubscribe": {
+    "title": "Dejar de recibir estos correos",
+    "body": "No recibirás más correos de este negocio sobre visitas a la fila. Si te unes de nuevo a una de sus filas, no te escribiremos.",
+    "confirm": "Dejar de recibir correos",
+    "done": {
+      "title": "Ya no recibirás estos correos",
+      "body": "Puedes cerrar esta página."
+    },
+    "invalid": {
+      "title": "Este enlace no funciona",
+      "body": "Usa el enlace del correo más reciente, o responde a ese correo y pide al negocio que deje de escribirte."
+    },
+    "failed": "Algo salió mal. Inténtalo de nuevo."
+  },
+  "branding": {
+    "terms": "Términos",
+    "privacy": "Política de privacidad",
+    "poweredBy": "Con tecnología de {{name}}",
+    "source": "Código fuente"
+  },
+  "language": {
+    "label": "Idioma"
+  }
+}

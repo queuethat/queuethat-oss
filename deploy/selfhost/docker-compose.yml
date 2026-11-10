@@ -1,0 +1,432 @@
+# Self-host stack (P-4, #207): a minimal, pinned Supabase plus the app. Start with
+# `./setup.sh && docker compose up -d`. Every third-party image is pinned `tag@sha256:...` and bumped
+# by Dependabot; deploy/selfhost/tests/check-compose.sh fails on a missing digest or a published
+# port other than 80/443. Supabase and imgproxy images come from ghcr.io, which has no pull-rate limit; the digests
+# are the Docker Hub ones. Images built from this repo (web, migrate, backup) are pinned by the
+# release in #214 instead.
+#
+# Profiles (all off by default): studio (Supabase Studio on 127.0.0.1:54323), tunnel (cloudflared),
+# backup (nightly encrypted dumps). DEMO_MODE=true seeds a demo organization. Sized for 2 vCPU / 4 GB: the default
+# profile needs about 2.5 GB.
+name: queue
+
+x-restart: &restart
+  restart: unless-stopped
+
+services:
+  db:
+    <<: *restart
+    image: ghcr.io/supabase/postgres:17.6.1.136@sha256:f371b5f3f2ac0a05703f33d6e6134515fb2498cab708fb948a0aeb7481467c00
+    command:
+      [
+        'postgres',
+        '-c',
+        'config_file=/etc/postgresql/postgresql.conf',
+        '-c',
+        'log_min_messages=fatal',
+      ]
+    environment:
+      POSTGRES_HOST: /var/run/postgresql
+      PGPORT: 5432
+      POSTGRES_PORT: 5432
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run ./setup.sh}
+      POSTGRES_DB: postgres
+      JWT_EXP: ${JWT_EXPIRY:-3600}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - db-config:/etc/postgresql-custom
+      - ./volumes/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql:ro
+      - ./volumes/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql:ro
+      - ./volumes/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql:ro
+      - ./volumes/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql:ro
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'postgres', '-h', 'localhost']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # One-shot: applies migrations, sets the dispatcher's Vault secrets and publishes the Edge Functions.
+  # kong, functions and web start only after it exits 0, so a bad secret or a failed migration
+  # leaves nothing running that serves traffic (2P-OPS3, #209).
+  migrate:
+    image: queue-migrate:${QM_VERSION:-local}
+    build:
+      context: ../..
+      dockerfile: deploy/selfhost/migrate/Dockerfile
+    restart: 'no'
+    # Migrations use the schemas these services create when they first start (auth, realtime,
+    # storage), so they go first.
+    depends_on:
+      db: { condition: service_healthy }
+      auth: { condition: service_healthy }
+      realtime: { condition: service_healthy }
+      storage: { condition: service_healthy }
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      ANON_KEY: ${ANON_KEY}
+      SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      VAULT_ENC_KEY: ${VAULT_ENC_KEY}
+      PG_META_CRYPTO_KEY: ${PG_META_CRYPTO_KEY}
+      DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD}
+      DISPATCH_SECRET: ${DISPATCH_SECRET}
+      REALTIME_DB_ENC_KEY: ${REALTIME_DB_ENC_KEY}
+      DEMO_MODE: ${DEMO_MODE:-false}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-}
+    volumes:
+      - functions:/functions
+
+  auth:
+    <<: *restart
+    image: ghcr.io/supabase/gotrue:v2.197.0@sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      API_EXTERNAL_URL: ${PUBLIC_URL:?run ./setup.sh}
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:${POSTGRES_PASSWORD}@db:5432/postgres
+      GOTRUE_SITE_URL: ${PUBLIC_URL}
+      GOTRUE_URI_ALLOW_LIST: ${ADDITIONAL_REDIRECT_URLS:-}
+      GOTRUE_DISABLE_SIGNUP: ${DISABLE_SIGNUP:-false}
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_EXP: ${JWT_EXPIRY:-3600}
+      GOTRUE_JWT_SECRET: ${JWT_SECRET}
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: 'true'
+      GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED: 'false'
+      GOTRUE_MAILER_AUTOCONFIRM: ${ENABLE_EMAIL_AUTOCONFIRM:-false}
+      GOTRUE_EXTERNAL_PHONE_ENABLED: 'false'
+      GOTRUE_SMTP_ADMIN_EMAIL: ${SMTP_ADMIN_EMAIL:-}
+      GOTRUE_SMTP_HOST: ${SMTP_HOST:-}
+      GOTRUE_SMTP_PORT: ${SMTP_PORT:-587}
+      GOTRUE_SMTP_USER: ${SMTP_USER:-}
+      GOTRUE_SMTP_PASS: ${SMTP_PASS:-}
+      GOTRUE_SMTP_SENDER_NAME: ${SMTP_SENDER_NAME:-QueueThat}
+      GOTRUE_MAILER_URLPATHS_INVITE: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_CONFIRMATION: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_RECOVERY: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: /auth/v1/verify
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:9999/health']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  rest:
+    <<: *restart
+    image: postgrest/postgrest:v14.18@sha256:c7cd7e265a85b05248abf53f4473fcec7e327c282d0bd0cf60f1551996d09fcf
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${POSTGRES_PASSWORD}@db:5432/postgres
+      # The same exposed schemas as supabase/config.toml [api].
+      PGRST_DB_SCHEMAS: api,api_v1,app,graphql_public
+      PGRST_DB_EXTRA_SEARCH_PATH: public,extensions
+      PGRST_DB_MAX_ROWS: 1000
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_DB_USE_LEGACY_GUCS: 'false'
+      PGRST_APP_SETTINGS_JWT_EXP: ${JWT_EXPIRY:-3600}
+      PGRST_ADMIN_SERVER_PORT: 3001
+      PGRST_ADMIN_SERVER_HOST: localhost
+    healthcheck:
+      # Ready only once migrate has created the api schema, so nothing that migrate needs waits on it.
+      test: ['CMD', 'postgrest', '--ready']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  realtime:
+    <<: *restart
+    # The container name looks odd but is required: Realtime derives its tenant id from the subdomain.
+    container_name: realtime-dev.queue-realtime
+    image: ghcr.io/supabase/realtime:v2.143.3@sha256:768b559241dd234c4e8852c5c0f504e598b80f1df2ad4dd78d5486fbed2f17a2
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      PORT: 4000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: supabase_admin
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: postgres
+      DB_AFTER_CONNECT_QUERY: 'SET search_path TO _realtime'
+      DB_ENC_KEY: ${REALTIME_DB_ENC_KEY:?run ./setup.sh}
+      API_JWT_SECRET: ${JWT_SECRET}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      METRICS_JWT_SECRET: ${JWT_SECRET}
+      ERL_AFLAGS: -proto_dist inet_tcp
+      DNS_NODES: "''"
+      RLIMIT_NOFILE: '10000'
+      APP_NAME: realtime
+      SEED_SELF_HOST: 'true'
+      RUN_JANITOR: 'true'
+      DISABLE_HEALTHCHECK_LOGGING: 'true'
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'curl -sSfL --head -o /dev/null -H "Authorization: Bearer ${ANON_KEY}" http://localhost:4000/api/tenants/realtime-dev/health',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  storage:
+    <<: *restart
+    image: ghcr.io/supabase/storage-api:v1.81.0@sha256:98ffec5d0678803783c30e404c27f4ec65e97efbe014088f2a86b4b8b54b9f54
+    depends_on:
+      db: { condition: service_healthy }
+      rest: { condition: service_started }
+      imgproxy: { condition: service_healthy }
+    environment:
+      ANON_KEY: ${ANON_KEY}
+      SERVICE_KEY: ${SERVICE_ROLE_KEY}
+      POSTGREST_URL: http://rest:3000
+      AUTH_JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL: postgres://supabase_storage_admin:${POSTGRES_PASSWORD}@db:5432/postgres
+      STORAGE_PUBLIC_URL: ${PUBLIC_URL}
+      REQUEST_ALLOW_X_FORWARDED_PATH: 'true'
+      FILE_SIZE_LIMIT: 52428800
+      STORAGE_BACKEND: file
+      GLOBAL_S3_BUCKET: stub
+      FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+      TENANT_ID: queue
+      REGION: local
+      ENABLE_IMAGE_TRANSFORMATION: 'true'
+      IMGPROXY_URL: http://imgproxy:5001
+    volumes:
+      - storage-data:/var/lib/storage
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://storage:5000/status']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  imgproxy:
+    <<: *restart
+    image: ghcr.io/imgproxy/imgproxy:v3.31.4@sha256:73c5dda13199745b0d2d00e4149d4a589c5b2e205dbf335ca05eca8276b54712
+    environment:
+      IMGPROXY_BIND: ':5001'
+      IMGPROXY_LOCAL_FILESYSTEM_ROOT: /
+      IMGPROXY_USE_ETAG: 'true'
+      IMGPROXY_MAX_SRC_RESOLUTION: 16.8
+    volumes:
+      - storage-data:/var/lib/storage
+    healthcheck:
+      test: ['CMD', 'imgproxy', 'health']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # The API gateway. Reachable only from the web service on the compose network.
+  kong:
+    <<: *restart
+    image: ghcr.io/supabase/kong:2.8.1@sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d
+    entrypoint:
+      [
+        'bash',
+        '-c',
+        'eval "echo \"$$(cat ~/temp.yml)\"" > ~/kong.yml && /docker-entrypoint.sh kong docker-start',
+      ]
+    depends_on:
+      auth: { condition: service_healthy }
+      rest: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    environment:
+      KONG_DATABASE: 'off'
+      KONG_DECLARATIVE_CONFIG: /home/kong/kong.yml
+      KONG_DNS_ORDER: LAST,A,CNAME
+      KONG_PLUGINS: request-transformer,cors,key-auth,acl,rate-limiting
+      KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
+      KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
+      # Caddy is the only client, on the compose network, and it overwrites X-Forwarded-For with the
+      # address it saw (#211); only that hop is trusted, so a guest can't choose the key the join rate
+      # limit uses (O5, #76).
+      KONG_TRUSTED_IPS: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+      KONG_REAL_IP_HEADER: X-Forwarded-For
+      KONG_REAL_IP_RECURSIVE: 'off'
+      # Realtime holds two connections per socket; the default of 512 caps a shop at about 250 guests (K1).
+      KONG_NGINX_EVENTS_WORKER_CONNECTIONS: 4096
+      SUPABASE_ANON_KEY: ${ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SERVICE_ROLE_KEY}
+    volumes:
+      - ./volumes/api/kong.yml:/home/kong/temp.yml:ro
+    healthcheck:
+      test: ['CMD', 'kong', 'health']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Runs supabase/functions. The functions volume is filled by the migrate service (#209).
+  functions:
+    <<: *restart
+    image: ghcr.io/supabase/edge-runtime:v1.77.4@sha256:ad45164b7548bf5820ed7be714789c17ac2865edce79a09cfb4c3756c3d365a8
+    depends_on:
+      kong: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      SUPABASE_URL: http://kong:8000
+      SUPABASE_ANON_KEY: ${ANON_KEY}
+      SUPABASE_SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
+      SUPABASE_DB_URL: postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/postgres
+      # The gateway checks the API key; each function checks its own secret (see supabase/config.toml).
+      VERIFY_JWT: 'false'
+      DISPATCH_SECRET: ${DISPATCH_SECRET:-}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+    volumes:
+      - functions:/home/deno/functions:ro
+      - deno-cache:/root/.cache/deno
+    command:
+      [
+        'start',
+        '--user-worker-request-idle-timeout',
+        '150000',
+        '--main-service',
+        '/home/deno/functions/main',
+      ]
+    healthcheck:
+      test: ['CMD-SHELL', "timeout 1 bash -c '</dev/tcp/127.0.0.1/9000'"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # The only published service: the static app, and (since #211) the API paths, on one hostname.
+  # Caddy gets the certificate for an https PUBLIC_URL by itself. Behind a tunnel that ends TLS, set
+  # SITE_ADDRESS=:80 in .env.
+  web:
+    <<: *restart
+    image: queue-web:${QM_VERSION:-local}
+    build:
+      context: ../..
+      dockerfile: apps/web/Dockerfile
+    depends_on:
+      kong: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    ports:
+      - '${WEB_BIND:-0.0.0.0}:80:80'
+      - '${WEB_BIND:-0.0.0.0}:443:443'
+    environment:
+      PUBLIC_URL: ${PUBLIC_URL}
+      SITE_ADDRESS: ${SITE_ADDRESS:-}
+      # Set to private_ranges only when cloudflared is the sole way in (tunnel profile).
+      QM_TRUSTED_PROXIES: ${QM_TRUSTED_PROXIES:-}
+      # The only key that reaches the browser. The entrypoint refuses a demo or service-role key.
+      ANON_KEY: ${ANON_KEY}
+      DEMO_MODE: ${DEMO_MODE:-false}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      AUTH_TURNSTILE_SITE_KEY: ${AUTH_TURNSTILE_SITE_KEY:-}
+      PUBLIC_JOIN: ${PUBLIC_JOIN:-}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ISSUES_URL: ${SENTRY_ISSUES_URL:-}
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+
+  # --profile studio: Supabase Studio, loopback only. Reach it over `ssh -L 54323:localhost:54323`.
+  meta:
+    <<: *restart
+    profiles: [studio]
+    image: ghcr.io/supabase/postgres-meta:v0.100.0@sha256:145325b7e39f8ef4931d6e8cfd3f6f4d655de09d72a2ccc96d9513542c2202bd
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      PG_META_PORT: 8080
+      PG_META_DB_HOST: db
+      PG_META_DB_PORT: 5432
+      PG_META_DB_NAME: postgres
+      PG_META_DB_USER: postgres
+      PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      CRYPTO_KEY: ${PG_META_CRYPTO_KEY}
+
+  studio:
+    <<: *restart
+    profiles: [studio]
+    image: ghcr.io/supabase/studio:2026.10.12-sha-3699278@sha256:948770ec467f00e6ae34c35018ef7cb23d7b30eb806b42c2cc0d7bcfdcf8a7a8
+    depends_on:
+      meta: { condition: service_started }
+    ports:
+      - '127.0.0.1:54323:3000'
+    environment:
+      HOSTNAME: 0.0.0.0
+      STUDIO_PG_META_URL: http://meta:8080
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: db
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PG_META_CRYPTO_KEY: ${PG_META_CRYPTO_KEY}
+      PGRST_DB_SCHEMAS: api,api_v1,app,graphql_public
+      DEFAULT_ORGANIZATION_NAME: Queue
+      DEFAULT_PROJECT_NAME: Queue
+      SUPABASE_URL: http://kong:8000
+      SUPABASE_PUBLIC_URL: ${PUBLIC_URL}
+      SUPABASE_ANON_KEY: ${ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SERVICE_ROLE_KEY}
+      AUTH_JWT_SECRET: ${JWT_SECRET}
+      ENABLED_FEATURES_LOGS_ALL: 'false'
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'node -e "fetch(''http://localhost:3000/api/platform/profile'').then((r) => {if (r.status !== 200) throw new Error(r.status)})"',
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  # --profile backup: nightly encrypted dumps to ./backups (docs/selfhost/backups.md, #216).
+  backup:
+    <<: *restart
+    profiles: [backup]
+    image: queue-backup:${QM_VERSION:-local}
+    build:
+      context: ../..
+      dockerfile: deploy/selfhost/backup/Dockerfile
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      BACKUP_AGE_RECIPIENT: ${BACKUP_AGE_RECIPIENT:-}
+      BACKUP_KEEP: ${BACKUP_KEEP:-14}
+      BACKUP_TIME: ${BACKUP_TIME:-03:00}
+      BACKUP_RCLONE_REMOTE: ${BACKUP_RCLONE_REMOTE:-}
+      BACKUP_HEALTHCHECK_URL: ${BACKUP_HEALTHCHECK_URL:-}
+    volumes:
+      - ${BACKUP_PATH:-./backups}:/backups
+      - ${BACKUP_RCLONE_CONFIG:-/dev/null}:/root/.config/rclone/rclone.conf:ro
+      - storage-data:/storage:ro
+      # Holds pgsodium_root.key, the key Vault's secrets are encrypted with (restore needs it).
+      - db-config:/db-config:ro
+
+  # --profile tunnel: reach the app with no public IP. Ingress goes only to web (#211).
+  cloudflared:
+    <<: *restart
+    profiles: [tunnel]
+    image: cloudflare/cloudflared:2026.10.0@sha256:9b49eed8f62806d5d45ddf59ecefb5710429598ea6d3fcccd2af938f621b2b07
+    command: ['tunnel', '--no-autoupdate', 'run']
+    # With a token, the tunnel's public hostname is set in Cloudflare (Zero Trust > Tunnels) to
+    # http://web:80 and nothing else; cloudflared/config.yml is the same rule as a local file.
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:-}
+    depends_on:
+      web: { condition: service_started }
+
+volumes:
+  db-data:
+  db-config:
+  storage-data:
+  functions:
+  deno-cache:
+  caddy-data:
+  caddy-config:

@@ -1,0 +1,546 @@
+# Every SECURITY DEFINER function in api, app, private, ops or public must be listed here
+# (schema.name, one per line). Lines marked "anon" may also be executable by anon; adding one
+# needs a security-review PR (technical-design.md 5). Compiled by `pnpm db:compile-tests`.
+#
+# Format:  schema.function_name            (definer, not callable by anon)
+#          schema.function_name  anon      (definer, callable by anon)
+
+# S1 (#22) tenancy
+private.has_role
+private.is_device
+private.device_kind
+api.create_organization
+
+# S3 (#24) visits
+private.audit_row
+
+# S5 (#26) api contracts: guest functions (anon)
+api.get_location_public  anon
+api.join_queue           anon
+api.get_visit_status     anon
+api.guest_act            anon
+api.guest_register_push  anon
+# staff
+api.staff_add_visit
+api.call_next
+api.transition_visit
+api.undo_event
+api.set_queue_state
+api.today_stats
+api.display_snapshot
+# dispatcher (service role)
+api.claim_outbox
+api.outbox_still_relevant
+api.report_outbox_result
+api.unsubscribe_outbox
+
+# PLT1 (#407) platform core
+private.is_platform
+private.audit_platform_role
+
+# D1 (#48) devices
+api.create_pairing_code
+api.revoke_device
+api.set_device_counter
+api.device_heartbeat
+api.redeem_pairing_code
+api.register_device
+
+# PLT3 (#409) support grants
+api.grant_support_access
+api.revoke_support_access
+api.platform_break_glass
+
+# PLT6 (#412) entitlements
+private.entitlement
+api.org_entitlements
+api.platform_set_entitlement
+api.platform_sms_health
+api.platform_set_sms_pause
+
+# PLT4 (#410) platform tenant RPCs
+api.platform_list_orgs
+api.platform_get_org
+api.platform_set_org_status
+api.platform_transfer_ownership
+
+# #1136 visit lookup under a support grant
+api.platform_search_visits
+api.platform_visit_timeline
+# #1129 platform activation funnel
+api.platform_org_activation
+api.platform_funnel
+
+# PLT7 (#413) platform stats
+api.platform_health
+api.platform_stats
+
+# A1 (#1222) SMS analytics
+api.platform_sms_analytics
+
+# V9 (#38) realtime signals
+private.note_visit_event_change
+private.note_queue_change
+private.flush_realtime_changes
+private.can_follow_location
+
+# PLT9 (#415) platform announcements
+private.audit_platform_announcement
+api.platform_upsert_announcement
+
+# PLT13 (#419) platform ops pages
+api.platform_list_announcements
+
+# O6 (#77) observability
+api.health_report
+
+# #529 display refresh on location display changes
+private.note_location_display_change
+
+# Turnstile join pass (#482 follow-up)
+api.issue_join_pass
+
+# PLT5 (#411) end a tenant's sessions
+api.platform_sign_out_members
+api.platform_revoke_devices
+
+# PLT8 (#414) platform blocks
+api.platform_block_contact
+api.platform_unblock_contact
+
+# 2A-API1 (#87) guest, kiosk and display stubs
+api.get_visit_info       anon
+api.get_location_wait    anon
+api.display_onsite_code
+
+# 2A-API2 (#88) staff and admin stubs (authenticated only)
+api.move_visit
+api.transfer_visit
+api.assign_visit
+api.update_visit_notes
+api.set_visit_answers
+api.visit_history
+api.search_visits
+api.find_visit_by_scan_code
+api.correct_visit_times
+api.set_wait_override
+api.create_invitation
+api.accept_invitation
+api.revoke_invitation
+api.set_member_role
+api.remove_member
+api.set_my_pin
+api.switch_operator
+api.end_operator_session
+api.list_industry_templates
+api.apply_industry_template
+api.history_stats
+
+# 2P-NTF1 (#173) alert preferences (anon)
+api.guest_get_alert_prefs  anon
+api.guest_set_alert_prefs  anon
+# 2A-JN5 (#115)
+private.create_location_secrets
+api.list_members
+private.revoke_member_sessions
+api.add_guest_contact
+api.remove_guest_contact
+api.outcome_rates
+private.analytics_tz
+private.feedback_report_access
+
+# 2P-APT2 (#158) appointments: public slot listing (anon)
+api.get_available_slots  anon
+# 2P-NTF5 (#177)
+private.snapshot_template
+
+# 2P-APT3 (#159) booking RPCs
+api.book_appointment  anon
+api.staff_book_appointment
+api.staff_cancel_appointment
+api.list_appointments
+# 4-APT1 (#385)
+api.create_appointment_series
+api.cancel_series_from
+# 2A-JN2 (#112)
+api.hit_rate_limit
+ops.purge_rate_buckets
+api.set_require_mfa
+private.require_aal2_if_enrolled
+api.search_guests
+api.get_guest
+api.guest_badges
+
+# 2P-BRD1 (#202) branding (anon)
+api.get_location_branding  anon
+api.find_guest_data
+api.export_guest_data
+api.erase_guest
+
+# 2P-APT4 (#160) guest appointment management (anon)
+api.get_appointment  anon
+api.guest_register_appointment_push  anon
+api.guest_cancel_appointment  anon
+api.guest_reschedule_appointment  anon
+api.block_from_visit
+api.unblock
+private.org_pending_deletion
+api.request_org_deletion
+api.cancel_org_deletion
+api.get_org_deletion
+
+# 2P-APT15 (#171) calendar feeds
+api.create_calendar_feed
+api.revoke_calendar_feed
+api.calendar_feed_events
+# 2P-NTF8 (#180)
+api.send_queue_message
+api.org_purge_targets
+api.mark_org_purged_externally
+
+# 2P-NTF10 (#182)
+api.dev_record_inbound
+private.apply_inbound_keyword
+private.apply_inbound_command
+private.enqueue_inbound_reply
+private.enqueue_booking_mail
+private.apply_inbound_join
+private.open_whatsapp_window
+private.inbound_join_blocked
+
+# 2P-RPT4 (#200)
+api.begin_data_export
+
+# 2B-API1 phase 2b contracts (stubs until their tickets land)
+api.set_visit_priority
+api.advance_journey
+api.guest_add_companion  anon
+api.guest_remove_companion  anon
+api.staff_set_companions
+api.guest_submit_feedback  anon
+api.guest_send_message  anon
+api.guest_list_messages  anon
+api.staff_send_message
+api.staff_mark_read
+api.guest_create_link_code  anon
+api.redeem_link_code
+api.unlink_telegram_chat
+api.list_visit_notifications
+api.list_failed_notifications
+api.retry_notification
+api.counter_display_snapshot
+api.set_member_locations
+api.org_overview
+api.list_shifts
+api.set_my_presence
+api.guest_claim_offer  anon
+api.guest_leave_waitlist  anon
+api.get_location_events  anon
+api.guest_get_waitlist  anon
+api.book_event_seats  anon
+api.guest_join_waitlist  anon
+api.cancel_event
+api.block_time_bulk
+api.delete_time_blocks
+api.search_appointments
+api.eta_accuracy
+api.staff_performance
+api.peak_heatmap
+api.location_comparison
+api.feedback_summary
+api.feedback_comments
+api.duplicate_guest_candidates
+api.merge_guests
+api.export_guests
+api.import_guests
+api.create_api_key
+api.revoke_api_key
+api.create_webhook_endpoint
+api.claim_webhook_deliveries
+api.report_webhook_result
+
+# 2B-I1 (#306) API keys
+private.audit_api_key
+private.require_key_admin
+private.authenticate_api_key
+
+# 2B-I3 (#308) API v1 (key-authenticated; anon-executable because callers hold no session)
+api_v1.list_queues  anon
+api_v1.get_queue  anon
+api_v1.list_visits  anon
+api_v1.get_visit  anon
+private.require_api_scope
+private.v1_queue
+api.create_payment_hold
+api.record_payment_event
+
+# 2B-I4 (#309) API v1 writes
+api_v1.create_visit  anon
+api_v1.transition_visit  anon
+api_v1.set_queue_state  anon
+private.transition_core
+private.v1_visit
+
+# 2B-I6 (#311) webhooks
+private.enqueue_webhooks
+private.webhook_visit_event
+private.webhook_queue_state
+private.new_webhook_secret
+ops.purge_webhook_deliveries
+api.rotate_webhook_secret
+api.redeliver_webhook
+ops.kick_webhooks_if_due
+private.is_org_admin_unrestricted
+private.audit_webhook_endpoint
+private.drop_webhook_secrets
+api.log_manual_contact
+
+# 2B-I10 (#315) chat alerts
+ops.evaluate_queue_long
+private.webhook_notification_dead
+api.set_webhook_alert_thresholds
+api.send_webhook_test
+api.set_webhook_active
+
+# 3-API1 phase 3 contracts (stubs until their tickets land)
+api.record_webhook_event
+api.mark_webhook_processed
+api.staff_capture_consent
+api.guest_grant_consent  anon
+api.guest_request_phone_code
+api.guest_verify_phone_code  anon
+private.phone_code_hash
+private.scrub_verify_code
+api.process_inbound_message
+api.process_telegram_message
+api.process_voice_call
+api.set_channel_enabled
+api.set_provider_settings
+api.get_channel_config
+api.get_webhook_secret
+api.usage_summary
+api.reserve_send
+api.get_whatsapp_send
+api.get_telegram_bot
+api.staff_charge_no_show
+api.staff_refund_payment
+api.claim_payment_jobs
+api.report_payment_result
+api.add_custom_domain
+api.remove_custom_domain
+
+# 3-PAY2 (#363) payments
+private.payment_policy_scope
+private.enqueue_payment_release
+private.payment_cancel_is_timely
+private.release_payments_on_visit_event
+private.release_payments_on_appointment
+private.payment_for_manager
+# 3-PV1 (#340) provider settings
+private.audit_provider_settings
+private.drop_provider_secrets
+
+# 3-PV4 (#344) cost ledger
+api.resolve_custom_domain
+api.record_domain_check
+private.enforce_notification_category
+private.message_rate
+private.phone_countries
+
+# 3-PAY3 (#364)
+api.begin_payment
+api.attach_payment_intent
+private.kick_on_payment_job
+ops.kick_payment_jobs_if_due
+# 3-WA2 (#359) whatsapp rules
+private.validate_whatsapp_template
+private.whatsapp_decision
+private.enforce_whatsapp_rules
+api.apply_delivery_status
+api.pending_price_reconciliation
+api.apply_provider_price
+ops.kick_reconcile_costs
+
+# 3-PAY4 (#365)
+api.apply_payment_event
+private.enqueue_usage_alert
+
+# 3-EM2 (#348)
+api.suppress_by_message
+api.apply_platform_sms_event
+
+# 3-CG13 (#338) channel gate
+private.channel_missing
+private.channel_enabled
+api.location_channels
+api.visit_text_states
+
+# 3-RPT1 (#368)
+private.report_vars
+private.enqueue_report
+ops.enqueue_due_reports
+private.validate_report_schedule
+api.send_report_preview
+api.list_report_schedules
+
+# 3-PAY8 pending payment on paid bookings
+private.require_card_on_booking
+private.fail_unpaid_on_cancel
+private.confirm_booking_on_payment
+# 4-API1 phase 4 contracts (stub until #392 lands)
+api.run_report
+
+# 4-RPT1 (#392) report builder
+private.validate_report_definition
+# 4-RBAC1 custom roles (#373)
+private.has_permission
+private.has_queue_access
+private.validate_custom_role
+private.payment_for_permission
+api.display_signage
+api.set_member_custom_role
+api.my_permissions
+
+# 4-AI1 (#394) natural-language analytics
+api.ask_analytics_reserve
+# 4-BILL1 (#377) billing
+private.billing_enabled
+private.org_plan
+private.sync_subscription_quantity
+private.sync_quantity_on_location
+api.claim_billing_jobs
+api.report_billing_result
+ops.kick_billing_jobs_if_due
+api.apply_billing_event
+private.payments_connected
+private.require_processor_for_policy
+
+api.org_billing
+api.billing_session_info
+private.enforce_plan_limit
+private.enforce_retention_cap
+
+# 4-INT1 (#395) integration job queue
+private.integration_contact
+private.enqueue_integration_jobs
+api.claim_integration_jobs
+api.report_integration_result
+ops.purge_integration_jobs
+ops.kick_integrations_if_due
+
+# 4-INT1 (#395) integration OAuth hand-off
+api.begin_integration_connect
+api.consume_integration_state
+api.save_integration_tokens
+api.revoke_integration
+private.forbid_ledger_change
+private.credit_balance
+private.uses_platform_credit
+private.check_credit_low
+private.check_country_allowlist
+private.credit_margin
+private.debit_credit
+api.apply_credit_topup
+api.apply_bundle_grant
+api.staff_request_payment
+api.begin_pos_payment
+private.enqueue_pos_receipt
+
+# 4-PAY2 (#992) pay code for counter payments (service role / staff only, not anon)
+api.staff_create_pay_code
+api.begin_pos_payment_by_code
+
+# session limits: 12 hours absolute, 30 minutes idle (operators and staff, not devices)
+api.touch_session
+ops.end_expired_sessions
+
+private.messaging_daily_ceiling
+private.messaging_budget_ceiling
+api.org_setup_state
+# pending hold cap: live unpaid holds and open offers per service and day
+private.live_holds
+api.create_location
+
+# #1083 payment-failed email (not anon)
+private.enqueue_payment_email
+ops.send_payment_grace_reminders
+
+# #1133 platform audit search and export
+api.platform_audit_search
+api.platform_audit_export
+# #1135 platform org notes
+api.platform_add_note
+api.platform_list_notes
+api.platform_tagged_orgs
+# #1274 platform incident register (operator only)
+api.platform_create_incident
+api.platform_update_incident
+api.platform_add_incident_note
+api.platform_list_incidents
+api.platform_incident_tenants
+api.platform_incident_break_glass
+# #1275 tenant breach notices and incident log
+api.platform_save_notice
+api.platform_approve_notice
+api.platform_send_notice
+api.platform_list_notices
+api.acknowledge_incident_notice
+api.update_incident_log_entry
+api.report_incident
+# #1276 guest breach notices (owner-approved, outbox)
+api.save_guest_notice
+api.approve_guest_notice
+api.send_guest_notice
+api.list_guest_notices
+private.guest_notice_row
+# #1134 platform team list and revoke (revoke is service_role only)
+api.platform_team
+api.platform_revoke_role
+
+
+# #1130 platform delivery log
+api.platform_org_deliveries
+api.platform_delivery_summary
+# #1131 platform billing panel
+api.platform_org_billing
+api.platform_billing_overview
+
+# #1138 in-app contact support
+private.support_inbox
+api.contact_support
+api.platform_list_support_requests
+api.platform_set_support_request_status
+
+# #1132 platform attention queue
+api.platform_attention
+api.platform_ack_attention
+private.notify_sms_paused
+private.enforce_send_window_bounds
+private.notify_sms_warning
+
+# F5 (#1281) forms admin
+api.save_form_draft
+api.publish_form_version
+api.attach_form
+api.detach_form
+# C5 (#1271) sensitive-field guards
+private.check_intake_field
+
+# F2 (#1278) forms engine and join
+api.get_join_form  anon
+private.sync_intake_form
+private.privacy_contact_recorded
+api.set_booking_answers  anon
+private.carry_booking_answers
+private.carry_answers_on_visit
+api.get_location_lines  anon
+
+# W2 (#1304) waiver evidence
+private.record_waiver_acceptances
+
+# W4 (#1306) waiver record and export
+private.waiver_subject_visible
+api.export_waiver_records
+
+# W5 (#1307) waiver purge reminder
+ops.send_waiver_purge_reminders

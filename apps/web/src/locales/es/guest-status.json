@@ -1,0 +1,150 @@
+{
+  "status": {
+    "title": "Tu lugar en la fila",
+    "group": {
+      "label": "Personas de tu grupo",
+      "tab": "{{name}} · {{ticket}}"
+    },
+    "leave": {
+      "trigger": "Salir de la fila",
+      "title": "¿Salir de la fila?",
+      "body": "Perderás tu lugar. Para volver tendrás que unirte de nuevo al final de la fila.",
+      "confirm": "Sí, salir",
+      "cancel": "Seguir en la fila",
+      "failed": "No se pudo salir de la fila. Revisa tu conexión e inténtalo de nuevo."
+    },
+    "undoLeave": {
+      "prompt": "¿Saliste por error? Todavía puedes recuperar tu lugar.",
+      "action": "Recuperar mi lugar",
+      "failed": "No pudimos devolverte a la fila. Si pasaron unos minutos, únete de nuevo."
+    },
+    "joinAgain": "Unirme de nuevo",
+    "alert": {
+      "soundHint": "¿Quieres un sonido cuando sea tu turno? Tu teléfono necesita un toque antes.",
+      "enableSound": "Activar alertas de sonido",
+      "soundOn": "Las alertas de sonido están activadas. Mantén esta página abierta.",
+      "title": "Es tu turno",
+      "goTo": "Ve a {{counter}}",
+      "goToDesk": "Ve a la recepción",
+      "dismiss": "Entendido"
+    },
+    "loading": "Cargando tu lugar en la fila",
+    "notFound": {
+      "title": "Este enlace caducó",
+      "body": "Los enlaces dejan de funcionar 12 horas después de terminar una visita. Pregunta al personal si crees que sigues en la fila."
+    },
+    "loadFailed": {
+      "title": "No se pudo cargar tu lugar en la fila",
+      "body": "Revisa tu conexión. Esta página sigue intentándolo."
+    },
+    "ticket": "Tu turno",
+    "position_one": "Eres el número {{count}} de la fila",
+    "position_other": "Eres el número {{count}} de la fila",
+    "ahead_one": "{{count}} persona delante de ti",
+    "ahead_other": "{{count}} personas delante de ti",
+    "wait": "Espera estimada",
+    "asOf": "Actualizado a las {{time}}. Reconectando…",
+    "keepOpen": "Mantén esta página abierta. Los iPhone no te avisan si está cerrada, así que vuelve a mirar aquí.",
+    "textAlerts": {
+      "title": "Recibe un mensaje cuando sea tu turno",
+      "failed": "Te uniste a la fila, pero los mensajes de texto están desactivados. Marca la casilla e inténtalo de nuevo.",
+      "turnOn": "Activar mensajes de texto",
+      "turningOn": "Activando mensajes de texto",
+      "error": "No se pudieron activar los mensajes de texto. Inténtalo de nuevo."
+    },
+    "phoneVerify": {
+      "title": "Confirma tu número de teléfono",
+      "hint": "Te enviaremos un código de 6 dígitos para asegurarnos de que los avisos te lleguen.",
+      "send": "Envíame un código",
+      "sending": "Enviando el código",
+      "resend": "Enviar un código nuevo",
+      "codeLabel": "Código de 6 dígitos",
+      "confirm": "Confirmar",
+      "confirming": "Comprobando el código",
+      "sent": "Código enviado. Es válido durante 10 minutos.",
+      "invalid": "Ese código no funcionó. Revísalo o pide uno nuevo.",
+      "verified": "Tu número de teléfono está confirmado.",
+      "waiting": "Preparando una comprobación de seguridad. Un momento.",
+      "errors": {
+        "rate_limited": "Demasiados intentos. Espera un rato e inténtalo de nuevo.",
+        "captcha_failed": "Falló la comprobación de seguridad. Recarga la página e inténtalo de nuevo.",
+        "consent_required": "Activa primero los mensajes de texto.",
+        "sms_unavailable": "Este negocio no está enviando mensajes de texto ahora.",
+        "unknown": "Algo salió mal. Inténtalo de nuevo."
+      }
+    },
+    "push": {
+      "enable": "Avisarme cuando sea mi turno",
+      "enabling": "Activando alertas",
+      "on": "Las alertas están activadas. Te avisaremos cuando sea tu turno, incluso con esta página cerrada.",
+      "homeScreen": "En iPhone, las alertas necesitan esta página en tu pantalla de inicio: toca Compartir, luego Añadir a pantalla de inicio, ábrela desde ahí y toca Avisarme. O mantén esta página abierta y vuelve a mirar aquí.",
+      "denied": "Las notificaciones están bloqueadas para este sitio. Mantén esta página abierta, o permite las notificaciones en los ajustes del navegador.",
+      "failed": "No se pudieron activar las alertas. Mantén esta página abierta y vuelve a mirar aquí.",
+      "prompt": "Permite las notificaciones en el aviso del navegador.",
+      "slow": "Aún se están configurando las alertas. Puede tardar hasta un minuto.",
+      "timeout": "Las alertas tardaron demasiado en activarse. Toca Avisarme para intentarlo de nuevo, o mantén esta página abierta y vuelve a mirar aquí."
+    },
+    "connection": {
+      "live": "En vivo",
+      "connecting": "Conectando",
+      "offline": "Sin conexión"
+    },
+    "state": {
+      "expected": "Reservado",
+      "waiting": "En espera",
+      "called": "Llamado",
+      "serving": "Siendo atendido",
+      "served": "Listo",
+      "no_show": "Ausente",
+      "cancelled": "Salió de la fila",
+      "removed": "Retirado",
+      "expired": "Caducado",
+      "scheduled": "Programado"
+    },
+    "message": {
+      "called": "Es tu turno. Por favor ve a {{counter}}.",
+      "calledNoCounter": "Es tu turno. Por favor ve a la recepción.",
+      "serving": "Te están atendiendo.",
+      "served": "Gracias por visitar {{location}}.",
+      "no_show": "Te llamamos pero no te encontramos. Pregunta al personal si sigues aquí.",
+      "cancelled": "Saliste de la fila.",
+      "removed": "El personal te retiró de la fila. Pregúntales si es un error.",
+      "expired": "Esta visita terminó cuando {{location}} cerró por hoy.",
+      "expected": "Tienes una reserva. Regístrate cuando llegues.",
+      "later": "Entrarás en la fila a las {{time}}. Mientras tanto puedes salir desde aquí."
+    },
+    "alerts": {
+      "toggle": "Elegir mis alertas",
+      "title": "Alertas",
+      "intro": "Elige sobre qué te escribimos. No enviamos nada más.",
+      "saveFailed": "No se pudo guardar el cambio. Tus alertas siguen como estaban.",
+      "calledOffWarning": "Sin esta no te avisaremos cuando sea tu turno. Mantén esta página abierta y atento a tu turno.",
+      "trigger": {
+        "called": "Es mi turno",
+        "almost_up": "Casi es mi turno",
+        "position_changed": "Cambia mi lugar en la fila",
+        "eta_changed": "Cambia mi espera estimada",
+        "broadcast": "Avisos del local",
+        "removed": "Me retiran de la fila",
+        "served": "Termina mi visita",
+        "joined": "Me uno a la fila",
+        "no_show_warning": "Mi lugar está a punto de cederse"
+      }
+    },
+    "telegram": {
+      "enable": "Recibir avisos por Telegram",
+      "opening": "Abriendo Telegram",
+      "opened": "Telegram está abierto. Toca Iniciar allí y recibirás tus avisos en ese chat. Envía /stop cuando quieras para dejar de recibirlos.",
+      "unavailable": "Los avisos por Telegram no están disponibles ahora. Mantén esta página abierta y vuelve a mirar aquí.",
+      "failed": "No se pudo abrir Telegram. Inténtalo de nuevo."
+    },
+    "nowIn": "Ahora estás en {{queue}}.",
+    "pos": {
+      "paid": "Gracias. Su pago se realizó correctamente."
+    },
+    "offline": {
+      "title": "Sin conexión",
+      "body": "Se sigue mostrando tu última posición. Se actualiza al volver la conexión."
+    }
+  }
+}

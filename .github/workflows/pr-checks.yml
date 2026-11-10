@@ -1,0 +1,46 @@
+# F4 (#14): governance checks on every PR. Rules live in .github/scripts and are unit-tested
+# there. Branch protection should require `pr-rules` alongside `ci-ok` and `dependency-review`.
+name: PR checks
+
+on:
+  pull_request:
+    # edited/labeled/unlabeled so title fixes and `size:override` re-run the checks.
+    types: [opened, synchronize, reopened, edited, labeled, unlabeled]
+
+concurrency:
+  group: pr-checks-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  pr-rules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write # needs-human label only
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      - id: rules
+        name: Title, size, migrations, skipped tests
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: node .github/scripts/pr-checks.mjs
+      - name: Label needs-human when supabase/tests lines are deleted
+        if: always() && steps.rules.outputs.needs_human == 'true'
+        # Fork PRs get a read-only token; the log line above still flags it.
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr edit ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --add-label needs-human

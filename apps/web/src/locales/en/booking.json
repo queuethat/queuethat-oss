@@ -1,0 +1,223 @@
+{
+  "book": {
+    "title": "Book an appointment",
+    "loading": "Loading availability…",
+    "notFound": {
+      "title": "We can't find that place",
+      "body": "Check the link or QR code and try again."
+    },
+    "loadFailed": {
+      "title": "Couldn't load availability",
+      "body": "Check your connection and try again."
+    },
+    "none": {
+      "title": "No times available",
+      "body": "There's nothing to book online right now. Please check back later."
+    },
+    "service": "What do you need?",
+    "pickDay": "Pick a day",
+    "pickTime": "Pick a time on {{day}}",
+    "dayAria": "{{day}}, {{count}} times",
+    "timezone": "Times are in {{zone}}",
+    "back": "Back",
+    "summary": "{{service}} on {{when}}",
+    "name": "First name",
+    "nameMissing": "Enter your first name.",
+    "phone": "Mobile number (optional)",
+    "country": "Country code",
+    "phoneHint": "So the business can reach you about this appointment. We don't text reminders.",
+    "phoneInvalid": "That doesn't look like a valid number. Fix it or clear it.",
+    "email": "Email (optional)",
+    "emailHint": "For a confirmation and reminders.",
+    "privacy": {
+      "summary": "How we use your details",
+      "body": "We use your name and contact details only to run this appointment and are asked to delete them soon after. Your link is the only way to see or change the booking.",
+      "retention": "We delete your name and contact details {{count}} day after your appointment.",
+      "retention_other": "We delete your name and contact details {{count}} days after your appointment."
+    },
+    "submit": "Confirm booking",
+    "submitting": "Booking…",
+    "captcha": "Checking you're not a robot",
+    "taken": "That time was just taken. Here are the times that are still open.",
+    "error": {
+      "slot_full": "That time was just taken. Here are the times that are still open.",
+      "slot_unavailable": "That time is no longer available. Here are the times that are still open.",
+      "rate_limited": "Too many attempts. Wait a minute and try again.",
+      "captcha_required": "We couldn't confirm you're not a robot. Wait for the check to finish, then try again.",
+      "captcha_failed": "The robot check didn't pass. Wait for it to finish, then try again.",
+      "org_suspended": "This business isn't taking bookings right now.",
+      "not_found": "We can't find that place.",
+      "unknown": "Something went wrong. Check your connection and try again.",
+      "invalid_input": "Check the details and try again."
+    },
+    "contactRequired": "Add a phone number or an email so we can reach you if the event changes.",
+    "tabs": {
+      "label": "What to book",
+      "slots": "Appointments",
+      "events": "Events"
+    }
+  },
+  "appointment": {
+    "loading": "Loading your appointment…",
+    "notFound": {
+      "title": "Appointment not found",
+      "body": "This link is wrong or has expired."
+    },
+    "title": "Your appointment",
+    "status": {
+      "booked": "Booked",
+      "cancelled": "Cancelled",
+      "completed": "Done",
+      "no_show": "Missed",
+      "offered": "Held for you",
+      "pending_payment": "Waiting for your card"
+    },
+    "pending": "Your time is held for a few minutes. It is confirmed once your card is accepted, and released if that does not happen.",
+    "addCard": "Add card to confirm",
+    "payUnavailable": "We could not reach the payment service. Try again.",
+    "at": "{{location}}",
+    "addToCalendar": "Add to calendar",
+    "reschedule": "Change time",
+    "rescheduleTitle": "Pick a new time",
+    "keepTime": "Keep this time",
+    "confirmMove": "Move to {{when}}",
+    "cancelTrigger": "Cancel appointment",
+    "cancelTitle": "Cancel this appointment?",
+    "cancelBody": "Your time will be given to someone else.",
+    "cancelConfirm": "Yes, cancel it",
+    "cancelKeep": "Keep it",
+    "notYou": "Did you not book this? Cancel it below and the time goes back to the business.",
+    "tooLate": "It's too close to the appointment to change it online. Please contact the business.",
+    "rescheduleTaken": "That time was just taken. Pick another.",
+    "cancelled": "This appointment is cancelled.",
+    "bookAgain": "Book a new appointment",
+    "reminders": {
+      "title": "Reminders",
+      "body": "Reminders are emailed to the address you gave when you booked, before your appointment. You can also get them on this device or add the appointment to your calendar.",
+      "enable": "Remind me",
+      "enabling": "Turning on…",
+      "on": "Reminders are on for this device.",
+      "unsupported": "This browser can't show reminders. Add the appointment to your calendar instead.",
+      "failed": "Couldn't turn reminders on. Try again.",
+      "denied": "Notifications are blocked for this site. Allow them in your browser settings to get reminders.",
+      "homeScreen": "On iPhone, reminders need this page on your Home Screen: tap Share, then Add to Home Screen, and open it from there.",
+      "keepOpen": "This browser can't show reminders. Add the appointment to your calendar instead."
+    }
+  },
+  "events": {
+    "loading": "Loading events…",
+    "none": "No events are open for booking.",
+    "list": "Upcoming events",
+    "seatsLeft_one": "{{count}} seat left",
+    "seatsLeft_other": "{{count}} seats left",
+    "full": "Full",
+    "book": "Book seats",
+    "bookFor": "Book seats for {{title}}",
+    "summary": "{{title}} · {{when}}",
+    "party": "Number of seats",
+    "partyHint_one": "Up to {{count}} seat.",
+    "partyHint_other": "Up to {{count}} seats.",
+    "error": {
+      "event_full": "Sorry, there aren't enough seats left. Pick another event or fewer seats.",
+      "rate_limited": "Too many attempts. Try again in a minute.",
+      "org_suspended": "Booking is paused for this place.",
+      "not_found": "That event is no longer open.",
+      "invalid_input": "Check the details and try again.",
+      "unknown": "Something went wrong. Try again."
+    }
+  },
+  "waitlist": {
+    "join": "Join the waitlist",
+    "prompt": "Can't find a time that works? We'll email you if one opens up.",
+    "summary": "Waitlist: we'll email you when a matching time opens up.",
+    "when": "When would suit you?",
+    "day": "Day",
+    "from": "No earlier than (optional)",
+    "to": "No later than (optional)",
+    "windowHint": "Leave the times empty to accept any time that day.",
+    "windowInvalid": "Pick both times, with the second after the first.",
+    "emailRequired": "Add your email: that's how we offer you a time."
+  },
+  "offer": {
+    "title": "Your waitlist spot",
+    "loading": "Loading…",
+    "notFound": {
+      "title": "We can't find that waitlist spot",
+      "body": "The link may be old. Check the email we sent you."
+    },
+    "status": {
+      "waiting": "On the waitlist",
+      "offered": "A time opened up",
+      "claimed": "Booked",
+      "expired": "Offer expired",
+      "cancelled": "Left the waitlist"
+    },
+    "waitingFor": "We'll email you if a time opens up on {{day}}.",
+    "holdLeft_one": "Held for you for about {{count}} more minute, until {{until}} (as of {{asOf}}).",
+    "holdLeft_other": "Held for you for about {{count}} more minutes, until {{until}} (as of {{asOf}}).",
+    "claim": "Book this time",
+    "claiming": "Booking…",
+    "decline": "No thanks",
+    "declineTitle": "Give this time up?",
+    "declineBody": "It goes to the next person on the waitlist.",
+    "declineConfirm": "Give it up",
+    "declineKeep": "Keep it",
+    "leave": "Leave the waitlist",
+    "leaveTitle": "Leave the waitlist?",
+    "leaveBody": "You won't be offered a time on this day any more.",
+    "leaveConfirm": "Leave",
+    "leaveKeep": "Stay on it",
+    "viewBooking": "See your booking",
+    "error": {
+      "offer_expired": "Sorry, this offer ran out. You're no longer on the waitlist for it.",
+      "slot_taken": "Sorry, that time is no longer available.",
+      "rate_limited": "You already have too many unpaid bookings. Pay for or cancel one, then claim this offer before it runs out.",
+      "not_found": "We can't find that offer any more.",
+      "unknown": "Something went wrong. Try again."
+    }
+  },
+  "payment": {
+    "title": "Secure your booking",
+    "loading": "Getting your payment ready",
+    "amount": "Amount",
+    "mode": {
+      "hold": "We will place a hold of {{amount}} on your card. Nothing is charged now.",
+      "deposit": "A deposit of {{amount}} is charged to your card now.",
+      "card_on_file": "We will save your card. Nothing is charged now, and a no-show fee of {{amount}} may be charged if you miss your appointment.",
+      "pos": "{{amount}} is charged to your card now."
+    },
+    "policy": {
+      "hold_one": "Cancel at least {{count}} hour before your appointment and the hold is released.",
+      "hold_other": "Cancel at least {{count}} hours before your appointment and the hold is released.",
+      "deposit_one": "Cancel at least {{count}} hour before your appointment and your deposit is refunded.",
+      "deposit_other": "Cancel at least {{count}} hours before your appointment and your deposit is refunded.",
+      "card_on_file_one": "Cancel at least {{count}} hour before your appointment to avoid the fee.",
+      "card_on_file_other": "Cancel at least {{count}} hours before your appointment to avoid the fee.",
+      "pos": "For a refund, ask the staff here."
+    },
+    "pay": {
+      "hold": "Place hold of {{amount}}",
+      "deposit": "Pay {{amount}} deposit",
+      "card_on_file": "Save card",
+      "pos": "Pay {{amount}}"
+    },
+    "paying": "Working on it",
+    "testMode": "This install has no card processor connected, so no card can be entered and nothing is charged. A booking that needs a card is released if none is added.",
+    "continue": "Continue to my appointment",
+    "error": {
+      "declined": "Your card was declined. Try another card.",
+      "failed": "We could not complete the payment. Check your card details and try again.",
+      "unavailable": "We could not reach the payment service. Try again."
+    },
+    "retry": "Try again",
+    "posTitle": "Pay at the counter",
+    "posTestMode": "This install has no card processor connected, so no card can be entered and nothing is charged.",
+    "posClose": "Close"
+  },
+  "payCode": {
+    "endedTitle": "This payment link has ended",
+    "ended": "It may have expired, been replaced, or already been paid. If you still need to pay, ask the staff for a new code.",
+    "unavailable": "We could not reach the payment service. Reload this page to try again.",
+    "paid": "Thank you. Your payment went through."
+  }
+}

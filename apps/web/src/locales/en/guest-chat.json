@@ -1,0 +1,15 @@
+{
+  "open": "Message the staff",
+  "close": "Hide messages",
+  "title": "Messages",
+  "empty": "No messages yet.",
+  "you": "You",
+  "staff": "Staff",
+  "message": "Your message",
+  "count": "{{count}} of {{max}} characters",
+  "send": "Send",
+  "rateLimited": "You're sending messages too quickly. Wait a few minutes and try again.",
+  "disabled": "Messaging isn't available for this queue.",
+  "closed": "Messaging has closed for this visit.",
+  "failed": "Couldn't send your message. Check your connection and try again."
+}

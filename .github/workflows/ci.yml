@@ -1,0 +1,192 @@
+# F3 (#13): the full check suite for every PR. Branch protection should require only `ci-ok`,
+# which always reports, so path-skipped jobs never block a merge.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, development]
+  workflow_dispatch:
+  schedule:
+    # F10 (#20): nightly run of the full e2e device matrix.
+    - cron: '0 7 * * *'
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION_FILE: .nvmrc
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      db: ${{ steps.filter.outputs.db }}
+      compliance: ${{ steps.filter.outputs.compliance }}
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - id: filter
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        with:
+          filters: |
+            db:
+              - 'supabase/**'
+              - 'packages/db-types/**'
+              - 'tests/concurrency/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - '.github/workflows/ci.yml'
+            compliance:
+              - 'supabase/**'
+              - 'tests/compliance/**'
+              - 'tests/fixtures/webhooks/**'
+              - 'docs/compliance/**'
+              - 'docs/compliance/security-review.md'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - '.github/workflows/ci.yml'
+
+  static:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: ${{ env.NODE_VERSION_FILE }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-static.sh
+
+  db:
+    needs: changes
+    if: needs.changes.outputs.db == 'true' || github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: ${{ env.NODE_VERSION_FILE }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Start trimmed Supabase stack
+        run: pnpm exec supabase start -x studio,imgproxy,logflare,vector,storage-api,edge-runtime,supavisor,mailpit
+      - name: Database checks (same script as pnpm ci:local)
+        run: bash scripts/ci-db.sh
+
+  # 3-CG14 (#339): the phase 3 compliance gate. Fails if any criterion in docs/compliance/phase3-gate.md
+  # stops holding, e.g. a PR that drops the daily-cap check. Required check; see ci-ok below.
+  compliance:
+    needs: changes
+    if: needs.changes.outputs.compliance == 'true' || github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: ${{ env.NODE_VERSION_FILE }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Start trimmed Supabase stack
+        run: pnpm exec supabase start -x studio,imgproxy,logflare,vector,storage-api,edge-runtime,supavisor,mailpit
+      - name: Phase 3 compliance gate (pgTAP)
+        # helpers/ is passed too: the CLI mounts only the paths it is given, and every test
+        # includes ../helpers/_setup.psql (a .psql file, so pg_prove does not run it as a test).
+        run: pnpm exec supabase test db supabase/tests/compliance supabase/tests/helpers
+      - name: Phase 3 compliance gate (Edge Function half and gate document)
+        run: pnpm exec vitest run tests/compliance
+
+  db-upgrade:
+    # Applies this PR's new migrations on top of the base branch's schema and seed data,
+    # the way they will run against the pilot database.
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.db == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: ${{ env.NODE_VERSION_FILE }}
+          cache: pnpm
+      - name: Install base branch dependencies
+        run: |
+          if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile; fi
+      - name: Base schema plus seed
+        run: |
+          if [ ! -d supabase/migrations ]; then
+            echo "Base branch has no migrations yet; nothing to upgrade from."
+            echo "SKIP_UPGRADE=1" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          npx --yes supabase@2.122.0 start -x studio,imgproxy,logflare,vector,storage-api,edge-runtime,supavisor,mailpit
+          npx --yes supabase@2.122.0 db reset
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: env.SKIP_UPGRADE != '1'
+        with:
+          clean: false
+      - name: Apply this PR's migrations on top
+        if: env.SKIP_UPGRADE != '1'
+        run: npx --yes supabase@2.122.0 migration up --local
+
+  e2e:
+    # F10 (#20): Playwright against the local stack. PRs run desktop Chrome and iPhone WebKit;
+    # the nightly schedule runs every project. Traces and videos upload on failure; the smoke
+    # spec's happy-path videos upload on every run.
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: ${{ env.NODE_VERSION_FILE }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install browsers
+        run: pnpm exec playwright install --with-deps chromium webkit
+      - name: Start trimmed Supabase stack
+        run: pnpm exec supabase start -x studio,imgproxy,logflare,vector,storage-api,edge-runtime,supavisor,mailpit
+      - name: Playwright
+        env:
+          FULL_MATRIX: ${{ github.event_name == 'schedule' }}
+        run: |
+          if [ "$FULL_MATRIX" = true ]; then pnpm test:e2e
+          else pnpm test:e2e --project=desktop-chrome --project=iphone; fi
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        if: always()
+        with:
+          name: playwright-${{ github.run_attempt }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+          if-no-files-found: ignore
+
+  ci-ok:
+    if: always()
+    needs: [static, db, compliance, db-upgrade, e2e]
+    runs-on: ubuntu-latest
+    steps:
+      - name: All required jobs passed or were skipped
+        run: |
+          results='${{ join(needs.*.result, ' ') }}'
+          echo "Job results: $results"
+          for r in $results; do
+            if [ "$r" = "failure" ] || [ "$r" = "cancelled" ]; then exit 1; fi
+          done

@@ -1,0 +1,11 @@
+{
+  "data": {
+    "record_type": "message",
+    "id": "40385f64-5717-4562-b3fc-2c963f66afa6",
+    "direction": "outbound",
+    "type": "SMS",
+    "parts": 1,
+    "to": [{ "phone_number": "+15558675310", "status": "queued" }],
+    "cost": null
+  }
+}

@@ -1,0 +1,6 @@
+# A change to any of these paths needs a maintainer's review: migrations, database tests,
+# CI and the deploy stack are where a mistake costs the most.
+/supabase/migrations/ @rkadiwal
+/supabase/tests/ @rkadiwal
+/.github/ @rkadiwal
+/deploy/ @rkadiwal

@@ -1,0 +1,10 @@
+{
+  "nodeModulesDir": "none",
+  "lock": false,
+  "imports": {
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2.118.0",
+    "@qm/providers": "../../../packages/providers/src/index.ts",
+    "@qm/db-types": "../../../packages/db-types/src/index.ts",
+    "@qm/domain": "../../../packages/domain/src/index.ts"
+  }
+}

@@ -1,0 +1,6 @@
+# Ingress for the tunnel profile (2P-OPS5, #211): the tunnel reaches the web service and nothing
+# else. Never Studio, the Kong admin port or Postgres (technical-design.md 5). With a TUNNEL_TOKEN,
+# set the public hostname's service to http://web:80 in Cloudflare; this file is the same rule for a
+# locally managed tunnel (cloudflared tunnel --config /etc/cloudflared/config.yml run <name>).
+ingress:
+  - service: http://web:80

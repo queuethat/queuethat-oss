@@ -1,0 +1,37 @@
+{
+  "$comment": "Licences allowed in dependencies of this AGPL-3.0 project. Read by license-check.mjs and the dependency-review action. Anything not listed (SSPL, BUSL, CC-BY-NC, UNLICENSED, unknown) fails. Add a package to exceptions only with a reason.",
+  "allow": [
+    "MIT",
+    "MIT-0",
+    "Apache-2.0",
+    "ISC",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "0BSD",
+    "MPL-2.0",
+    "LGPL-2.1-only",
+    "LGPL-2.1-or-later",
+    "LGPL-3.0-only",
+    "LGPL-3.0-or-later",
+    "GPL-3.0-only",
+    "GPL-3.0-or-later",
+    "AGPL-3.0-only",
+    "AGPL-3.0-or-later",
+    "BlueOak-1.0.0",
+    "CC0-1.0",
+    "CC-BY-4.0",
+    "Python-2.0",
+    "Unlicense"
+  ],
+  "exceptions": {
+    "@sentry/cli-darwin@3.8.0": "Build-time only (apps/web/scripts/sourcemaps.mjs uploads source maps when a Sentry token is set); never in the bundle or a self-hosted runtime. FSL-1.1 allows any use except a product competing with Sentry, and each release becomes MIT two years after publication. Pinned to this version so an upgrade is reviewed again (#553).",
+    "@sentry/cli-linux-arm64@3.8.0": "Build-time only (apps/web/scripts/sourcemaps.mjs uploads source maps when a Sentry token is set); never in the bundle or a self-hosted runtime. FSL-1.1 allows any use except a product competing with Sentry, and each release becomes MIT two years after publication. Pinned to this version so an upgrade is reviewed again (#553).",
+    "@sentry/cli-linux-arm@3.8.0": "Build-time only (apps/web/scripts/sourcemaps.mjs uploads source maps when a Sentry token is set); never in the bundle or a self-hosted runtime. FSL-1.1 allows any use except a product competing with Sentry, and each release becomes MIT two years after publication. Pinned to this version so an upgrade is reviewed again (#553).",
+    "@sentry/cli-linux-i686@3.8.0": "Build-time only (apps/web/scripts/sourcemaps.mjs uploads source maps when a Sentry token is set); never in the bundle or a self-hosted runtime. FSL-1.1 allows any use except a product competing with Sentry, and each release becomes MIT two years after publication. Pinned to this version so an upgrade is reviewed again (#553).",
+    "@sentry/cli-linux-x64@3.8.0": "Build-time only (apps/web/scripts/sourcemaps.mjs uploads source maps when a Sentry token is set); never in the bundle or a self-hosted runtime. FSL-1.1 allows any use except a product competing with Sentry, and each release becomes MIT two years after publication. Pinned to this version so an upgrade is reviewed again (#553).",
+    "@sentry/cli-win32-arm64@3.8.0": "Build-time only (apps/web/scripts/sourcemaps.mjs uploads source maps when a Sentry token is set); never in the bundle or a self-hosted runtime. FSL-1.1 allows any use except a product competing with Sentry, and each release becomes MIT two years after publication. Pinned to this version so an upgrade is reviewed again (#553).",
+    "@sentry/cli-win32-i686@3.8.0": "Build-time only (apps/web/scripts/sourcemaps.mjs uploads source maps when a Sentry token is set); never in the bundle or a self-hosted runtime. FSL-1.1 allows any use except a product competing with Sentry, and each release becomes MIT two years after publication. Pinned to this version so an upgrade is reviewed again (#553).",
+    "@sentry/cli-win32-x64@3.8.0": "Build-time only (apps/web/scripts/sourcemaps.mjs uploads source maps when a Sentry token is set); never in the bundle or a self-hosted runtime. FSL-1.1 allows any use except a product competing with Sentry, and each release becomes MIT two years after publication. Pinned to this version so an upgrade is reviewed again (#553).",
+    "@sentry/cli@3.8.0": "Build-time only (apps/web/scripts/sourcemaps.mjs uploads source maps when a Sentry token is set); never in the bundle or a self-hosted runtime. FSL-1.1 allows any use except a product competing with Sentry, and each release becomes MIT two years after publication. Pinned to this version so an upgrade is reviewed again (#553)."
+  }
+}

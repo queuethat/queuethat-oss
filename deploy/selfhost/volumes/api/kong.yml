@@ -1,0 +1,212 @@
+# API gateway config for the self-host stack (Kong 2.8 declarative). The kong service renders
+# $SUPABASE_ANON_KEY and $SUPABASE_SERVICE_KEY from the environment at start, so this file holds no
+# secret and must contain no double quote or backtick. Only the paths below exist: Studio, the
+# Postgres meta API and the dashboard are not routed (technical-design.md 5).
+_format_version: '2.1'
+_transform: true
+
+consumers:
+  - username: anon
+    keyauth_credentials:
+      - key: $SUPABASE_ANON_KEY
+  - username: service_role
+    keyauth_credentials:
+      - key: $SUPABASE_SERVICE_KEY
+
+acls:
+  - consumer: anon
+    group: anon
+  - consumer: service_role
+    group: admin
+
+services:
+  ## Auth: links in e-mails carry no API key
+  - name: auth-v1-open
+    url: http://auth:9999/verify
+    routes:
+      - name: auth-v1-open
+        strip_path: true
+        paths:
+          - /auth/v1/verify
+    plugins:
+      - name: cors
+  - name: auth-v1-open-callback
+    url: http://auth:9999/callback
+    routes:
+      - name: auth-v1-open-callback
+        strip_path: true
+        paths:
+          - /auth/v1/callback
+    plugins:
+      - name: cors
+  - name: auth-v1
+    url: http://auth:9999/
+    routes:
+      - name: auth-v1-all
+        strip_path: true
+        paths:
+          - /auth/v1/
+    plugins:
+      - name: cors
+      - name: key-auth
+        config:
+          hide_credentials: false
+      - name: acl
+        config:
+          hide_groups_header: true
+          allow:
+            - admin
+            - anon
+
+  ## PostgREST. rest-v1-join is the rate-limited guest join (O5, #76); the plugins of rest-v1
+  ## are repeated on it, then rate-limiting is added last.
+  - name: rest-v1-join
+    url: http://rest:3000/rpc/join_queue
+    routes:
+      - name: rest-v1-join
+        strip_path: true
+        paths:
+          - /rest/v1/rpc/join_queue
+    plugins:
+      - name: cors
+      - name: key-auth
+        config:
+          hide_credentials: true
+      - name: acl
+        config:
+          hide_groups_header: true
+          allow:
+            - admin
+            - anon
+      - name: rate-limiting
+        config:
+          minute: 30
+          limit_by: ip
+          policy: local
+  - name: rest-v1
+    url: http://rest:3000/
+    routes:
+      - name: rest-v1-all
+        strip_path: true
+        paths:
+          - /rest/v1/
+    plugins:
+      - name: cors
+      - name: key-auth
+        config:
+          hide_credentials: true
+      - name: acl
+        config:
+          hide_groups_header: true
+          allow:
+            - admin
+            - anon
+
+  ## Realtime (websocket). The admin REST API of Realtime is not routed.
+  - name: realtime-v1
+    url: http://realtime-dev.queue-realtime:4000/socket/
+    protocol: ws
+    routes:
+      - name: realtime-v1-all
+        strip_path: true
+        paths:
+          - /realtime/v1/
+    plugins:
+      - name: cors
+      - name: key-auth
+        config:
+          hide_credentials: false
+      - name: acl
+        config:
+          hide_groups_header: true
+          allow:
+            - admin
+            - anon
+
+  ## Storage verifies the caller's JWT itself
+  - name: storage-v1
+    url: http://storage:5000/
+    routes:
+      - name: storage-v1-all
+        strip_path: true
+        paths:
+          - /storage/v1/
+    plugins:
+      - name: cors
+
+  ## Edge functions. These check their own secret or token (supabase/config.toml, verify_jwt =
+  ## false), so guests, uptime checks, the database and paired devices call them with no API key.
+  ## Every other function needs the API key at the gateway and verifies the caller's JWT itself.
+  - name: functions-v1-join-pass
+    url: http://functions:9000/join-pass
+    routes:
+      - name: functions-v1-join-pass
+        strip_path: true
+        paths:
+          - /functions/v1/join-pass
+    plugins:
+      - name: cors
+      - name: rate-limiting
+        config:
+          minute: 30
+          limit_by: ip
+          policy: local
+  - name: functions-v1-public-join
+    url: http://functions:9000/public-join
+    routes:
+      - name: functions-v1-public-join
+        strip_path: true
+        paths:
+          - /functions/v1/public-join
+    plugins:
+      - name: cors
+      - name: rate-limiting
+        config:
+          minute: 30
+          limit_by: ip
+          policy: local
+  - name: functions-v1-health
+    url: http://functions:9000/health
+    routes:
+      - name: functions-v1-health
+        strip_path: true
+        paths:
+          - /functions/v1/health
+    plugins:
+      - name: cors
+  - name: functions-v1-unsubscribe
+    url: http://functions:9000/unsubscribe
+    routes:
+      - name: functions-v1-unsubscribe
+        strip_path: true
+        paths:
+          - /functions/v1/unsubscribe
+    plugins:
+      - name: cors
+  - name: functions-v1-dispatch-notifications
+    url: http://functions:9000/dispatch-notifications
+    routes:
+      - name: functions-v1-dispatch-notifications
+        strip_path: true
+        paths:
+          - /functions/v1/dispatch-notifications
+    plugins:
+      - name: cors
+  - name: functions-v1
+    url: http://functions:9000/
+    routes:
+      - name: functions-v1-all
+        strip_path: true
+        paths:
+          - /functions/v1/
+    plugins:
+      - name: cors
+      - name: key-auth
+        config:
+          hide_credentials: false
+      - name: acl
+        config:
+          hide_groups_header: true
+          allow:
+            - admin
+            - anon

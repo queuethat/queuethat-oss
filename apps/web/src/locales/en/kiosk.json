@@ -1,0 +1,96 @@
+{
+  "title": "Check in",
+  "connection": {
+    "live": "Live",
+    "connecting": "Reconnecting",
+    "offline": "Offline"
+  },
+  "welcome": {
+    "title": "Welcome",
+    "start": "Check in"
+  },
+  "closed": {
+    "title": "We are not taking check-ins right now",
+    "org_suspended": "This location is not available.",
+    "closed": "We are closed. Please come back during opening hours.",
+    "paused": "Check-in is paused. Please ask a member of staff.",
+    "outside_hours": "We are closed. Please come back during opening hours.",
+    "full": "The line is full. Please ask a member of staff."
+  },
+  "form": {
+    "title": "Your details",
+    "queue": "Which line?",
+    "service": "What do you need?",
+    "name": "First name",
+    "nameMissing": "Enter your first name so staff can call you.",
+    "party": "How many people?",
+    "phone": "Mobile number (optional)",
+    "phoneHint": "For a text when it is your turn.",
+    "country": "Country code",
+    "phoneInvalid": "Check the mobile number, or leave it empty.",
+    "submit": "Get my ticket",
+    "joining": "Checking you in",
+    "cancel": "Start over"
+  },
+  "error": {
+    "queue_not_accepting": "This line stopped taking check-ins. Please ask a member of staff.",
+    "not_found": "This line is not available here. Please ask a member of staff.",
+    "rate_limited": "Too many check-ins at once. Wait a moment and try again.",
+    "invalid_input": "Check your name and number and try again.",
+    "party_size_out_of_range": "This line does not take that many people at once. Please ask a member of staff.",
+    "too_many_active_visits": "That is more people than one phone can check in. Please ask a member of staff.",
+    "unknown": "Could not check you in. Try again, or ask a member of staff."
+  },
+  "done": {
+    "title": "You are checked in",
+    "ticket": "Your ticket",
+    "scan": "Scan to follow your place in line on your phone.",
+    "qrAlt": "QR code with the link to your place in line",
+    "finish": "Done",
+    "clears_one": "This screen clears in {{count}} second.",
+    "clears_other": "This screen clears in {{count}} seconds."
+  },
+  "idle": {
+    "title": "Still there?",
+    "body_one": "This screen starts over in {{count}} second, and what you typed is cleared.",
+    "body_other": "This screen starts over in {{count}} seconds, and what you typed is cleared.",
+    "more": "I need more time"
+  },
+  "print": {
+    "setting": "Print ticket",
+    "off": "Off",
+    "ask": "Ask the guest",
+    "always": "Always",
+    "button": "Print my ticket",
+    "slip": {
+      "ticket": "Your ticket",
+      "joined": "Joined at {{time}}",
+      "scan": "Scan to follow your place in line."
+    }
+  },
+  "settings": {
+    "summary": "Device settings"
+  },
+  "a11y": {
+    "button": "Accessibility",
+    "audio": "Audio guidance",
+    "screen": {
+      "welcome": "Welcome. Press Check in to start.",
+      "form": "Check-in. Enter your first name, then press Get my ticket.",
+      "done": "Your ticket is {{ticket}}. Please take a seat."
+    }
+  },
+  "printer": {
+    "connect": "Connect printer",
+    "connected": "Printer: {{name}}",
+    "none": "No printer connected. Tickets print through the browser.",
+    "test": "Test print",
+    "testQueue": "Test ticket"
+  },
+  "steps": {
+    "label": "Check-in steps",
+    "start": "Start",
+    "details": "Your details",
+    "ticket": "Your ticket"
+  }
+}

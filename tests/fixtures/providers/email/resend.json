@@ -1,0 +1,35 @@
+{
+  "sent": { "status": 200, "body": { "id": "49a3999c-0ce1-4ea6-ab68-afcd6dc2e794" } },
+  "rateLimited": {
+    "status": 429,
+    "body": { "statusCode": 429, "name": "rate_limit_exceeded", "message": "Too many requests." }
+  },
+  "invalidAddress": {
+    "status": 422,
+    "body": {
+      "statusCode": 422,
+      "name": "validation_error",
+      "message": "Invalid `to` field. The email address needs to follow the `email@example.com` format."
+    }
+  },
+  "otherValidation": {
+    "status": 422,
+    "body": { "statusCode": 422, "name": "validation_error", "message": "Invalid `subject` field." }
+  },
+  "concurrent": {
+    "status": 409,
+    "body": {
+      "statusCode": 409,
+      "name": "concurrent_idempotent_requests",
+      "message": "Same idempotency key used while the first request is still processing."
+    }
+  },
+  "badKey": {
+    "status": 403,
+    "body": { "statusCode": 403, "name": "invalid_api_key", "message": "API key is invalid." }
+  },
+  "unavailable": {
+    "status": 503,
+    "body": { "statusCode": 503, "name": "internal_server_error", "message": "Unavailable" }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "title": "How was your visit?",
+  "rating": "Your rating",
+  "star": "{{value}} of 5 stars",
+  "comment": "Anything you'd like to add? (optional)",
+  "commentHint": "Staff of this business can read this. Please leave out personal details.",
+  "submit": "Send feedback",
+  "thanks": "Thank you for your feedback.",
+  "closed": "Feedback isn't available for this visit.",
+  "failed": "Couldn't send your feedback. Check your connection and try again."
+}

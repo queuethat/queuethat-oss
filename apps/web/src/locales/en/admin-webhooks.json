@@ -1,0 +1,104 @@
+{
+  "title": "Webhooks",
+  "loading": "Loading webhooks",
+  "adminsOnly": "Only admins and owners can manage webhooks.",
+  "list": {
+    "title": "Endpoints",
+    "intro": "We send a signed message to each endpoint when a chosen event happens. Failed deliveries are retried.",
+    "empty": "No webhook endpoints yet.",
+    "guestName": "Includes the guest's first name."
+  },
+  "status": {
+    "active": "Active",
+    "failing": "Failing",
+    "disabled": "Disabled"
+  },
+  "kind": {
+    "generic": "Generic JSON",
+    "slack": "Slack",
+    "discord": "Discord",
+    "teams": "Microsoft Teams"
+  },
+  "event": {
+    "visit_joined": "Guest joined",
+    "visit_called": "Guest called",
+    "visit_recalled": "Guest recalled",
+    "visit_serving": "Service started",
+    "visit_served": "Service finished",
+    "visit_no_show": "No-show",
+    "visit_cancelled": "Guest cancelled",
+    "visit_removed": "Guest removed",
+    "visit_requeued": "Guest requeued",
+    "visit_expired": "Visit expired",
+    "visit_reinstated": "Guest reinstated",
+    "visit_checked_in": "Appointment checked in",
+    "queue_state_changed": "Queue opened, paused or closed",
+    "queue_long": "Queue getting long",
+    "delivery_dead": "A delivery gave up"
+  },
+  "create": {
+    "open": "Add endpoint",
+    "title": "Add a webhook endpoint",
+    "url": "URL",
+    "urlHint": "Must start with https://.",
+    "kind": "Format",
+    "events": "Which events?",
+    "guestName": "Include the guest's first name",
+    "guestNameWarning": "Privacy: the first name is personal data and will be sent to this URL. Leave this off unless you need it.",
+    "submit": "Add endpoint",
+    "creating": "Adding",
+    "cancel": "Cancel"
+  },
+  "shown": {
+    "title": "Copy your signing secret now",
+    "description": "We use this secret to sign every message so you can check it came from us. It is shown only once.",
+    "rotatedTitle": "Your new signing secret",
+    "rotatedDescription": "Shown once. The old secret keeps signing alongside it for 24 hours so you can switch over.",
+    "label": "Signing secret",
+    "copy": "Copy secret",
+    "copied": "Copied",
+    "stored": "I have stored this secret",
+    "done": "Done"
+  },
+  "rotate": {
+    "trigger": "Rotate secret",
+    "triggerFor": "Rotate secret for {{url}}",
+    "title": "Rotate the signing secret?",
+    "description": "You get a new secret now. The old one stops working after 24 hours, so update your receiver before then.",
+    "confirm": "Rotate secret",
+    "cancel": "Keep current"
+  },
+  "log": {
+    "toggle": "Deliveries",
+    "title": "Deliveries",
+    "loading": "Loading deliveries",
+    "empty": "No deliveries yet.",
+    "attempts": "{{count}} attempt",
+    "attempts_other": "{{count}} attempts",
+    "response": "HTTP {{code}}",
+    "payload": "Payload",
+    "close": "Close",
+    "redeliver": "Redeliver",
+    "redelivering": "Queuing",
+    "status": {
+      "queued": "Queued",
+      "claimed": "Sending",
+      "delivered": "Delivered",
+      "failed": "Failed",
+      "dead": "Gave up"
+    },
+    "test": "Send test event",
+    "testing": "Sending"
+  },
+  "errors": {
+    "invalid_url": "Use an https:// address.",
+    "invalid_input": "Check the address and events and try again.",
+    "permission_denied": "Only admins and owners can add endpoints.",
+    "not_found": "That organization was not found.",
+    "unknown": "Something went wrong. Try again."
+  },
+  "enable": {
+    "trigger": "Re-enable",
+    "enabling": "Enabling"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "RecordType": "Bounce",
+  "Type": "HardBounce",
+  "MessageID": "pm_1",
+  "Email": "guest@example.test",
+  "BouncedAt": "2026-10-30T21:00:00Z"
+}

@@ -1,0 +1,8 @@
+{
+  "publicKey": "BcGUOO0vPObxA+OBcOzeZLiQuUAtUf/vvA78PR2WeR4=",
+  "t": 1761840000,
+  "body": "{\"data\":{\"event_type\":\"message.finalized\",\"id\":\"evt-1\",\"occurred_at\":\"2025-10-30T16:00:00Z\",\"payload\":{\"id\":\"40385f64-5717-4562-b3fc-2c963f66afa6\",\"direction\":\"outbound\",\"to\":[{\"phone_number\":\"+15558675310\",\"status\":\"delivered\"}],\"errors\":[]},\"record_type\":\"event\"},\"meta\":{\"attempt\":1,\"delivered_to\":\"https://x\"}}",
+  "signature": "FtyXZxgCYPkMYU98axRL4T5khnzzTjr7hUZNYfGBymh5okp038MTIUyMCDfyJF6yRGr/3mZmzhcqBSegBdpYDw==",
+  "inboundBody": "{\"data\":{\"event_type\":\"message.received\",\"id\":\"evt-2\",\"occurred_at\":\"2025-10-30T16:00:00Z\",\"payload\":{\"id\":\"in-1\",\"direction\":\"inbound\",\"from\":{\"phone_number\":\"+15558675310\"},\"to\":[{\"phone_number\":\"+15550000000\"}],\"text\":\"STOP\"},\"record_type\":\"event\"},\"meta\":{\"attempt\":1,\"delivered_to\":\"https://x\"}}",
+  "inboundSignature": "LKGde8L6ja3jAg6p5V+ojIs46v7HNXH9OwQWhOIrgrRm5HVVzmduzbaalyrPtTtPF/eLCzePRcwvJUClDt6PDA=="
+}

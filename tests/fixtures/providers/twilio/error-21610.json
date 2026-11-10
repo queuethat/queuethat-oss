@@ -1,0 +1,6 @@
+{
+  "status": 400,
+  "code": 21610,
+  "message": "The message From/To pair violates a blacklist rule.",
+  "more_info": "https://www.twilio.com/docs/errors/21610"
+}

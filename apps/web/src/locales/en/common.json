@@ -1,0 +1,86 @@
+{
+  "home": {
+    "title": "Queue management",
+    "staffSignIn": "Staff sign in"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "home": "Go to the start page"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "retry": "Try again"
+  },
+  "placeholder": {
+    "builtIn": "Built in {{ticket}}."
+  },
+  "demo": {
+    "banner": "Demo mode: sample data only. Do not enter real guest details."
+  },
+  "pwa": {
+    "offline": "You're offline. This page will update when your connection is back.",
+    "updateAvailable": "A new version is available.",
+    "reload": "Reload",
+    "later": "Later"
+  },
+  "announcement": {
+    "severity": {
+      "info": "Notice",
+      "warning": "Warning",
+      "maintenance": "Maintenance"
+    },
+    "dismiss": "Dismiss"
+  },
+  "toast": {
+    "region": "Notifications",
+    "dismiss": "Dismiss",
+    "undo": "Undo"
+  },
+  "supportBanner": {
+    "label": "Support access",
+    "breakGlass": "Emergency support access",
+    "read": "Our support team can see this business (read only) until {{until}}. Reason: {{reason}}",
+    "act": "Our support team can see and change this business until {{until}}. Reason: {{reason}}"
+  },
+  "pastDueBanner": {
+    "label": "Payment failed",
+    "pastDue": "We could not charge your card. Paid features end on {{date}} unless you update it; your data is never deleted.",
+    "unpaid": "Your subscription is unpaid and you are on the free plan. Your data is kept.",
+    "link": "Update your payment method"
+  },
+  "mfaBanner": {
+    "label": "Two-step sign-in required",
+    "message": "Your business requires 2FA for owners and admins. Until you add an authenticator app you can run the queue but not change settings.",
+    "link": "Set up an authenticator app"
+  },
+  "suspendedBanner": {
+    "label": "Suspended",
+    "message": "This business was suspended on {{at}}: {{reason}}. Guests can’t join and the queue can’t change. Contact support.",
+    "noDate": "This business is suspended: {{reason}}. Guests can’t join and the queue can’t change. Contact support.",
+    "noReason": "no reason recorded"
+  },
+  "contactSupport": {
+    "button": "Contact support",
+    "title": "Contact support",
+    "close": "Close",
+    "intro": "Write to QueueThat support about {{org}}. We reply by email.",
+    "subject": "Subject",
+    "message": "What happened?",
+    "guestWarning": "Don't paste guests' names, phone numbers or emails.",
+    "count": "{{count}} of {{max}} characters",
+    "includePage": "Include the page I'm on",
+    "includePageHint": "We also receive your business, role, plan, app version, browser and window size. Never guest details.",
+    "send": "Send message",
+    "sending": "Sending…",
+    "sent": "Sent. Your reference is {{reference}}. We emailed you a confirmation.",
+    "noOrg": "You aren't part of a business yet, so we can't attach one. Email us at {{email}} instead.",
+    "errors": {
+      "offline": "You're offline, so nothing was sent. Your message is still here. Reconnect and try again.",
+      "rate_limited": "You've sent several messages in the last hour. Email {{email}} if this is urgent.",
+      "invalid_input": "Check the subject and message: both are required, and the subject is a single line.",
+      "not_found": "You're no longer a member of this business, so the message can't be sent. Email {{email}} instead.",
+      "not_authenticated": "You're signed out. Sign in again and retry. Your message is still here.",
+      "generic": "The message wasn't sent. Try again, or email {{email}}."
+    }
+  }
+}

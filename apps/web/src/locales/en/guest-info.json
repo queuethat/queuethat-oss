@@ -1,0 +1,21 @@
+{
+  "info": {
+    "title": "About this place",
+    "directions": "Get directions",
+    "call": "Call {{phone}}",
+    "openUntil": "Open until {{time}}",
+    "openUntilLater": "Open until {{day}} {{time}}",
+    "opensAt": "Opens at {{time}}",
+    "opensAtLater": "Opens {{day}} at {{time}}"
+  },
+  "qr": {
+    "title": "Show at the counter",
+    "hint": "Staff can scan this to find your place. It never contains your private link.",
+    "label": "QR code for ticket {{ticket}}"
+  },
+  "calendar": {
+    "add": "Add to calendar",
+    "summary": "Visit at {{place}}",
+    "note": "Check your place in line on the link you were sent."
+  }
+}

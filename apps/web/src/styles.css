@@ -1,0 +1,220 @@
+@import 'tailwindcss';
+@import '@qm/ui/theme.css';
+
+/* Self-hosted fonts (DS-3): Latin and Latin-1/Extended-A subsets of the variable Geist faces, from our
+   own origin so guests' IPs never reach a font CDN and the PWA shell works offline (sw precaches
+   woff2). Regenerate with pyftsubset; see docs/ops/fonts.md. */
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/geist-latin-var.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('/fonts/geist-mono-latin-var.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Layout shells. Everything else is Tailwind utilities on @qm/ui tokens. */
+
+.layout-guest main {
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.layout-staff[data-layout='auth'] main {
+  max-width: none;
+  padding: 0;
+}
+
+.layout-staff main {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* The admin wrapper already pads the sides; on phones and tablets that doubled to 48px. */
+@media (max-width: 1023px) {
+  .layout-staff[data-layout='admin'] main {
+    padding-inline: 0;
+  }
+}
+
+.layout-display {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout-display main {
+  flex: 1;
+  padding: 2rem;
+  font-size: 2rem;
+}
+
+.page-message {
+  max-width: 32rem;
+  margin: 4rem auto;
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Printing (the QR poster, G7): the paper size comes from the print dialog. The poster fits the
+   printable area both A4 (180 x 267 mm) and Letter (186 x 249 mm) leave inside these margins. */
+@page {
+  margin: 15mm;
+}
+
+@media print {
+  .layout-staff main {
+    max-width: none;
+    padding: 0;
+  }
+}
+
+/* The kiosk ticket slip (2A-KSK2): hidden on screen. When printing, everything else in the kiosk
+   collapses to nothing (no blank pages on a thermal roll) and the slip is placed at the top in a
+   column that fits 58 mm paper and fills 80 mm. Its own named page drops the margins that the
+   poster's @page above would otherwise add to a narrow roll. */
+.kiosk-slip {
+  display: none;
+}
+
+@page slip {
+  margin: 0;
+}
+
+@page slip58 {
+  size: 58mm auto;
+  margin: 0;
+}
+
+@page slip80 {
+  size: 80mm auto;
+  margin: 0;
+}
+
+@media print {
+  [data-layout='kiosk'] {
+    min-height: 0;
+  }
+
+  [data-layout='kiosk'] > main {
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  [data-layout='kiosk'] > main * {
+    visibility: hidden;
+  }
+
+  [data-layout='kiosk'] main .kiosk-slip,
+  [data-layout='kiosk'] main .kiosk-slip * {
+    visibility: visible;
+  }
+
+  .kiosk-slip {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    page: slip;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 80mm;
+    padding: 3mm;
+    color: #000;
+    background: #fff;
+    font-size: 11pt;
+    line-height: 1.3;
+    text-align: center;
+  }
+
+  .kiosk-slip[data-paper='58'] {
+    page: slip58;
+    max-width: 58mm;
+  }
+
+  .kiosk-slip[data-paper='80'] {
+    page: slip80;
+  }
+
+  /* Staff print from a dialog: only the slip, which is a direct child of the body. */
+  body.print-slip > *:not(.kiosk-slip) {
+    display: none !important;
+  }
+
+  .kiosk-slip-footer {
+    margin-top: 3mm;
+    font-size: 9pt;
+  }
+
+  .kiosk-slip-location {
+    font-weight: 700;
+    font-size: 12pt;
+  }
+
+  .kiosk-slip-label {
+    margin-top: 3mm;
+  }
+
+  .kiosk-slip-ticket {
+    font-size: 40pt;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  .kiosk-slip-qr {
+    display: block;
+    width: 36mm;
+    height: 36mm;
+    margin: 3mm auto 1mm;
+  }
+}
+
+/* Auth panel (decorative): rows of bento tiles drift sideways. */
+.auth-fade {
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.auth-row {
+  animation: auth-scroll var(--row-seconds, 60s) linear infinite;
+}
+.auth-row.reverse {
+  animation-direction: reverse;
+}
+@keyframes auth-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-row {
+    animation: none;
+  }
+}
+
+/* The waiver export (W4): when printing from /admin/forms, only the records table is shown. */
+@media print {
+  body[data-print-waivers] * {
+    visibility: hidden;
+  }
+
+  body[data-print-waivers] .waiver-print,
+  body[data-print-waivers] .waiver-print * {
+    visibility: visible;
+  }
+
+  body[data-print-waivers] .waiver-print {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+}

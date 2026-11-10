@@ -1,0 +1,160 @@
+{
+  "join": {
+    "title": "Join the queue",
+    "loading": "Loading",
+    "notFound": {
+      "title": "We can't find this queue",
+      "body": "Check the link or scan the code again."
+    },
+    "loadFailed": {
+      "title": "Couldn't load the queue",
+      "body": "Check your connection and reload the page."
+    },
+    "queue": "Queue",
+    "wait": {
+      "waiting_one": "{{count}} waiting",
+      "waiting_other": "{{count}} waiting",
+      "opensToday": "Opens at {{time}}",
+      "opensLater": "Opens {{day}} at {{time}}",
+      "asOf": "As of {{time}}"
+    },
+    "queueOption_one": "{{name}} ({{count}} waiting)",
+    "queueOption_other": "{{name}} ({{count}} waiting)",
+    "service": "What do you need?",
+    "name": "First name",
+    "nameMissing": "Enter your first name so staff can call you.",
+    "addPerson": "Add another person",
+    "addPersonHint": "They join together with the same phone number and email.",
+    "otherName": "Name of person {{number}}",
+    "otherNameMissing": "Enter a name for person {{number}}, or remove them.",
+    "removePerson": "Remove person {{number}}",
+    "phone": "Mobile number (optional)",
+    "party": "How many people?",
+    "partyFewer": "One fewer person",
+    "partyMore": "One more person",
+    "partySize_one": "{{count}} person",
+    "partySize_other": "{{count}} people",
+    "phoneHint": "Only used to tell you about your place in line.",
+    "country": "Country code",
+    "email": "Email (optional)",
+    "emailHint": "We'll email you when it's almost your turn and when you're called. Nothing else.",
+    "intake": {
+      "missing": "Please answer this question.",
+      "invalid": "Please check this answer."
+    },
+    "privacy": {
+      "summary": "How we use your details",
+      "body": "We use your first name, number and email only to manage your place in this line and to tell you about this visit. Staff at this location can see them. Your number and email are never shown on screens in the waiting area."
+    },
+    "notAccepting": {
+      "closed": "This queue is closed right now.",
+      "paused": "This queue is paused. Please check back in a few minutes.",
+      "outside_hours": "This queue is outside its opening hours.",
+      "full": "This queue is full right now. Please check back soon.",
+      "online_full": "This queue isn't taking more online joins right now. Please check in at the front desk.",
+      "org_suspended": "This queue isn't taking guests right now. Please ask staff for help."
+    },
+    "error": {
+      "queue_not_accepting": "This queue stopped taking new guests. Ask staff for help.",
+      "capacity_reached": "This queue just filled up. Please check back soon.",
+      "rate_limited": "Too many people are joining at once. Wait a moment and try again.",
+      "rate_limited_phone": "You've joined too many times from this phone. Please ask staff to add you.",
+      "rate_limited_network": "Too many joins from this network right now. Please ask staff to add you.",
+      "rate_limited_total": "This queue isn't taking more online joins right now. Please check in at the front desk.",
+      "onsite_code_required": "This location asks for the join code shown on the screen in the waiting area. Enter it below.",
+      "onsite_code_invalid": "That code isn't right. Check the screen in the waiting area and try again. It changes every few minutes.",
+      "onsite_required": "This queue is for people who are here. Share your location so we can check, or ask staff to add you.",
+      "captcha_failed": "The robot check didn't pass. Wait for it to finish, then try again, or ask staff to add you.",
+      "captcha_required": "We couldn't confirm you're not a robot. Wait for the check above to finish, then try again, or ask staff to add you.",
+      "already_in_queue": "You are already in a line. Open your ticket or ask staff.",
+      "no_route": "We could not find the right line for that service. Please ask at the desk.",
+      "too_many_active_visits": "That is more people than this queue lets one phone join. Ask staff to add the rest.",
+      "invalid_input": "Check your name, number and email and try again.",
+      "invalid_answers": "Please check your answers and try again.",
+      "not_found": "This queue no longer exists. Scan the code again.",
+      "unknown": "Couldn't join. Check your connection and try again.",
+      "invalid_arrive_after": "That time isn't available. Pick another one, or join now."
+    },
+    "alreadyJoined": "You're already in line as {{ticket}}. Show this ticket number to staff if you need help.",
+    "onsiteCode": "Join code",
+    "onsiteCodeHint": "Shown on the screen in the waiting area.",
+    "captcha": "Checking you're not a robot",
+    "retryIn_one": "Too many tries from this network. Try again in {{count}} minute.",
+    "retryIn_other": "Too many tries from this network. Try again in {{count}} minutes.",
+    "pow": {
+      "working": "Checking you're not a robot… {{percent}}%",
+      "ready": "Check complete.",
+      "failed": "We couldn't run the check that keeps robots out. Reload the page, or ask staff to add you."
+    },
+    "captchaProblem": {
+      "body": "We couldn't run the check that keeps robots out. Reload the page, or ask staff to add you.",
+      "reload": "Reload the page"
+    },
+    "joining": "Joining",
+    "submit": "Join the queue",
+    "phoneInvalid": "That isn't a full mobile number. Fix it, or clear it to join without texts.",
+    "phoneForTexts": "Add your mobile number to get texts, or untick the box to join without them.",
+    "already": {
+      "named": "You are already waiting in {{queue}}.",
+      "generic": "This phone, number or email is already waiting in a line.",
+      "open": "Open my ticket",
+      "leave": "Leave that queue",
+      "leaveTitle": "Leave that queue?",
+      "leaveBody": "You will lose your place there. You can then join this queue.",
+      "leaveConfirm": "Leave that queue",
+      "leaveCancel": "Stay",
+      "ask": "Use the link you were sent, or ask staff for help."
+    },
+    "widget": {
+      "inLineTitle": "You're in line",
+      "inLineBody": "Open your place in line to follow your turn. It opens in a new tab.",
+      "inLineLink": "Open my place in line"
+    },
+    "when": {
+      "label": "When",
+      "now": "Now",
+      "later": "Later today",
+      "at": "Arrival time",
+      "hint": "Times are in {{zone}}, the location's time. You get a ticket now and join the line at this time."
+    },
+    "location": {
+      "title": "Are you here?",
+      "why": "This queue is only for people at the location. We check your position once, to see you are close, and we don't keep it.",
+      "share": "Share my location",
+      "asking": "Finding your location",
+      "shared": "Location shared. Tap Join the queue again.",
+      "denied": "We couldn't get your location. You can allow location access in your browser settings and try again, or ask staff to add you."
+    },
+    "history": {
+      "welcome": "Welcome back, {{name}}. We filled in your name from your last visit.",
+      "forget": "Forget my history"
+    },
+    "state": {
+      "open": "Open",
+      "paused": "Paused",
+      "closed": "Closed",
+      "full": "Full"
+    },
+    "consentLinks": {
+      "prefix": "Read our",
+      "terms": "Terms of Service",
+      "and": "and",
+      "privacy": "Privacy Policy"
+    },
+    "retention": {
+      "notice": "{{business}} keeps your visit details for {{count}} days.",
+      "notice_one": "{{business}} keeps your visit details for {{count}} day.",
+      "notice_other": "{{business}} keeps your visit details for {{count}} days.",
+      "privacyLink": "How your details are used"
+    },
+    "privacyContact": {
+      "intro": "Questions about your privacy? Contact {{name}}:"
+    },
+    "lines": {
+      "title": "Who would you like to see?",
+      "anyone": "Anyone available",
+      "anyoneHint": "The next free person takes you.",
+      "unavailable": "Not taking guests right now"
+    }
+  }
+}

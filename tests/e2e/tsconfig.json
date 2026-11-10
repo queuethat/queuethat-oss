@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node"],
+    "paths": {
+      "@qm/db-types": ["../../packages/db-types/src/index.ts"],
+      "@qm/providers": ["../../packages/providers/src/index.ts"]
+    }
+  },
+  "include": ["**/*.ts", "../../playwright.config.ts", "../../playwright.pilot.config.ts"]
+}

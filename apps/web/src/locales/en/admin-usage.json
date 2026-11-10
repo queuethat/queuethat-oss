@@ -1,0 +1,47 @@
+{
+  "title": "Usage and limits",
+  "loading": "Loading usage",
+  "error": "Could not load usage.",
+  "managersOnly": "Only managers, admins and owners can see usage.",
+  "channel": {
+    "sms": "SMS",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "push": "Push",
+    "console": "Console",
+    "telegram": "Telegram"
+  },
+  "today": {
+    "title": "Today",
+    "resets": "Counts are per UTC day and reset at 00:00 UTC.",
+    "count": "{{channel}}: {{sent}} of {{cap}} messages today",
+    "nearly": "{{channel}} is at {{pct}}% of today's cap.",
+    "full": "{{channel}} has reached today's cap. Further messages are held back until it resets."
+  },
+  "limits": {
+    "title": "Limits",
+    "readOnly": "Only admins and owners can change limits.",
+    "cap": "Daily {{channel}} cap",
+    "budget": "Monthly budget (USD, optional)",
+    "budgetHint": "Sending stops for the month once the cost reaches this amount.",
+    "countries": "Countries messages may go to",
+    "noneAllowed": "No country is allowed, so no SMS or WhatsApp message will be sent.",
+    "sharedCode": "A shared calling code such as +1 matches every country that uses it.",
+    "save": "Save limits",
+    "saved": "Limits saved.",
+    "error": "Could not save limits."
+  },
+  "spend": {
+    "title": "Spend, last 30 days",
+    "chart": "Messages sent per day, last 30 days",
+    "empty": "No paid messages were sent in the last 30 days.",
+    "col": {
+      "day": "Day (UTC)",
+      "channel": "Channel",
+      "provider": "Provider",
+      "messages": "Messages",
+      "segments": "Segments",
+      "cost": "Cost"
+    }
+  }
+}

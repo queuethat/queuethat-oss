@@ -1,0 +1,108 @@
+{
+  "title": "Dein Unternehmen einrichten",
+  "back": "Zurück",
+  "next": "Weiter",
+  "finish": "Mein Unternehmen anlegen",
+  "working": "Wird angelegt …",
+  "steps": {
+    "label": "Fortschritt der Einrichtung",
+    "business": "Unternehmen",
+    "location": "Standort",
+    "queue": "Erste Warteschlange"
+  },
+  "business": {
+    "heading": "Dein Unternehmen",
+    "name": "Name des Unternehmens",
+    "nameHint": "Der Name, unter dem dich Kundschaft kennt."
+  },
+  "location": {
+    "heading": "Dein Standort",
+    "name": "Name des Standorts",
+    "nameHint": "Zum Beispiel die Straße oder das Viertel. Er wird zur Adresse deiner Beitrittsseite.",
+    "address": "Straße und Hausnummer",
+    "addressHint": "Optional. Wird Kundschaft auf der Beitrittsseite angezeigt.",
+    "timeZone": "Zeitzone",
+    "timeZoneHint": "Von diesem Gerät erkannt. Tippe, um zu suchen."
+  },
+  "queue": {
+    "heading": "Deine erste Warteschlange",
+    "intro": "Weitere Warteschlangen und Leistungen kannst du später hinzufügen.",
+    "name": "Name der Warteschlange",
+    "defaultName": "Laufkundschaft",
+    "service": "Leistung",
+    "defaultService": "Allgemein",
+    "minutes": "Übliche Minuten pro Person"
+  },
+  "errors": {
+    "invalid_timezone": "Wähle eine Zeitzone aus der Liste.",
+    "invalid_input": "Fülle die Namen aus.",
+    "permission_denied": "Mit diesem Konto kann kein Unternehmen angelegt werden. Gekoppelte Bildschirme zum Beispiel können es nicht.",
+    "unknown": "Etwas ist schiefgelaufen. Dein Fortschritt ist gespeichert; versuche es erneut.",
+    "hasVisits": "An diesem Standort warten heute schon Gäste, daher kann keine Vorlage angewendet werden."
+  },
+  "templates": {
+    "heading": "Mit einer Vorlage starten",
+    "blank": "Leer starten",
+    "blankHint": "Benenne deine erste Warteschlange und Leistung selbst.",
+    "privacyNote": "Datenschutz: Gäste erscheinen nur mit Ticketnummer. Namen werden nie auf Bildschirmen gezeigt.",
+    "names": {
+      "barber": "Friseur oder Salon",
+      "clinic": "Praxis",
+      "restaurant": "Restaurant",
+      "dmv_counter": "Servicestelle",
+      "retail_repair": "Handel oder Reparatur",
+      "events": "Veranstaltungen und Check-in"
+    },
+    "descriptions": {
+      "barber": "Eine Laufkundschaft-Warteschlange mit Haarschnitt und Bart sowie drei Stühlen.",
+      "clinic": "Nur Ticketnummern, allgemeine Termin- und Laufkundschaft-Leistungen und zwei Räume.",
+      "restaurant": "Eine Warteliste mit einer Tischleistung und drei Tischen.",
+      "dmv_counter": "Führerscheine und Zulassungen in einer Warteschlange mit drei Schaltern.",
+      "retail_repair": "Abgabe und Abholung an zwei Schaltern.",
+      "events": "Eine Check-in-Warteschlange mit zwei Schaltern und ohne Wartezeitschätzung."
+    },
+    "summary_other": "{{count}} Warteschlangen, {{services}} Leistungen und {{counters}} Schalter angelegt.",
+    "summary_one": "{{count}} Warteschlange, {{services}} Leistungen und {{counters}} Schalter angelegt.",
+    "editQueues": "Warteschlangen und Leistungen bearbeiten",
+    "editCounters": "Schalter bearbeiten",
+    "apply": "Vorlage anwenden",
+    "applyTitle": "Vorlage anwenden",
+    "applyIntro": "Legt Warteschlangen, Leistungen und Schalter in einem Schritt an. Alles mit gleichem Namen bleibt erhalten. Nur vor dem ersten Gast des Tages möglich.",
+    "applyConfirm": "Vorlage anwenden",
+    "cancel": "Abbrechen",
+    "applied": "Vorlage angewendet."
+  },
+  "live": {
+    "loading": "Deine Warteschlange wird geöffnet …",
+    "badge": "Deine Warteschlange ist live",
+    "title": "{{name}} ist bereit für den ersten Gast.",
+    "intro": "Gäste scannen den Code oder öffnen den Link und reihen sich ein. Teile ihn jetzt und schließe die Einrichtung in deinem Tempo ab.",
+    "shareTitle": "Beitrittslink teilen",
+    "qr": "QR-Code für {{url}}",
+    "copy": "Link kopieren",
+    "copied": "Link kopiert.",
+    "poster": "Plakat drucken",
+    "openPage": "Beitrittsseite öffnen",
+    "tryIt": "Scanne das mit deinem Handy, tritt bei und rufe dich dann selbst in der Konsole auf.",
+    "nextTitle": "Einrichtung abschließen",
+    "hours": "Öffnungszeiten festlegen",
+    "hoursHint": "Ohne Öffnungszeiten nimmt deine Warteschlange rund um die Uhr Gäste an.",
+    "hoursAction": "Zeiten festlegen",
+    "team": "Team einladen",
+    "teamHint": "Mitarbeitende rufen den nächsten Gast von ihrem eigenen Handy aus auf.",
+    "teamAction": "Mitarbeitende einladen",
+    "tv": "Fernseher im Wartebereich koppeln",
+    "tvHint": "Zeigt, wer gerade aufgerufen wird. Optional.",
+    "tvAction": "Fernseher koppeln",
+    "console": "Personalkonsole öffnen",
+    "dashboard": "Zum Dashboard",
+    "alerts": {
+      "title": "So erfahren Gäste, dass sie dran sind",
+      "phone": "Gäste sehen ihren Platz in der Warteschlange auf dem Handy; er aktualisiert sich von selbst.",
+      "browser": "Sie erhalten eine Browser-Benachrichtigung, wenn du sie aufrufst. Auf dem iPhone müssen sie zuerst auf Teilen und dann auf Zum Home-Bildschirm tippen.",
+      "tv": "Ein Fernseher im Wartebereich zeigt die aufgerufene Nummer.",
+      "textsFree": "Mit deinem aktuellen Tarif werden keine SMS gesendet. SMS gibt es mit einem kostenpflichtigen Tarif.",
+      "textsPaid": "Dein Tarif kann auch SMS an Gäste senden, die eine Telefonnummer angeben und SMS zustimmen."
+    }
+  }
+}

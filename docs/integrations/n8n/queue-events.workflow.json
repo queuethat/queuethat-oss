@@ -1,0 +1,124 @@
+{
+  "name": "Queue events",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "queue-events",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Verifies X-QM-Signature on the raw body (enable \"Raw Body\" on the Webhook node).\nconst crypto = require('crypto');\nconst secret = $env.QM_WEBHOOK_SECRET;\nconst header = $input.first().json.headers['x-qm-signature'] || '';\nconst raw = $input.first().binary.data ? Buffer.from($input.first().binary.data.data, 'base64').toString('utf8') : '';\nconst parts = header.split(',').map((p) => p.trim().split('='));\nconst t = Number(parts.find(([k]) => k === 't')?.[1]);\nconst fresh = Number.isInteger(t) && Math.abs(Date.now() / 1000 - t) <= 300;\nconst expected = crypto.createHmac('sha256', secret).update(`${t}.${raw}`).digest('hex');\nconst ok = fresh && parts.some(([k, v]) => k === 'v1' && v && v.length === expected.length &&\n  crypto.timingSafeEqual(Buffer.from(v), Buffer.from(expected)));\nreturn [{ json: { verified: ok, event: ok ? JSON.parse(raw) : null } }];"
+      },
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.verified }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Signature valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        480,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.QM_API_URL }}/rest/v1/rpc/get_visit",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.QM_ANON_KEY }}"
+            },
+            {
+              "name": "Content-Profile",
+              "value": "api_v1"
+            },
+            {
+              "name": "X-API-Key",
+              "value": "={{ $env.QM_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_visit_id: $json.event.data.visit.id }) }}"
+      },
+      "name": "Look up the visit (api_v1)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        720,
+        -80
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature": {
+      "main": [
+        [
+          {
+            "node": "Signature valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Signature valid?": {
+      "main": [
+        [
+          {
+            "node": "Look up the visit (api_v1)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

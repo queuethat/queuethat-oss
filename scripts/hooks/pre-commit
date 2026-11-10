@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Formats staged files with the repo's prettier so unformatted files never reach `development`.
+# Installed by `pnpm i` (package.json "prepare" sets core.hooksPath). Bypass once: git commit --no-verify
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+prettier=node_modules/.bin/prettier
+[ -x "$prettier" ] || { echo "pre-commit: prettier not installed, run pnpm i (skipping format)" >&2; exit 0; }
+
+mapfile -d '' staged < <(git diff --cached --name-only --diff-filter=ACMR -z)
+[ "${#staged[@]}" -gt 0 ] || exit 0
+
+# A file with unstaged edits can't be re-added without staging those edits too: leave it alone.
+safe=()
+for f in "${staged[@]}"; do
+  if git diff --quiet -- "$f"; then
+    safe+=("$f")
+  else
+    echo "pre-commit: $f has unstaged changes, not auto-formatted (run pnpm format)" >&2
+  fi
+done
+[ "${#safe[@]}" -gt 0 ] || exit 0
+
+"$prettier" --write --ignore-unknown --log-level warn "${safe[@]}"
+git add -- "${safe[@]}"

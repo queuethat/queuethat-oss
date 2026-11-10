@@ -1,0 +1,1018 @@
+# RLS access matrix (F11, #21). Compiled to matrix.test.sql by `pnpm db:compile-tests`.
+#
+# Every table in an exposed schema (api, app, public) needs an entry, or CI fails.
+# For each operation, list the actors that are ALLOWED; every other actor must be denied.
+#
+# Actors (created by tests.create_world()):
+#   anon            no session (guests; a guest token grants no table access)
+#   owner, admin, manager, staff   members of org A
+#   display, kiosk  paired devices of org A's location
+#   other_owner     owner of org B. Can only be listed on global_tables: cross-tenant access is always denied.
+#   platform        platform operator with an aal2 session and no membership. A platform role grants
+#                   no tenant data; support access comes only through support grants (PLT3).
+#
+# Per table:
+#   where:   SQL predicate selecting one org A fixture row (probed by select/update/delete)
+#   update:  SET clause that leaves the row unchanged, e.g. "name = name"
+#   insert:  column list + VALUES for a new org A row, e.g. "(org_id, name) values (tests.id('org_a'), 'x')"
+#   allow:   { select: [...], insert: [...], update: [...], delete: [...] }
+
+# Tables in app that are deliberately not tenant-scoped (no org_id). Give a reason for each.
+global_tables:
+  - app.dial_codes # calling codes, the same for every tenant
+  - app.organizations # the tenant root: its id is the org_id
+  - app.visit_transitions # the state machine, identical for every tenant
+  - app.platform_roles # operators belong to the platform, not to a tenant
+  - app.platform_audit # operator-wide log; org_id is the optional subject, not the owning tenant
+  - app.platform_incidents # operator-only register; org_ids name the affected tenants, no tenant owns a row
+  - app.platform_incident_events # timeline of a platform incident
+  - app.incident_notices # operator-only breach notice drafts; sent copies live in each business's app.org_incident_log
+  - app.entitlement_defaults # platform-wide flag defaults, the same for every tenant
+  - app.platform_daily_stats # operator-wide counts; org_id is the subject, not the owning tenant
+  - app.platform_sms_daily # operator-wide SMS counts; org_id is the subject, not the owning tenant
+  - app.platform_announcements # shown to every tenant's staff; no tenant owns one
+  - app.platform_blocks # platform-wide abuse list; no tenant owns it
+  - app.platform_flags # deployment gate flags, written only by the deploy runbook as service_role
+  - app.plans # the price list, identical for every tenant and written only by migrations
+  - app.plan_entitlements # plan defaults for entitlement keys; read only by the resolver
+  - app.consent_texts # published opt-in copy, identical for every tenant and append-only
+  - app.sms_footers # opt-out wording per locale, identical for every tenant and written only by migrations
+  - app.sms_guard_terms # the SMS blocklist, identical for every tenant and written only by migrations
+  - app.template_catalog # setup templates, identical for every tenant, versions immutable and written only by migrations
+
+tables:
+  # ---------------------------------------------------------------- S1 (#22) tenancy
+  app.organizations:
+    where: id = tests.id('org_a')
+    update: name = name
+    insert: (name) values ('New org')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk]
+      update: [owner, admin]
+
+  app.memberships:
+    where: org_id = tests.id('org_a') and user_id = tests.id('staff')
+    update: role = role
+    insert: (org_id, user_id, role) values (tests.id('org_a'), tests.id('other_owner'), 'staff')
+    allow:
+      select: [owner, admin, staff] # staff sees only their own row
+      insert: [owner]
+      update: [owner]
+      delete: [owner]
+
+  app.custom_roles: # 4-RBAC1 (#373): owners define roles; every member can read them
+    where: id = tests.id('role_a')
+    update: name = name
+    insert: (org_id, name, permissions) values (tests.id('org_a'), 'Host', array['visits.remove'])
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner]
+      update: [owner]
+      delete: [owner]
+
+  app.locations:
+    where: id = tests.id('loc_a')
+    update: name = name
+    insert: (org_id, name, slug, tz) values (tests.id('org_a'), 'New', 'new-location', 'UTC')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk]
+      insert: [owner, admin]
+      update: [owner, admin]
+
+  app.business_hours:
+    where: id = tests.id('hours_a')
+    update: opens = opens
+    insert: (org_id, location_id, weekday, opens, closes) values (tests.id('org_a'), tests.id('loc_a'), 2, '09:00', '17:00')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+      delete: [owner, admin, manager]
+
+  app.hours_exceptions:
+    where: id = tests.id('exception_a')
+    update: note = note
+    insert: (org_id, location_id, date, closed) values (tests.id('org_a'), tests.id('loc_a'), '2026-12-26', true)
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+      delete: [owner, admin, manager]
+
+  app.devices:
+    where: id = tests.id('display_device')
+    update: name = name
+    insert: (org_id, location_id, kind) values (tests.id('org_a'), tests.id('loc_a'), 'display')
+    allow:
+      select: [owner, admin]
+
+  app.device_pairing_codes: # D1 (#48): written only by the pairing RPCs
+    where: id = tests.id('pairing_code_a')
+    update: name = name
+    insert: (org_id, location_id, kind, code_hash, expires_at) values (tests.id('org_a'), tests.id('loc_a'), 'kiosk', '\\x00', now())
+    allow:
+      select: [owner, admin]
+
+  app.retention_runs: # 2P-PRV1 (#188): written only by ops.retention_tick
+    where: id = 900000001
+    update: visits_anonymized = visits_anonymized
+    insert: (org_id, visits_anonymized, contacts_deleted, appointments_anonymized) values (tests.id('org_a'), 0, 0, 0)
+    allow:
+      select: [owner, admin]
+
+  app.org_privacy: # C7 (#1273): the business's privacy officer; never deleted, it gates sensitive fields and SMS
+    where: org_id = tests.id('org_a')
+    update: officer_name = officer_name
+    # one row per org and the fixture exists, so the insert probe is an upsert (it still needs both policies)
+    insert: (org_id, officer_name, email, jurisdiction) values (tests.id('org_a'), 'Pat', 'pat@example.test', 'ca') on conflict (org_id) do update set officer_name = excluded.officer_name
+    allow:
+      select: [owner, admin, manager]
+      insert: [owner, admin]
+      update: [owner, admin]
+
+  app.blocked_identities: # 2P-PRV5 (#192): written only by api.block_from_visit / api.unblock
+    where: id = tests.id('block_a')
+    update: reason = reason
+    insert: (org_id, kind, value_hash, reason) values (tests.id('org_a'), 'phone_hash', '\\xbb', 'x')
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.slug_redirects:
+    where: old_slug = 'old-location-a'
+    update: old_slug = old_slug
+    insert: (old_slug, org_id, location_id) values ('another-old-slug', tests.id('org_a'), tests.id('loc_a'))
+    allow:
+      select: [owner, admin]
+
+  # ---------------------------------------------------------------- S2 (#23) queues
+  app.queues:
+    where: id = tests.id('queue_a')
+    update: name = name
+    insert: (org_id, location_id, name) values (tests.id('org_a'), tests.id('loc_a'), 'New queue')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+
+  app.services:
+    where: id = tests.id('service_a')
+    update: name = name
+    insert: (org_id, location_id, queue_id, name) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), 'Beard')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+
+  app.signage_slides: # 4-SIG1 (#389): admins write, staff and devices read; the TV reads through api.display_signage
+    where: id = tests.id('slide_a')
+    update: sort = sort
+    insert: (org_id, location_id, kind, body) values (tests.id('org_a'), tests.id('loc_a'), 'text', 'Sale today')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk]
+      insert: [owner, admin]
+      update: [owner, admin]
+      delete: [owner, admin]
+
+  app.counters:
+    where: id = tests.id('counter_a')
+    update: label = label
+    insert: (org_id, location_id, label) values (tests.id('org_a'), tests.id('loc_a'), 'Chair 9')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+
+  app.staff_shifts:
+    where: id = tests.id('shift_a')
+    update: note = note
+    insert: (org_id, location_id, user_id, during) values (tests.id('org_a'), tests.id('loc_a'), tests.id('manager'), tstzrange('2026-01-02 09:00+00', '2026-01-02 17:00+00'))
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+      delete: [owner, admin, manager]
+
+  app.staff_presence:
+    where: user_id = tests.id('staff') and location_id = tests.id('loc_a')
+    update: status = status
+    insert: (org_id, location_id, user_id, status) values (tests.id('org_a'), tests.id('loc_a'), tests.id('manager'), 'away')
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.service_resources:
+    where: service_id = tests.id('service_a') and counter_id = tests.id('counter_a')
+    update: created_at = created_at
+    insert: (org_id, location_id, service_id, counter_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('service_a'), tests.id('counter_pair'))
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+      delete: [owner, admin, manager]
+
+  app.intake_fields:
+    where: id = tests.id('intake_a')
+    update: label = label
+    insert: (org_id, location_id, queue_id, key, label, type) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), 'extra', 'Extra', 'text')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+
+  app.priority_classes:
+    where: id = tests.id('prio_a')
+    update: name = name
+    insert: (org_id, location_id, name, offset_minutes) values (tests.id('org_a'), tests.id('loc_a'), 'Extra', 5)
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+
+  app.priority_rules:
+    where: id = tests.id('prule_a')
+    update: rank = rank
+    insert: (org_id, location_id, priority_class_id, condition_kind, source) values (tests.id('org_a'), tests.id('loc_a'), tests.id('prio_a'), 'source', 'staff')
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+
+  app.routing_rules:
+    where: id = tests.id('route_a')
+    update: rank = rank
+    insert: (org_id, location_id, target_queue_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'))
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+
+  app.visit_answers:
+    where: visit_id = tests.id('visit_a')
+    update: answers = answers
+    insert: (org_id, location_id, visit_id, answers) values (tests.id('org_a'), tests.id('loc_a'), tests.id('visit_a'), '{}')
+    allow:
+      select: [owner, admin, manager, staff]
+
+  # F1 (#1277) forms: authenticated may only read; writes come with the F2/F5 definer functions.
+  app.forms:
+    where: id = tests.id('form_a')
+    update: name = name
+    insert: (org_id, location_id, name) values (tests.id('org_a'), tests.id('loc_a'), 'Extra')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk]
+
+  app.form_versions:
+    where: id = tests.id('form_version_a')
+    update: fields = fields
+    insert: (org_id, location_id, form_id, version) values (tests.id('org_a'), tests.id('loc_a'), tests.id('form_a'), 2)
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk]
+
+  app.form_targets:
+    where: id = tests.id('form_target_a')
+    update: channel = channel
+    insert: (org_id, location_id, form_id, queue_id, channel) values (tests.id('org_a'), tests.id('loc_a'), tests.id('form_a'), tests.id('queue_a'), 'walk_in')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk]
+
+  app.form_responses:
+    where: id = tests.id('form_response_a')
+    update: answers = answers
+    insert: (org_id, location_id, form_version_id, visit_id, answers) values (tests.id('org_a'), tests.id('loc_a'), tests.id('form_version_a'), tests.id('visit_a'), '{}')
+    allow:
+      select: [owner, admin, manager, staff]
+
+  # W2 (#1304) waiver evidence: written by a trigger only; staff of the location read it.
+  app.waiver_acceptances:
+    where: id = tests.id('waiver_acceptance_a')
+    update: typed_name = typed_name
+    insert: (org_id, location_id, form_response_id, form_version_id, field_key, text_hash, accepted_at, subject_kind, subject_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('form_response_a'), tests.id('form_version_a'), 'k2', repeat('a', 64), now(), 'visit', tests.id('visit_a'))
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.ticket_counters:
+    where: queue_id = tests.id('queue_a') and service_day = '2026-01-01'
+    update: last_value = last_value
+    insert: (org_id, queue_id, prefix, service_day, last_value) values (tests.id('org_a'), tests.id('queue_a'), 'A', '2026-01-02', 1)
+    allow:
+      select: [owner, admin, manager]
+
+  # ---------------------------------------------------------------- S3 (#24) visits and events
+  app.visit_transitions:
+    where: from_status = 'waiting' and action = 'call'
+    update: to_status = to_status
+    insert: (from_status, action, to_status) values ('served', 'call', 'called')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk, other_owner, platform] # the state machine is public to every signed-in user
+
+  app.visits:
+    where: id = tests.id('visit_a')
+    update: guest_name = guest_name
+    insert: (org_id, location_id, queue_id, service_day, ticket_prefix, ticket_number, display_ticket, status, sort_key, guest_token_hash, source, idempotency_key) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), '2026-01-01', 'A', 99, 'A099', 'waiting', 1, '\\x00', 'staff', gen_random_uuid())
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.staff_visits: # invoker view (#513): RLS and column grants of app.visits apply; read-only
+    where: id = tests.id('visit_a')
+    update: guest_name = guest_name
+    insert: (org_id, location_id, queue_id, service_day, ticket_prefix, ticket_number, display_ticket, status, sort_key, source) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), '2026-01-01', 'A', 99, 'A099', 'waiting', 1, 'staff')
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.visit_events:
+    where: visit_id = tests.id('visit_a')
+    update: reason = reason
+    insert: (org_id, visit_id, type, to_status, actor_kind) values (tests.id('org_a'), tests.id('visit_a'), 'updated', 'waiting', 'staff')
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.audit_log:
+    where: org_id = tests.id('org_a') and table_name = 'queues'
+    update: role = role
+    insert: (org_id, action, table_name) values (tests.id('org_a'), 'UPDATE', 'queues')
+    allow:
+      select: [owner, admin]
+
+  app.idempotency_keys:
+    where: key = tests.id('idem_a')
+    update: response = response
+    insert: (org_id, actor_id, rpc, key) values (tests.id('org_a'), tests.id('staff'), 'call_next', gen_random_uuid())
+    allow:
+      select: [staff] # only the actor who used the key
+
+  # ---------------------------------------------------------------- S4 (#25) messaging
+  app.guests:
+    where: id = tests.id('guest_a')
+    update: first_name = first_name
+    insert: (org_id, first_name) values (tests.id('org_a'), 'New')
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.guest_contacts:
+    where: id = tests.id('contact_a')
+    update: value = value
+    insert: (org_id, guest_id, channel, value, created_source) values (tests.id('org_a'), tests.id('guest_a'), 'email', 'g@example.com', 'staff')
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.consents:
+    where: id = tests.id('consent_a')
+    update: status = status
+    insert: (org_id, contact_id, channel, purpose, status, source, consent_text_version, consent_text_hash) values (tests.id('org_a'), tests.id('contact_a'), 'email', 'transactional', 'granted', 'staff', 'v1', 'h')
+    allow:
+      select: [owner, admin, manager]
+
+  app.guest_tags:
+    where: id = tests.id('gtag_a')
+    update: name = name
+    insert: (org_id, name) values (tests.id('org_a'), 'VIP')
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+      delete: [owner, admin, manager]
+
+  app.guest_tag_links:
+    where: tag_id = tests.id('gtag_a')
+    update: tag_id = tag_id
+    insert: (org_id, guest_id, tag_id) values (tests.id('org_a'), tests.id('guest_a'), tests.id('gtag_b'))
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin, manager, staff]
+      delete: [owner, admin, manager, staff]
+
+  app.guest_notes:
+    where: id = tests.id('gnote_a')
+    update: deleted_at = deleted_at
+    insert: (org_id, guest_id, author_user_id, body) values (tests.id('org_a'), tests.id('guest_a'), (select auth.uid()), 'x')
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin, manager, staff]
+
+  app.suppressions:
+    where: id = tests.id('suppression_a')
+    update: reason = reason
+    insert: (org_id, channel, value, reason) values (tests.id('org_a'), 'sms', '+14155550100', 'manual')
+    allow:
+      select: [owner, admin, manager]
+
+  app.channel_limits:
+    where: org_id = tests.id('org_a') and channel = 'sms'
+    update: daily_cap = daily_cap
+    insert: (org_id, channel) values (tests.id('org_a'), 'whatsapp')
+    allow:
+      select: [owner, admin, manager]
+      insert: [owner, admin]
+      update: [owner, admin]
+      delete: [owner, admin]
+
+  app.usage_alerts:
+    where: org_id = tests.id('org_a') and day = date '2000-01-01'
+    update: threshold = threshold
+    insert: (org_id, channel, day, threshold) values (tests.id('org_a'), 'sms', date '2000-01-02', 80)
+    allow:
+      select: [owner, admin, manager]
+
+  app.report_schedules:
+    where: org_id = tests.id('org_a')
+    update: enabled = enabled
+    insert: (org_id, location_id, frequency, send_at_local, enabled) values (tests.id('org_a'), tests.id('loc_a'), 'daily', '08:00', false)
+    allow:
+      select: [owner, admin]
+      insert: [owner, admin]
+      update: [owner, admin]
+      delete: [owner, admin]
+
+  app.usage_counters:
+    where: org_id = tests.id('org_a') and day = date '2000-01-01'
+    update: sent = sent
+    insert: (org_id, channel, day) values (tests.id('org_a'), 'sms', date '2000-01-02')
+    allow:
+      select: [owner, admin, manager]
+
+  app.provider_rates:
+    where: id = tests.id('rate_a')
+    update: micros_per_unit = micros_per_unit
+    insert: (org_id, provider, channel, micros_per_unit) values (tests.id('org_a'), 'plivo', 'sms', 1)
+    allow:
+      select: [owner, admin, manager]
+      insert: [owner, admin]
+      update: [owner, admin]
+      delete: [owner, admin]
+
+  app.notification_templates:
+    where: id = tests.id('template_a')
+    update: body = body
+    insert: (org_id, trigger, channel, body) values (tests.id('org_a'), 'almost_up', 'push', 'Soon')
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+      delete: [owner, admin, manager]
+
+  app.whatsapp_templates: # 3-WA2 (#359): the Meta template behind a whatsapp notification template
+    where: id = tests.id('wa_template_a')
+    update: status = status
+    insert: (org_id, template_id, wa_name, wa_language, wa_category) values (tests.id('org_a'), tests.id('template_wa2'), 'other_name', 'en_US', 'utility')
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin]
+      update: [owner, admin]
+      delete: [owner, admin]
+
+  app.notification_template_versions:
+    where: template_id = tests.id('template_a')
+    update: body = body
+    insert: (org_id, template_id, version, trigger, channel, locale, body, active) values (tests.id('org_a'), tests.id('template_a'), 99, 'called', 'push', 'en', 'x', true)
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.notifications:
+    where: id = tests.id('notification_a')
+    update: status = status
+    insert: (org_id, visit_id, channel, recipient_ref, template_key, template_version, dedupe_key) values (tests.id('org_a'), tests.id('visit_a'), 'push', tests.id('push_a'), 'called', 1, 'matrix-insert')
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.push_subscriptions:
+    where: id = tests.id('push_a')
+    update: auth = auth
+    insert: (org_id, visit_id, endpoint, p256dh, auth) values (tests.id('org_a'), tests.id('visit_a'), 'https://push.example/2', 'k', 'a')
+    allow:
+      select: [owner, admin]
+
+  app.channel_link_codes:
+    where: org_id = tests.id('org_a')
+    update: used_at = used_at
+    insert: (code_hash, org_id, visit_id, channel, expires_at) values ('\x01', tests.id('org_a'), tests.id('visit_a'), 'telegram', now())
+    allow: {} # the Telegram link flow runs in definer functions; no client reads or writes codes
+
+  app.pay_codes:
+    where: org_id = tests.id('org_a')
+    update: expires_at = expires_at
+    insert: (code_hash, org_id, payment_id, expires_at) values ('\x01', tests.id('org_a'), gen_random_uuid(), now())
+    allow: {} # codes are minted and redeemed in definer functions; no client reads or writes them
+
+  app.payment_holds:
+    where: org_id = tests.id('org_a')
+    update: status = status
+    insert: (org_id, provider, provider_hold_id, amount_minor, currency, idempotency_key) values (tests.id('org_a'), 'fake', 'h_x', 100, 'usd', 'k_x')
+    allow:
+      select: [owner, admin] # money state; written only by the service-role payment functions
+
+  app.payment_events:
+    where: org_id = tests.id('org_a')
+    update: type = type
+    insert: (provider, provider_event_id, org_id, type) values ('fake', 'e_x', tests.id('org_a'), 'released')
+    allow:
+      select: [owner, admin]
+
+  app.payment_policies:
+    where: org_id = tests.id('org_a')
+    update: mode = mode
+    insert: (org_id, service_id, mode, amount_minor) values (tests.id('org_a'), tests.id('service_a2'), 'hold', 700)
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+      delete: [owner, admin, manager]
+
+  app.payments:
+    where: org_id = tests.id('org_a')
+    update: status = status
+    insert: (org_id, location_id, provider, kind, amount_minor, currency, idempotency_key) values (tests.id('org_a'), tests.id('loc_a'), 'fake', 'hold', 1, 'usd', 'k_x')
+    allow:
+      select: [owner, admin, manager, staff] # written only by the payment functions
+
+  app.payment_jobs:
+    where: org_id = tests.id('org_a')
+    update: status = status
+    insert: (org_id, location_id, payment_id, action, dedupe_key) values (tests.id('org_a'), tests.id('loc_a'), tests.id('payment_a'), 'release', 'dk_x')
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.plans:
+    where: id = 'standard'
+    update: name = name
+    insert: (id, name) values ('fixture_plan', 'x')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk, other_owner, platform] # the price list is public to signed-in users
+
+  app.plan_entitlements:
+    where: plan_id = 'free'
+    update: value = value
+    insert: (plan_id, key, value) values ('free', 'fixture.flag', 'true')
+    allow: {} # read only through private.entitlement
+
+  app.subscriptions:
+    where: org_id = tests.id('org_a')
+    update: status = status
+    insert: (org_id) values (tests.id('org_a'))
+    allow:
+      select: [owner] # written only by the billing functions
+
+  app.credit_ledger:
+    where: org_id = tests.id('org_a')
+    update: entry_type = entry_type
+    insert: (org_id, entry_type, amount_micros) values (tests.id('org_a'), 'adjustment', 0)
+    allow:
+      select: [owner, admin] # appended only by the billing and dispatcher functions
+
+  app.billing_jobs:
+    where: org_id = tests.id('org_a')
+    update: status = status
+    insert: (org_id) values (tests.id('org_a'))
+    allow: {} # service role only
+
+  app.dev_inbox:
+    where: org_id = tests.id('org_a')
+    update: body = body
+    insert: (org_id, channel, recipient, body) values (tests.id('org_a'), 'console', 'x', 'y')
+    allow:
+      select: [owner, admin]
+
+  app.inbound_messages:
+    where: org_id = tests.id('org_a')
+    update: body = body
+    insert: (org_id, from_value_e164, body) values (tests.id('org_a'), '+14155550199', 'x')
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.visit_companions:
+    where: visit_id = tests.id('visit_a')
+    update: first_name = first_name
+    insert: (org_id, visit_id, first_name) values (tests.id('org_a'), tests.id('visit_a'), 'Maya')
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.visit_messages:
+    where: visit_id = tests.id('visit_a')
+    update: body = body
+    insert: (org_id, location_id, visit_id, sender, body) values (tests.id('org_a'), tests.id('loc_a'), tests.id('visit_a'), 'guest', 'x')
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.visit_feedback:
+    where: visit_id = tests.id('visit_a')
+    update: rating = rating
+    insert: (org_id, location_id, visit_id, rating) values (tests.id('org_a'), tests.id('loc_a'), tests.id('visit_a'), 3)
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.alert_preferences:
+    where: visit_id = tests.id('visit_a')
+    update: triggers = triggers
+    insert: (org_id, visit_id) values (tests.id('org_a'), tests.id('visit_a'))
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.queue_broadcasts:
+    where: id = tests.id('broadcast_a')
+    update: body = body
+    insert: (org_id, queue_id, body) values (tests.id('org_a'), tests.id('queue_a'), 'x')
+    allow:
+      select: [owner, admin, manager]
+
+  app.visit_notify_state:
+    where: visit_id = tests.id('visit_a')
+    update: last_position = last_position
+    insert: (org_id, visit_id) values (tests.id('org_a'), tests.id('visit_a'))
+    allow:
+      select: [owner, admin, manager, staff]
+
+  # ---------------------------------------------------------------- PLT1 (#407) platform
+  app.platform_roles:
+    where: user_id = tests.id('platform')
+    update: role = role
+    insert: (user_id, role) values (tests.id('staff'), 'support')
+    allow:
+      select: [platform] # each user reads only their own row; written with the service role
+
+  app.platform_audit:
+    where: action = 'platform_role.grant' and target ->> 'user_id' = tests.id('platform')::text
+    update: reason = reason
+    insert: (action) values ('fixture.insert')
+    allow:
+      select: [platform] # operators with aal2; append-only for every role
+
+  # ---------------------------------------------------------------- PLT3 (#409) support grants
+  app.support_grants:
+    where: id = tests.id('grant_a')
+    update: reason = reason
+    insert: (org_id, scope, reason, expires_at) values (tests.id('org_a'), 'act', 'x', now() + interval '1 hour')
+    allow:
+      select: [owner, admin, manager, staff] # members see the "support has access" banner; written only by RPCs
+
+  # ---------------------------------------------------------------- #1138 support requests
+  app.support_requests:
+    where: id = tests.id('support_request_a')
+    update: status = status
+    insert: (org_id, user_id, subject, message) values (tests.id('org_a'), tests.id('staff'), 'x', 'x')
+    allow:
+      select: [owner, admin, staff] # admins read the org's requests, anyone else only their own; written by api.contact_support alone
+
+  # ---------------------------------------------------------------- #1132 platform attention
+  app.platform_attention_acks:
+    where: org_id = tests.id('org_a')
+    update: reason = reason
+    insert: (org_id, reason, snooze_until) values (tests.id('org_a'), 'plan_limit', now())
+    allow:
+      select: [platform] # operators with aal2 read it; written by api.platform_ack_attention alone
+
+  # ---------------------------------------------------------------- 2P-RPT4 (#200) export tickets
+  app.data_exports:
+    where: id = tests.id('export_a')
+    update: format = format
+    insert: (org_id, actor, format, idempotency_key, expires_at) values (tests.id('org_a'), tests.id('owner'), 'csv', gen_random_uuid(), now())
+    allow:
+      select: [owner] # only the person who started the export; written by api.begin_data_export alone
+
+  # ---------------------------------------------------------------- 2A-TM1 (#95) invitations
+  app.invitations:
+    where: id = tests.id('invitation_a')
+    update: role = role
+    insert: (org_id, email, role, token_hash) values (tests.id('org_a'), 'x@example.test', 'staff', '\x01')
+    allow:
+      select: [owner, admin] # written only by the invitation RPCs
+
+  # ---------------------------------------------------------------- 2A-TM4 (#98) operator switch
+  app.operator_sessions:
+    where: id = tests.id('operator_session_a')
+    update: ended_at = ended_at
+    insert: (org_id, location_id, device_user_id, operator_user_id, token_hash) values (tests.id('org_a'), tests.id('loc_a'), tests.id('admin'), tests.id('staff'), '\x02')
+    allow:
+      select: [owner, admin, manager, staff] # the token hash is not selectable; written only by the RPCs
+
+  # ---------------------------------------------------------------- PLT6 (#412) entitlements
+  app.platform_flags: # read only through private.channel_missing; no tenant role touches it
+    where: singleton
+    update: singleton = singleton
+    insert: (singleton) values (false)
+    allow: {}
+
+  app.dial_codes:
+    where: prefix = '1' and country_code = 'US'
+    update: prefix = prefix
+    insert: (prefix, country_code) values ('999', 'ZZ')
+    allow: {}
+
+  app.entitlement_defaults:
+    where: key = 'fixture.flag'
+    update: value = value
+    insert: (key, value, description) values ('fixture.other', 'true', 'x')
+    allow:
+      select: [platform] # tenants read resolved values through api.org_entitlements()
+
+  app.org_entitlements:
+    where: org_id = tests.id('org_a') and key = 'fixture.flag'
+    update: value = value
+    insert: (org_id, key, value, reason) values (tests.id('org_a'), 'fixture.flag', 'false', 'x')
+    allow:
+      select: [platform] # overrides carry operator reasons; written only by platform_set_entitlement
+
+  # ---------------------------------------------------------------- PLT7 (#413) platform stats
+  app.platform_daily_stats:
+    where: day = '2026-01-01' and org_id = tests.id('org_a')
+    update: joins = joins
+    insert: (day, org_id) values ('2026-01-02', tests.id('org_a'))
+    allow:
+      select: [platform] # support and operators; written only by the nightly tick
+
+  # ---------------------------------------------------------------- A1 (#1222) SMS rollup
+  app.platform_sms_daily:
+    where: day = '2026-01-01' and org_id = tests.id('org_a')
+    update: messages = messages
+    insert: (day, org_id) values ('2026-01-02', tests.id('org_a'))
+    allow:
+      select: [platform] # support and operators; written only by the hourly tick
+
+  # ---------------------------------------------------------------- PLT9 (#415) announcements
+  app.platform_announcements:
+    where: message = 'fixture announcement'
+    update: message = message
+    insert: (severity, message, ends_at) values ('info', 'x', now() + interval '1 hour')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk, other_owner, platform] # every signed-in user, active rows only; written only by platform_upsert_announcement
+
+  # ---------------------------------------------------------------- PLT8 (#414) platform blocks
+  app.platform_blocks:
+    where: reason = 'fixture'
+    update: reason = reason
+    insert: (contact_hash, kind, reason) values (extensions.digest('x', 'sha256'), 'email', 'x')
+    allow:
+      select: [platform] # support and operators; written only through the operator RPCs
+
+  # ---------------------------------------------------------------- 3-CG5 (#330) consent copy
+  app.consent_texts:
+    where: channel = 'sms' and version = 1
+    update: body = body
+    insert: (channel, purpose, locale, version, body) values ('sms', 'transactional', 'fr', 1, 'x')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk, other_owner, platform] # published copy is public to signed-in users; no one writes it
+
+  # ---------------------------------------------------------------- S1 (#1218) locked SMS frame
+  app.sms_footers:
+    where: locale = 'en' and version = 1
+    update: text = text
+    insert: (locale, version, text) values ('fr', 1, 'STOP')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk, other_owner, platform] # public wording; no one writes it
+
+  app.sms_guard_terms:
+    where: term = 'sale'
+    update: reason = reason
+    insert: (term, reason) values ('zzz', 'promo')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk, other_owner, platform] # the list is shown in save errors; no one writes it
+
+  # ---------------------------------------------------------------- 2P-APT1 (#157) booking config
+  app.booking_policies:
+    where: id = tests.id('booking_policy_a')
+    update: bookable = bookable
+    insert: (org_id, service_id) values (tests.id('org_a'), tests.id('service_a2'))
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+      delete: [owner, admin, manager]
+
+  app.availability_rules:
+    where: id = tests.id('availability_rule_a')
+    update: weekday = weekday
+    insert: (org_id, location_id, weekday, starts, ends) values (tests.id('org_a'), tests.id('loc_a'), 3, '09:00', '12:00')
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+      delete: [owner, admin, manager]
+
+  app.availability_exceptions:
+    where: id = tests.id('availability_exception_a')
+    update: note = note
+    insert: (org_id, location_id, local_date, kind) values (tests.id('org_a'), tests.id('loc_a'), '2026-12-31', 'unavailable')
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+      delete: [owner, admin, manager]
+
+  app.time_blocks:
+    where: id = tests.id('time_block_a')
+    update: reason = 'x'
+    insert: (org_id, location_id, counter_id, during) values (tests.id('org_a'), tests.id('loc_a'), tests.id('counter_a'), tstzrange('2027-01-01 09:00+00', '2027-01-01 10:00+00'))
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+      delete: [owner, admin, manager]
+
+  app.capacity_rules:
+    where: id = tests.id('capacity_rule_a')
+    update: capacity = capacity
+    insert: (org_id, service_id, scope, weekday, capacity) values (tests.id('org_a'), tests.id('service_a'), 'day', 2, 5)
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+      delete: [owner, admin, manager]
+
+  # ---------------------------------------------------------------- 2P-APT2 (#158) appointments
+  app.appointments: # written only by the booking RPCs
+    where: id = tests.id('appointment_a')
+    update: guest_name = guest_name
+    insert: (org_id, location_id, service_id, queue_id, starts_at, ends_at, local_date, guest_name, source, idempotency_key) values (tests.id('org_a'), tests.id('loc_a'), tests.id('service_a'), tests.id('queue_a'), now(), now() + interval '20 minutes', current_date, 'x', 'staff', gen_random_uuid())
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.appointment_manage_tokens: # hashes of mailed manage links; no policy, no grant, definer functions only
+    where: org_id = tests.id('org_a')
+    update: org_id = org_id
+    insert: (org_id, appointment_id, notification_id, token_hash) values (tests.id('org_a'), tests.id('appointment_a'), gen_random_uuid(), '\x00')
+    allow: {}
+
+  app.appointment_series: # written only by api.create_appointment_series
+    where: id = tests.id('series_a')
+    update: rule = rule
+    insert: (org_id, location_id, service_id, rule, idempotency_key) values (tests.id('org_a'), tests.id('loc_a'), tests.id('service_a'), '{}', gen_random_uuid())
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.appointment_events:
+    where: appointment_id = tests.id('appointment_a')
+    update: type = type
+    insert: (org_id, appointment_id, type, to_status, actor_kind) values (tests.id('org_a'), tests.id('appointment_a'), 'x', 'booked', 'system')
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.appointment_slot_counts:
+    where: service_id = tests.id('service_a')
+    update: count = count
+    insert: (org_id, service_id, slot_start) values (tests.id('org_a'), tests.id('service_a'), now())
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.appointment_day_counts:
+    where: service_id = tests.id('service_a')
+    update: count = count
+    insert: (org_id, service_id, local_date) values (tests.id('org_a'), tests.id('service_a'), current_date)
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.slot_waitlist: # written only by the waitlist RPCs; guests hold a token, never a row
+    where: id = tests.id('waitlist_a')
+    update: name = name
+    insert: (org_id, location_id, service_id, wanted_day, name, token_hash, idempotency_key) values (tests.id('org_a'), tests.id('loc_a'), tests.id('service_a'), '2030-01-13', 'x', private.token_hash('tok-x'), gen_random_uuid())
+    allow:
+      select: [owner, admin, manager, staff]
+
+  app.events: # seats and status change only through the event RPCs
+    where: id = tests.id('event_a')
+    update: title = title
+    insert: (org_id, location_id, service_id, title, during, capacity) values (tests.id('org_a'), tests.id('loc_a'), tests.id('service_a'), 'x', tstzrange('2030-02-01 10:00Z', '2030-02-01 11:00Z'), 5)
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+
+  # ---------------------------------------------------------------- 2P-APT15 (#171) calendar feeds
+  app.calendar_feeds: # a member sees only their own feeds (the fixture belongs to staff); written only by the RPCs
+    where: id = tests.id('calendar_feed_a')
+    update: include_guest_names = include_guest_names
+    insert: (org_id, user_id, token_hash) values (tests.id('org_a'), tests.id('staff'), '\x01')
+    allow:
+      select: [staff]
+
+  # ---------------------------------------------------------------- 2B-I1 (#306) API keys
+  app.api_keys: # written only by create_api_key / revoke_api_key; secret_hash is not column-granted
+    where: id = tests.id('api_key_a')
+    update: name = name
+    insert: (org_id, name, prefix, secret_hash, scopes) values (tests.id('org_a'), 'x', 'abcdef01', '\\x0000000000000000000000000000000000000000000000000000000000000000', array['queues:read'])
+    allow:
+      select: [owner, admin]
+
+  # ---------------------------------------------------------------- 3-DOM1 (#370) custom domains
+  app.custom_domains: # written only by add_custom_domain / remove_custom_domain / record_domain_check
+    where: id = tests.id('domain_a')
+    update: hostname = hostname
+    insert: (org_id, hostname, default_location_id) values (tests.id('org_a'), 'other.fixture-a.org', tests.id('loc_a'))
+    allow:
+      select: [owner, admin]
+
+  app.journeys:
+    where: id = tests.id('journey_a')
+    update: name = name
+    insert: (org_id, location_id, name) values (tests.id('org_a'), tests.id('loc_a'), 'Another journey')
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+      delete: [owner, admin, manager]
+
+  app.journey_steps:
+    where: id = tests.id('journey_step_a')
+    update: step_no = step_no
+    insert: (journey_id, org_id, step_no, queue_id) values (tests.id('journey_b'), tests.id('org_a'), 1, tests.id('queue_a'))
+    allow:
+      select: [owner, admin, manager, staff]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+      delete: [owner, admin, manager]
+
+  # ---------------------------------------------------------------- 2B-I6 (#311) webhooks
+  app.webhook_endpoints: # written only by the webhook RPCs; the Vault secret ids are not column-granted
+    where: id = tests.id('webhook_a')
+    update: url = url
+    insert: (org_id, url, event_types, vault_secret_id) values (tests.id('org_a'), 'https://example.com/x', array['visit.called'], gen_random_uuid())
+    allow:
+      select: [owner, admin]
+
+  app.provider_settings: # written only by api.set_provider_settings / set_channel_enabled; Vault ids are not column-granted
+    where: id = tests.id('provider_settings_a')
+    update: provider = provider
+    insert: (org_id, channel, provider, mode) values (tests.id('org_a'), 'email', 'postmark', 'own')
+    allow:
+      select: [owner, admin]
+
+  app.webhook_deliveries: # written by the enqueue trigger and the sender RPCs
+    where: id = tests.id('webhook_delivery_a')
+    update: status = status
+    insert: (org_id, endpoint_id, event_id, event_type, payload) values (tests.id('org_a'), tests.id('webhook_a'), 'x', 'visit.called', '{}')
+    allow:
+      select: [owner, admin]
+
+  app.integration_jobs: # written by the served-visit trigger and the worker RPCs
+    where: id = tests.id('integration_job_a')
+    update: status = status
+    insert: (org_id, setting_id, visit_id, event_id) values (tests.id('org_a'), tests.id('integration_setting_a'), tests.id('visit_a'), 'x')
+    allow:
+      select: [owner, admin]
+
+  app.integration_oauth_states: # written only by api.begin_integration_connect
+    where: org_id = tests.id('org_a')
+    update: channel = channel
+    insert: (state_hash, org_id, channel, user_id, expires_at) values ('\x01', tests.id('org_a'), 'pos', tests.id('org_a'), now())
+    allow: {}
+
+  app.report_definitions:
+    where: org_id = tests.id('org_a')
+    update: name = name
+    insert: (org_id, name, definition) values (tests.id('org_a'), 'x', jsonb_build_object('measures', jsonb_build_array('visits')))
+    allow:
+      select: [owner, admin, manager]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+      delete: [owner, admin, manager]
+
+  app.analytics_questions: # written only by api.ask_analytics_reserve
+    where: org_id = tests.id('org_a')
+    update: question = question
+    insert: (org_id, question) values (tests.id('org_a'), 'x')
+    allow:
+      select: [owner, admin]
+
+  # ---------------------------------------------------------------- #1135 platform org notes
+  app.platform_org_notes:
+    where: body = 'fixture note'
+    update: body = body
+    insert: (org_id, root_id, version, body) values (tests.id('org_a'), gen_random_uuid(), 1, 'x')
+    allow:
+      select: [platform] # support and operators with aal2; written only by api.platform_add_note
+
+  # ---------------------------------------------------------------- #1274 platform incident register
+  app.platform_incidents:
+    where: title = 'fixture incident'
+    update: title = title
+    insert: (kind, title) values ('other', 'x')
+    allow:
+      select: [platform] # operators with aal2; written only by api.platform_*_incident
+  app.incident_notices: # C9 (#1275): drafted, approved and sent only through api.platform_*_notice
+    where: subject = 'fixture notice'
+    update: subject = subject
+    insert: (incident_id, subject, body) values (tests.id('incident_a'), 'x', 'x')
+    allow:
+      select: [platform]
+  app.guest_notices: # C10 (#1276): drafted, approved and sent only through api.*_guest_notice
+    where: subject = 'fixture guest notice'
+    update: subject = subject
+    insert: (org_id, log_id, subject, body, window_from, window_to) values (tests.id('org_a'), (select id from app.org_incident_log where title = 'fixture incident log'), 'x', 'x', now() - interval '1 day', now())
+    allow:
+      select: [owner, admin]
+  app.org_incident_log: # C9 (#1275): the business's own record; written only by api.report_incident and the notice send
+    where: title = 'fixture incident log'
+    update: title = title
+    insert: (org_id, source, kind, title, detected_at) values (tests.id('org_a'), 'manual', 'other', 'x', now())
+    allow:
+      select: [owner, admin]
+  app.platform_incident_events:
+    where: body = 'fixture event'
+    update: body = body
+    insert: (incident_id, kind, body) values (tests.id('incident_a'), 'note', 'x')
+    allow:
+      select: [platform] # operators with aal2; append-only through api.platform_add_incident_note
+
+  # ---------------------------------------------------------------- T1 (#1295) template catalog
+  app.template_catalog:
+    where: key = 'barber' and version = 1
+    update: tier = tier
+    insert: (key, version, payload, tier, mode) values ('probe', 1, '{}'::jsonb, 1, 'walk_in')
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk, other_owner, platform] # public content; no tenant writes it

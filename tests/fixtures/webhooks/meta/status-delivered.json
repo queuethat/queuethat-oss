@@ -1,0 +1,39 @@
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "WABA1",
+      "changes": [
+        {
+          "field": "messages",
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": { "display_phone_number": "15550001111", "phone_number_id": "1055" },
+            "statuses": [
+              {
+                "id": "wamid.OUT1",
+                "status": "delivered",
+                "timestamp": "1761858100",
+                "recipient_id": "14155550123",
+                "pricing": { "billable": true, "pricing_model": "PMP", "category": "utility" }
+              },
+              {
+                "id": "wamid.OUT2",
+                "status": "failed",
+                "timestamp": "1761858101",
+                "recipient_id": "14155550124",
+                "errors": [{ "code": 131026, "title": "Message undeliverable" }]
+              },
+              {
+                "id": "wamid.OUT3",
+                "status": "sent",
+                "timestamp": "1761858102",
+                "recipient_id": "14155550125"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

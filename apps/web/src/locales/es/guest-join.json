@@ -1,0 +1,160 @@
+{
+  "join": {
+    "title": "Únete a la fila",
+    "loading": "Cargando",
+    "notFound": {
+      "title": "No encontramos esta fila",
+      "body": "Revisa el enlace o escanea el código de nuevo."
+    },
+    "loadFailed": {
+      "title": "No se pudo cargar la fila",
+      "body": "Revisa tu conexión y recarga la página."
+    },
+    "queue": "Fila",
+    "wait": {
+      "waiting_one": "{{count}} esperando",
+      "waiting_other": "{{count}} esperando",
+      "opensToday": "Abre a las {{time}}",
+      "opensLater": "Abre el {{day}} a las {{time}}",
+      "asOf": "A las {{time}}"
+    },
+    "queueOption_one": "{{name}} ({{count}} esperando)",
+    "queueOption_other": "{{name}} ({{count}} esperando)",
+    "service": "¿Qué necesitas?",
+    "name": "Nombre",
+    "nameMissing": "Escribe tu nombre para que el personal pueda llamarte.",
+    "addPerson": "Añadir a otra persona",
+    "addPersonHint": "Se unen juntas con el mismo teléfono y correo.",
+    "otherName": "Nombre de la persona {{number}}",
+    "otherNameMissing": "Escribe un nombre para la persona {{number}}, o quítala.",
+    "removePerson": "Quitar a la persona {{number}}",
+    "phone": "Número de móvil (opcional)",
+    "party": "¿Cuántas personas?",
+    "partyFewer": "Una persona menos",
+    "partyMore": "Una persona más",
+    "partySize_one": "{{count}} persona",
+    "partySize_other": "{{count}} personas",
+    "phoneHint": "Solo se usa para avisarte de tu lugar en la fila.",
+    "country": "Código del país",
+    "email": "Correo electrónico (opcional)",
+    "emailHint": "Te escribiremos cuando casi sea tu turno y cuando te llamen. Nada más.",
+    "intake": {
+      "missing": "Por favor responde esta pregunta.",
+      "invalid": "Por favor revisa esta respuesta."
+    },
+    "privacy": {
+      "summary": "Cómo usamos tus datos",
+      "body": "Usamos tu nombre, número y correo solo para gestionar tu lugar en esta fila y avisarte sobre esta visita. El personal de este local puede verlos. Tu número y tu correo nunca se muestran en las pantallas de la sala de espera."
+    },
+    "notAccepting": {
+      "closed": "Esta fila está cerrada ahora.",
+      "paused": "Esta fila está en pausa. Vuelve a mirar en unos minutos.",
+      "outside_hours": "Esta fila está fuera de su horario.",
+      "full": "Esta fila está llena ahora. Vuelve a mirar pronto.",
+      "online_full": "Esta fila no admite más personas en línea ahora. Por favor acude a la recepción.",
+      "org_suspended": "Esta fila no admite clientes ahora. Pide ayuda al personal."
+    },
+    "error": {
+      "queue_not_accepting": "Esta fila dejó de admitir clientes. Pide ayuda al personal.",
+      "capacity_reached": "Esta fila acaba de llenarse. Vuelve a mirar pronto.",
+      "rate_limited": "Demasiadas personas se están uniendo a la vez. Espera un momento e inténtalo de nuevo.",
+      "rate_limited_phone": "Te has unido demasiadas veces desde este teléfono. Pide al personal que te añada.",
+      "rate_limited_network": "Demasiadas uniones desde esta red ahora. Pide al personal que te añada.",
+      "rate_limited_total": "Esta fila no admite más personas en línea ahora. Por favor acude a la recepción.",
+      "onsite_code_required": "Este local pide el código que aparece en la pantalla de la sala de espera. Escríbelo abajo.",
+      "onsite_code_invalid": "Ese código no es correcto. Mira la pantalla de la sala de espera e inténtalo de nuevo. Cambia cada pocos minutos.",
+      "onsite_required": "Esta cola es para quienes están en el local. Comparte tu ubicación para comprobarlo o pide al personal que te añada.",
+      "captcha_failed": "La comprobación anti-robots no se superó. Espera a que termine e inténtalo de nuevo, o pide al personal que te añada.",
+      "captcha_required": "No pudimos confirmar que no eres un robot. Espera a que termine la comprobación de arriba e inténtalo de nuevo, o pide al personal que te añada.",
+      "already_in_queue": "Ya estás en una fila. Abre tu boleto o pregunta al personal.",
+      "no_route": "No encontramos la fila adecuada para ese servicio. Por favor pregunta en el mostrador.",
+      "too_many_active_visits": "Son más personas de las que esta fila permite por teléfono. Pide al personal que añada al resto.",
+      "invalid_input": "Revisa tu nombre, número y correo e inténtalo de nuevo.",
+      "invalid_answers": "Por favor revisa tus respuestas e inténtalo de nuevo.",
+      "not_found": "Esta fila ya no existe. Escanea el código de nuevo.",
+      "unknown": "No se pudo completar. Revisa tu conexión e inténtalo de nuevo.",
+      "invalid_arrive_after": "Esa hora no está disponible. Elige otra o únete ahora."
+    },
+    "alreadyJoined": "Ya estás en la fila con el turno {{ticket}}. Muestra este número al personal si necesitas ayuda.",
+    "onsiteCode": "Código de acceso",
+    "onsiteCodeHint": "Aparece en la pantalla de la sala de espera.",
+    "captcha": "Comprobando que no eres un robot",
+    "retryIn_one": "Demasiados intentos desde esta red. Inténtalo de nuevo en {{count}} minuto.",
+    "retryIn_other": "Demasiados intentos desde esta red. Inténtalo de nuevo en {{count}} minutos.",
+    "pow": {
+      "working": "Comprobando que no eres un robot… {{percent}}%",
+      "ready": "Comprobación completa.",
+      "failed": "No pudimos ejecutar la comprobación que evita robots. Recarga la página, o pide al personal que te añada."
+    },
+    "captchaProblem": {
+      "body": "No pudimos ejecutar la comprobación que evita robots. Recarga la página, o pide al personal que te añada.",
+      "reload": "Recargar la página"
+    },
+    "joining": "Uniéndote",
+    "submit": "Unirme a la fila",
+    "phoneInvalid": "Ese no es un número de móvil completo. Corrígelo, o bórralo para unirte sin mensajes de texto.",
+    "phoneForTexts": "Añade tu número de móvil para recibir mensajes de texto, o desmarca la casilla para unirte sin ellos.",
+    "already": {
+      "named": "Ya estás esperando en {{queue}}.",
+      "generic": "Este teléfono, número o correo ya espera en una fila.",
+      "open": "Abrir mi boleto",
+      "leave": "Salir de esa fila",
+      "leaveTitle": "¿Salir de esa fila?",
+      "leaveBody": "Perderás tu lugar allí. Después podrás unirte a esta fila.",
+      "leaveConfirm": "Salir de esa fila",
+      "leaveCancel": "Quedarme",
+      "ask": "Usa el enlace que recibiste o pide ayuda al personal."
+    },
+    "widget": {
+      "inLineTitle": "Estás en la fila",
+      "inLineBody": "Abre tu lugar en la fila para seguir tu turno. Se abre en una pestaña nueva.",
+      "inLineLink": "Abrir mi lugar en la fila"
+    },
+    "when": {
+      "label": "Cuándo",
+      "now": "Ahora",
+      "later": "Más tarde hoy",
+      "at": "Hora de llegada",
+      "hint": "Las horas están en {{zone}}, la del local. Recibes un boleto ahora y entras en la fila a esa hora."
+    },
+    "location": {
+      "title": "¿Estás aquí?",
+      "why": "Esta cola es solo para quienes están en el local. Comprobamos tu posición una vez, para ver que estás cerca, y no la guardamos.",
+      "share": "Compartir mi ubicación",
+      "asking": "Buscando tu ubicación",
+      "shared": "Ubicación compartida. Toca de nuevo Unirme a la cola.",
+      "denied": "No pudimos obtener tu ubicación. Puedes permitir el acceso en los ajustes del navegador e intentarlo de nuevo, o pedir al personal que te añada."
+    },
+    "history": {
+      "welcome": "Hola de nuevo, {{name}}. Rellenamos tu nombre de tu última visita.",
+      "forget": "Borrar mi historial"
+    },
+    "state": {
+      "open": "Abierta",
+      "paused": "En pausa",
+      "closed": "Cerrada",
+      "full": "Llena"
+    },
+    "consentLinks": {
+      "prefix": "Lee nuestros",
+      "terms": "Términos del servicio",
+      "and": "y",
+      "privacy": "Política de privacidad"
+    },
+    "retention": {
+      "notice": "{{business}} conserva los datos de tu visita durante {{count}} días.",
+      "notice_one": "{{business}} conserva los datos de tu visita durante {{count}} día.",
+      "notice_other": "{{business}} conserva los datos de tu visita durante {{count}} días.",
+      "privacyLink": "Cómo se usan tus datos"
+    },
+    "privacyContact": {
+      "intro": "¿Preguntas sobre tu privacidad? Contacta a {{name}}:"
+    },
+    "lines": {
+      "title": "¿A quién prefieres ver?",
+      "anyone": "Cualquiera disponible",
+      "anyoneHint": "Te atiende la siguiente persona libre.",
+      "unavailable": "No recibe clientes ahora"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "onMyWay": "Voy en camino",
+  "onMyWayDone": "En camino. El personal ya lo sabe.",
+  "needMoreTime": "Necesito más tiempo",
+  "needMoreTimeLeft": "Queda {{count}} prórroga",
+  "needMoreTimeLeft_other": "Quedan {{count}} prórrogas",
+  "needMoreTimeNone": "No quedan más prórrogas",
+  "needMoreTimeHint": "Retrocedes unos lugares.",
+  "failed": "No se pudo completar. Inténtalo de nuevo.",
+  "limit": "Ya usaste todas tus prórrogas.",
+  "arriveBy": "Por favor llega antes de las {{time}}",
+  "warning": "Tu lugar se cederá en {{count}} minuto si no llegas o pides más tiempo.",
+  "warning_other": "Tu lugar se cederá en {{count}} minutos si no llegas o pides más tiempo.",
+  "warningNow": "Tu lugar está a punto de cederse. Por favor llega ahora."
+}

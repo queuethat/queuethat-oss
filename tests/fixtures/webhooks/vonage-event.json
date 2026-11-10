@@ -1,0 +1,9 @@
+{
+  "secret": "vonage-signature-secret",
+  "t": 1761840000,
+  "body": "{\"message_uuid\":\"aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee\",\"to\":\"15558675310\",\"from\":\"15550000000\",\"timestamp\":\"2025-10-30T16:00:00Z\",\"status\":\"delivered\",\"channel\":\"sms\"}",
+  "jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NjE4NDAwMDAsImp0aSI6ImoxIiwicGF5bG9hZF9oYXNoIjoiZjdkMGY2NWU0ZjEzNDFiNzY3MDJkZWVjNGExYTRiODI0NWI3NWI4ZGZlOTk5NWRkM2VlMmIxMDJlYzg4NDEzNCIsImFwaV9rZXkiOiJrIn0.h5zJuwUicegu5813lGiOH4-q9vh7E-_4sUxJARZX-xM",
+  "inboundBody": "{\"message_uuid\":\"in-1\",\"to\":\"15550000000\",\"from\":\"15558675310\",\"channel\":\"sms\",\"message_type\":\"text\",\"text\":\"STOP\",\"timestamp\":\"2025-10-30T16:00:01Z\"}",
+  "inboundJwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NjE4NDAwMDAsImp0aSI6ImoxIiwicGF5bG9hZF9oYXNoIjoiY2JhNWI0MDFmYTA0ZGM0MjdlYzM1NjE4OWY4OTg2MWMxNWY3NWVlZWYyMzg1M2VlN2ZlNGM5ZDQ2ODE1N2U3MSIsImFwaV9rZXkiOiJrIn0.lxgS0t-wHpZ9r3-ePRs8wgwcaIqGSbMnUiI1k5Rt9jk",
+  "wrongSecretJwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NjE4NDAwMDAsImp0aSI6ImoxIiwicGF5bG9hZF9oYXNoIjoiZjdkMGY2NWU0ZjEzNDFiNzY3MDJkZWVjNGExYTRiODI0NWI3NWI4ZGZlOTk5NWRkM2VlMmIxMDJlYzg4NDEzNCIsImFwaV9rZXkiOiJrIn0.5DyTjwk_M6OeJ-dBCnl_ebgrhUqEVC58QQkFFnfOOdM"
+}

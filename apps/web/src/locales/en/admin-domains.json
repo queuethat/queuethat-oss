@@ -1,0 +1,56 @@
+{
+  "title": "Custom domains",
+  "loading": "Loading domains",
+  "adminsOnly": "Only admins and owners can manage custom domains.",
+  "copy": "Copy",
+  "copied": "Copied",
+  "list": {
+    "title": "Your domains",
+    "intro": "Guests who open your own domain land on your join page. Staff and admin pages always stay on our address. Posters switch to your domain once it is verified.",
+    "empty": "No custom domains yet.",
+    "lastChecked": "Last checked {{date}}",
+    "neverChecked": "Not checked yet"
+  },
+  "status": {
+    "pending": "Waiting for DNS",
+    "verified": "Verified",
+    "failed": "Check failed",
+    "disabled": "Disabled"
+  },
+  "records": {
+    "intro": "Add these two records at your DNS provider, then press Check now. DNS changes can take a while to spread.",
+    "txtName": "TXT record name",
+    "txtValue": "TXT record value",
+    "cname": "CNAME record for {{host}} points to"
+  },
+  "verify": {
+    "button": "Check now",
+    "checking": "Checking",
+    "unavailable": "We could not reach the DNS lookup service. Try again in a minute."
+  },
+  "add": {
+    "open": "Add domain",
+    "title": "Add a custom domain",
+    "hostname": "Domain",
+    "hostnameHint": "For example book.yourshop.com",
+    "location": "Join page of",
+    "cancel": "Cancel",
+    "submit": "Add domain",
+    "adding": "Adding"
+  },
+  "remove": {
+    "trigger": "Remove",
+    "triggerFor": "Remove {{host}}",
+    "title": "Remove {{host}}?",
+    "description": "Guests who open this address will no longer reach your join page. Posters already printed with it stop working until you add it again.",
+    "confirm": "Remove domain",
+    "cancel": "Keep it"
+  },
+  "errors": {
+    "unknown": "Something went wrong. Try again.",
+    "invalid_input": "That is not a domain we can use. Use a full name such as book.yourshop.com, not an IP address and not one of ours.",
+    "domain_taken": "That domain is already in use.",
+    "permission_denied": "Only admins and owners can add domains.",
+    "not_found": "That location was not found."
+  }
+}

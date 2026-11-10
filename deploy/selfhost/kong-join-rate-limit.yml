@@ -1,0 +1,58 @@
+# Edge rate rules on guest joins (O5, #76). Add these two services to the self-hosted Supabase
+# gateway's declarative config (docker/volumes/api/kong.yml), `rest-v1-join` next to `rest-v1` and
+# `functions-v1-join-pass` next to `functions-v1`, and add `rate-limiting` to KONG_PLUGINS.
+# docs/ops/pilot-deploy.md has the steps and the check script.
+#
+# Each route is more specific than its parent's (`/rest/v1/`, `/functions/v1/`), so Kong sends
+# joins and join passes here and everything else on as before. Each `plugins` list must repeat
+# its parent service's list exactly (whatever your kong.yml has there), then add rate-limiting
+# last. A guest makes one join pass per join (#560), so both allow the same 30 a minute.
+#
+# limit_by ip uses the client address Kong forwards upstream as X-Real-IP, the same value
+# private.client_ip() reads by default (deployment_settings.client_ip_header = 'x-real-ip').
+# Behind another proxy, set KONG_REAL_IP_HEADER and KONG_TRUSTED_IPS so that address is the
+# guest's, never a value the client can set.
+- name: rest-v1-join
+  _comment: 'Guest joins: /rest/v1/rpc/join_queue -> http://rest:3000/rpc/join_queue, rate limited'
+  url: http://rest:3000/rpc/join_queue
+  routes:
+    - name: rest-v1-join
+      strip_path: true
+      paths:
+        - /rest/v1/rpc/join_queue
+  plugins:
+    # Copy rest-v1's plugins here, unchanged. The common self-host defaults are:
+    - name: cors
+    - name: key-auth
+      config:
+        hide_credentials: true
+    - name: acl
+      config:
+        hide_groups_header: true
+        allow:
+          - admin
+          - anon
+    - name: rate-limiting
+      config:
+        # 30 joins a minute from one address: well above a busy shop on one Wi-Fi or CGNAT, and the
+        # database's own per-device, per-network and per-queue limits still apply under it.
+        minute: 30
+        limit_by: ip
+        policy: local
+- name: functions-v1-join-pass
+  _comment: 'Turnstile join passes: /functions/v1/join-pass -> http://functions:9000/join-pass, rate limited'
+  url: http://functions:9000/join-pass
+  routes:
+    - name: functions-v1-join-pass
+      strip_path: true
+      paths:
+        - /functions/v1/join-pass
+  plugins:
+    # Copy functions-v1's plugins here, unchanged. The common self-host default is:
+    - name: cors
+    - name: rate-limiting
+      config:
+        # One pass per join, so the same limit as rest-v1-join, keyed the same way.
+        minute: 30
+        limit_by: ip
+        policy: local

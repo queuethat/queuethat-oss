@@ -1,0 +1,89 @@
+{
+  "help": {
+    "title": "Help articles",
+    "intro": "Quick answers to the most common questions. Still stuck? Use Contact support at the top of the page.",
+    "contents": "Articles",
+    "articles": {
+      "line": {
+        "title": "Set up a line",
+        "body": [
+          "Open Queues and choose Add a queue, then name it for what guests wait for, such as Walk-ins.",
+          "Pick the services it offers and how long each usually takes. Wait estimates come from these.",
+          "Set the opening hours in Opening hours. Outside them the line shows as closed and guests can't join.",
+          "Switch the queue on when you are ready. Guests can join as soon as it is open.",
+          "You can pause a line any time from Today without losing the people already waiting."
+        ]
+      },
+      "callNext": {
+        "title": "Call the next guest",
+        "body": [
+          "Open Today or the staff console and press Call next. The guest who has waited longest is called.",
+          "The guest sees their turn on their phone, and gets a message if they allowed one.",
+          "When they arrive, press Start. When you finish, press Done.",
+          "If they don't show up, mark them as a no-show so the line moves on.",
+          "Pressed the wrong thing? Use Undo straight after."
+        ]
+      },
+      "qr": {
+        "title": "Share the QR code",
+        "body": [
+          "Open QR poster to see the code that opens your join page.",
+          "Print the poster and put it where guests will see it: the door, the counter or the window.",
+          "Guests can scan it from any phone, and the printed code keeps working.",
+          "You can also copy the join link and send it in a message or add it to your website.",
+          "Guests don't need an account or an app. They scan, enter a first name and join."
+        ]
+      },
+      "sms": {
+        "title": "Text messages (SMS)",
+        "body": [
+          "Guests only get texts when they gave a phone number and agreed to be messaged.",
+          "Edit the wording of each message in Messages. Keep it short and say who it is from.",
+          "Texts are only sent on a paid plan. The Free plan shows guests their place on the page instead.",
+          "If a guest replies STOP they get no more texts from you.",
+          "Failed messages are listed under Message activity so you can follow up by phone."
+        ]
+      },
+      "billing": {
+        "title": "Billing and plans",
+        "body": [
+          "Open Billing to see your plan, your next invoice and your payment method.",
+          "You pay per location each month, or choose annual billing for a discount.",
+          "Add or remove a location and the next invoice adjusts. Only owners can change billing.",
+          "If a payment fails we email you so you can update the card.",
+          "Invoices and receipts are available from Billing for your accountant."
+        ]
+      },
+      "staff": {
+        "title": "Add staff and set roles",
+        "body": [
+          "Open Team and invite people by email. They get a link that lets them set a password.",
+          "Owners can change everything, including billing. Admins manage lines and people. Staff run the queue.",
+          "Pick the role when you invite someone. You can change it later from the same page.",
+          "Remove someone when they leave. They lose access straight away.",
+          "Open Roles to see exactly what each role can do."
+        ]
+      },
+      "hours": {
+        "title": "Opening hours",
+        "body": [
+          "Open Opening hours to set when each day starts and ends.",
+          "Times use your location's time zone, so check it under Location first.",
+          "You can add a closed day or special hours for a holiday.",
+          "Outside opening hours guests see that you're closed and can't join the line.",
+          "Staying open late? Pause the line from Today instead of changing your hours."
+        ]
+      },
+      "data": {
+        "title": "Delete guest or account data",
+        "body": [
+          "To erase one guest, open Data requests under Privacy and find them by the exact phone number or email they gave.",
+          "You can download everything held about them first, then press Erase.",
+          "Use Export data if you want a copy of your own records.",
+          "To close the whole account, owners can use the Danger zone. Everything is erased after 7 days, and until then you can call it off.",
+          "Questions about privacy? Use Contact support and we will help."
+        ]
+      }
+    }
+  }
+}
