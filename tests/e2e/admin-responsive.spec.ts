@@ -38,6 +38,10 @@ for (const route of adminRoutes()) {
   test(`AC1: ${route} fits at every width`, async ({ devices }) => {
     const { staff } = devices;
     for (const width of WIDTHS) {
+      // Re-navigating straight from a live admin page to the same URL cancels its in-flight loads;
+      // under parallel load that sometimes crashes WebKit's network process (libsoup), which blanks
+      // the page or fails goto with "WebKit encountered an internal error". Settle on a blank page first.
+      await staff.goto('about:blank');
       await staff.setViewportSize({ width, height: 900 });
       await staff.goto(route);
       await expect(staff.getByRole('main')).toBeVisible();

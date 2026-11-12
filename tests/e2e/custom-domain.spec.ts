@@ -91,6 +91,13 @@ test.describe('on a custom host', () => {
     );
   });
 
+  // The handlers above proxy requests the page may still have in flight when the test's last
+  // assertion passes; without this, a late route.fulfill fails ("Fetch response has been disposed")
+  // as the context closes.
+  test.afterEach(async ({ devices }) => {
+    await devices.guest.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
   test("AC1: / opens the join page of the host's location", async ({ devices }) => {
     const { guest } = devices;
     await guest.goto(`http://${HOST}/`);

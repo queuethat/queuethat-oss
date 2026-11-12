@@ -2,6 +2,8 @@ import { Badge, Button, Card, Checkbox, Input, PageHeader, Select, Skeleton } fr
 import { useQuery } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from '../../../../lib/translation.tsx';
+import { ExtensionSlot } from '../../../../extensions/ExtensionSlot.tsx';
+import { hasSharedSender } from '../../../../extensions/index.ts';
 import { useCurrentOrg } from '../../../auth/current.ts';
 import {
   CHANNELS,
@@ -20,6 +22,7 @@ import {
 interface Row {
   kind: string;
   provider: string;
+  mode: string;
   config: unknown;
   secret_hints: unknown;
   endpoint_id: string;
@@ -28,7 +31,7 @@ interface Row {
   enabled: boolean;
 }
 
-const SAVE_ERRORS = ['invalid_input', 'permission_denied'];
+const SAVE_ERRORS = ['platform_mode_unavailable', 'invalid_input', 'permission_denied'];
 
 /** `/admin/integrations` (3-PV3, #342): provider credentials, webhook URL, verification and the enable switch. */
 export function ProvidersPage() {
@@ -41,6 +44,7 @@ export function ProvidersPage() {
     <div className="flex flex-col gap-6 pb-8">
       <PageHeader title={t('title')} description={editable ? undefined : t('readOnly')} />
       {query.isError ? <p role="alert">{t('errors.unknown')}</p> : null}
+      <ExtensionSlot name="integrations.top" props={{ orgId: org.id, role: org.role }} />
       {CHANNELS.map((channel) => (
         <ChannelCard
           key={channel}
@@ -76,6 +80,8 @@ function ChannelCard({
   const hints = (row?.secret_hints as Record<string, string> | undefined) ?? {};
   const [provider, setProvider] = useState(row?.provider ?? PROVIDERS[channel][0]!);
   const fields = fieldsFor(channel, provider);
+  // A business sends through its own provider account, or the deployment's shared sender when it has one.
+  const [mode, setMode] = useState(row?.mode ?? 'own');
   const [config, setConfig] = useState<Record<string, string>>(stored);
   const [secrets, setSecrets] = useState<Record<string, string>>({});
   const [copied, setCopied] = useState(false);
@@ -85,7 +91,7 @@ function ChannelCard({
     const given = Object.fromEntries(Object.entries(secrets).filter(([, v]) => v !== ''));
     const keep = Object.fromEntries(fields.config.map((k) => [k, config[k] ?? '']));
     save.mutate(
-      { kind: channel, provider, mode: 'own', config: keep, secrets: given },
+      { kind: channel, provider, mode, config: keep, secrets: mode === 'own' ? given : {} },
       { onSuccess: () => setSecrets({}) },
     );
   };
@@ -118,6 +124,17 @@ function ChannelCard({
             </option>
           ))}
         </Select>
+        {hasSharedSender() || mode === 'platform' ? (
+          <Select
+            label={t('mode.label')}
+            value={mode}
+            disabled={!editable}
+            onChange={(e) => setMode(e.target.value)}
+          >
+            <option value="own">{t('mode.own')}</option>
+            <option value="platform">{t('mode.platform')}</option>
+          </Select>
+        ) : null}
         {fields.config.map((key) => (
           <Input
             key={key}
@@ -127,21 +144,23 @@ function ChannelCard({
             onChange={(e) => setConfig({ ...config, [key]: e.target.value })}
           />
         ))}
-        {fields.secrets.map((key) => (
-          <Input
-            key={key}
-            type="password"
-            autoComplete="off"
-            label={t(`secretsBy.${provider}.${key}` as 'secrets.auth_token', {
-              defaultValue: t(`secrets.${key}` as 'secrets.auth_token'),
-            })}
-            hint={hints[key] ? t('secretStored', { last4: hints[key] }) : t('secretEmpty')}
-            placeholder={hints[key] ? `****${hints[key]}` : ''}
-            readOnly={!editable}
-            value={secrets[key] ?? ''}
-            onChange={(e) => setSecrets({ ...secrets, [key]: e.target.value })}
-          />
-        ))}
+        {mode === 'own'
+          ? fields.secrets.map((key) => (
+              <Input
+                key={key}
+                type="password"
+                autoComplete="off"
+                label={t(`secretsBy.${provider}.${key}` as 'secrets.auth_token', {
+                  defaultValue: t(`secrets.${key}` as 'secrets.auth_token'),
+                })}
+                hint={hints[key] ? t('secretStored', { last4: hints[key] }) : t('secretEmpty')}
+                placeholder={hints[key] ? `****${hints[key]}` : ''}
+                readOnly={!editable}
+                value={secrets[key] ?? ''}
+                onChange={(e) => setSecrets({ ...secrets, [key]: e.target.value })}
+              />
+            ))
+          : null}
         {failure ? <p role="alert">{t(`errors.${failure}` as 'errors.unknown')}</p> : null}
         {editable ? (
           <div>

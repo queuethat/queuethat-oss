@@ -2,7 +2,7 @@
 -- (who, when, visit; never values), honours queue scope (M1) and denies other tenants.
 begin;
 \ir ../helpers/_setup.psql
-select plan(16);
+select plan(29);
 select tests.create_world();
 select tests.new_id(k) from unnest(array['s1', 'queue_a2']) k;
 
@@ -69,6 +69,34 @@ select tests.act_as('other_owner');
 select throws_ok($$ select api.get_visit_answers(tests.id('va')) $$, 'P0001', 'not_found', 'another org cannot read the answers');
 select tests.as_anon();
 select throws_ok($$ select api.get_visit_answers(tests.id('va')) $$, '42501', null, 'a guest cannot call it');
+
+-- F7b (#1396): the direct SELECT is revoked, so the audited function is the only read. Every member role is
+-- refused on both tables (a REST read would otherwise skip the access row), and the function still works.
+select tests.as_postgres();
+select is((select count(*)::int from app.visit_answers where visit_id = tests.id('va')), 1, 'fixture: the answers exist');
+select ok((select count(*) from app.form_responses) > 0, 'fixture: a stored response exists');
+select is(has_table_privilege('authenticated', 'app.visit_answers', 'select'), false, 'authenticated has no SELECT on visit_answers');
+select is(has_table_privilege('authenticated', 'app.form_responses', 'select'), false, 'authenticated has no SELECT on form_responses');
+select is(has_table_privilege('anon', 'app.visit_answers', 'select') or has_table_privilege('anon', 'app.form_responses', 'select'),
+  false, 'anon has none either');
+select is((select count(*)::int from pg_policies where schemaname = 'app'
+           and tablename in ('visit_answers', 'form_responses') and cmd in ('SELECT', 'ALL') and qual is distinct from 'false'), 0,
+  'the only SELECT policy left on either table admits no row');
+select tests.act_as('owner');
+select throws_ok($$ select * from app.visit_answers $$, '42501', null, 'owner: direct read of visit_answers is refused');
+select tests.act_as('admin');
+select throws_ok($$ select * from app.form_responses $$, '42501', null, 'admin: direct read of form_responses is refused');
+select tests.act_as('manager');
+select throws_ok($$ select answers from app.visit_answers $$, '42501', null, 'manager: direct read of visit_answers is refused');
+select tests.act_as('staff');
+select throws_ok($$ select answers from app.form_responses $$, '42501', null, 'staff: direct read of form_responses is refused');
+select tests.act_as('other_owner');
+select throws_ok($$ select * from app.visit_answers $$, '42501', null, 'another org: refused too');
+select tests.act_as('owner');
+select lives_ok($$ select api.get_visit_answers(tests.id('va')) $$, 'the owner still reads through the function');
+select tests.act_as('staff');
+select is((select api.get_visit_answers(tests.id('va')) -> 'answers'), '{"reason": "cut", "triage": "urgent-canary"}'::jsonb,
+  'and staff still read the answers through it');
 
 select * from finish();
 rollback;

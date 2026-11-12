@@ -1,10 +1,19 @@
 import { extensions } from './installed.ts';
-import type { ExtensionAdminPage, ExtensionBanner, WebExtensions } from './types.ts';
+import type {
+  ExtensionAdminPage,
+  ExtensionBanner,
+  ExtensionSlotName,
+  ExtensionSlots,
+  WebExtensions,
+} from './types.ts';
 
 export type {
   ExtensionAdminPage,
   ExtensionBanner,
   ExtensionNavGroup,
+  ExtensionSlotName,
+  ExtensionSlotProps,
+  ExtensionSlots,
   WebExtensions,
 } from './types.ts';
 
@@ -40,4 +49,17 @@ export function bannersFor(
   set: WebExtensions = installedExtensions(),
 ): ExtensionBanner[] {
   return set.banners.filter((b) => b.areas.includes(area));
+}
+
+/** The loader a deployment installed for a slot, or undefined. */
+export function slotLoader<K extends ExtensionSlotName>(
+  name: K,
+  set: WebExtensions = installedExtensions(),
+): ExtensionSlots[K] | undefined {
+  return set.slots?.[name];
+}
+
+/** True when the deployment offers its shared sender on the Integrations page. */
+export function hasSharedSender(set: WebExtensions = installedExtensions()): boolean {
+  return set.sharedSender === true;
 }
