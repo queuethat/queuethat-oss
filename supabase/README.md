@@ -59,6 +59,11 @@ tenant function, so changes made here keep reaching it.
 | `private.ext_entitlement(org, key)` | `private.entitlement`, between the org override and the default | null |
 | `private.ext_is_blocked(org, phone, email)` | `private.is_blocked` | false |
 | `private.ext_support_grant(org)` | `private.support_grant` (so `private.has_role` for non-members) | no grant |
+| `private.ext_bills_shared_sms(org)` | `private.channel_missing`: clears `platform_requires_billing` | false |
+| `private.ext_report_incident(org, kind, title, description, detected_at, categories, key)` | `api.report_incident` when the business asks to tell the platform | null: a plain log entry |
+| `private.ext_support_context(org)` | `api.contact_support`: extra facts in the request and email | `{}` |
+| `private.ext_purge_keep_tables()` | `ops.purge_deleted_orgs`: tables to leave alone | none |
+| `private.ext_price_changed(org, notification, old, new)` | `api.apply_provider_price` when a quoted cost changes | nothing |
 
 Rules: a hook's name, arguments and return type never change, and no migration here redefines a
 hook once it exists (that would overwrite a deployment's body). Add a new hook rather than change
