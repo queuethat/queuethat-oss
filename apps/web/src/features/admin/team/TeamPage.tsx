@@ -17,6 +17,8 @@ import { useState, type FormEvent, type ReactNode } from 'react';
 import { useTranslation } from '../../../lib/translation.tsx';
 import { ScreenEmpty } from '../../../components/ScreenEmpty.tsx';
 import { useSession } from '../../auth/api.ts';
+import { ExtensionSlot } from '../../../extensions/ExtensionSlot.tsx';
+import { isLimitReached, limitOf } from '../limits.ts';
 import { useCurrentLocation, useCurrentOrg } from '../../auth/current.ts';
 import {
   customRolesQuery,
@@ -508,9 +510,22 @@ function InviteDialog({ orgId, role }: { orgId: string; role: string }) {
           {canPickLines ? (
             <LinePicker orgId={orgId} value={queueIds} onChange={setQueueIds} />
           ) : null}
-          <p role="alert" className="font-medium text-danger-strong empty:hidden">
-            {failure ? t(failure) : null}
-          </p>
+          {isLimitReached(invite.error) ? (
+            <ExtensionSlot
+              name="limits.reached"
+              props={{ kind: 'members', limit: limitOf(invite.error), role }}
+            >
+              <p role="alert" className="font-medium text-danger-strong">
+                {limitOf(invite.error) === undefined
+                  ? t('errors.limitReached')
+                  : t('errors.limitReachedCount', { count: limitOf(invite.error) })}
+              </p>
+            </ExtensionSlot>
+          ) : (
+            <p role="alert" className="font-medium text-danger-strong empty:hidden">
+              {failure ? t(failure) : null}
+            </p>
+          )}
           <div className="flex justify-end gap-3">
             <Button variant="secondary" onClick={close}>
               {t('invite.cancel')}

@@ -60,6 +60,19 @@ describe('AddLocationPage', () => {
     expect(m.select).toHaveBeenCalledWith('loc-2');
   });
 
+  it('explains a reached location limit in words, with the number when the database gives it', async () => {
+    m.rpc.mockResolvedValue({
+      data: null,
+      error: { code: 'P0001', message: 'plan_limit_reached', details: '2' },
+    });
+    renderPage();
+    await userEvent.type(screen.getByLabelText(/location name/i), 'Third');
+    await userEvent.click(screen.getByRole('button', { name: 'Add location' }));
+    expect(await screen.findByText(/can have 2 locations/i)).toBeTruthy();
+    expect(screen.queryByText(/plan_limit_reached/)).toBeNull();
+    expect(m.navigate).not.toHaveBeenCalled();
+  });
+
   it('explains a taken slug in words', async () => {
     m.rpc.mockResolvedValue({ data: null, error: { code: 'P0001', message: 'slug_taken' } });
     renderPage();

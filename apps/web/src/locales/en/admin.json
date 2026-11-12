@@ -59,6 +59,9 @@
     "open": "Add a location",
     "errors": {
       "invalid_timezone": "Pick a time zone from the list.",
+      "limitReached": "This organization has all the locations it can have.",
+      "limitReachedCount_one": "This organization can have {{count}} location, and it has it.",
+      "limitReachedCount_other": "This organization can have {{count}} locations, and it has them all.",
       "invalid_input": "Check the details: use a name of 120 characters or fewer and a web address of lowercase letters, numbers and hyphens.",
       "slug_taken": "That join page address is already used. Try another, or leave it blank.",
       "permission_denied": "Only admins and owners can add a location.",
