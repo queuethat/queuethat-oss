@@ -46,15 +46,17 @@ export interface MenuProps {
   /** Trigger content; defaults to an ellipsis icon. */
   trigger?: ReactNode;
   align?: 'start' | 'end';
+  /** Extra classes for the trigger button, e.g. a taller target on tablets. */
+  triggerClassName?: string;
 }
 
 /**
  * Action menu (WAI-ARIA menu button): Enter, Space or ArrowDown on the trigger opens it; Arrow
  * keys, Home, End and typeahead move; Enter or Space picks; Escape closes and returns focus.
- * Items are 48px tall. Row-overflow pattern: keep the one common action as a visible button and
+ * Items are 48px tall (56px from the tablet breakpoint). Row-overflow pattern: keep the one common action as a visible button and
  * put the rest here; destructive items carry `confirm`, which opens `ConfirmDialog`.
  */
-export function Menu({ label, items, trigger, align = 'end' }: MenuProps) {
+export function Menu({ label, items, trigger, align = 'end', triggerClassName }: MenuProps) {
   const [open, setOpen] = useState(false);
   const [confirming, setConfirming] = useState<MenuConfirm | null>(null);
   const root = useRef<HTMLDivElement>(null);
@@ -147,6 +149,7 @@ export function Menu({ label, items, trigger, align = 'end' }: MenuProps) {
       <Button
         ref={button}
         variant="secondary"
+        className={triggerClassName}
         aria-label={label}
         aria-haspopup="menu"
         aria-expanded={open}
@@ -180,7 +183,7 @@ export function Menu({ label, items, trigger, align = 'end' }: MenuProps) {
               disabled={item.disabled}
               onClick={() => pick(item)}
               className={cx(
-                'flex min-h-target w-full items-center gap-3 rounded-control px-3 text-left hover:bg-secondary-hover focus-visible:bg-secondary-hover disabled:opacity-60',
+                'flex min-h-target w-full items-center md:min-h-target-big gap-3 rounded-control px-3 text-left hover:bg-secondary-hover focus-visible:bg-secondary-hover disabled:opacity-60',
                 item.confirm && 'text-danger',
               )}
             >

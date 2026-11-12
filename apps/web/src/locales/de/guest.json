@@ -1,0 +1,25 @@
+{
+  "unsubscribe": {
+    "title": "Diese E-Mails beenden",
+    "body": "Sie erhalten keine E-Mails mehr von diesem Unternehmen zu Warteschlangen-Besuchen. Wenn Sie erneut einer seiner Warteschlangen beitreten, erhalten Sie keine E-Mails.",
+    "confirm": "E-Mails beenden",
+    "done": {
+      "title": "Sie erhalten diese E-Mails nicht mehr",
+      "body": "Sie können diese Seite schließen."
+    },
+    "invalid": {
+      "title": "Dieser Link funktioniert nicht",
+      "body": "Verwenden Sie den Link aus der neuesten E-Mail oder antworten Sie darauf und bitten Sie das Unternehmen, sie zu beenden."
+    },
+    "failed": "Etwas ist schiefgegangen. Bitte versuchen Sie es erneut."
+  },
+  "branding": {
+    "terms": "AGB",
+    "privacy": "Datenschutzerklärung",
+    "poweredBy": "Bereitgestellt von {{name}}",
+    "source": "Quellcode"
+  },
+  "language": {
+    "label": "Sprache"
+  }
+}

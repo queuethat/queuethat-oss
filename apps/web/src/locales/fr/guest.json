@@ -1,0 +1,25 @@
+{
+  "unsubscribe": {
+    "title": "Arrêter ces e-mails",
+    "body": "Vous ne recevrez plus d'e-mails de cette entreprise concernant vos visites en file d'attente. Si vous rejoignez de nouveau l'une de ses files, vous ne recevrez pas d'e-mail.",
+    "confirm": "Arrêter les e-mails",
+    "done": {
+      "title": "Vous ne recevrez plus ces e-mails",
+      "body": "Vous pouvez fermer cette page."
+    },
+    "invalid": {
+      "title": "Ce lien ne fonctionne pas",
+      "body": "Utilisez le lien du dernier e-mail, ou répondez-y pour demander à l'entreprise d'arrêter."
+    },
+    "failed": "Une erreur s'est produite. Veuillez réessayer."
+  },
+  "branding": {
+    "terms": "Conditions",
+    "privacy": "Politique de confidentialité",
+    "poweredBy": "Propulsé par {{name}}",
+    "source": "Code source"
+  },
+  "language": {
+    "label": "Langue"
+  }
+}

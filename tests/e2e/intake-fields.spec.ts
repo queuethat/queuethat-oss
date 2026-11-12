@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { pickRowAction } from './support/console.ts';
 import { demo } from '../fixtures/demo.ts';
 import { expect, expectNoSeriousA11yViolations, LIVE_TIMEOUT_MS, test } from './fixtures.ts';
 import { supabaseEnv } from './support/env.ts';
@@ -89,7 +90,7 @@ test('AC3: staff fill a staff-only field and another tablet sees it within 3 s',
   for (const page of [staff, other]) {
     await page.goto(`/staff?queue=${queue.id}`);
     await expect(page.locator('[data-state="live"]')).toBeVisible({ timeout: LIVE_TIMEOUT_MS });
-    await page.getByRole('button', { name: `Details for ${ticket}` }).click();
+    await pickRowAction(page, 'Details', ticket);
     await expect(page.getByTestId('visit-answers')).toContainText('Colour');
   }
 

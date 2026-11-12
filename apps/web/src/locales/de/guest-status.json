@@ -1,0 +1,150 @@
+{
+  "status": {
+    "title": "Ihr Platz in der Warteschlange",
+    "group": {
+      "label": "Personen in Ihrer Gruppe",
+      "tab": "{{name}} · {{ticket}}"
+    },
+    "leave": {
+      "trigger": "Warteschlange verlassen",
+      "title": "Warteschlange verlassen?",
+      "body": "Sie verlieren Ihren Platz. Um zurückzukehren, müssen Sie sich erneut am Ende der Warteschlange anstellen.",
+      "confirm": "Ja, verlassen",
+      "cancel": "In der Warteschlange bleiben",
+      "failed": "Die Warteschlange konnte nicht verlassen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+    },
+    "undoLeave": {
+      "prompt": "Versehentlich verlassen? Sie können Ihren Platz noch zurückbekommen.",
+      "action": "Meinen Platz zurückholen",
+      "failed": "Sie konnten nicht wieder eingereiht werden. Wenn es schon einige Minuten her ist, treten Sie erneut bei."
+    },
+    "joinAgain": "Erneut beitreten",
+    "alert": {
+      "soundHint": "Möchten Sie einen Ton, wenn Sie an der Reihe sind? Ihr Handy braucht dafür zuerst einen Tipp.",
+      "enableSound": "Tonsignale einschalten",
+      "soundOn": "Tonsignale sind an. Lassen Sie diese Seite geöffnet.",
+      "title": "Sie sind an der Reihe",
+      "goTo": "Gehen Sie zu {{counter}}",
+      "goToDesk": "Gehen Sie zum Empfang",
+      "dismiss": "Verstanden"
+    },
+    "loading": "Ihr Platz in der Warteschlange wird geladen",
+    "notFound": {
+      "title": "Dieser Link ist abgelaufen",
+      "body": "Links funktionieren 12 Stunden nach Ende eines Besuchs nicht mehr. Fragen Sie das Personal, wenn Sie glauben, noch in der Warteschlange zu sein."
+    },
+    "loadFailed": {
+      "title": "Ihr Platz in der Warteschlange konnte nicht geladen werden",
+      "body": "Prüfen Sie Ihre Verbindung. Diese Seite versucht es weiter."
+    },
+    "ticket": "Ihr Ticket",
+    "position_one": "Sie sind Nummer {{count}} in der Warteschlange",
+    "position_other": "Sie sind Nummer {{count}} in der Warteschlange",
+    "ahead_one": "{{count}} Person vor Ihnen",
+    "ahead_other": "{{count}} Personen vor Ihnen",
+    "wait": "Geschätzte Wartezeit",
+    "asOf": "Zuletzt aktualisiert {{time}}. Verbindung wird wiederhergestellt…",
+    "keepOpen": "Lassen Sie diese Seite geöffnet. iPhones benachrichtigen Sie nicht, wenn sie geschlossen ist; schauen Sie also hier nach.",
+    "textAlerts": {
+      "title": "Per SMS benachrichtigt werden, wenn Sie an der Reihe sind",
+      "failed": "Sie sind beigetreten, aber SMS-Benachrichtigungen sind aus. Setzen Sie das Häkchen und versuchen Sie es erneut.",
+      "turnOn": "SMS-Benachrichtigungen einschalten",
+      "turningOn": "SMS-Benachrichtigungen werden eingeschaltet",
+      "error": "SMS-Benachrichtigungen konnten nicht eingeschaltet werden. Versuchen Sie es erneut."
+    },
+    "phoneVerify": {
+      "title": "Bestätigen Sie Ihre Telefonnummer",
+      "hint": "Wir schicken Ihnen einen 6-stelligen Code per SMS, damit wir wissen, dass Benachrichtigungen Sie erreichen.",
+      "send": "Code per SMS senden",
+      "sending": "Code wird gesendet",
+      "resend": "Neuen Code senden",
+      "codeLabel": "6-stelliger Code",
+      "confirm": "Bestätigen",
+      "confirming": "Code wird geprüft",
+      "sent": "Code gesendet. Er ist 10 Minuten gültig.",
+      "invalid": "Dieser Code hat nicht funktioniert. Prüfen Sie ihn oder fordern Sie einen neuen an.",
+      "verified": "Ihre Telefonnummer ist bestätigt.",
+      "waiting": "Eine Sicherheitsprüfung wird vorbereitet. Einen Moment bitte.",
+      "errors": {
+        "rate_limited": "Zu viele Versuche. Bitte warten Sie eine Weile und versuchen Sie es erneut.",
+        "captcha_failed": "Die Sicherheitsprüfung ist fehlgeschlagen. Laden Sie die Seite neu und versuchen Sie es erneut.",
+        "consent_required": "Schalten Sie zuerst SMS-Benachrichtigungen ein.",
+        "sms_unavailable": "Dieses Unternehmen versendet derzeit keine SMS.",
+        "unknown": "Etwas ist schiefgegangen. Versuchen Sie es erneut."
+      }
+    },
+    "push": {
+      "enable": "Benachrichtigen, wenn ich an der Reihe bin",
+      "enabling": "Benachrichtigungen werden eingeschaltet",
+      "on": "Benachrichtigungen sind an. Wir informieren Sie, wenn Sie an der Reihe sind, auch bei geschlossener Seite.",
+      "homeScreen": "Auf dem iPhone müssen Sie diese Seite zum Home-Bildschirm hinzufügen: Tippen Sie auf Teilen, dann auf „Zum Home-Bildschirm“, öffnen Sie sie von dort und tippen Sie auf „Benachrichtigen“. Oder lassen Sie diese Seite geöffnet und schauen Sie hier nach.",
+      "denied": "Benachrichtigungen sind für diese Website blockiert. Lassen Sie diese Seite geöffnet oder erlauben Sie Benachrichtigungen in den Browsereinstellungen.",
+      "failed": "Benachrichtigungen konnten nicht eingeschaltet werden. Lassen Sie diese Seite geöffnet und schauen Sie hier nach.",
+      "prompt": "Erlauben Sie Benachrichtigungen in der Browserabfrage.",
+      "slow": "Benachrichtigungen werden noch eingerichtet. Das kann bis zu einer Minute dauern.",
+      "timeout": "Das Einschalten der Benachrichtigungen hat zu lange gedauert. Tippen Sie erneut auf „Benachrichtigen“ oder lassen Sie diese Seite geöffnet und schauen Sie hier nach."
+    },
+    "connection": {
+      "live": "Live",
+      "connecting": "Verbindung wird hergestellt",
+      "offline": "Offline"
+    },
+    "state": {
+      "expected": "Gebucht",
+      "waiting": "Wartend",
+      "called": "Aufgerufen",
+      "serving": "Wird bedient",
+      "served": "Erledigt",
+      "no_show": "Verpasst",
+      "cancelled": "Warteschlange verlassen",
+      "removed": "Entfernt",
+      "expired": "Abgelaufen",
+      "scheduled": "Geplant"
+    },
+    "message": {
+      "called": "Sie sind an der Reihe. Bitte gehen Sie zu {{counter}}.",
+      "calledNoCounter": "Sie sind an der Reihe. Bitte gehen Sie zum Empfang.",
+      "serving": "Sie werden bedient.",
+      "served": "Danke für Ihren Besuch bei {{location}}.",
+      "no_show": "Wir haben Sie aufgerufen, konnten Sie aber nicht finden. Fragen Sie das Personal, wenn Sie noch da sind.",
+      "cancelled": "Sie haben die Warteschlange verlassen.",
+      "removed": "Das Personal hat Sie aus der Warteschlange entfernt. Fragen Sie nach, falls das ein Irrtum ist.",
+      "expired": "Dieser Besuch endete, als {{location}} für den Tag schloss.",
+      "expected": "Sie sind gebucht. Checken Sie bei Ankunft ein.",
+      "later": "Sie treten um {{time}} der Warteschlange bei. Bis dahin können Sie von hier aus austreten."
+    },
+    "alerts": {
+      "toggle": "Benachrichtigungen auswählen",
+      "title": "Benachrichtigungen",
+      "intro": "Wählen Sie, worüber wir Sie benachrichtigen. Sonst wird nichts gesendet.",
+      "saveFailed": "Die Änderung konnte nicht gespeichert werden. Ihre Benachrichtigungen sind unverändert.",
+      "calledOffWarning": "Ohne diese Benachrichtigung erfahren Sie nicht, wann Sie an der Reihe sind. Lassen Sie diese Seite geöffnet und achten Sie auf Ihr Ticket.",
+      "trigger": {
+        "called": "Ich bin an der Reihe",
+        "almost_up": "Ich bin bald dran",
+        "position_changed": "Mein Platz in der Warteschlange ändert sich",
+        "eta_changed": "Meine Wartezeitschätzung ändert sich",
+        "broadcast": "Ankündigungen des Standorts",
+        "removed": "Ich werde aus der Warteschlange entfernt",
+        "served": "Mein Besuch ist beendet",
+        "joined": "Ich trete der Warteschlange bei",
+        "no_show_warning": "Mein Platz wird gleich vergeben"
+      }
+    },
+    "telegram": {
+      "enable": "Updates über Telegram erhalten",
+      "opening": "Telegram wird geöffnet",
+      "opened": "Telegram ist geöffnet. Tippen Sie dort auf „Start“, dann erhalten Sie Ihre Updates in diesem Chat. Senden Sie jederzeit /stop, um sie zu beenden.",
+      "unavailable": "Telegram-Updates sind derzeit nicht verfügbar. Lassen Sie diese Seite geöffnet und schauen Sie hier nach.",
+      "failed": "Telegram konnte nicht geöffnet werden. Versuchen Sie es erneut."
+    },
+    "nowIn": "Sie sind jetzt in {{queue}}.",
+    "pos": {
+      "paid": "Vielen Dank. Ihre Zahlung ist eingegangen."
+    },
+    "offline": {
+      "title": "Sie sind offline",
+      "body": "Ihre letzte Position wird weiter angezeigt. Sie wird aktualisiert, sobald Sie wieder verbunden sind."
+    }
+  }
+}

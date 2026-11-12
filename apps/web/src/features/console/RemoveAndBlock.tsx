@@ -1,4 +1,4 @@
-import { ConfirmDestructive, Input, Select } from '@qm/ui';
+import { ConfirmDialog, Input, Select } from '@qm/ui';
 import { useState } from 'react';
 import { useTranslation } from '../../lib/translation.tsx';
 import type { BlockDuration, ConsoleVisit } from './api.ts';
@@ -12,22 +12,27 @@ const DURATIONS: { key: 'day' | 'month' | 'forever'; days: BlockDuration }[] = [
 /**
  * "Remove and block" for managers: removes the visit and blocks its phone, email and device for
  * a while (2P-PRV6, #193). The block can be lifted under Blocks, so a mistake is reversible.
+ * The dialog is controlled: the row's overflow menu opens it, and nothing fires before the
+ * separate confirm tap (I-9).
  */
 export function RemoveAndBlock({
   visit,
   onBlock,
+  onClose,
 }: {
   visit: ConsoleVisit;
+  onClose: () => void;
   onBlock: (visit: ConsoleVisit, reason: string, days: BlockDuration) => Promise<unknown>;
 }) {
   const { t } = useTranslation('staff');
   const [reason, setReason] = useState('');
   const [duration, setDuration] = useState<(typeof DURATIONS)[number]['key']>('day');
   return (
-    <ConfirmDestructive
-      triggerLabel={t('console.block.trigger')}
-      triggerAriaLabel={t('console.block.triggerFor', { ticket: visit.ticket })}
-      triggerVariant="secondary"
+    <ConfirmDialog
+      open
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
       title={t('console.block.title', { ticket: visit.ticket })}
       description={t('console.block.body')}
       confirmLabel={t('console.block.confirm')}
@@ -35,6 +40,7 @@ export function RemoveAndBlock({
       confirmDisabled={reason.trim() === ''}
       onConfirm={() => onBlock(visit, reason, DURATIONS.find((d) => d.key === duration)!.days)}
     >
+      <GuestLine visit={visit} />
       <Input
         label={t('console.block.reason')}
         hint={t('console.block.reasonHint')}
@@ -53,6 +59,19 @@ export function RemoveAndBlock({
           </option>
         ))}
       </Select>
-    </ConfirmDestructive>
+    </ConfirmDialog>
+  );
+}
+
+/** Names the guest in a destructive confirmation, so staff see who they are acting on (I-9). */
+export function GuestLine({ visit }: { visit: ConsoleVisit }) {
+  const { t } = useTranslation('staff');
+  return (
+    <p className="font-medium" data-testid="confirm-guest">
+      {t('console.confirm.guest', {
+        ticket: visit.ticket,
+        name: visit.name ?? t('console.noName'),
+      })}
+    </p>
   );
 }
