@@ -5,6 +5,7 @@
 !tsconfig.base.json
 !apps/web
 !packages
+!supabase/catalog/waivers
 !deploy/selfhost/Caddyfile
 !deploy/selfhost/check-secrets.sh
 !deploy/selfhost/known-demo-keys.sha256

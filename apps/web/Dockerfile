@@ -14,6 +14,8 @@ COPY packages/db-types/package.json packages/db-types/
 RUN pnpm install --frozen-lockfile --filter @qm/web...
 COPY apps/web apps/web
 COPY packages packages
+# The starter waivers that forms/waivers/starters.ts bundles.
+COPY supabase/catalog/waivers supabase/catalog/waivers
 # No VITE_* values: the build must be the same for everyone. `build` also fails on a leaked secret.
 ENV APP_VERSION=
 RUN pnpm --filter @qm/web build
