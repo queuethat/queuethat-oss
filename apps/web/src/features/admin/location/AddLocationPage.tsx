@@ -4,6 +4,8 @@ import { useState, type FormEvent } from 'react';
 import { useTranslation } from '../../../lib/translation.tsx';
 import { useCurrentOrg } from '../../auth/current.ts';
 import { browserTimeZone, timeZones } from '../../onboarding/api.ts';
+import { ExtensionSlot } from '../../../extensions/ExtensionSlot.tsx';
+import { isLimitReached, limitOf } from '../limits.ts';
 import { useAddLocation } from './addApi.ts';
 
 const KNOWN_ERRORS = ['invalid_timezone', 'invalid_input', 'slug_taken', 'permission_denied'];
@@ -25,6 +27,7 @@ export function AddLocationPage() {
   const zoneInvalid = !zones.includes(timeZone);
 
   const code = add.error ? add.error.message : null;
+  const limited = isLimitReached(add.error);
   const failure = code
     ? `addLocation.errors.${KNOWN_ERRORS.includes(code) ? code : 'unknown'}`
     : null;
@@ -44,9 +47,22 @@ export function AddLocationPage() {
         title={t('addLocation.title')}
         description={canAdd ? t('addLocation.intro') : t('addLocation.adminsOnly')}
       />
-      <p role="alert" className="font-medium text-danger-strong empty:hidden">
-        {failure ? t(failure as 'addLocation.errors.unknown') : null}
-      </p>
+      {limited ? (
+        <ExtensionSlot
+          name="limits.reached"
+          props={{ kind: 'locations', limit: limitOf(add.error), role: org?.role }}
+        >
+          <p role="alert" className="font-medium text-danger-strong">
+            {limitOf(add.error) === undefined
+              ? t('addLocation.errors.limitReached')
+              : t('addLocation.errors.limitReachedCount', { count: limitOf(add.error) })}
+          </p>
+        </ExtensionSlot>
+      ) : (
+        <p role="alert" className="font-medium text-danger-strong empty:hidden">
+          {failure ? t(failure as 'addLocation.errors.unknown') : null}
+        </p>
+      )}
       <form className="flex flex-col gap-4" onSubmit={submit}>
         <Input
           label={t('location.name')}
