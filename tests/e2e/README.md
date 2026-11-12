@@ -55,6 +55,34 @@ suite like any other.
 access. Code that spec reaches must not import the
 service-role modules at load time: `supabaseEnv()` throws on `serviceRoleKey` in pilot mode.
 
+### Why the pilot runs only that journey
+
+`playwright.pilot.config.ts` matches `day-in-the-shop.spec.ts` alone, so the other specs never run
+against a deployed shop. The ones that start with
+`test.skip(process.env.E2E_PILOT === '1', 'needs the service role ...')` (booking, planning,
+guest forms, provider picker, console lines and the like) are a guard for someone pointing that
+config at them by hand; they are not coverage the pilot is missing. Making them run there is not
+sound, for three reasons:
+
+- Their fixtures need things a deployed project gives only to the service role or to a mailbox.
+  `bookableLocation()` in `support/booking.ts` confirms a new owner and a staff user through the
+  Auth admin API (a deployed project has no test inbox to click a confirmation link in), then
+  inserts the staff membership, availability rules, booking policy and capacity rules with the
+  service role. Many specs also read Mailpit, move the clock or run SQL directly (`support/mail.ts`,
+  `clock.ts`, `sms.ts`).
+- They leave data behind. Each spec creates an organization of its own, and appointments and visits
+  are never hard-deleted (I-1), so every run would add permanent orgs and bookings to the project
+  the pilot is meant to check. The pilot journey is limited to one queue and one TV pairing that it
+  archives and revokes at the end.
+- Their assertions assume an empty, known shop (one seat, hourly slots 08:00 to 20:00, no other
+  bookings), which is why they build their own. Pointed at the pilot's shop they would fail on its
+  real services and hours or change them.
+
+Booking and the other skipped areas are covered by the full local and `pnpm ci:local` runs on a
+disposable database. If a pilot-safe booking check is wanted later, add it as a second journey
+that reuses the shop's existing services and cleans up after itself, as `support/shop.ts` does,
+rather than lifting these skips.
+
 Import `test` and `expect` from `./fixtures.ts`, not from `@playwright/test`.
 
 - `devices` gives three pages in one test, each in its own browser context: `guest` (phone,
