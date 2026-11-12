@@ -30,7 +30,7 @@ function job(id: string, overrides: Partial<OutboxJob> = {}): OutboxJob {
 
 function setup(
   batches: OutboxJob[][],
-  opts: { reserve?: (id: string) => 'allowed' | 'cap_reached' | 'country_blocked' | 'budget_reached'; sms?: boolean; relevant?: (id: string) => boolean; fail?: boolean; secret?: string; stop?: boolean | 'page-only'; appUrl?: string } = {},
+  opts: { reserve?: (id: string) => string; sms?: boolean; relevant?: (id: string) => boolean; fail?: boolean; secret?: string; stop?: boolean | 'page-only'; appUrl?: string } = {},
 ) {
   const sent: OutboundMessage[] = [];
   const reports = new Map<string, OutboxReport>();
@@ -347,6 +347,14 @@ Deno.test('a paid send the limits refuse never reaches the provider', async () =
   assert.equal(reports.get('ok')?.status, 'sent');
   assert.deepEqual(sent.map((m) => m.outboxId), ['ok']);
   assert.deepEqual(reserved.sort(), ['ok', 'over']);
+});
+
+Deno.test("a deployment's own refusal code is kept as the row's error code", async () => {
+  const sms = (id: string) => job(id, { channel: 'sms', recipient: { kind: 'address', value: '+447700900123' } });
+  const { run, sent, reports } = setup([[sms('held')]], { reserve: () => 'insufficient_credit' });
+  await run();
+  assert.deepEqual(reports.get('held'), { status: 'suppressed', error_code: 'insufficient_credit' });
+  assert.deepEqual(sent, []);
 });
 
 Deno.test('email and rows without consent are not reserved', async () => {

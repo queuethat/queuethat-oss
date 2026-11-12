@@ -64,6 +64,8 @@ tenant function, so changes made here keep reaching it.
 | `private.ext_support_context(org)` | `api.contact_support`: extra facts in the request and email | `{}` |
 | `private.ext_purge_keep_tables()` | `ops.purge_deleted_orgs`: tables to leave alone | none |
 | `private.ext_price_changed(org, notification, old, new)` | `api.apply_provider_price` when a quoted cost changes | nothing |
+| `private.ext_send_refusal(org, channel, reserved)` | `api.reserve_send`: refuses a paid send before anything is counted | null |
+| `private.ext_send_reported(notification, org, channel, status, cost, segments)` | `api.report_outbox_result` after each report on a claimed row | nothing |
 
 Rules: a hook's name, arguments and return type never change, and no migration here redefines a
 hook once it exists (that would overwrite a deployment's body). Add a new hook rather than change
