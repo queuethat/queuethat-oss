@@ -1,0 +1,21 @@
+{
+  "info": {
+    "title": "À propos de ce lieu",
+    "directions": "Obtenir l'itinéraire",
+    "call": "Appeler le {{phone}}",
+    "openUntil": "Ouvert jusqu'à {{time}}",
+    "openUntilLater": "Ouvert jusqu'à {{day}} {{time}}",
+    "opensAt": "Ouvre à {{time}}",
+    "opensAtLater": "Ouvre {{day}} à {{time}}"
+  },
+  "qr": {
+    "title": "À présenter au comptoir",
+    "hint": "Le personnel peut scanner ce code pour retrouver votre place. Il ne contient jamais votre lien privé.",
+    "label": "Code QR du ticket {{ticket}}"
+  },
+  "calendar": {
+    "add": "Ajouter au calendrier",
+    "summary": "Visite chez {{place}}",
+    "note": "Suivez votre place dans la file avec le lien qui vous a été envoyé."
+  }
+}

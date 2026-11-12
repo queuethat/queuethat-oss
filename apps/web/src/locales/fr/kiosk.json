@@ -1,0 +1,96 @@
+{
+  "title": "Enregistrement",
+  "connection": {
+    "live": "En direct",
+    "connecting": "Reconnexion",
+    "offline": "Hors ligne"
+  },
+  "welcome": {
+    "title": "Bienvenue",
+    "start": "S'enregistrer"
+  },
+  "closed": {
+    "title": "Nous n'acceptons pas d'enregistrements pour le moment",
+    "org_suspended": "Ce lieu n'est pas disponible.",
+    "closed": "Nous sommes fermés. Merci de revenir pendant les heures d'ouverture.",
+    "paused": "L'enregistrement est suspendu. Veuillez vous adresser au personnel.",
+    "outside_hours": "Nous sommes fermés. Merci de revenir pendant les heures d'ouverture.",
+    "full": "La file est pleine. Veuillez vous adresser au personnel."
+  },
+  "form": {
+    "title": "Vos informations",
+    "queue": "Quelle file ?",
+    "service": "De quoi avez-vous besoin ?",
+    "name": "Prénom",
+    "nameMissing": "Saisissez votre prénom pour que le personnel puisse vous appeler.",
+    "party": "Combien de personnes ?",
+    "phone": "Numéro de mobile (facultatif)",
+    "phoneHint": "Pour un SMS lorsque ce sera votre tour.",
+    "country": "Indicatif du pays",
+    "phoneInvalid": "Vérifiez le numéro de mobile ou laissez le champ vide.",
+    "submit": "Obtenir mon ticket",
+    "joining": "Enregistrement en cours",
+    "cancel": "Recommencer"
+  },
+  "error": {
+    "queue_not_accepting": "Cette file n'accepte plus d'enregistrements. Veuillez vous adresser au personnel.",
+    "not_found": "Cette file n'est pas disponible ici. Veuillez vous adresser au personnel.",
+    "rate_limited": "Trop d'enregistrements en même temps. Patientez un instant et réessayez.",
+    "invalid_input": "Vérifiez votre nom et votre numéro, puis réessayez.",
+    "party_size_out_of_range": "Cette file n'accepte pas autant de personnes à la fois. Veuillez vous adresser au personnel.",
+    "too_many_active_visits": "C'est plus de personnes qu'un téléphone ne peut en enregistrer. Veuillez vous adresser au personnel.",
+    "unknown": "Enregistrement impossible. Réessayez ou adressez-vous au personnel."
+  },
+  "done": {
+    "title": "Vous êtes enregistré",
+    "ticket": "Votre ticket",
+    "scan": "Scannez pour suivre votre place dans la file sur votre téléphone.",
+    "qrAlt": "Code QR avec le lien vers votre place dans la file",
+    "finish": "Terminé",
+    "clears_one": "Cet écran s'efface dans {{count}} seconde.",
+    "clears_other": "Cet écran s'efface dans {{count}} secondes."
+  },
+  "idle": {
+    "title": "Vous êtes toujours là ?",
+    "body_one": "Cet écran redémarre dans {{count}} seconde et ce que vous avez saisi sera effacé.",
+    "body_other": "Cet écran redémarre dans {{count}} secondes et ce que vous avez saisi sera effacé.",
+    "more": "J'ai besoin de plus de temps"
+  },
+  "print": {
+    "setting": "Imprimer le ticket",
+    "off": "Désactivé",
+    "ask": "Demander au client",
+    "always": "Toujours",
+    "button": "Imprimer mon ticket",
+    "slip": {
+      "ticket": "Votre ticket",
+      "joined": "Arrivée à {{time}}",
+      "scan": "Scannez pour suivre votre place dans la file."
+    }
+  },
+  "settings": {
+    "summary": "Réglages de l'appareil"
+  },
+  "a11y": {
+    "button": "Accessibilité",
+    "audio": "Guidage audio",
+    "screen": {
+      "welcome": "Bienvenue. Appuyez sur S'enregistrer pour commencer.",
+      "form": "Enregistrement. Saisissez votre prénom, puis appuyez sur Obtenir mon ticket.",
+      "done": "Votre ticket est le {{ticket}}. Veuillez vous asseoir."
+    }
+  },
+  "printer": {
+    "connect": "Connecter l'imprimante",
+    "connected": "Imprimante : {{name}}",
+    "none": "Aucune imprimante connectée. Les tickets s'impriment via le navigateur.",
+    "test": "Impression de test",
+    "testQueue": "Ticket de test"
+  },
+  "steps": {
+    "label": "Étapes de l'enregistrement",
+    "start": "Début",
+    "details": "Vos informations",
+    "ticket": "Votre ticket"
+  }
+}

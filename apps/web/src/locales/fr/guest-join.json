@@ -1,0 +1,160 @@
+{
+  "join": {
+    "title": "Rejoindre la file",
+    "loading": "Chargement",
+    "notFound": {
+      "title": "Nous ne trouvons pas cette file",
+      "body": "Vérifiez le lien ou scannez de nouveau le code."
+    },
+    "loadFailed": {
+      "title": "Impossible de charger la file",
+      "body": "Vérifiez votre connexion et rechargez la page."
+    },
+    "queue": "File",
+    "wait": {
+      "waiting_one": "{{count}} en attente",
+      "waiting_other": "{{count}} en attente",
+      "opensToday": "Ouvre à {{time}}",
+      "opensLater": "Ouvre {{day}} à {{time}}",
+      "asOf": "À {{time}}"
+    },
+    "queueOption_one": "{{name}} ({{count}} en attente)",
+    "queueOption_other": "{{name}} ({{count}} en attente)",
+    "service": "De quoi avez-vous besoin ?",
+    "name": "Prénom",
+    "nameMissing": "Saisissez votre prénom pour que le personnel puisse vous appeler.",
+    "addPerson": "Ajouter une autre personne",
+    "addPersonHint": "Elle rejoint la file avec le même numéro de téléphone et la même adresse e-mail.",
+    "otherName": "Nom de la personne {{number}}",
+    "otherNameMissing": "Saisissez un nom pour la personne {{number}} ou retirez-la.",
+    "removePerson": "Retirer la personne {{number}}",
+    "phone": "Numéro de mobile (facultatif)",
+    "party": "Combien de personnes ?",
+    "partyFewer": "Une personne de moins",
+    "partyMore": "Une personne de plus",
+    "partySize_one": "{{count}} personne",
+    "partySize_other": "{{count}} personnes",
+    "phoneHint": "Utilisé uniquement pour vous informer de votre place dans la file.",
+    "country": "Indicatif du pays",
+    "email": "E-mail (facultatif)",
+    "emailHint": "Nous vous écrirons quand ce sera bientôt votre tour et quand vous serez appelé. Rien d'autre.",
+    "intake": {
+      "missing": "Veuillez répondre à cette question.",
+      "invalid": "Veuillez vérifier cette réponse."
+    },
+    "privacy": {
+      "summary": "Comment nous utilisons vos informations",
+      "body": "Nous utilisons votre prénom, votre numéro et votre e-mail uniquement pour gérer votre place dans cette file et vous informer de cette visite. Le personnel de ce lieu peut les voir. Votre numéro et votre e-mail ne sont jamais affichés sur les écrans de la salle d'attente."
+    },
+    "notAccepting": {
+      "closed": "Cette file est fermée pour le moment.",
+      "paused": "Cette file est suspendue. Revenez dans quelques minutes.",
+      "outside_hours": "Cette file est en dehors de ses heures d'ouverture.",
+      "full": "Cette file est pleine pour le moment. Revenez bientôt.",
+      "online_full": "Cette file n'accepte plus d'inscriptions en ligne pour le moment. Veuillez vous présenter à l'accueil.",
+      "org_suspended": "Cette file n'accepte pas de clients pour le moment. Veuillez demander de l'aide au personnel."
+    },
+    "error": {
+      "queue_not_accepting": "Cette file n'accepte plus de nouveaux clients. Demandez de l'aide au personnel.",
+      "capacity_reached": "Cette file vient d'être remplie. Revenez bientôt.",
+      "rate_limited": "Trop de personnes rejoignent en même temps. Patientez un instant et réessayez.",
+      "rate_limited_phone": "Vous avez rejoint trop de fois depuis ce téléphone. Demandez au personnel de vous ajouter.",
+      "rate_limited_network": "Trop d'inscriptions depuis ce réseau en ce moment. Demandez au personnel de vous ajouter.",
+      "rate_limited_total": "Cette file n'accepte plus d'inscriptions en ligne pour le moment. Veuillez vous présenter à l'accueil.",
+      "onsite_code_required": "Ce lieu demande le code d'accès affiché sur l'écran de la salle d'attente. Saisissez-le ci-dessous.",
+      "onsite_code_invalid": "Ce code n'est pas correct. Vérifiez l'écran de la salle d'attente et réessayez. Il change toutes les quelques minutes.",
+      "onsite_required": "Cette file est réservée aux personnes sur place. Partagez votre position pour que nous puissions vérifier, ou demandez au personnel de vous ajouter.",
+      "captcha_failed": "La vérification anti-robot a échoué. Attendez qu'elle se termine puis réessayez, ou demandez au personnel de vous ajouter.",
+      "captcha_required": "Nous n'avons pas pu confirmer que vous n'êtes pas un robot. Attendez la fin de la vérification ci-dessus puis réessayez, ou demandez au personnel de vous ajouter.",
+      "already_in_queue": "Vous êtes déjà dans une file. Ouvrez votre ticket ou demandez au personnel.",
+      "no_route": "Nous n'avons pas trouvé la bonne file pour ce service. Veuillez demander à l'accueil.",
+      "too_many_active_visits": "C'est plus de personnes que cette file n'en autorise par téléphone. Demandez au personnel d'ajouter les autres.",
+      "invalid_input": "Vérifiez votre nom, votre numéro et votre e-mail, puis réessayez.",
+      "invalid_answers": "Veuillez vérifier vos réponses et réessayer.",
+      "not_found": "Cette file n'existe plus. Scannez de nouveau le code.",
+      "unknown": "Impossible de rejoindre la file. Vérifiez votre connexion et réessayez.",
+      "invalid_arrive_after": "Cet horaire n'est pas disponible. Choisissez-en un autre ou rejoignez la file maintenant."
+    },
+    "alreadyJoined": "Vous êtes déjà dans la file avec le ticket {{ticket}}. Montrez ce numéro au personnel si vous avez besoin d'aide.",
+    "onsiteCode": "Code d'accès",
+    "onsiteCodeHint": "Affiché sur l'écran de la salle d'attente.",
+    "captcha": "Vérification anti-robot en cours",
+    "retryIn_one": "Trop d'essais depuis ce réseau. Réessayez dans {{count}} minute.",
+    "retryIn_other": "Trop d'essais depuis ce réseau. Réessayez dans {{count}} minutes.",
+    "pow": {
+      "working": "Vérification anti-robot en cours… {{percent}} %",
+      "ready": "Vérification terminée.",
+      "failed": "Nous n'avons pas pu exécuter la vérification qui bloque les robots. Rechargez la page ou demandez au personnel de vous ajouter."
+    },
+    "captchaProblem": {
+      "body": "Nous n'avons pas pu exécuter la vérification qui bloque les robots. Rechargez la page ou demandez au personnel de vous ajouter.",
+      "reload": "Recharger la page"
+    },
+    "joining": "Inscription en cours",
+    "submit": "Rejoindre la file",
+    "phoneInvalid": "Ce n'est pas un numéro de mobile complet. Corrigez-le ou effacez-le pour rejoindre sans SMS.",
+    "phoneForTexts": "Ajoutez votre numéro de mobile pour recevoir des SMS, ou décochez la case pour rejoindre sans SMS.",
+    "already": {
+      "named": "Vous attendez déjà dans {{queue}}.",
+      "generic": "Ce téléphone, ce numéro ou cet e-mail attend déjà dans une file.",
+      "open": "Ouvrir mon ticket",
+      "leave": "Quitter cette file",
+      "leaveTitle": "Quitter cette file ?",
+      "leaveBody": "Vous y perdrez votre place. Vous pourrez ensuite rejoindre cette file.",
+      "leaveConfirm": "Quitter cette file",
+      "leaveCancel": "Rester",
+      "ask": "Utilisez le lien qui vous a été envoyé ou demandez de l'aide au personnel."
+    },
+    "widget": {
+      "inLineTitle": "Vous êtes dans la file",
+      "inLineBody": "Ouvrez votre place dans la file pour suivre votre tour. Elle s'ouvre dans un nouvel onglet.",
+      "inLineLink": "Ouvrir ma place dans la file"
+    },
+    "when": {
+      "label": "Quand",
+      "now": "Maintenant",
+      "later": "Plus tard aujourd'hui",
+      "at": "Heure d'arrivée",
+      "hint": "Les heures sont en {{zone}}, l'heure locale du lieu. Vous recevez un ticket maintenant et rejoignez la file à cette heure."
+    },
+    "location": {
+      "title": "Êtes-vous sur place ?",
+      "why": "Cette file est réservée aux personnes présentes sur le lieu. Nous vérifions votre position une seule fois, pour voir si vous êtes proche, et nous ne la conservons pas.",
+      "share": "Partager ma position",
+      "asking": "Recherche de votre position",
+      "shared": "Position partagée. Appuyez de nouveau sur Rejoindre la file.",
+      "denied": "Nous n'avons pas pu obtenir votre position. Vous pouvez autoriser l'accès à la position dans les réglages du navigateur et réessayer, ou demander au personnel de vous ajouter."
+    },
+    "history": {
+      "welcome": "Bon retour, {{name}}. Nous avons rempli votre nom d'après votre dernière visite.",
+      "forget": "Oublier mon historique"
+    },
+    "state": {
+      "open": "Ouvert",
+      "paused": "En pause",
+      "closed": "Fermé",
+      "full": "Complet"
+    },
+    "consentLinks": {
+      "prefix": "Lisez nos",
+      "terms": "Conditions d'utilisation",
+      "and": "et notre",
+      "privacy": "Politique de confidentialité"
+    },
+    "retention": {
+      "notice": "{{business}} conserve les informations de votre visite pendant {{count}} jours.",
+      "notice_one": "{{business}} conserve les informations de votre visite pendant {{count}} jour.",
+      "notice_other": "{{business}} conserve les informations de votre visite pendant {{count}} jours.",
+      "privacyLink": "Comment vos informations sont utilisées"
+    },
+    "privacyContact": {
+      "intro": "Des questions sur votre vie privée ? Contactez {{name}} :"
+    },
+    "lines": {
+      "title": "Qui souhaitez-vous voir ?",
+      "anyone": "N'importe qui de disponible",
+      "anyoneHint": "La première personne libre vous prend en charge.",
+      "unavailable": "N'accepte pas de clients pour le moment"
+    }
+  }
+}

@@ -65,7 +65,13 @@ const ownerPaths = [
   '/admin/help',
 ];
 
-for (const locale of ['en-US', 'de-DE']) {
+// German is a guest language, so a de-DE browser gets German guest pages (labels differ).
+const LOCALES = [
+  { locale: 'en-US', join: { name: 'First name', submit: 'Join the queue' } },
+  { locale: 'de-DE', join: { name: 'Vorname', submit: 'Der Warteschlange beitreten' } },
+];
+
+for (const { locale, join } of LOCALES) {
   test.describe(`${locale}`, () => {
     test.use({ locale });
 
@@ -84,8 +90,8 @@ for (const locale of ['en-US', 'de-DE']) {
 
     test('a guest status page meets the screen rules', async ({ page }) => {
       await page.goto(`/q/${demo.locationSlug}`);
-      await page.getByLabel('First name').fill('Sweep');
-      await page.getByRole('button', { name: 'Join the queue' }).click();
+      await page.getByLabel(join.name).fill('Sweep');
+      await page.getByRole('button', { name: join.submit }).click();
       await expect(page).toHaveURL(/\/v\/[\w-]+$/);
       await expectCompliant(page);
     });

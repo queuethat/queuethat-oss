@@ -1,0 +1,15 @@
+{
+  "onMyWay": "Je suis en route",
+  "onMyWayDone": "En route. Le personnel est prévenu.",
+  "needMoreTime": "J'ai besoin de plus de temps",
+  "needMoreTimeLeft": "{{count}} délai supplémentaire restant",
+  "needMoreTimeLeft_other": "{{count}} délais supplémentaires restants",
+  "needMoreTimeNone": "Plus de délai supplémentaire",
+  "needMoreTimeHint": "Vous reculez de quelques places.",
+  "failed": "Cela n'a pas abouti. Réessayez.",
+  "limit": "Vous avez utilisé tous vos délais supplémentaires.",
+  "arriveBy": "Merci d'arriver avant {{time}}",
+  "warning": "Votre place sera donnée dans {{count}} minute si vous n'arrivez pas ou ne demandez pas plus de temps.",
+  "warning_other": "Votre place sera donnée dans {{count}} minutes si vous n'arrivez pas ou ne demandez pas plus de temps.",
+  "warningNow": "Votre place va être donnée. Merci d'arriver maintenant."
+}

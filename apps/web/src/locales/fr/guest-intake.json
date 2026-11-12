@@ -1,0 +1,25 @@
+{
+  "title": "Quelques questions",
+  "optional": "facultatif",
+  "required": "obligatoire",
+  "choose": "Choisissez une option",
+  "phoneHint": "Indiquez l'indicatif du pays, par exemple +33 6 12 34 56 78.",
+  "checkboxYes": "Oui",
+  "invalid": "Veuillez vérifier cette réponse.",
+  "booked": {
+    "title": "Votre réservation est confirmée",
+    "body": "Encore une étape : l'établissement a besoin de quelques réponses avant votre visite.",
+    "save": "Enregistrer les réponses",
+    "saving": "Enregistrement…",
+    "skip": "Continuer sans répondre",
+    "failed": "Nous n'avons pas pu enregistrer vos réponses. Vérifiez votre connexion et réessayez."
+  },
+  "agreement": {
+    "accept": "J'ai lu et j'accepte"
+  },
+  "signature": {
+    "hint": "Saisissez votre nom complet.",
+    "guardian": "Nom du parent ou du tuteur",
+    "guardianHint": "Uniquement si vous signez pour quelqu'un d'autre ou si vous avez moins de 18 ans."
+  }
+}

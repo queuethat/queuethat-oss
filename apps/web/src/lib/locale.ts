@@ -1,9 +1,14 @@
 /** The languages guest pages are translated into; `en` is the fallback for every string. */
-export const GUEST_LOCALES = ['en', 'es'] as const;
+export const GUEST_LOCALES = ['en', 'es', 'de', 'fr'] as const;
 export type GuestLocale = (typeof GUEST_LOCALES)[number];
 
 /** Each language in its own words, so a guest can find theirs whatever the page says now. */
-export const LOCALE_NAMES: Record<GuestLocale, string> = { en: 'English', es: 'Español' };
+export const LOCALE_NAMES: Record<GuestLocale, string> = {
+  en: 'English',
+  es: 'Español',
+  de: 'Deutsch',
+  fr: 'Français',
+};
 
 const STORAGE_KEY = 'qm.locale';
 

@@ -1,0 +1,160 @@
+{
+  "join": {
+    "title": "Der Warteschlange beitreten",
+    "loading": "Wird geladen",
+    "notFound": {
+      "title": "Wir finden diese Warteschlange nicht",
+      "body": "Prüfen Sie den Link oder scannen Sie den Code erneut."
+    },
+    "loadFailed": {
+      "title": "Warteschlange konnte nicht geladen werden",
+      "body": "Prüfen Sie Ihre Verbindung und laden Sie die Seite neu."
+    },
+    "queue": "Warteschlange",
+    "wait": {
+      "waiting_one": "{{count}} wartet",
+      "waiting_other": "{{count}} warten",
+      "opensToday": "Öffnet um {{time}}",
+      "opensLater": "Öffnet {{day}} um {{time}}",
+      "asOf": "Stand: {{time}}"
+    },
+    "queueOption_one": "{{name}} ({{count}} wartet)",
+    "queueOption_other": "{{name}} ({{count}} warten)",
+    "service": "Was brauchen Sie?",
+    "name": "Vorname",
+    "nameMissing": "Geben Sie Ihren Vornamen ein, damit das Personal Sie aufrufen kann.",
+    "addPerson": "Weitere Person hinzufügen",
+    "addPersonHint": "Die Person tritt mit derselben Telefonnummer und E-Mail-Adresse bei.",
+    "otherName": "Name von Person {{number}}",
+    "otherNameMissing": "Geben Sie einen Namen für Person {{number}} ein oder entfernen Sie sie.",
+    "removePerson": "Person {{number}} entfernen",
+    "phone": "Handynummer (optional)",
+    "party": "Wie viele Personen?",
+    "partyFewer": "Eine Person weniger",
+    "partyMore": "Eine Person mehr",
+    "partySize_one": "{{count}} Person",
+    "partySize_other": "{{count}} Personen",
+    "phoneHint": "Wird nur verwendet, um Sie über Ihren Platz in der Warteschlange zu informieren.",
+    "country": "Landesvorwahl",
+    "email": "E-Mail (optional)",
+    "emailHint": "Wir schicken Ihnen eine E-Mail, wenn Sie bald an der Reihe sind und wenn Sie aufgerufen werden. Sonst nichts.",
+    "intake": {
+      "missing": "Bitte beantworten Sie diese Frage.",
+      "invalid": "Bitte prüfen Sie diese Antwort."
+    },
+    "privacy": {
+      "summary": "So verwenden wir Ihre Angaben",
+      "body": "Wir verwenden Ihren Vornamen, Ihre Nummer und Ihre E-Mail-Adresse nur, um Ihren Platz in dieser Warteschlange zu verwalten und Sie über diesen Besuch zu informieren. Das Personal an diesem Standort kann sie sehen. Ihre Nummer und E-Mail-Adresse werden nie auf Bildschirmen im Wartebereich angezeigt."
+    },
+    "notAccepting": {
+      "closed": "Diese Warteschlange ist derzeit geschlossen.",
+      "paused": "Diese Warteschlange ist pausiert. Bitte schauen Sie in einigen Minuten wieder vorbei.",
+      "outside_hours": "Diese Warteschlange ist außerhalb ihrer Öffnungszeiten.",
+      "full": "Diese Warteschlange ist derzeit voll. Bitte schauen Sie bald wieder vorbei.",
+      "online_full": "Diese Warteschlange nimmt derzeit keine weiteren Online-Beitritte an. Bitte melden Sie sich am Empfang.",
+      "org_suspended": "Diese Warteschlange nimmt derzeit keine Gäste an. Bitte wenden Sie sich an das Personal."
+    },
+    "error": {
+      "queue_not_accepting": "Diese Warteschlange nimmt keine neuen Gäste mehr an. Wenden Sie sich an das Personal.",
+      "capacity_reached": "Diese Warteschlange ist gerade voll geworden. Bitte schauen Sie bald wieder vorbei.",
+      "rate_limited": "Zu viele Personen treten gleichzeitig bei. Warten Sie einen Moment und versuchen Sie es erneut.",
+      "rate_limited_phone": "Sie sind von diesem Handy zu oft beigetreten. Bitten Sie das Personal, Sie hinzuzufügen.",
+      "rate_limited_network": "Von diesem Netzwerk treten gerade zu viele Personen bei. Bitten Sie das Personal, Sie hinzuzufügen.",
+      "rate_limited_total": "Diese Warteschlange nimmt derzeit keine weiteren Online-Beitritte an. Bitte melden Sie sich am Empfang.",
+      "onsite_code_required": "Dieser Standort verlangt den Beitrittscode, der auf dem Bildschirm im Wartebereich angezeigt wird. Geben Sie ihn unten ein.",
+      "onsite_code_invalid": "Dieser Code ist nicht richtig. Prüfen Sie den Bildschirm im Wartebereich und versuchen Sie es erneut. Er ändert sich alle paar Minuten.",
+      "onsite_required": "Diese Warteschlange ist für Personen vor Ort. Teilen Sie Ihren Standort, damit wir das prüfen können, oder bitten Sie das Personal, Sie hinzuzufügen.",
+      "captcha_failed": "Die Robotersicherheitsprüfung wurde nicht bestanden. Warten Sie, bis sie abgeschlossen ist, und versuchen Sie es erneut, oder bitten Sie das Personal, Sie hinzuzufügen.",
+      "captcha_required": "Wir konnten nicht bestätigen, dass Sie kein Roboter sind. Warten Sie, bis die Prüfung oben abgeschlossen ist, und versuchen Sie es erneut, oder bitten Sie das Personal, Sie hinzuzufügen.",
+      "already_in_queue": "Sie sind bereits in einer Warteschlange. Öffnen Sie Ihr Ticket oder fragen Sie das Personal.",
+      "no_route": "Wir konnten für diese Leistung keine passende Warteschlange finden. Bitte fragen Sie am Empfang.",
+      "too_many_active_visits": "Das sind mehr Personen, als diese Warteschlange pro Handy zulässt. Bitten Sie das Personal, die übrigen hinzuzufügen.",
+      "invalid_input": "Prüfen Sie Ihren Namen, Ihre Nummer und Ihre E-Mail-Adresse und versuchen Sie es erneut.",
+      "invalid_answers": "Bitte prüfen Sie Ihre Antworten und versuchen Sie es erneut.",
+      "not_found": "Diese Warteschlange gibt es nicht mehr. Scannen Sie den Code erneut.",
+      "unknown": "Beitritt nicht möglich. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+      "invalid_arrive_after": "Diese Uhrzeit ist nicht verfügbar. Wählen Sie eine andere oder treten Sie jetzt bei."
+    },
+    "alreadyJoined": "Sie sind bereits als {{ticket}} in der Warteschlange. Zeigen Sie dem Personal diese Ticketnummer, wenn Sie Hilfe brauchen.",
+    "onsiteCode": "Beitrittscode",
+    "onsiteCodeHint": "Wird auf dem Bildschirm im Wartebereich angezeigt.",
+    "captcha": "Es wird geprüft, ob Sie kein Roboter sind",
+    "retryIn_one": "Zu viele Versuche aus diesem Netzwerk. Versuchen Sie es in {{count}} Minute erneut.",
+    "retryIn_other": "Zu viele Versuche aus diesem Netzwerk. Versuchen Sie es in {{count}} Minuten erneut.",
+    "pow": {
+      "working": "Es wird geprüft, ob Sie kein Roboter sind… {{percent}} %",
+      "ready": "Prüfung abgeschlossen.",
+      "failed": "Die Prüfung, die Roboter fernhält, konnte nicht ausgeführt werden. Laden Sie die Seite neu oder bitten Sie das Personal, Sie hinzuzufügen."
+    },
+    "captchaProblem": {
+      "body": "Die Prüfung, die Roboter fernhält, konnte nicht ausgeführt werden. Laden Sie die Seite neu oder bitten Sie das Personal, Sie hinzuzufügen.",
+      "reload": "Seite neu laden"
+    },
+    "joining": "Beitritt läuft",
+    "submit": "Der Warteschlange beitreten",
+    "phoneInvalid": "Das ist keine vollständige Handynummer. Korrigieren Sie sie oder löschen Sie sie, um ohne SMS beizutreten.",
+    "phoneForTexts": "Geben Sie Ihre Handynummer an, um SMS zu erhalten, oder entfernen Sie das Häkchen, um ohne SMS beizutreten.",
+    "already": {
+      "named": "Sie warten bereits in {{queue}}.",
+      "generic": "Dieses Handy, diese Nummer oder E-Mail-Adresse wartet bereits in einer Warteschlange.",
+      "open": "Mein Ticket öffnen",
+      "leave": "Diese Warteschlange verlassen",
+      "leaveTitle": "Diese Warteschlange verlassen?",
+      "leaveBody": "Sie verlieren dort Ihren Platz. Danach können Sie dieser Warteschlange beitreten.",
+      "leaveConfirm": "Diese Warteschlange verlassen",
+      "leaveCancel": "Bleiben",
+      "ask": "Verwenden Sie den Link, den Sie erhalten haben, oder bitten Sie das Personal um Hilfe."
+    },
+    "widget": {
+      "inLineTitle": "Sie sind in der Warteschlange",
+      "inLineBody": "Öffnen Sie Ihren Platz in der Warteschlange, um Ihre Reihenfolge zu verfolgen. Er öffnet sich in einem neuen Tab.",
+      "inLineLink": "Meinen Platz in der Warteschlange öffnen"
+    },
+    "when": {
+      "label": "Wann",
+      "now": "Jetzt",
+      "later": "Später heute",
+      "at": "Ankunftszeit",
+      "hint": "Die Zeiten gelten in {{zone}}, der Ortszeit des Standorts. Sie erhalten jetzt ein Ticket und treten zu dieser Zeit der Warteschlange bei."
+    },
+    "location": {
+      "title": "Sind Sie vor Ort?",
+      "why": "Diese Warteschlange ist nur für Personen am Standort. Wir prüfen Ihre Position einmal, um zu sehen, ob Sie in der Nähe sind, und speichern sie nicht.",
+      "share": "Meinen Standort teilen",
+      "asking": "Ihr Standort wird ermittelt",
+      "shared": "Standort geteilt. Tippen Sie erneut auf „Der Warteschlange beitreten“.",
+      "denied": "Wir konnten Ihren Standort nicht ermitteln. Sie können den Standortzugriff in den Browsereinstellungen erlauben und es erneut versuchen oder das Personal bitten, Sie hinzuzufügen."
+    },
+    "history": {
+      "welcome": "Willkommen zurück, {{name}}. Wir haben Ihren Namen von Ihrem letzten Besuch eingetragen.",
+      "forget": "Meinen Verlauf löschen"
+    },
+    "state": {
+      "open": "Offen",
+      "paused": "Pausiert",
+      "closed": "Geschlossen",
+      "full": "Voll"
+    },
+    "consentLinks": {
+      "prefix": "Lesen Sie unsere",
+      "terms": "Nutzungsbedingungen",
+      "and": "und",
+      "privacy": "Datenschutzerklärung"
+    },
+    "retention": {
+      "notice": "{{business}} speichert Ihre Besuchsdaten {{count}} Tage lang.",
+      "notice_one": "{{business}} speichert Ihre Besuchsdaten {{count}} Tag lang.",
+      "notice_other": "{{business}} speichert Ihre Besuchsdaten {{count}} Tage lang.",
+      "privacyLink": "So werden Ihre Angaben verwendet"
+    },
+    "privacyContact": {
+      "intro": "Fragen zum Datenschutz? Wenden Sie sich an {{name}}:"
+    },
+    "lines": {
+      "title": "Zu wem möchten Sie?",
+      "anyone": "Jeder Verfügbare",
+      "anyoneHint": "Die nächste freie Person übernimmt Sie.",
+      "unavailable": "Nimmt derzeit keine Gäste an"
+    }
+  }
+}
