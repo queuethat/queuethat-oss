@@ -1,0 +1,185 @@
+{
+  "key": "nail_salon",
+  "version": 1,
+  "tier": 1,
+  "mode": "both",
+  "health_tagged": false,
+  "name": {
+    "en": "Nail salon",
+    "es": "Salón de uñas"
+  },
+  "description": {
+    "en": "Manicures, pedicures and enhancements, booked or walk-in, with a line per nail technician and an \"Anyone available\" option.",
+    "es": "Manicuras, pedicuras y uñas postizas, con cita o sin cita, con una fila por manicurista y la opción \"Cualquiera disponible\"."
+  },
+  "keywords": {
+    "en": [
+      "nail salon",
+      "nails",
+      "manicure",
+      "pedicure",
+      "gel",
+      "acrylic"
+    ],
+    "es": [
+      "uñas",
+      "salón de uñas",
+      "manicura",
+      "pedicura",
+      "gel",
+      "acrílico"
+    ]
+  },
+  "queues": [
+    {
+      "name": {
+        "en": "Nails",
+        "es": "Uñas"
+      },
+      "prefix": "N",
+      "show_eta": true,
+      "services": [
+        {
+          "name": {
+            "en": "Polish change",
+            "es": "Cambio de esmalte"
+          },
+          "minutes": 15
+        },
+        {
+          "name": {
+            "en": "Manicure",
+            "es": "Manicura"
+          },
+          "minutes": 30
+        },
+        {
+          "name": {
+            "en": "Gel manicure",
+            "es": "Manicura en gel"
+          },
+          "minutes": 45
+        },
+        {
+          "name": {
+            "en": "Pedicure",
+            "es": "Pedicura"
+          },
+          "minutes": 45
+        },
+        {
+          "name": {
+            "en": "Gel pedicure",
+            "es": "Pedicura en gel"
+          },
+          "minutes": 60
+        },
+        {
+          "name": {
+            "en": "Acrylic full set",
+            "es": "Juego completo de acrílico"
+          },
+          "minutes": 75
+        },
+        {
+          "name": {
+            "en": "Fill",
+            "es": "Relleno"
+          },
+          "minutes": 45
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "label": {
+        "en": "Nail station 1",
+        "es": "Mesa de uñas 1"
+      },
+      "kind": "desk"
+    },
+    {
+      "label": {
+        "en": "Nail station 2",
+        "es": "Mesa de uñas 2"
+      },
+      "kind": "desk"
+    },
+    {
+      "label": {
+        "en": "Nail station 3",
+        "es": "Mesa de uñas 3"
+      },
+      "kind": "desk"
+    },
+    {
+      "label": {
+        "en": "Pedicure chair 1",
+        "es": "Sillón de pedicura 1"
+      },
+      "kind": "chair"
+    },
+    {
+      "label": {
+        "en": "Pedicure chair 2",
+        "es": "Sillón de pedicura 2"
+      },
+      "kind": "chair"
+    }
+  ],
+  "providers": {
+    "noun": {
+      "en": "nail technician",
+      "es": "manicurista"
+    },
+    "default_count": 3,
+    "pool": true
+  },
+  "form": {
+    "name": {
+      "en": "Before your appointment",
+      "es": "Antes de tu servicio"
+    },
+    "fields": [
+      {
+        "key": "removal",
+        "type": "single_choice",
+        "label": {
+          "en": "Do you need old product removed?",
+          "es": "¿Necesitas retirar producto anterior?"
+        },
+        "options": [
+          {
+            "en": "No",
+            "es": "No"
+          },
+          {
+            "en": "Gel polish",
+            "es": "Esmalte en gel"
+          },
+          {
+            "en": "Acrylic or hard gel",
+            "es": "Acrílico o gel duro"
+          }
+        ],
+        "sensitivity": "normal"
+      },
+      {
+        "key": "design_notes",
+        "type": "short_text",
+        "label": {
+          "en": "Colour or design ideas",
+          "es": "Ideas de color o diseño"
+        },
+        "sensitivity": "normal"
+      }
+    ]
+  },
+  "booking": {
+    "slot_minutes": 15,
+    "buffer_after_minutes": 10,
+    "min_notice_minutes": 60,
+    "max_days_ahead": 30
+  }
+}

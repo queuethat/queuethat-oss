@@ -1,0 +1,127 @@
+{
+  "key": "walk_in_clinic",
+  "version": 1,
+  "tier": 1,
+  "mode": "walk_in",
+  "health_tagged": true,
+  "name": {
+    "en": "Walk-in clinic",
+    "es": "Clínica sin cita"
+  },
+  "description": {
+    "en": "A walk-in line with a line per doctor and an \"Anyone available\" pool. Ticket numbers only on screens; no visit details in messages.",
+    "es": "Una fila sin cita con una fila por médico y un grupo \"Cualquiera disponible\". Solo números en las pantallas; ningún detalle de la visita en los mensajes."
+  },
+  "keywords": {
+    "en": [
+      "walk-in clinic",
+      "medical clinic",
+      "doctor",
+      "urgent",
+      "family doctor",
+      "health"
+    ],
+    "es": [
+      "clínica",
+      "médico",
+      "consulta sin cita",
+      "doctor",
+      "salud",
+      "atención médica"
+    ]
+  },
+  "queues": [
+    {
+      "name": {
+        "en": "Walk-in",
+        "es": "Sin cita"
+      },
+      "prefix": "C",
+      "show_eta": true,
+      "services": [
+        {
+          "name": {
+            "en": "Walk-in visit",
+            "es": "Consulta sin cita"
+          },
+          "minutes": 15
+        },
+        {
+          "name": {
+            "en": "Follow-up",
+            "es": "Seguimiento"
+          },
+          "minutes": 10
+        },
+        {
+          "name": {
+            "en": "Forms and notes",
+            "es": "Formularios y justificantes"
+          },
+          "minutes": 10
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "label": {
+        "en": "Room 1",
+        "es": "Consultorio 1"
+      },
+      "kind": "room"
+    },
+    {
+      "label": {
+        "en": "Room 2",
+        "es": "Consultorio 2"
+      },
+      "kind": "room"
+    },
+    {
+      "label": {
+        "en": "Room 3",
+        "es": "Consultorio 3"
+      },
+      "kind": "room"
+    }
+  ],
+  "providers": {
+    "noun": {
+      "en": "doctor",
+      "es": "médico"
+    },
+    "default_count": 3,
+    "pool": true
+  },
+  "form": {
+    "name": {
+      "en": "Before your visit",
+      "es": "Antes de tu consulta"
+    },
+    "fields": [
+      {
+        "key": "returning",
+        "type": "yes_no",
+        "label": {
+          "en": "Have you been to this clinic before?",
+          "es": "¿Has venido antes a esta clínica?"
+        },
+        "sensitivity": "normal"
+      },
+      {
+        "key": "reason",
+        "type": "short_text",
+        "label": {
+          "en": "Reason for the visit, in a few words",
+          "es": "Motivo de la consulta, en pocas palabras"
+        },
+        "help": {
+          "en": "For example \"sore throat\". Please don't include medical history; the doctor will ask.",
+          "es": "Por ejemplo \"dolor de garganta\". No incluyas tu historial médico; el médico te preguntará."
+        },
+        "sensitivity": "sensitive"
+      }
+    ]
+  }
+}

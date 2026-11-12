@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_NEXT, safeNext } from './next.ts';
+import { DEFAULT_NEXT, nextSearch, safeNext } from './next.ts';
 
 const origin = 'http://localhost:5173';
 
@@ -31,5 +31,15 @@ describe('safeNext', () => {
     expect(safeNext('/auth/accept-invite/../callback', origin)).toBe(DEFAULT_NEXT);
     expect(safeNext('/auth/reset-password', origin)).toBe('/auth/reset-password');
     expect(safeNext('/auth/reset-password/../sign-in', origin)).toBe(DEFAULT_NEXT);
+  });
+});
+
+describe('nextSearch', () => {
+  it('is empty for the default, so the address carries no ?next=', () => {
+    expect(nextSearch(DEFAULT_NEXT)).toEqual({});
+  });
+
+  it.each(['/admin', '/staff?queue=kids', '/staff#top', '/onboarding'])('keeps %s', (path) => {
+    expect(nextSearch(path)).toEqual({ next: path });
   });
 });

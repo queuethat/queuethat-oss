@@ -4,11 +4,12 @@ import { useTranslation } from '../../../lib/translation.tsx';
 import { useCurrentLocation, useCurrentOrg } from '../../auth/current.ts';
 import { ChannelLabel, StatusBadge, useDeliveryReason } from '../../console/messages/Messages.tsx';
 import { useFailedNotifications, useRetryNotification } from '../../console/messages/api.ts';
+import { RecentTexts } from './RecentTexts.tsx';
 
 /**
  * `/admin/notifications/failed` (N-12, #257): the location's failed, dead and suppressed messages of
  * the last day, with a retry for dead ones (managers and above). The database refuses a retry whose
- * moment has passed (`not_relevant`).
+ * moment has passed (`not_relevant`). Below them, managers and above see every recent text (T4, #1239).
  */
 export function FailedMessages() {
   const { t } = useTranslation('staff');
@@ -67,6 +68,7 @@ export function FailedMessages() {
           )}
         </p>
       ) : null}
+      {canRetry && location ? <RecentTexts locationId={location.id} tz={location.tz} /> : null}
     </div>
   );
 }

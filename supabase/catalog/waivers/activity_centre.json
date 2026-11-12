@@ -1,0 +1,47 @@
+{
+  "key": "activity_centre",
+  "version": 1,
+  "name": {
+    "en": "Activity participation waiver",
+    "es": "Exención para participar en actividades"
+  },
+  "description": {
+    "en": "Everyone taking part signs this once per visit. A parent or guardian signs for anyone under 18.",
+    "es": "Cada participante firma esto una vez por visita. Un padre, madre o tutor firma por los menores de 18 años."
+  },
+  "form": {
+    "name": {
+      "en": "Activity participation waiver",
+      "es": "Exención para participar en actividades"
+    },
+    "fields": [
+      {
+        "key": "agreement_1",
+        "type": "agreement",
+        "label": {
+          "en": "Risks and rules",
+          "es": "Riesgos y normas"
+        },
+        "body": {
+          "en": "Activities here involve physical effort, height, speed or contact with other people. Even when everyone follows the rules, they can cause **injuries such as sprains, broken bones or head injuries**.\n\nBy taking part, I agree that:\n\n- I take part by choice and I understand these risks.\n- I will follow the posted rules and staff instructions, and use the equipment only as shown.\n- I will stop and tell staff if I feel unwell or see something unsafe.\n- I am not aware of any health condition that makes this activity unsafe for me, or I have checked with a health professional.\n- Staff may ask anyone who is not following the rules to stop or leave.\n\nI accept responsibility for the risks of taking part, except where an injury is caused by the business's own negligence.",
+          "es": "Las actividades de este lugar implican esfuerzo físico, altura, velocidad o contacto con otras personas. Aunque todos sigan las normas, pueden causar **lesiones como torceduras, fracturas o golpes en la cabeza**.\n\nAl participar, acepto que:\n\n- Participo por decisión propia y entiendo estos riesgos.\n- Seguiré las normas publicadas y las instrucciones del personal, y usaré el equipo solo como se indica.\n- Me detendré y avisaré al personal si me siento mal o veo algo peligroso.\n- No conozco ninguna condición de salud que haga esta actividad insegura para mí, o lo he consultado con un profesional de la salud.\n- El personal puede pedir a quien no siga las normas que se detenga o se retire.\n\nAcepto la responsabilidad por los riesgos de participar, salvo cuando una lesión se deba a la negligencia del propio negocio."
+        },
+        "required": true
+      },
+      {
+        "key": "signature_1",
+        "type": "signature",
+        "label": {
+          "en": "Participant's full name",
+          "es": "Nombre completo del participante"
+        },
+        "required": true,
+        "collect_guardian": true
+      }
+    ]
+  },
+  "waiver_banner": {
+    "en": "A starting point, not legal advice. Have your own counsel review before using.",
+    "es": "Un punto de partida, no asesoría legal. Pide a tu propio abogado que lo revise antes de usarlo."
+  }
+}

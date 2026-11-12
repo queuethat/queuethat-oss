@@ -65,5 +65,19 @@
       "permission_denied": "You do not have permission to change opening hours.",
       "unknown": "The dates could not be saved. Try again."
     }
+  },
+  "sendWindow": {
+    "title": "Text message hours",
+    "intro": "Reminders, place-in-line updates and messages to everyone go out only between these times ({{tz}}). Anything sent outside them waits until the start time. \"It's your turn\" and replies to a guest's own text always go right away. The law and carrier rules set the widest window, 8:00 to 21:00; you can narrow it, not widen it.",
+    "start": "Texts start at",
+    "end": "Texts stop at",
+    "save": "Save text hours",
+    "saved": "Text message hours saved.",
+    "errors": {
+      "send_window_out_of_bounds": "Pick times between 8:00 and 21:00.",
+      "invalid_input": "The start time must be before the stop time.",
+      "permission_denied": "Only admins and owners can change text message hours.",
+      "unknown": "Text message hours could not be saved. Try again."
+    }
   }
 }

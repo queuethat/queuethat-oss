@@ -2,7 +2,7 @@ import { errorCode, type ErrorCode } from '@qm/domain';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase.ts';
 import { selectLocation } from '../auth/current.ts';
-import { applyTemplate, type TemplateResult } from './templates.tsx';
+import { applyTemplate, type ProviderSetup, type TemplateResult } from './templates.tsx';
 
 export interface BusinessSetup {
   businessName: string;
@@ -14,6 +14,8 @@ export interface BusinessSetup {
   expectedMinutes: number;
   /** An industry template to apply instead of the hand-made queue and service; null starts blank. */
   templateKey: string | null;
+  /** For a template with providers: their personal lines and the optional pool (T4). */
+  providers?: ProviderSetup | null;
 }
 
 /** What has been created so far; passed back in to resume after a failure. */
@@ -66,7 +68,12 @@ export function useSetUpBusiness() {
         if (setup.templateKey) {
           const template =
             created.template ??
-            (await applyTemplate(created.locationId, setup.templateKey, created.orgId));
+            (await applyTemplate(
+              created.locationId,
+              setup.templateKey,
+              created.orgId,
+              setup.providers ?? null,
+            ));
           return { ...created, template };
         }
         if (!created.queueId) {

@@ -31,6 +31,7 @@ export function fromStored(raw: unknown): BuilderField[] {
         ...(f.required === true ? { required: true } : {}),
         ...(type === 'agreement' && typeof f.body === 'string' ? { body: f.body } : {}),
         ...(type === 'signature' && f.collect_guardian === true ? { collect_guardian: true } : {}),
+        ...(type === 'yes_no' && f.must_be_true === true ? { must_be_true: true } : {}),
         ...(f.visibility === 'staff_only' ? { visibility: 'staff_only' as Visibility } : {}),
         ...(SENSITIVITIES.includes(f.sensitivity as Sensitivity)
           ? { sensitivity: f.sensitivity as Sensitivity }

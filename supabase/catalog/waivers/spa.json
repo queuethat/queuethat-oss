@@ -1,0 +1,46 @@
+{
+  "key": "spa",
+  "version": 1,
+  "name": {
+    "en": "Spa treatment consent",
+    "es": "Consentimiento para tratamientos de spa"
+  },
+  "description": {
+    "en": "We ask this before your first treatment so your therapist can keep you comfortable and safe.",
+    "es": "Pedimos esto antes de tu primer tratamiento para que tu terapeuta cuide tu comodidad y tu seguridad."
+  },
+  "form": {
+    "name": {
+      "en": "Spa treatment consent",
+      "es": "Consentimiento para tratamientos de spa"
+    },
+    "fields": [
+      {
+        "key": "agreement_1",
+        "type": "agreement",
+        "label": {
+          "en": "Before your treatment",
+          "es": "Antes de tu tratamiento"
+        },
+        "body": {
+          "en": "Spa treatments such as massage, facials and body treatments are for relaxation and well-being. They are not medical treatment and do not replace care from a health professional.\n\nI agree that:\n\n- I will tell my therapist before we start about anything that could make a treatment unsafe or uncomfortable, such as allergies, recent injuries or surgery, skin sensitivity or pregnancy.\n- I will tell my therapist right away if anything feels painful or wrong, and I can ask to change or stop the treatment at any time.\n- Some treatments can cause temporary redness, soreness or a skin reaction.\n\nI accept that the spa is not responsible for reactions caused by information I did not share.",
+          "es": "Los tratamientos de spa, como masajes, faciales y tratamientos corporales, son para la relajación y el bienestar. No son un tratamiento médico ni reemplazan la atención de un profesional de la salud.\n\nAcepto que:\n\n- Antes de empezar le diré a mi terapeuta cualquier cosa que pueda hacer un tratamiento inseguro o incómodo, como alergias, lesiones o cirugías recientes, piel sensible o un embarazo.\n- Le avisaré de inmediato si algo me duele o no se siente bien, y puedo pedir que cambie o detenga el tratamiento en cualquier momento.\n- Algunos tratamientos pueden causar enrojecimiento, molestias o una reacción de la piel pasajeros.\n\nAcepto que el spa no es responsable de reacciones causadas por información que no compartí."
+        },
+        "required": true
+      },
+      {
+        "key": "signature_1",
+        "type": "signature",
+        "label": {
+          "en": "Type your full name to sign",
+          "es": "Escribe tu nombre completo para firmar"
+        },
+        "required": true
+      }
+    ]
+  },
+  "waiver_banner": {
+    "en": "A starting point, not legal advice. Have your own counsel review before using.",
+    "es": "Un punto de partida, no asesoría legal. Pide a tu propio abogado que lo revise antes de usarlo."
+  }
+}

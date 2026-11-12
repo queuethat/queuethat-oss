@@ -1,0 +1,161 @@
+{
+  "key": "spa",
+  "version": 1,
+  "tier": 1,
+  "mode": "both",
+  "health_tagged": false,
+  "name": {
+    "en": "Spa and massage",
+    "es": "Spa y masajes"
+  },
+  "description": {
+    "en": "Massages, facials and body treatments, mostly booked, with a line per therapist and an \"Anyone available\" option.",
+    "es": "Masajes, faciales y tratamientos corporales, sobre todo con cita, con una fila por terapeuta y la opción \"Cualquiera disponible\"."
+  },
+  "keywords": {
+    "en": [
+      "spa",
+      "massage",
+      "facial",
+      "wellness",
+      "body treatment",
+      "relaxation"
+    ],
+    "es": [
+      "spa",
+      "masaje",
+      "facial",
+      "bienestar",
+      "tratamiento corporal",
+      "relajación"
+    ]
+  },
+  "queues": [
+    {
+      "name": {
+        "en": "Treatments",
+        "es": "Tratamientos"
+      },
+      "prefix": "T",
+      "show_eta": true,
+      "services": [
+        {
+          "name": {
+            "en": "Massage, 30 minutes",
+            "es": "Masaje, 30 minutos"
+          },
+          "minutes": 30
+        },
+        {
+          "name": {
+            "en": "Massage, 60 minutes",
+            "es": "Masaje, 60 minutos"
+          },
+          "minutes": 60
+        },
+        {
+          "name": {
+            "en": "Massage, 90 minutes",
+            "es": "Masaje, 90 minutos"
+          },
+          "minutes": 90
+        },
+        {
+          "name": {
+            "en": "Facial",
+            "es": "Facial"
+          },
+          "minutes": 60
+        },
+        {
+          "name": {
+            "en": "Body scrub",
+            "es": "Exfoliación corporal"
+          },
+          "minutes": 45
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "label": {
+        "en": "Room 1",
+        "es": "Sala 1"
+      },
+      "kind": "room"
+    },
+    {
+      "label": {
+        "en": "Room 2",
+        "es": "Sala 2"
+      },
+      "kind": "room"
+    },
+    {
+      "label": {
+        "en": "Room 3",
+        "es": "Sala 3"
+      },
+      "kind": "room"
+    }
+  ],
+  "providers": {
+    "noun": {
+      "en": "therapist",
+      "es": "terapeuta"
+    },
+    "default_count": 3,
+    "pool": true
+  },
+  "form": {
+    "name": {
+      "en": "Before your treatment",
+      "es": "Antes de tu tratamiento"
+    },
+    "fields": [
+      {
+        "key": "pressure",
+        "type": "single_choice",
+        "label": {
+          "en": "Preferred pressure",
+          "es": "Presión preferida"
+        },
+        "options": [
+          {
+            "en": "Light",
+            "es": "Suave"
+          },
+          {
+            "en": "Medium",
+            "es": "Media"
+          },
+          {
+            "en": "Firm",
+            "es": "Firme"
+          }
+        ],
+        "sensitivity": "normal"
+      },
+      {
+        "key": "avoid_areas",
+        "type": "short_text",
+        "label": {
+          "en": "Any injuries or areas to avoid?",
+          "es": "¿Alguna lesión o zona que debamos evitar?"
+        },
+        "help": {
+          "en": "Keep it short, for example \"sore left shoulder\". Please don't include medical history.",
+          "es": "Sé breve, por ejemplo \"hombro izquierdo adolorido\". No incluyas tu historial médico."
+        },
+        "sensitivity": "sensitive"
+      }
+    ]
+  },
+  "booking": {
+    "slot_minutes": 15,
+    "buffer_after_minutes": 15,
+    "min_notice_minutes": 120,
+    "max_days_ahead": 60
+  }
+}

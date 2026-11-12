@@ -109,6 +109,7 @@ export function AppointmentPage({ token }: { token: string }) {
           {t(`appointment.status.${a.status}` as 'appointment.status.booked')}
         </BookingStatusPill>
         <p className="text-xl font-semibold">{a.service_name}</p>
+        {a.provider_name ? <p>{t('appointment.with', { name: a.provider_name })}</p> : null}
         <p>{a.location_name}</p>
         <p data-testid="appointment-when">{formatWhen(a.starts_at, tz, i18n.language)}</p>
         <p className="text-sm text-muted">{zoneName(a.starts_at, tz, i18n.language)}</p>

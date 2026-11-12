@@ -15,7 +15,7 @@ grant execute on function tests.detail_of(text) to authenticated;
 select is((select final_text from private.sms_compose(tests.id('org_a'), 'en', 'called', 'Come in, {{guest_first_name}}.', '{"location_name":"Joe Barber"}')),
   'Joe Barber: Come in, Alexandria. Reply STOP to opt out, HELP for help.', 'name first, footer last, variables filled');
 select is((select final_text from private.sms_compose(tests.id('org_a'), 'es', 'called', 'Pasa.', '{"location_name":"Joe"}')),
-  'Joe: Pasa. Responde STOP para cancelar, AYUDA para ayuda.', 'the Spanish footer');
+  'Joe: Pasa. Responde STOP para cancelar, HELP para ayuda.', 'the Spanish footer');
 select is((select final_text from private.sms_compose(tests.id('org_a'), 'en', 'help', 'Call us.', '{"location_name":"Joe"}')),
   'Call us.', 'the HELP reply keeps its own text');
 select is((select final_text from private.sms_compose(tests.id('org_a'), 'en', 'called', 'Go [to {counter}]', '{"location_name":"J","counter":"Chair 1"}')),
@@ -135,7 +135,7 @@ select throws_ok($$ insert into app.sms_footers (locale, version, text) values (
 insert into app.sms_footers (locale, version, text) values ('en', 2, 'Reply STOP to end, HELP for help.');
 select is(private.sms_footer('en'), 'Reply STOP to end, HELP for help.', 'the highest footer version is used');
 select is(private.sms_footer('fr'), 'Reply STOP to end, HELP for help.', 'an unknown locale gets English');
-select is(private.sms_footer('es'), 'Responde STOP para cancelar, AYUDA para ayuda.', 'Spanish keeps its own');
+select is(private.sms_footer('es'), 'Responde STOP para cancelar, HELP para ayuda.', 'Spanish keeps its own');
 
 select * from finish();
 rollback;

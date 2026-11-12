@@ -34,3 +34,12 @@ export function safeNext(next: unknown, origin: string = window.location.origin)
   // A normalised `/.//host` becomes `//host`, which navigation reads as another site.
   return path.startsWith('//') ? DEFAULT_NEXT : path;
 }
+
+/**
+ * The `?next=` search for a link or redirect to an auth screen. Empty when `next` is
+ * `DEFAULT_NEXT`: every auth screen falls back to it through `safeNext`, so the address stays
+ * `/auth/sign-up` rather than `/auth/sign-up?next=%2Fstaff`. Any other path is kept.
+ */
+export function nextSearch(next: string): { next?: string } {
+  return next === DEFAULT_NEXT ? {} : { next };
+}

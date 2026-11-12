@@ -1,0 +1,156 @@
+{
+  "key": "pet_groomer",
+  "version": 1,
+  "tier": 1,
+  "mode": "both",
+  "health_tagged": false,
+  "name": {
+    "en": "Pet groomer",
+    "es": "Peluquería de mascotas"
+  },
+  "description": {
+    "en": "Baths, full grooms and nail trims, booked or walk-in, with a line per groomer and an \"Anyone available\" option.",
+    "es": "Baños, cortes completos y corte de uñas, con cita o sin cita, con una fila por peluquero y la opción \"Cualquiera disponible\"."
+  },
+  "keywords": {
+    "en": [
+      "pet groomer",
+      "dog grooming",
+      "cat grooming",
+      "pet salon",
+      "nail trim",
+      "bath"
+    ],
+    "es": [
+      "peluquería canina",
+      "mascotas",
+      "grooming",
+      "baño de perro",
+      "corte de uñas",
+      "gatos"
+    ]
+  },
+  "queues": [
+    {
+      "name": {
+        "en": "Grooming",
+        "es": "Peluquería"
+      },
+      "prefix": "G",
+      "show_eta": true,
+      "services": [
+        {
+          "name": {
+            "en": "Nail trim",
+            "es": "Corte de uñas"
+          },
+          "minutes": 15
+        },
+        {
+          "name": {
+            "en": "Bath and brush, small dog",
+            "es": "Baño y cepillado, perro pequeño"
+          },
+          "minutes": 60
+        },
+        {
+          "name": {
+            "en": "Bath and brush, large dog",
+            "es": "Baño y cepillado, perro grande"
+          },
+          "minutes": 90
+        },
+        {
+          "name": {
+            "en": "Full groom, small dog",
+            "es": "Corte completo, perro pequeño"
+          },
+          "minutes": 90
+        },
+        {
+          "name": {
+            "en": "Full groom, large dog",
+            "es": "Corte completo, perro grande"
+          },
+          "minutes": 120
+        },
+        {
+          "name": {
+            "en": "Cat groom",
+            "es": "Arreglo de gato"
+          },
+          "minutes": 90
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "label": {
+        "en": "Grooming table 1",
+        "es": "Mesa de peluquería 1"
+      },
+      "kind": "table"
+    },
+    {
+      "label": {
+        "en": "Grooming table 2",
+        "es": "Mesa de peluquería 2"
+      },
+      "kind": "table"
+    }
+  ],
+  "providers": {
+    "noun": {
+      "en": "groomer",
+      "es": "peluquero"
+    },
+    "default_count": 2,
+    "pool": true
+  },
+  "form": {
+    "name": {
+      "en": "About your pet",
+      "es": "Sobre tu mascota"
+    },
+    "fields": [
+      {
+        "key": "pet_name",
+        "type": "short_text",
+        "label": {
+          "en": "Pet's name",
+          "es": "Nombre de tu mascota"
+        },
+        "sensitivity": "normal"
+      },
+      {
+        "key": "breed",
+        "type": "short_text",
+        "label": {
+          "en": "Breed or type",
+          "es": "Raza o tipo"
+        },
+        "sensitivity": "normal"
+      },
+      {
+        "key": "handling",
+        "type": "short_text",
+        "label": {
+          "en": "Anything we should know?",
+          "es": "¿Algo que debamos saber?"
+        },
+        "help": {
+          "en": "For example \"nervous with dryers\" or \"matted behind the ears\".",
+          "es": "Por ejemplo \"se pone nervioso con el secador\" o \"nudos detrás de las orejas\"."
+        },
+        "sensitivity": "normal"
+      }
+    ]
+  },
+  "booking": {
+    "slot_minutes": 30,
+    "buffer_after_minutes": 15,
+    "min_notice_minutes": 120,
+    "max_days_ahead": 60
+  }
+}

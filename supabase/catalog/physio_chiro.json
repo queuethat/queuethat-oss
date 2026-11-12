@@ -1,0 +1,150 @@
+{
+  "key": "physio_chiro",
+  "version": 1,
+  "tier": 1,
+  "mode": "both",
+  "health_tagged": true,
+  "name": {
+    "en": "Physio, chiro and massage therapy",
+    "es": "Fisioterapia, quiropráctica y masoterapia"
+  },
+  "description": {
+    "en": "Assessments and treatments, mostly booked, with a line per practitioner and an optional \"Anyone available\" line. Ticket numbers only on screens.",
+    "es": "Evaluaciones y tratamientos, sobre todo con cita, con una fila por profesional y una fila opcional \"Cualquiera disponible\". Solo números en las pantallas."
+  },
+  "keywords": {
+    "en": [
+      "physiotherapy",
+      "physio",
+      "chiropractor",
+      "massage therapy",
+      "RMT",
+      "rehab"
+    ],
+    "es": [
+      "fisioterapia",
+      "fisioterapeuta",
+      "quiropráctico",
+      "masoterapia",
+      "rehabilitación"
+    ]
+  },
+  "queues": [
+    {
+      "name": {
+        "en": "Appointments",
+        "es": "Citas"
+      },
+      "prefix": "P",
+      "show_eta": true,
+      "services": [
+        {
+          "name": {
+            "en": "Initial assessment",
+            "es": "Evaluación inicial"
+          },
+          "minutes": 45
+        },
+        {
+          "name": {
+            "en": "Physiotherapy treatment",
+            "es": "Sesión de fisioterapia"
+          },
+          "minutes": 30
+        },
+        {
+          "name": {
+            "en": "Chiropractic adjustment",
+            "es": "Ajuste quiropráctico"
+          },
+          "minutes": 15
+        },
+        {
+          "name": {
+            "en": "Massage therapy, 30 minutes",
+            "es": "Masoterapia, 30 minutos"
+          },
+          "minutes": 30
+        },
+        {
+          "name": {
+            "en": "Massage therapy, 60 minutes",
+            "es": "Masoterapia, 60 minutos"
+          },
+          "minutes": 60
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "label": {
+        "en": "Treatment room 1",
+        "es": "Sala de tratamiento 1"
+      },
+      "kind": "room"
+    },
+    {
+      "label": {
+        "en": "Treatment room 2",
+        "es": "Sala de tratamiento 2"
+      },
+      "kind": "room"
+    },
+    {
+      "label": {
+        "en": "Treatment room 3",
+        "es": "Sala de tratamiento 3"
+      },
+      "kind": "room"
+    }
+  ],
+  "providers": {
+    "noun": {
+      "en": "practitioner",
+      "es": "profesional"
+    },
+    "default_count": 3,
+    "pool": true
+  },
+  "form": {
+    "name": {
+      "en": "Before your visit",
+      "es": "Antes de tu visita"
+    },
+    "fields": [
+      {
+        "key": "new_patient",
+        "type": "yes_no",
+        "label": {
+          "en": "Is this your first visit here?",
+          "es": "¿Es tu primera visita aquí?"
+        },
+        "help": {
+          "en": "New patients may be asked to fill in a registration form at the front desk.",
+          "es": "Es posible que en recepción pidamos a los pacientes nuevos que llenen un formulario de registro."
+        },
+        "sensitivity": "normal"
+      },
+      {
+        "key": "area",
+        "type": "short_text",
+        "label": {
+          "en": "Area to work on, in a few words",
+          "es": "Zona a tratar, en pocas palabras"
+        },
+        "help": {
+          "en": "For example \"lower back\". Please don't include medical history; your practitioner will ask.",
+          "es": "Por ejemplo \"espalda baja\". No incluyas tu historial médico; tu profesional te preguntará."
+        },
+        "sensitivity": "sensitive"
+      }
+    ]
+  },
+  "booking": {
+    "slot_minutes": 15,
+    "buffer_after_minutes": 10,
+    "min_notice_minutes": 120,
+    "max_days_ahead": 60
+  }
+}

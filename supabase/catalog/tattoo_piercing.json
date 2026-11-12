@@ -1,0 +1,194 @@
+{
+  "key": "tattoo_piercing",
+  "version": 1,
+  "tier": 1,
+  "mode": "both",
+  "health_tagged": false,
+  "name": {
+    "en": "Tattoo and piercing studio",
+    "es": "Estudio de tatuajes y perforaciones"
+  },
+  "description": {
+    "en": "Flash walk-ins and booked sessions, with age confirmation, a consent and aftercare waiver, and a line per artist.",
+    "es": "Diseños sin cita y sesiones con cita, con confirmación de edad, un consentimiento con cuidados posteriores y una fila por artista."
+  },
+  "keywords": {
+    "en": [
+      "tattoo",
+      "piercing",
+      "flash",
+      "ink",
+      "studio",
+      "body art"
+    ],
+    "es": [
+      "tatuaje",
+      "perforación",
+      "piercing",
+      "flash",
+      "estudio",
+      "arte corporal"
+    ]
+  },
+  "queues": [
+    {
+      "name": {
+        "en": "Studio",
+        "es": "Estudio"
+      },
+      "prefix": "T",
+      "show_eta": true,
+      "services": [
+        {
+          "name": {
+            "en": "Consultation",
+            "es": "Consulta"
+          },
+          "minutes": 15
+        },
+        {
+          "name": {
+            "en": "Flash tattoo",
+            "es": "Tatuaje flash"
+          },
+          "minutes": 60
+        },
+        {
+          "name": {
+            "en": "Custom tattoo session",
+            "es": "Sesión de tatuaje personalizado"
+          },
+          "minutes": 180
+        },
+        {
+          "name": {
+            "en": "Touch-up",
+            "es": "Retoque"
+          },
+          "minutes": 30
+        },
+        {
+          "name": {
+            "en": "Ear piercing",
+            "es": "Perforación de oreja"
+          },
+          "minutes": 15
+        },
+        {
+          "name": {
+            "en": "Body piercing",
+            "es": "Perforación corporal"
+          },
+          "minutes": 20
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "label": {
+        "en": "Station 1",
+        "es": "Estación 1"
+      },
+      "kind": "chair"
+    },
+    {
+      "label": {
+        "en": "Station 2",
+        "es": "Estación 2"
+      },
+      "kind": "chair"
+    },
+    {
+      "label": {
+        "en": "Station 3",
+        "es": "Estación 3"
+      },
+      "kind": "chair"
+    }
+  ],
+  "providers": {
+    "noun": {
+      "en": "artist",
+      "es": "artista"
+    },
+    "default_count": 3,
+    "pool": true
+  },
+  "form": {
+    "name": {
+      "en": "Tattoo and piercing consent",
+      "es": "Consentimiento para tatuaje y perforación"
+    },
+    "fields": [
+      {
+        "key": "piece",
+        "type": "short_text",
+        "label": {
+          "en": "What are you getting?",
+          "es": "¿Qué te vas a hacer?"
+        },
+        "help": {
+          "en": "For example \"small flash on forearm\" or \"helix piercing\".",
+          "es": "Por ejemplo \"flash pequeño en el antebrazo\" o \"perforación en el hélix\"."
+        },
+        "sensitivity": "normal"
+      },
+      {
+        "key": "yes_no_1",
+        "type": "yes_no",
+        "label": {
+          "en": "Are you 18 or older?",
+          "es": "¿Tienes 18 años o más?"
+        },
+        "required": true,
+        "must_be_true": true
+      },
+      {
+        "key": "agreement_1",
+        "type": "agreement",
+        "label": {
+          "en": "Consent to the procedure",
+          "es": "Consentimiento para el procedimiento"
+        },
+        "body": {
+          "en": "I am asking this studio to give me a tattoo or piercing. Before starting I confirm that:\n\n- I have told the artist about anything that could affect the procedure or healing, such as allergies, skin conditions, medicines that affect bleeding, or pregnancy.\n- I have not had alcohol or drugs today that could affect my judgement or bleeding.\n- I understand that a tattoo or piercing breaks the skin and can cause pain, swelling, bleeding, infection, allergic reaction or scarring.\n- I understand that colours, lines and healing vary from person to person, and that a tattoo is permanent and hard to remove.\n- I have checked the design, spelling and placement, and I approve them.\n\nI can ask questions or stop at any time. I agree that the studio and its artists are not responsible for problems caused by information I did not share or by aftercare I did not follow.",
+          "es": "Le pido a este estudio que me haga un tatuaje o una perforación. Antes de empezar confirmo que:\n\n- Le he contado al artista cualquier cosa que pueda afectar el procedimiento o la cicatrización, como alergias, problemas de la piel, medicamentos que afecten el sangrado o un embarazo.\n- Hoy no he consumido alcohol ni drogas que puedan afectar mi juicio o el sangrado.\n- Entiendo que un tatuaje o una perforación rompe la piel y puede causar dolor, hinchazón, sangrado, infección, reacción alérgica o cicatrices.\n- Entiendo que los colores, las líneas y la cicatrización varían de una persona a otra, y que un tatuaje es permanente y difícil de quitar.\n- He revisado el diseño, la ortografía y la ubicación, y los apruebo.\n\nPuedo hacer preguntas o detenerme en cualquier momento. Acepto que el estudio y sus artistas no son responsables de problemas causados por información que no compartí o por cuidados posteriores que no seguí."
+        },
+        "required": true
+      },
+      {
+        "key": "agreement_2",
+        "type": "agreement",
+        "label": {
+          "en": "Aftercare",
+          "es": "Cuidados posteriores"
+        },
+        "body": {
+          "en": "I have received aftercare instructions and I will follow them. In particular I will:\n\n- Keep the area clean and wash my hands before touching it.\n- Avoid swimming, baths and direct sun until it has healed.\n- Not pick or scratch scabs.\n\nIf I see signs of infection, such as spreading redness, heat, pus or fever, I will contact a health professional and let the studio know.",
+          "es": "He recibido las instrucciones de cuidado y las seguiré. En particular:\n\n- Mantendré la zona limpia y me lavaré las manos antes de tocarla.\n- Evitaré nadar, bañarme en tina y el sol directo hasta que cicatrice.\n- No me quitaré ni rascaré las costras.\n\nSi veo señales de infección, como enrojecimiento que se extiende, calor, pus o fiebre, consultaré a un profesional de la salud y avisaré al estudio."
+        },
+        "required": true
+      },
+      {
+        "key": "signature_1",
+        "type": "signature",
+        "label": {
+          "en": "Type your full name to sign",
+          "es": "Escribe tu nombre completo para firmar"
+        },
+        "required": true
+      }
+    ]
+  },
+  "waiver_banner": {
+    "en": "A starting point, not legal advice. Have your own counsel review before using.",
+    "es": "Un punto de partida, no asesoría legal. Pide a tu propio abogado que lo revise antes de usarlo."
+  },
+  "booking": {
+    "slot_minutes": 30,
+    "buffer_after_minutes": 15,
+    "min_notice_minutes": 1440,
+    "max_days_ahead": 90
+  }
+}

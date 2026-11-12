@@ -283,6 +283,10 @@ begin
   insert into app.blocked_identities (id, org_id, kind, value_hash, reason)
   values (tests.new_id('block_a'), tests.id('org_a'), 'phone_hash', '\xaa', 'fixture');
 
+  -- S2b (#1389) the owner's own phone for test texts
+  insert into app.member_phones (id, org_id, user_id, phone_e164, verified_at)
+  values (tests.new_id('member_phone_a'), tests.id('org_a'), tests.id('owner'), '+14155550100', now());
+
   -- S2 (#23) queues
   insert into app.queues (id, org_id, location_id, name, ticket_prefix)
   values (tests.new_id('queue_a'), tests.id('org_a'), tests.id('loc_a'), 'Walk-ins', 'A');

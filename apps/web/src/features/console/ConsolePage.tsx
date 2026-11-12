@@ -79,6 +79,9 @@ import { useShortcuts } from './shortcuts/useShortcuts.ts';
 import { TodayPanel } from '../appointments/TodayPanel.tsx';
 import { useLiveScreenActivity } from '../auth/SessionLimits.tsx';
 import { useWakeLock } from '../display/useWakeLock.ts';
+import { myLinesQuery } from './lines/api.ts';
+import { callableCount } from './lines/lines.ts';
+import { LinesBoard } from './lines/LinesBoard.tsx';
 
 /** Roles that may block a guest (the database enforces the same ladder). */
 const MANAGER_ROLES: string[] = ['manager', 'admin', 'owner'];
@@ -174,6 +177,19 @@ export function ConsolePage({
   });
   const userId = useSession().data?.user.id;
   const members = useQuery({ ...membersQuery(location?.org_id ?? ''), enabled: !!location });
+  const myLines = useQuery({ ...myLinesQuery(location?.org_id ?? ''), enabled: !!location });
+  // Without ?queue=, a provider (M6) opens on their own line.
+  const currentQueue = () =>
+    queues.data?.find((q) => q.id === queueId) ??
+    queues.data?.find((q) => q.kind === 'provider' && myLines.data?.queueIds?.includes(q.id)) ??
+    queues.data?.[0];
+  // A provider line also reaches its pool (M4), so either having someone enables Call next.
+  const nobodyToCall = (q: ConsoleQueue) => callableCount(q, visits.data ?? []) === 0;
+  const callNextOn = (id: string) =>
+    callNext.mutate(
+      { queueId: id, counterId: myCounter },
+      { onSuccess: (row) => announce('call', row), onError: failed },
+    );
   // Every action answers with what happened and an Undo for 10 s (S-6); the database decides
   // whether the undo still applies.
   const announce = (action: VisitAction, row: VisitRow | QueuedRow | null) => {
@@ -347,7 +363,7 @@ export function ConsolePage({
     );
 
   useShortcuts(shortcutsOn, (command) => {
-    const current = queues.data?.find((q) => q.id === queueId) ?? queues.data?.[0];
+    const current = currentQueue();
     if (!location || !current || view !== 'queue') return;
     const inView = applyFilters(
       (visits.data ?? []).filter((v) => v.queueId === current.id),
@@ -384,11 +400,8 @@ export function ConsolePage({
     const click = (selector: string) => document.querySelector<HTMLElement>(selector)?.click();
     switch (command) {
       case 'callNext':
-        if (mayCall && online && waitingCount(current.id) > 0 && !callNext.isPending)
-          callNext.mutate(
-            { queueId: current.id, counterId: myCounter },
-            { onSuccess: (row) => announce('call', row), onError: failed },
-          );
+        if (mayCall && online && !nobodyToCall(current) && !callNext.isPending)
+          callNextOn(current.id);
         return;
       case 'selectNext':
         return step(1);
@@ -426,7 +439,7 @@ export function ConsolePage({
   if (!location || !queues.data || !counters.data) {
     return <Spinner label={t('console.loading')} className="mx-auto my-16" />;
   }
-  const queue = queues.data.find((q) => q.id === queueId) ?? queues.data[0];
+  const queue = currentQueue();
   const inQueue = visits.data?.filter((v) => v.queueId === queue?.id) ?? [];
   const waitingIn = waitingCount;
 
@@ -518,6 +531,17 @@ export function ConsolePage({
           />
         ) : queue ? (
           <>
+            <LinesBoard
+              queues={queues.data}
+              visits={visits.data ?? []}
+              mine={myLines.data}
+              currentId={queue.id}
+              mayCall={mayCall}
+              disabled={!online || onBreak}
+              calling={callNext.isPending ? callNext.variables.queueId : null}
+              onCallNext={callNextOn}
+              onOpen={onQueueChange}
+            />
             <Tabs
               label={t('console.queues')}
               panelId={PANEL_ID}
@@ -565,15 +589,10 @@ export function ConsolePage({
               <div className="mb-4 grid grid-cols-[2fr_1fr] gap-4">
                 {mayCall ? (
                   <BigButton
-                    disabled={waitingIn(queue.id) === 0 || !online || onBreak}
+                    disabled={nobodyToCall(queue) || !online || onBreak}
                     loading={callNext.isPending}
                     loadingLabel={t('console.calling')}
-                    onClick={() =>
-                      callNext.mutate(
-                        { queueId: queue.id, counterId: myCounter },
-                        { onSuccess: (row) => announce('call', row), onError: failed },
-                      )
-                    }
+                    onClick={() => callNextOn(queue.id)}
                   >
                     {t('console.callNext')}
                   </BigButton>

@@ -1,0 +1,161 @@
+{
+  "key": "auto_repair",
+  "version": 1,
+  "tier": 1,
+  "mode": "both",
+  "health_tagged": false,
+  "name": {
+    "en": "Auto repair and tires",
+    "es": "Taller mecánico y llantas"
+  },
+  "description": {
+    "en": "Oil changes, tire work and repairs, walk-in or booked, with a line per service bay.",
+    "es": "Cambios de aceite, llantas y reparaciones, con cita o sin cita, con una fila por bahía de servicio."
+  },
+  "keywords": {
+    "en": [
+      "auto repair",
+      "mechanic",
+      "garage",
+      "tires",
+      "tyres",
+      "oil change",
+      "car service"
+    ],
+    "es": [
+      "taller mecánico",
+      "mecánico",
+      "llantas",
+      "neumáticos",
+      "cambio de aceite",
+      "servicio de auto"
+    ]
+  },
+  "queues": [
+    {
+      "name": {
+        "en": "Service desk",
+        "es": "Recepción de servicio"
+      },
+      "prefix": "A",
+      "show_eta": true,
+      "services": [
+        {
+          "name": {
+            "en": "Oil change",
+            "es": "Cambio de aceite"
+          },
+          "minutes": 30
+        },
+        {
+          "name": {
+            "en": "Tire change or swap",
+            "es": "Cambio de llantas"
+          },
+          "minutes": 45
+        },
+        {
+          "name": {
+            "en": "Flat tire repair",
+            "es": "Reparación de pinchazo"
+          },
+          "minutes": 30
+        },
+        {
+          "name": {
+            "en": "Inspection or diagnosis",
+            "es": "Revisión o diagnóstico"
+          },
+          "minutes": 60
+        },
+        {
+          "name": {
+            "en": "Brake check",
+            "es": "Revisión de frenos"
+          },
+          "minutes": 45
+        },
+        {
+          "name": {
+            "en": "Battery check or replacement",
+            "es": "Revisión o cambio de batería"
+          },
+          "minutes": 20
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "label": {
+        "en": "Bay 1",
+        "es": "Bahía 1"
+      },
+      "kind": "counter"
+    },
+    {
+      "label": {
+        "en": "Bay 2",
+        "es": "Bahía 2"
+      },
+      "kind": "counter"
+    },
+    {
+      "label": {
+        "en": "Bay 3",
+        "es": "Bahía 3"
+      },
+      "kind": "counter"
+    }
+  ],
+  "form": {
+    "name": {
+      "en": "About your vehicle",
+      "es": "Sobre tu vehículo"
+    },
+    "fields": [
+      {
+        "key": "vehicle",
+        "type": "short_text",
+        "required": true,
+        "label": {
+          "en": "Vehicle make and model",
+          "es": "Marca y modelo del vehículo"
+        },
+        "help": {
+          "en": "For example \"Toyota Corolla 2018\".",
+          "es": "Por ejemplo \"Toyota Corolla 2018\"."
+        },
+        "sensitivity": "normal"
+      },
+      {
+        "key": "plate",
+        "type": "short_text",
+        "label": {
+          "en": "Licence plate",
+          "es": "Placa"
+        },
+        "sensitivity": "personal"
+      },
+      {
+        "key": "issue",
+        "type": "short_text",
+        "label": {
+          "en": "What do you need?",
+          "es": "¿Qué necesitas?"
+        },
+        "help": {
+          "en": "For example \"squeaky brakes\" or \"winter tires on\".",
+          "es": "Por ejemplo \"los frenos rechinan\" o \"poner llantas de invierno\"."
+        },
+        "sensitivity": "normal"
+      }
+    ]
+  },
+  "booking": {
+    "slot_minutes": 30,
+    "buffer_after_minutes": 15,
+    "min_notice_minutes": 120,
+    "max_days_ahead": 30
+  }
+}

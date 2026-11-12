@@ -7,6 +7,9 @@ import { addIntakeFields, freshQueue } from './support/queues.ts';
 // Q-8 (#131): a queue's questions on the join page, and the answers on the console.
 
 const { url, anonKey } = supabaseEnv();
+const ADMIN_DATABASE_URL =
+  process.env.E2E_ADMIN_DATABASE_URL ??
+  'postgresql://supabase_admin:postgres@127.0.0.1:55322/postgres';
 
 test('AC1 and AC2: the database refuses a required field left empty and the form names it; staff-only fields never show', async ({
   devices,
@@ -94,4 +97,20 @@ test('AC3: staff fill a staff-only field and another tablet sees it within 3 s',
   await staff.getByRole('button', { name: 'Save answers' }).click();
   await expect(other.getByLabel('Allergy check')).toHaveValue('Latex', { timeout: 3_000 });
   await expectNoSeriousA11yViolations(staff);
+
+  // F7 (#1283): the console read the answers through api.get_visit_answers, which logged the
+  // access (who and which visit, never the values), once per member and visit for 10 minutes.
+  const { default: postgres } = await import('postgres');
+  const sql = postgres(ADMIN_DATABASE_URL, { max: 1, onnotice: () => {} });
+  try {
+    const rows = await sql<{ role: string; after: unknown }[]>`
+      select l.role, l.after from app.audit_log l
+      join app.visits v on v.id::text = l.row_id
+      where l.action = 'READ' and v.queue_id = ${queue.id}`;
+    expect(rows).toHaveLength(1);
+    expect(rows[0]!.role).toBe('staff');
+    expect(JSON.stringify(rows[0]!.after)).not.toMatch(/Colour|Latex/);
+  } finally {
+    await sql.end();
+  }
 });

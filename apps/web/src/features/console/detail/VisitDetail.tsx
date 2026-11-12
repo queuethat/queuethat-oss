@@ -2,12 +2,12 @@ import { Badge, Button, Dialog, Input, Textarea } from '@qm/ui';
 import { useState } from 'react';
 import { useTranslation } from '../../../lib/translation.tsx';
 import type { NotesTarget } from '../api.ts';
-import { StaffAnswers } from '../../intake/StaffAnswers.tsx';
 import { MessagesSection } from '../messages/Messages.tsx';
 import { ChatPanel } from '../chat/ChatPanel.tsx';
 import { WhatsAppButton } from '../contact/WhatsAppButton.tsx';
 import { PaymentsSection } from '../payments/PaymentsSection.tsx';
 import { PartyEditor } from './PartyEditor.tsx';
+import { VisitAnswers } from './answers/VisitAnswers.tsx';
 import { WaiverRecord } from './waiver/WaiverRecord.tsx';
 
 export const NOTES_MAX = 1000;
@@ -71,7 +71,7 @@ export function VisitDetail({
       }
     >
       <div className="flex flex-col gap-4">
-        <StaffAnswers visit={visit} />
+        {open ? <VisitAnswers visit={visit} /> : null}
         {open ? <WaiverRecord visitId={visit.id} /> : null}
         <WhatsAppButton visitId={visit.id} ticket={visit.ticket} />
         {open ? <MessagesSection visitId={visit.id} /> : null}

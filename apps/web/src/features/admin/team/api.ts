@@ -24,6 +24,8 @@ export interface PendingInvitation {
   displayName: string | null;
   role: MemberRole;
   locationIds: string[] | null;
+  /** Lines a staff invite is limited to (M3b); null = every line. */
+  queueIds: string[] | null;
   expiresAt: string;
 }
 
@@ -76,7 +78,7 @@ export const invitationsQuery = (orgId: string) =>
       const { data, error } = await supabase
         .schema('app')
         .from('invitations')
-        .select('id, email, display_name, role, location_ids, expires_at')
+        .select('id, email, display_name, role, location_ids, queue_ids, expires_at')
         .eq('org_id', orgId)
         .is('accepted_at', null)
         .is('revoked_at', null)
@@ -89,6 +91,7 @@ export const invitationsQuery = (orgId: string) =>
         displayName: i.display_name,
         role: i.role,
         locationIds: i.location_ids,
+        queueIds: i.queue_ids,
         expiresAt: i.expires_at,
       }));
     },
@@ -100,6 +103,8 @@ export interface InviteInput {
   /** Null = every location. */
   locationIds: string[] | null;
   displayName: string;
+  /** Staff only: the lines they are limited to (null or absent = every line). */
+  queueIds?: string[] | null;
 }
 
 /** Maps the invite-staff function's `{ error }` answer (or a network failure) to the error to throw. */
@@ -123,6 +128,7 @@ async function invite(orgId: string, input: InviteInput) {
       role: input.role,
       location_ids: input.locationIds,
       display_name: input.displayName.trim() || null,
+      queue_ids: input.role === 'staff' ? (input.queueIds ?? null) : null,
       idempotency_key: crypto.randomUUID(),
     },
   });
@@ -172,6 +178,7 @@ export function useResendInvitation(orgId: string) {
         role: previous.role,
         locationIds: previous.locationIds,
         displayName: previous.displayName ?? '',
+        queueIds: previous.queueIds,
       });
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: teamKey(orgId) }),

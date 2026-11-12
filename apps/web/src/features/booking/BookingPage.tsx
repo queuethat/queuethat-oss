@@ -3,7 +3,7 @@ import { Button, EmptyState, Select, Spinner, Tabs } from '@qm/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { lazy, Suspense, useRef, useState } from 'react';
 import { useTranslation } from '../../lib/translation.tsx';
-import { useSetBookingAnswers } from '../guest/api.ts';
+import { useLocationLines, useSetBookingAnswers } from '../guest/api.ts';
 import { useBook, useBookingLocation, useServiceSlots } from './api.ts';
 import { useLocationEvents } from './events/api.ts';
 import type { Details } from './DetailsForm.tsx';
@@ -89,6 +89,8 @@ function SlotBooking({ slug, initialService }: { slug: string; initialService?: 
   const { t, i18n } = useTranslation('booking');
   const navigate = useNavigate();
   const location = useBookingLocation(slug);
+  // Provider and "Anyone available" lines (M5): rows only when the location has them.
+  const lines = useLocationLines(slug, null, false);
   const serviceIds = location.data?.services.map((s) => s.id) ?? [];
   const availability = useServiceSlots(slug, serviceIds, location.data?.tz ?? 'UTC');
   const book = useBook();
@@ -159,6 +161,12 @@ function SlotBooking({ slug, initialService }: { slug: string; initialService?: 
     );
 
   const { tz, captchaSiteKey: siteKey } = location.data;
+  // With provider lines, "Checkup" exists once per person: name the line so the guest picks whose.
+  const lineName = new Map((lines.data ?? []).map((l) => [l.queue_id, l.name]));
+  const serviceLabel = (s: { name: string; queueId: string | null }) => {
+    const line = s.queueId ? lineName.get(s.queueId) : undefined;
+    return line ? t('book.serviceOnLine', { service: s.name, line }) : s.name;
+  };
   const bookable = location.data.services.filter(
     (s) => (availability.slots[s.id]?.length ?? 0) > 0,
   );
@@ -275,7 +283,7 @@ function SlotBooking({ slug, initialService }: { slug: string; initialService?: 
           {service ? null : <option value="" />}
           {bookable.map((s) => (
             <option key={s.id} value={s.id}>
-              {s.name}
+              {serviceLabel(s)}
             </option>
           ))}
         </Select>
@@ -298,7 +306,7 @@ function SlotBooking({ slug, initialService }: { slug: string; initialService?: 
             queueId={service.queueId}
             serviceId={service.id}
             summary={t('book.summary', {
-              service: service.name,
+              service: serviceLabel(service),
               when: formatWhen(chosen, tz, i18n.language),
             })}
             countryCode={location.data.countryCode}

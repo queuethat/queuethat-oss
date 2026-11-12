@@ -1,16 +1,6 @@
 import { errorCode } from '@qm/domain';
-import { Button } from '@qm/ui';
-import { queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useTranslation } from '../../lib/translation.tsx';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase.ts';
-
-export interface IndustryTemplate {
-  key: string;
-  name: string;
-  description: string;
-  /** Clinics and the like: tickets only on screens, never names. */
-  healthTagged: boolean;
-}
 
 /** What `apply_industry_template` created. */
 export interface TemplateResult {
@@ -20,32 +10,29 @@ export interface TemplateResult {
   countersCreated: number;
 }
 
-/** The setup templates the database offers, in its order. */
-export const templatesQuery = queryOptions({
-  queryKey: ['onboarding', 'templates'],
-  staleTime: Infinity,
-  queryFn: async (): Promise<IndustryTemplate[]> => {
-    const { data, error } = await supabase.rpc('list_industry_templates');
-    if (error) throw error;
-    return data.map((row) => ({
-      key: row.key!,
-      name: row.name!,
-      description: row.description!,
-      healthTagged: !!row.health_tagged,
-    }));
-  },
-});
+/** "How many doctors?": one personal line per name, plus the optional "Anyone available" pool (T4). */
+export interface ProviderSetup {
+  names: string[];
+  pool: boolean;
+}
 
-/** Applies a template to a location in one transaction; a retry with the same key is a no-op. */
+/**
+ * Applies a template to a location in one transaction; a retry with the same key is a no-op.
+ * With `providers`, it makes their personal lines (and pool) instead of the template's queues.
+ */
 export async function applyTemplate(
   locationId: string,
   templateKey: string,
   idempotencyKey: string,
+  providers: ProviderSetup | null = null,
 ): Promise<TemplateResult> {
   const { data, error } = await supabase.rpc('apply_industry_template', {
     p_location_id: locationId,
     p_template_key: templateKey,
     p_idempotency_key: idempotencyKey,
+    ...(providers
+      ? { p_providers: providers.names.map((n) => n.trim()), p_pool: providers.pool }
+      : {}),
   });
   if (error) throw new Error(errorCode(error));
   return {
@@ -63,61 +50,12 @@ export function useApplyTemplate(locationId: string) {
     mutationFn: ({
       templateKey,
       idempotencyKey,
+      providers = null,
     }: {
       templateKey: string;
       idempotencyKey: string;
-    }) => applyTemplate(locationId, templateKey, idempotencyKey),
+      providers?: ProviderSetup | null;
+    }) => applyTemplate(locationId, templateKey, idempotencyKey, providers),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin'] }),
   });
-}
-
-/** One card per template plus "Start blank" (`value` null). Choosing is a toggle, not a commit. */
-export function TemplatePicker({
-  value,
-  onChange,
-  withBlank = true,
-}: {
-  value: string | null;
-  onChange: (key: string | null) => void;
-  /** Offers "Start blank"; off when applying to an existing location. */
-  withBlank?: boolean;
-}) {
-  const { t } = useTranslation('onboarding');
-  const { data: templates = [] } = useQuery(templatesQuery);
-  return (
-    <div className="flex flex-col gap-3" role="group" aria-label={t('templates.heading')}>
-      {withBlank ? (
-        <Button
-          variant={value === null ? 'primary' : 'secondary'}
-          aria-pressed={value === null}
-          className="h-auto justify-start py-3 text-left"
-          onClick={() => onChange(null)}
-        >
-          <span className="flex flex-col">
-            <span>{t('templates.blank')}</span>
-            <span className="text-sm font-normal">{t('templates.blankHint')}</span>
-          </span>
-        </Button>
-      ) : null}
-      {templates.map((tpl) => (
-        <Button
-          key={tpl.key}
-          variant={value === tpl.key ? 'primary' : 'secondary'}
-          aria-pressed={value === tpl.key}
-          className="h-auto justify-start py-3 text-left"
-          onClick={() => onChange(tpl.key)}
-        >
-          <span className="flex flex-col">
-            <span>{t(`templates.names.${tpl.key}`, { defaultValue: tpl.name })}</span>
-            <span className="text-sm font-normal">
-              {t(`templates.descriptions.${tpl.key}`, { defaultValue: tpl.description })}
-            </span>
-            {tpl.healthTagged ? (
-              <span className="text-sm font-semibold">{t('templates.privacyNote')}</span>
-            ) : null}
-          </span>
-        </Button>
-      ))}
-    </div>
-  );
 }

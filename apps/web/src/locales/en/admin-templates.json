@@ -49,7 +49,8 @@
     "unknown_variable": "{{name}} isn't a variable this message can use.",
     "permission_denied": "You don't have permission to change templates.",
     "invalid_input": "Write a message before saving.",
-    "unknown": "The template was not saved. Try again."
+    "unknown": "The template was not saved. Try again.",
+    "template_guard": "{{detail}}"
   },
   "queue": {
     "title": "Messages and look: {{name}}",
@@ -79,5 +80,48 @@
   "telegram": {
     "configured": "Telegram updates are on through @{{bot}}.",
     "notConfigured": "Telegram updates are off. Set up a bot to offer them: see docs/ops/telegram.md."
+  },
+  "language": {
+    "label": "Guest language",
+    "en": "English",
+    "es": "Spanish"
+  },
+  "previewSms": "Preview as sent (sample data)",
+  "locked": "Added to every text; you can't change it",
+  "lockedHint": "The business name and the opt-out line are added to every text and can't be edited.",
+  "otherLocale": "Guests who pick Spanish get your English text for this message. Save a Spanish version to replace it.",
+  "guard": {
+    "url": "Texts can't contain links or web addresses other than {{status_link}}.",
+    "contact": "Texts can't contain phone numbers, email addresses or tel: links.",
+    "length": "This message is too long.",
+    "unsubscribe_url": "Texts can't contain an unsubscribe link; guests reply STOP instead.",
+    "segments": "This message is longer than 3 text segments once the business name and opt-out line are added. Shorten it.",
+    "adjacent": "Put a space around {{name}} so it can't join other text into a link.",
+    "term": "Texts can't contain “{{term}}”: it reads as marketing or works against STOP."
+  },
+  "test": {
+    "title": "Send me a test",
+    "ready": "Test texts go to {{phone}}. The test uses your saved text, not unsaved changes.",
+    "send": "Text me this message",
+    "sending": "Sending",
+    "sent": "Sent to {{phone}}. It should arrive within a minute.",
+    "change": "Use another number",
+    "phone": "Your mobile number",
+    "phoneHint": "With the country code, for example +1 415 555 0123. We text it a code to check it's yours.",
+    "sendCode": "Text me a code",
+    "sendingCode": "Sending code",
+    "code": "Code from the text",
+    "confirm": "Confirm number",
+    "confirming": "Confirming",
+    "wrongCode": "That code doesn't match. Check the text and try again.",
+    "error": {
+      "rate_limited": "Too many texts today. Try again tomorrow.",
+      "invalid_input": "Enter the number with its country code, starting with +.",
+      "code_expired": "That code has expired. Ask for a new one.",
+      "not_found": "There's no text for this message to send yet.",
+      "phone_not_verified": "Confirm your number first.",
+      "permission_denied": "Only managers, admins and owners can send test texts.",
+      "unknown": "That didn't work. Try again."
+    }
   }
 }

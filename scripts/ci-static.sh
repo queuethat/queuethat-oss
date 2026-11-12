@@ -18,6 +18,7 @@ run pnpm format:check
 run node scripts/check-redefinitions.mjs
 run node scripts/check-migrations.mjs
 run node scripts/check-locales.mjs
+run node scripts/check-templates.ts
 run node scripts/check-test-clock.mjs
 run bash scripts/check-function-logs.sh
 run node scripts/check-answers-not-in-outbound.mjs

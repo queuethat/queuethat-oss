@@ -47,6 +47,7 @@
       "staffOnly": "For staff only",
       "none": "The guest gave no answers.",
       "yes": "Yes",
+      "no": "No",
       "save": "Save answers",
       "invalid": "Please check this answer.",
       "stale": "This visit changed. Close the sheet and try again.",
@@ -675,6 +676,19 @@
       "agreed": "Agreed v{{version}}, {{at}}, {{name}}",
       "noName": "no typed name",
       "guardian": "Guardian: {{name}}"
+    },
+    "lines": {
+      "title": "Lines",
+      "view": "Which lines",
+      "mine": "My lines",
+      "all": "All lines",
+      "pool": "Anyone available",
+      "yours": "Yours",
+      "next": "Next in {{line}}",
+      "fromPool": "Next comes from {{pool}}.",
+      "callNext": "Call next for {{line}}",
+      "open": "Open {{line}}",
+      "openShort": "Open"
     }
   },
   "planning": {
@@ -736,5 +750,44 @@
     "breakFor_one": "On break for {{count}} minute",
     "breakFor_other": "On break for {{count}} minutes",
     "callDisabled": "You're on break. Set yourself to Available to call the next guest."
+  },
+  "recentTexts": {
+    "title": "Recent texts",
+    "intro": "Every text from the last 7 days and what happened to it. Numbers show their last two digits only.",
+    "loading": "Loading texts",
+    "none": "No texts in the last 7 days.",
+    "error": "Couldn't load texts. Check your connection, then reload.",
+    "more": "Show older texts",
+    "ticket": "Ticket {{ticket}}",
+    "number": "Number ending {{last}}",
+    "outcome": {
+      "delivered": "Delivered",
+      "sent": "Sent",
+      "sending": "Sending",
+      "quiet_hours": "Waiting for quiet hours to end",
+      "blocked_stop": "Blocked: replied STOP",
+      "not_sent": "Not sent",
+      "failed": "Failed"
+    },
+    "why": {
+      "quiet_hours": "It goes out when your sending hours start.",
+      "blocked_stop": "This guest replied STOP, so we can't text them. They can reply START to get texts again.",
+      "not_sent": "Not sent: the guest didn't agree to texts, or texting was off or paused.",
+      "failed": "The phone network didn't deliver it. The number may be wrong or unable to receive texts."
+    },
+    "template": {
+      "called": "It's your turn",
+      "almost_up": "Almost your turn",
+      "joined": "Joined the line",
+      "position_changed": "Place in line changed",
+      "eta_changed": "Wait time changed",
+      "broadcast": "Message to everyone",
+      "removed": "Removed from the line",
+      "served": "Thanks for visiting",
+      "appointment_reminder": "Appointment reminder",
+      "appointment_confirmed": "Appointment confirmed",
+      "no_show_warning": "Missed turn warning",
+      "other": "Other message"
+    }
   }
 }

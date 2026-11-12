@@ -11,7 +11,7 @@ import {
 import { useAuthCaptcha } from '../../features/auth/AuthCaptcha.tsx';
 import { AuthCard } from '../../features/auth/AuthForm.tsx';
 import { CodeForm } from '../../features/auth/CodeForm.tsx';
-import { RESET_PATH, safeNext } from '../../features/auth/next.ts';
+import { nextSearch, RESET_PATH, safeNext } from '../../features/auth/next.ts';
 
 // Emailed links (sign-up confirmation, sign-in link) land here. The Supabase client reads the
 // session out of the URL fragment as it starts; this screen waits for it, then moves on.
@@ -60,7 +60,7 @@ function CallbackPage() {
       <FreshCode next={next} />
       <Link
         to="/auth/sign-in"
-        search={{ next }}
+        search={nextSearch(next)}
         className="inline-flex min-h-target items-center font-medium underline"
       >
         {t('callback.back')}

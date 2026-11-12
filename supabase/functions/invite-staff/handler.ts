@@ -3,7 +3,7 @@
 // /auth/accept-invite. It is an Edge Function because it needs the Auth admin API and SMTP
 // (technical-design.md 3.5, rule 3). Everything that touches Supabase is injected.
 //
-// POST { org_id, email, role, location_ids?, display_name?, idempotency_key? }   Authorization: Bearer <user JWT>
+// POST { org_id, email, role, location_ids?, display_name?, queue_ids?, idempotency_key? }   Authorization: Bearer <user JWT>
 //   200 { invitation, sent }   sent is false when this was an idempotent replay (no token, no mail)
 //   400 invalid_input · 401 not_authenticated · 403 permission_denied / forbidden_role / org_suspended
 //   402 plan_limit_reached { error, limit } (the plan's seat count) · 404 not_found · 429 rate_limited · 502 send_failed (the invitation is revoked again) · 500 unknown
@@ -28,6 +28,8 @@ export interface InviteInput {
   role: string;
   location_ids: string[] | null;
   display_name: string | null;
+  /** Lines (queues) a staff invite is limited to; null = every line. The database ignores it for other roles. */
+  queue_ids: string[] | null;
   idempotency_key: string;
 }
 
@@ -107,8 +109,11 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function parse(body: Record<string, unknown> | null): InviteInput | null {
   if (!body || typeof body.org_id !== 'string' || !UUID.test(body.org_id)) return null;
   if (typeof body.email !== 'string' || typeof body.role !== 'string') return null;
+  const uuids = (v: unknown) => v === null || (Array.isArray(v) && v.every((l) => typeof l === 'string' && UUID.test(l)));
   const ids = body.location_ids ?? null;
-  if (ids !== null && !(Array.isArray(ids) && ids.every((l) => typeof l === 'string' && UUID.test(l)))) return null;
+  if (!uuids(ids)) return null;
+  const queueIds = body.queue_ids ?? null;
+  if (!uuids(queueIds)) return null;
   const name = body.display_name ?? null;
   if (name !== null && typeof name !== 'string') return null;
   const key = body.idempotency_key ?? crypto.randomUUID();
@@ -119,6 +124,7 @@ function parse(body: Record<string, unknown> | null): InviteInput | null {
     role: body.role,
     location_ids: ids as string[] | null,
     display_name: name,
+    queue_ids: queueIds as string[] | null,
     idempotency_key: key,
   };
 }

@@ -55,7 +55,8 @@
       "label": "What to book",
       "slots": "Appointments",
       "events": "Events"
-    }
+    },
+    "serviceOnLine": "{{service}} · {{line}}"
   },
   "appointment": {
     "loading": "Loading your appointment…",
@@ -102,7 +103,8 @@
       "denied": "Notifications are blocked for this site. Allow them in your browser settings to get reminders.",
       "homeScreen": "On iPhone, reminders need this page on your Home Screen: tap Share, then Add to Home Screen, and open it from there.",
       "keepOpen": "This browser can't show reminders. Add the appointment to your calendar instead."
-    }
+    },
+    "with": "With {{name}}"
   },
   "events": {
     "loading": "Loading events…",

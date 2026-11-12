@@ -29,6 +29,10 @@ export interface ConsoleQueue {
   servingReminderMinutes: number | null;
   /** Active services, in display order, for the add-guest dialog. */
   services: { id: string; name: string }[];
+  /** M4: `provider` is one person's line, `pool` the shared "Anyone available" line. */
+  kind: 'general' | 'provider' | 'pool';
+  /** For a provider line, the pool Call next falls back to once the line is empty. */
+  pullsFrom: string | null;
 }
 
 /**
@@ -44,7 +48,7 @@ export function useConsoleQueues(locationId: string | undefined) {
         .schema('app')
         .from('queues')
         .select(
-          'id, name, manual_state, version, online_joins_paused_until, wait_override_minutes, wait_override_until, serving_reminder_minutes, services(id, name, active, sort_order)',
+          'id, name, manual_state, version, online_joins_paused_until, wait_override_minutes, wait_override_until, serving_reminder_minutes, kind, pulls_from, services(id, name, active, sort_order)',
         )
         .eq('location_id', locationId!)
         .is('archived_at', null)
@@ -64,6 +68,8 @@ export function useConsoleQueues(locationId: string | undefined) {
           .filter((s) => s.active)
           .sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name))
           .map(({ id, name }) => ({ id, name })),
+        kind: q.kind as ConsoleQueue['kind'],
+        pullsFrom: q.pulls_from,
       }));
     },
     // Staff see changes at once; jitter only spreads guest load.

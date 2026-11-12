@@ -3,8 +3,10 @@ import { useState } from 'react';
 import { useTranslation } from '../../../lib/translation.tsx';
 import type { FormRow } from './api.ts';
 import { FormBuilder } from './builder/FormBuilder.tsx';
-import type { BuilderField } from './builder/fields.ts';
+import { isEvidence, type BuilderField } from './builder/fields.ts';
 import { Preview } from './builder/preview/Preview.tsx';
+import { WaiverBanner } from './builder/WaiverBanner.tsx';
+import type { StarterForm } from './waivers/starters.ts';
 
 export interface EditorSave {
   name: string;
@@ -17,6 +19,8 @@ export interface EditorSave {
 export interface EditorProps {
   /** Null while creating. */
   form: FormRow | null;
+  /** A sample waiver to start a new form from (ignored when editing an existing form). */
+  starter?: StarterForm | null;
   healthTagged: boolean;
   pending: boolean;
   onCancel: () => void;
@@ -27,12 +31,20 @@ export interface EditorProps {
  * The editor: name, purpose, retention, the drag-and-drop question builder (B2) and a live phone preview (B3), saved as a draft
  * or published for every target at once. Editing never changes what guests see until publish.
  */
-export function FormEditor({ form, healthTagged, pending, onCancel, onSave }: EditorProps) {
+export function FormEditor({
+  form,
+  starter = null,
+  healthTagged,
+  pending,
+  onCancel,
+  onSave,
+}: EditorProps) {
   const { t } = useTranslation('admin-forms');
-  const [name, setName] = useState(form?.name ?? '');
-  const [purposeText, setPurposeText] = useState(form?.purposeText ?? '');
+  const seed = form ? null : starter;
+  const [name, setName] = useState(form?.name ?? seed?.name ?? '');
+  const [purposeText, setPurposeText] = useState(form?.purposeText ?? seed?.purposeText ?? '');
   const [retention, setRetention] = useState(String(form?.retentionDays ?? 365));
-  const [fields, setFields] = useState<BuilderField[]>(form?.fields ?? []);
+  const [fields, setFields] = useState<BuilderField[]>(form?.fields ?? seed?.fields ?? []);
   const days = Number(retention);
   const valid = name.trim() !== '' && Number.isInteger(days) && days >= 1 && days <= 365;
   const save = (publish: boolean) => () => {
@@ -65,6 +77,7 @@ export function FormEditor({ form, healthTagged, pending, onCancel, onSave }: Ed
         value={retention}
         onChange={(e) => setRetention(e.target.value)}
       />
+      {seed || fields.some((f) => isEvidence(f.type)) ? <WaiverBanner /> : null}
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <FormBuilder
           fields={fields}

@@ -443,3 +443,25 @@ api.export_waiver_records
 
 # W5 (#1307) waiver purge reminder
 ops.send_waiver_purge_reminders
+
+# M3b (#1323) assign lines when inviting and by admins
+api.set_member_lines
+
+# S2 (#1219) SMS template preview
+api.sms_preview
+
+# S2b (#1389) member phone and test texts
+private.is_member_phone
+api.start_member_phone
+api.confirm_member_phone
+api.send_member_test_sms
+
+# #1388 provider line person
+private.check_queue_provider
+
+# F7 (#1283) audited staff read of a visit's answers
+api.get_visit_answers
+
+# T4 (#1239) recent texts for shops
+api.list_recent_texts
+

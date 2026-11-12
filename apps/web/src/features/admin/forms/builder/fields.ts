@@ -32,6 +32,8 @@ export interface BuilderField {
   body?: string;
   /** `signature`: also ask for a parent or guardian name. */
   collect_guardian?: boolean;
+  /** `yes_no`: only "Yes" is accepted (an age or eligibility gate); the database enforces it. */
+  must_be_true?: boolean;
 }
 
 /** Guest-only consent evidence: the database stamps what was shown and when, staff never answer. */
@@ -92,6 +94,7 @@ export function patchField(field: BuilderField, patch: Partial<BuilderField>): B
   if (next.visibility === 'guest') delete next.visibility;
   if (next.sensitivity === 'normal') delete next.sensitivity;
   if (!next.collect_guardian) delete next.collect_guardian;
+  if (!next.must_be_true) delete next.must_be_true;
   return next;
 }
 

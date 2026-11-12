@@ -29,6 +29,7 @@ export function supabaseDeps(
         p_location_ids: input.location_ids,
         p_display_name: input.display_name,
         p_idempotency_key: input.idempotency_key,
+        p_queue_ids: input.queue_ids,
       });
       // PostgREST reports a rejected JWT as 401 before any SQL runs.
       if (error) throw new DbError(error.message === 'JWT expired' ? 'not_authenticated' : error.message, error.details);

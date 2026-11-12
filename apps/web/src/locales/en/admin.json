@@ -262,6 +262,13 @@
       "format": "Use 2 to 20 letters or digits, with no spaces.",
       "reserved": "That word is reserved for stopping, starting, help or replies. Pick another.",
       "duplicate": "Another queue already uses that word."
+    },
+    "provider": {
+      "label": "Whose line is this?",
+      "hint": "Bookings on this line go only to this person. Anyone means whoever is free.",
+      "anyone": "Anyone",
+      "unnamed": "Unnamed member",
+      "failed": "Couldn't save. They must work at this location, and you need manager access."
     }
   },
   "devices": {

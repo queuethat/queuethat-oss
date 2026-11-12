@@ -17,6 +17,28 @@ describe('form fields', () => {
     ]);
     expect(fromStored(null)).toEqual([]);
   });
+  it('keeps a yes/no gate (must_be_true) through an edit, and only on yes/no', () => {
+    const out = fromStored([
+      {
+        key: 'age',
+        label: 'Are you 18 or older?',
+        type: 'yes_no',
+        required: true,
+        must_be_true: true,
+      },
+      { key: 'n', label: 'Name', type: 'short_text', must_be_true: true },
+    ]);
+    expect(out).toEqual([
+      {
+        key: 'age',
+        label: 'Are you 18 or older?',
+        type: 'yes_no',
+        required: true,
+        must_be_true: true,
+      },
+      { key: 'n', label: 'Name', type: 'short_text' },
+    ]);
+  });
   it('sends list order and trimmed labels', () => {
     const out = fieldsPayload([{ key: 'a', label: ' A ', type: 'short_text' }]);
     expect(out).toEqual([{ key: 'a', label: 'A', type: 'short_text' }]);

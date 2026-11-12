@@ -5,7 +5,11 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import { loadNamespaces } from '../../lib/i18n.ts';
 import { AppointmentPage } from './AppointmentPage.tsx';
 
-const m = vi.hoisted(() => ({ status: 'pending_payment', requestPayment: vi.fn() }));
+const m = vi.hoisted(() => ({
+  status: 'pending_payment',
+  provider: null as string | null,
+  requestPayment: vi.fn(),
+}));
 
 vi.mock('../booking/api.ts', () => ({
   useAppointment: () => ({
@@ -20,6 +24,7 @@ vi.mock('../booking/api.ts', () => ({
       location_slug: 'main-st',
       can_reschedule: false,
       can_cancel: true,
+      provider_name: m.provider,
     },
   }),
   useBookingLocation: () => ({ isPending: false, data: { tz: 'UTC', services: [] } }),
@@ -42,6 +47,7 @@ function show() {
 beforeAll(() => loadNamespaces('booking'));
 beforeEach(() => {
   m.status = 'pending_payment';
+  m.provider = null;
   m.requestPayment.mockReset();
 });
 afterEach(cleanup);
@@ -75,5 +81,20 @@ describe('AppointmentPage while the booking waits for its card', () => {
     show();
     expect(screen.queryByRole('button', { name: 'Add card to confirm' })).toBeNull();
     expect(screen.getByText('reminders')).toBeTruthy();
+  });
+});
+
+describe('AppointmentPage on a provider line (M7)', () => {
+  it('names the provider', () => {
+    m.status = 'booked';
+    m.provider = 'Dr Ada';
+    show();
+    expect(screen.getByText('With Dr Ada')).toBeTruthy();
+  });
+
+  it('names no one when the database gives no provider', () => {
+    m.status = 'booked';
+    show();
+    expect(screen.queryByText(/^With /)).toBeNull();
   });
 });

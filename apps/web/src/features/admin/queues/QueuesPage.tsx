@@ -12,9 +12,10 @@ import {
 } from '@qm/ui';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, type ReactNode } from 'react';
 import { useTranslation } from '../../../lib/translation.tsx';
 import { ScreenEmpty } from '../../../components/ScreenEmpty.tsx';
+import { TemplateOrigin } from '../../onboarding/catalog/TemplateOrigin.tsx';
 import { useCurrentLocation, useCurrentOrg } from '../../auth/current.ts';
 import {
   ASSIGNMENT_STRATEGIES,
@@ -32,6 +33,7 @@ import {
 } from './api.ts';
 import { SingleActiveVisit } from '../org/SingleActiveVisit.tsx';
 import { GuestAlerts } from './alerts/GuestAlerts.tsx';
+import { LineOwner } from './provider/LineOwner.tsx';
 
 const PREFIX = /^[A-Z]{1,3}$/;
 const KNOWN_ERRORS = ['permission_denied', 'keyword_taken', 'keyword_invalid'];
@@ -129,6 +131,15 @@ export function QueuesPage() {
               <QueueSummary
                 queue={queue}
                 canManage={canManage}
+                owner={
+                  canManage ? (
+                    <LineOwner
+                      orgId={location.org_id}
+                      locationId={location.id}
+                      queueId={queue.id}
+                    />
+                  ) : null
+                }
                 onEdit={() => open(queue.id)}
                 onArchive={() =>
                   // A failure shows in the alert above; the dialog just closes.
@@ -146,11 +157,14 @@ export function QueuesPage() {
 function QueueSummary({
   queue,
   canManage,
+  owner,
   onEdit,
   onArchive,
 }: {
   queue: QueueRow;
   canManage: boolean;
+  /** "Whose line is this?" (#1388), for managers. */
+  owner: ReactNode;
   onEdit: () => void;
   onArchive: () => Promise<unknown>;
 }) {
@@ -168,10 +182,14 @@ function QueueSummary({
     <Card className="flex flex-wrap items-center justify-between gap-3" data-testid="queue">
       <div>
         <h2 className="text-lg font-semibold">{queue.name}</h2>
+        {queue.origin ? (
+          <TemplateOrigin templateKey={queue.origin.template} version={queue.origin.version} />
+        ) : null}
         <p className="text-sm text-muted">{details}</p>
         <p className="text-sm text-muted" data-testid="queue-alerts">
           {t('queues.alerts.summary', { alerts: alerts || t('queues.alerts.none') })}
         </p>
+        {owner}
       </div>
       <div className="flex flex-wrap gap-2">
         <LinkButton
