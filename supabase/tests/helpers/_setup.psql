@@ -17,6 +17,7 @@ create schema tests;
 grant usage on schema tests to anon, authenticated, service_role;
 
 \ir _generated.psql
+\ir _extensions.psql
 
 ------------------------------------------------------------------------------------------------
 -- Named fixture ids. tests.id('org_a') returns the same uuid every time within a test run.
@@ -197,7 +198,8 @@ end $$;
  * Builds the shared fixture world and registers its actors for the RLS matrix:
  *   org A ("org_a", location "loc_a") with owner, admin, manager, staff, a display and a kiosk;
  *   org B ("org_b", location "loc_b") with its owner, registered as actor other_owner.
- * Every table migration adds one org A fixture row here so the matrix can probe it.
+ * Every table migration adds one org A fixture row here so the matrix can probe it. Last, it calls
+ * tests.create_world_extensions() (_extensions.psql), where a deployment adds its own actors and rows.
  * Runs as postgres, so RLS does not apply while building.
  */
 create function tests.create_world() returns void
@@ -505,6 +507,9 @@ begin
   insert into app.guest_notices (org_id, log_id, subject, body, window_from, window_to)
   values (tests.id('org_a'), (select id from app.org_incident_log where title = 'fixture incident log'),
           'fixture guest notice', 'fixture body', now() - interval '1 day', now());
+
+  -- What a deployment's own tables and actors need (_extensions.psql; nothing here).
+  perform tests.create_world_extensions();
 end $$;
 
 ------------------------------------------------------------------------------------------------

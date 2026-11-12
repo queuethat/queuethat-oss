@@ -1,0 +1,8 @@
+-- Test fixtures a deployment adds for tables and actors of its own (a hosted service). This
+-- repository has none. A deployment ships its own copy of this file in place of this one; its
+-- tests.create_world_extensions() runs at the end of tests.create_world(), as postgres, and may
+-- register extra actors in tests.actors for the RLS matrix (see matrix.<name>.yaml in
+-- scripts/compile-rls-matrix.mjs).
+
+create function tests.create_world_extensions() returns void
+language plpgsql as $$ begin null; end $$;
