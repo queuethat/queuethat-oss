@@ -27,10 +27,23 @@ test('PhoneInput keeps the caret and the rest of the number on a one-digit fix',
 });
 
 test("country names follow the page's language, not the browser's", async ({ browser }) => {
-  const context = await browser.newContext({ locale: 'de-DE' });
+  // Italian is not a guest language, so the page stays English while the browser says it-IT.
+  const context = await browser.newContext({ locale: 'it-IT' });
   const page = await context.newPage();
   await page.goto(`/q/${demo.locationSlug}`);
   const country = page.getByLabel('Country code');
   await expect(country.locator('option[value="DE"]')).toHaveText('+49 Germany');
+  await context.close();
+});
+
+test('a German browser gets German guest pages and German country names', async ({ browser }) => {
+  const context = await browser.newContext({ locale: 'de-DE' });
+  const page = await context.newPage();
+  await page.goto(`/q/${demo.locationSlug}`);
+  await expect(page.getByRole('heading', { name: 'Der Warteschlange beitreten' })).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'de');
+  await expect(page.getByLabel('Landesvorwahl').locator('option[value="DE"]')).toHaveText(
+    '+49 Deutschland',
+  );
   await context.close();
 });
