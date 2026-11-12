@@ -1,0 +1,150 @@
+{
+  "status": {
+    "title": "Votre place dans la file",
+    "group": {
+      "label": "Personnes de votre groupe",
+      "tab": "{{name}} · {{ticket}}"
+    },
+    "leave": {
+      "trigger": "Quitter la file",
+      "title": "Quitter la file ?",
+      "body": "Vous perdrez votre place. Pour revenir, vous devrez rejoindre de nouveau la file à la fin.",
+      "confirm": "Oui, quitter",
+      "cancel": "Rester dans la file",
+      "failed": "Impossible de quitter la file. Vérifiez votre connexion et réessayez."
+    },
+    "undoLeave": {
+      "prompt": "Parti par erreur ? Vous pouvez encore récupérer votre place.",
+      "action": "Récupérer ma place",
+      "failed": "Impossible de vous remettre dans la file. Si cela fait quelques minutes, rejoignez-la de nouveau."
+    },
+    "joinAgain": "Rejoindre de nouveau",
+    "alert": {
+      "soundHint": "Envie d'un son lorsque ce sera votre tour ? Votre téléphone a d'abord besoin d'un appui.",
+      "enableSound": "Activer les alertes sonores",
+      "soundOn": "Les alertes sonores sont activées. Gardez cette page ouverte.",
+      "title": "C'est votre tour",
+      "goTo": "Rendez-vous au {{counter}}",
+      "goToDesk": "Rendez-vous à l'accueil",
+      "dismiss": "Compris"
+    },
+    "loading": "Chargement de votre place dans la file",
+    "notFound": {
+      "title": "Ce lien a expiré",
+      "body": "Les liens cessent de fonctionner 12 heures après la fin d'une visite. Demandez au personnel si vous pensez être encore dans la file."
+    },
+    "loadFailed": {
+      "title": "Impossible de charger votre place dans la file",
+      "body": "Vérifiez votre connexion. Cette page continue d'essayer."
+    },
+    "ticket": "Votre ticket",
+    "position_one": "Vous êtes le numéro {{count}} dans la file",
+    "position_other": "Vous êtes le numéro {{count}} dans la file",
+    "ahead_one": "{{count}} personne avant vous",
+    "ahead_other": "{{count}} personnes avant vous",
+    "wait": "Attente estimée",
+    "asOf": "Dernière mise à jour à {{time}}. Reconnexion…",
+    "keepOpen": "Gardez cette page ouverte. Les iPhone ne vous alertent pas lorsqu'elle est fermée ; revenez donc ici.",
+    "textAlerts": {
+      "title": "Recevoir un SMS lorsque ce sera votre tour",
+      "failed": "Vous avez rejoint la file, mais les alertes par SMS sont désactivées. Cochez la case et réessayez.",
+      "turnOn": "Activer les alertes par SMS",
+      "turningOn": "Activation des alertes par SMS",
+      "error": "Impossible d'activer les alertes par SMS. Réessayez."
+    },
+    "phoneVerify": {
+      "title": "Confirmez votre numéro de téléphone",
+      "hint": "Nous vous enverrons un code à 6 chiffres par SMS pour vérifier que les alertes vous parviennent.",
+      "send": "M'envoyer un code par SMS",
+      "sending": "Envoi du code",
+      "resend": "Envoyer un nouveau code",
+      "codeLabel": "Code à 6 chiffres",
+      "confirm": "Confirmer",
+      "confirming": "Vérification du code",
+      "sent": "Code envoyé. Il est valable 10 minutes.",
+      "invalid": "Ce code n'a pas fonctionné. Vérifiez-le ou demandez-en un nouveau.",
+      "verified": "Votre numéro de téléphone est confirmé.",
+      "waiting": "Préparation d'un contrôle de sécurité. Un instant.",
+      "errors": {
+        "rate_limited": "Trop d'essais. Veuillez patienter un moment puis réessayer.",
+        "captcha_failed": "Le contrôle de sécurité a échoué. Rechargez la page et réessayez.",
+        "consent_required": "Activez d'abord les alertes par SMS.",
+        "sms_unavailable": "Cette entreprise n'envoie pas de SMS pour le moment.",
+        "unknown": "Une erreur s'est produite. Réessayez."
+      }
+    },
+    "push": {
+      "enable": "Me prévenir quand ce sera mon tour",
+      "enabling": "Activation des alertes",
+      "on": "Les alertes sont activées. Nous vous préviendrons quand ce sera votre tour, même si cette page est fermée.",
+      "homeScreen": "Sur iPhone, les alertes nécessitent que cette page soit sur votre écran d'accueil : appuyez sur Partager, puis sur Sur l'écran d'accueil, ouvrez-la depuis là et appuyez sur Me prévenir. Ou gardez cette page ouverte et revenez ici.",
+      "denied": "Les notifications sont bloquées pour ce site. Gardez cette page ouverte ou autorisez les notifications dans les réglages du navigateur.",
+      "failed": "Impossible d'activer les alertes. Gardez cette page ouverte et revenez ici.",
+      "prompt": "Autorisez les notifications dans la fenêtre du navigateur.",
+      "slow": "Configuration des alertes en cours. Cela peut prendre jusqu'à une minute.",
+      "timeout": "L'activation des alertes a pris trop de temps. Appuyez sur Me prévenir pour réessayer, ou gardez cette page ouverte et revenez ici."
+    },
+    "connection": {
+      "live": "En direct",
+      "connecting": "Connexion",
+      "offline": "Hors ligne"
+    },
+    "state": {
+      "expected": "Réservé",
+      "waiting": "En attente",
+      "called": "Appelé",
+      "serving": "Pris en charge",
+      "served": "Terminé",
+      "no_show": "Manqué",
+      "cancelled": "A quitté la file",
+      "removed": "Retiré",
+      "expired": "Expiré",
+      "scheduled": "Planifié"
+    },
+    "message": {
+      "called": "C'est votre tour. Veuillez vous rendre au {{counter}}.",
+      "calledNoCounter": "C'est votre tour. Veuillez vous rendre à l'accueil.",
+      "serving": "Vous êtes pris en charge.",
+      "served": "Merci de votre visite chez {{location}}.",
+      "no_show": "Nous vous avons appelé mais ne vous avons pas trouvé. Demandez au personnel si vous êtes encore là.",
+      "cancelled": "Vous avez quitté la file.",
+      "removed": "Le personnel vous a retiré de la file. Demandez-lui si c'est une erreur.",
+      "expired": "Cette visite s'est terminée à la fermeture de {{location}} pour la journée.",
+      "expected": "Votre réservation est faite. Enregistrez-vous à votre arrivée.",
+      "later": "Vous rejoindrez la file à {{time}}. D'ici là, vous pouvez la quitter depuis ici."
+    },
+    "alerts": {
+      "toggle": "Choisir vos alertes",
+      "title": "Alertes",
+      "intro": "Choisissez les sujets sur lesquels nous vous écrivons. Rien d'autre n'est envoyé.",
+      "saveFailed": "Impossible d'enregistrer ce changement. Vos alertes sont inchangées.",
+      "calledOffWarning": "Sans celle-ci, vous ne serez pas prévenu lorsque ce sera votre tour. Gardez cette page ouverte et surveillez votre ticket.",
+      "trigger": {
+        "called": "C'est mon tour",
+        "almost_up": "C'est bientôt mon tour",
+        "position_changed": "Ma place dans la file change",
+        "eta_changed": "Mon temps d'attente estimé change",
+        "broadcast": "Annonces du lieu",
+        "removed": "Je suis retiré de la file",
+        "served": "Ma visite est terminée",
+        "joined": "Je rejoins la file",
+        "no_show_warning": "Ma place va être donnée"
+      }
+    },
+    "telegram": {
+      "enable": "Recevoir les mises à jour sur Telegram",
+      "opening": "Ouverture de Telegram",
+      "opened": "Telegram est ouvert. Appuyez sur Démarrer dans l'application et vous recevrez vos mises à jour dans cette conversation. Envoyez /stop à tout moment pour les arrêter.",
+      "unavailable": "Les mises à jour Telegram ne sont pas disponibles pour le moment. Gardez cette page ouverte et revenez ici.",
+      "failed": "Impossible d'ouvrir Telegram. Réessayez."
+    },
+    "nowIn": "Vous êtes maintenant dans {{queue}}.",
+    "pos": {
+      "paid": "Merci. Votre paiement a bien été effectué."
+    },
+    "offline": {
+      "title": "Vous êtes hors ligne",
+      "body": "Votre dernière position reste affichée. Elle se met à jour dès que vous êtes reconnecté."
+    }
+  }
+}

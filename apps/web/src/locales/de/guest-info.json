@@ -1,0 +1,21 @@
+{
+  "info": {
+    "title": "Über diesen Ort",
+    "directions": "Route anzeigen",
+    "call": "{{phone}} anrufen",
+    "openUntil": "Geöffnet bis {{time}}",
+    "openUntilLater": "Geöffnet bis {{day}} {{time}}",
+    "opensAt": "Öffnet um {{time}}",
+    "opensAtLater": "Öffnet {{day}} um {{time}}"
+  },
+  "qr": {
+    "title": "An der Theke zeigen",
+    "hint": "Das Personal kann dies scannen, um Ihren Platz zu finden. Es enthält nie Ihren privaten Link.",
+    "label": "QR-Code für Ticket {{ticket}}"
+  },
+  "calendar": {
+    "add": "Zum Kalender hinzufügen",
+    "summary": "Besuch bei {{place}}",
+    "note": "Ihren Platz in der Warteschlange sehen Sie über den Link, den Sie erhalten haben."
+  }
+}

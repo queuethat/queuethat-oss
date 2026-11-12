@@ -1,0 +1,15 @@
+{
+  "onMyWay": "Ich bin unterwegs",
+  "onMyWayDone": "Unterwegs. Das Personal weiß Bescheid.",
+  "needMoreTime": "Ich brauche mehr Zeit",
+  "needMoreTimeLeft": "Noch {{count}} Verlängerung",
+  "needMoreTimeLeft_other": "Noch {{count}} Verlängerungen",
+  "needMoreTimeNone": "Keine Verlängerungen mehr",
+  "needMoreTimeHint": "Sie rutschen einige Plätze nach hinten.",
+  "failed": "Das hat nicht geklappt. Versuchen Sie es erneut.",
+  "limit": "Sie haben alle Verlängerungen verbraucht.",
+  "arriveBy": "Bitte seien Sie bis {{time}} da",
+  "warning": "Ihr Platz wird in {{count}} Minute vergeben, wenn Sie nicht erscheinen oder mehr Zeit anfordern.",
+  "warning_other": "Ihr Platz wird in {{count}} Minuten vergeben, wenn Sie nicht erscheinen oder mehr Zeit anfordern.",
+  "warningNow": "Ihr Platz wird gleich vergeben. Bitte kommen Sie jetzt."
+}

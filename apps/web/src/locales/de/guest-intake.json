@@ -1,0 +1,25 @@
+{
+  "title": "Ein paar Fragen",
+  "optional": "optional",
+  "required": "erforderlich",
+  "choose": "Bitte auswählen",
+  "phoneHint": "Geben Sie die Landesvorwahl an, zum Beispiel +49 151 0000000.",
+  "checkboxYes": "Ja",
+  "invalid": "Bitte prüfen Sie diese Antwort.",
+  "booked": {
+    "title": "Ihre Buchung ist bestätigt",
+    "body": "Noch ein Schritt: Das Unternehmen braucht vor Ihrem Besuch einige Antworten.",
+    "save": "Antworten speichern",
+    "saving": "Wird gespeichert…",
+    "skip": "Ohne Antworten fortfahren",
+    "failed": "Wir konnten Ihre Antworten nicht speichern. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+  },
+  "agreement": {
+    "accept": "Ich habe gelesen und stimme zu"
+  },
+  "signature": {
+    "hint": "Geben Sie Ihren vollständigen Namen ein.",
+    "guardian": "Name des Elternteils oder Erziehungsberechtigten",
+    "guardianHint": "Nur wenn Sie für jemand anderen unterschreiben oder unter 18 sind."
+  }
+}

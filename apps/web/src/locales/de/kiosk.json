@@ -1,0 +1,96 @@
+{
+  "title": "Einchecken",
+  "connection": {
+    "live": "Live",
+    "connecting": "Verbindung wird hergestellt",
+    "offline": "Offline"
+  },
+  "welcome": {
+    "title": "Willkommen",
+    "start": "Einchecken"
+  },
+  "closed": {
+    "title": "Wir nehmen derzeit keine Check-ins an",
+    "org_suspended": "Dieser Standort ist nicht verfügbar.",
+    "closed": "Wir haben geschlossen. Bitte kommen Sie zu den Öffnungszeiten wieder.",
+    "paused": "Das Einchecken ist pausiert. Bitte wenden Sie sich an das Personal.",
+    "outside_hours": "Wir haben geschlossen. Bitte kommen Sie zu den Öffnungszeiten wieder.",
+    "full": "Die Warteschlange ist voll. Bitte wenden Sie sich an das Personal."
+  },
+  "form": {
+    "title": "Ihre Angaben",
+    "queue": "Welche Warteschlange?",
+    "service": "Was brauchen Sie?",
+    "name": "Vorname",
+    "nameMissing": "Geben Sie Ihren Vornamen ein, damit das Personal Sie aufrufen kann.",
+    "party": "Wie viele Personen?",
+    "phone": "Handynummer (optional)",
+    "phoneHint": "Für eine SMS, wenn Sie an der Reihe sind.",
+    "country": "Landesvorwahl",
+    "phoneInvalid": "Prüfen Sie die Handynummer oder lassen Sie das Feld leer.",
+    "submit": "Ticket abholen",
+    "joining": "Sie werden eingecheckt",
+    "cancel": "Neu beginnen"
+  },
+  "error": {
+    "queue_not_accepting": "Diese Warteschlange nimmt keine Check-ins mehr an. Bitte wenden Sie sich an das Personal.",
+    "not_found": "Diese Warteschlange ist hier nicht verfügbar. Bitte wenden Sie sich an das Personal.",
+    "rate_limited": "Zu viele Check-ins gleichzeitig. Warten Sie einen Moment und versuchen Sie es erneut.",
+    "invalid_input": "Prüfen Sie Ihren Namen und Ihre Nummer und versuchen Sie es erneut.",
+    "party_size_out_of_range": "Diese Warteschlange nimmt nicht so viele Personen auf einmal an. Bitte wenden Sie sich an das Personal.",
+    "too_many_active_visits": "Das sind mehr Personen, als ein Handy einchecken kann. Bitte wenden Sie sich an das Personal.",
+    "unknown": "Einchecken nicht möglich. Versuchen Sie es erneut oder wenden Sie sich an das Personal."
+  },
+  "done": {
+    "title": "Sie sind eingecheckt",
+    "ticket": "Ihr Ticket",
+    "scan": "Scannen Sie den Code, um Ihren Platz in der Warteschlange auf dem Handy zu verfolgen.",
+    "qrAlt": "QR-Code mit dem Link zu Ihrem Platz in der Warteschlange",
+    "finish": "Fertig",
+    "clears_one": "Dieser Bildschirm wird in {{count}} Sekunde gelöscht.",
+    "clears_other": "Dieser Bildschirm wird in {{count}} Sekunden gelöscht."
+  },
+  "idle": {
+    "title": "Noch da?",
+    "body_one": "Dieser Bildschirm beginnt in {{count}} Sekunde neu, und Ihre Eingaben werden gelöscht.",
+    "body_other": "Dieser Bildschirm beginnt in {{count}} Sekunden neu, und Ihre Eingaben werden gelöscht.",
+    "more": "Ich brauche mehr Zeit"
+  },
+  "print": {
+    "setting": "Ticket drucken",
+    "off": "Aus",
+    "ask": "Gast fragen",
+    "always": "Immer",
+    "button": "Mein Ticket drucken",
+    "slip": {
+      "ticket": "Ihr Ticket",
+      "joined": "Eingecheckt um {{time}}",
+      "scan": "Scannen Sie den Code, um Ihren Platz in der Warteschlange zu verfolgen."
+    }
+  },
+  "settings": {
+    "summary": "Geräteeinstellungen"
+  },
+  "a11y": {
+    "button": "Barrierefreiheit",
+    "audio": "Audio-Hinweise",
+    "screen": {
+      "welcome": "Willkommen. Drücken Sie Einchecken, um zu beginnen.",
+      "form": "Check-in. Geben Sie Ihren Vornamen ein und drücken Sie dann Ticket abholen.",
+      "done": "Ihr Ticket ist {{ticket}}. Bitte nehmen Sie Platz."
+    }
+  },
+  "printer": {
+    "connect": "Drucker verbinden",
+    "connected": "Drucker: {{name}}",
+    "none": "Kein Drucker verbunden. Tickets werden über den Browser gedruckt.",
+    "test": "Testdruck",
+    "testQueue": "Testticket"
+  },
+  "steps": {
+    "label": "Check-in-Schritte",
+    "start": "Start",
+    "details": "Ihre Angaben",
+    "ticket": "Ihr Ticket"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "eta": {
+    "paused": "Votre place est conservée",
+    "unstaffed": "En attente du démarrage du personnel",
+    "next": "Vous êtes le suivant",
+    "over_hour": "Plus d'une heure",
+    "uncertain": "Temps d'attente incertain",
+    "ok": "Environ {{low}}–{{high}} min"
+  }
+}
