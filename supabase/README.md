@@ -47,6 +47,24 @@ first; these are the conventions for working in this directory.
   `scripts/check-redefinitions.mjs` fails the build when that source is stale, so two changes
   cannot silently drop each other's fixes.
 
+## Extension hooks
+
+A deployment that runs code of its own (a hosted service) plugs into tenant functions through
+hooks: `private.ext_*` functions that do nothing here and that a tenant function calls at one
+fixed point. The deployment replaces a hook's body in its own migration and never redefines the
+tenant function, so changes made here keep reaching it.
+
+| Hook | Called by | Here |
+| --- | --- | --- |
+| `private.ext_entitlement(org, key)` | `private.entitlement`, between the org override and the default | null |
+| `private.ext_is_blocked(org, phone, email)` | `private.is_blocked` | false |
+| `private.ext_support_grant(org)` | `private.support_grant` (so `private.has_role` for non-members) | no grant |
+
+Rules: a hook's name, arguments and return type never change, and no migration here redefines a
+hook once it exists (that would overwrite a deployment's body). Add a new hook rather than change
+one. Each hook's `COMMENT ON FUNCTION` starts with `Extension hook:` and states its contract;
+`tests/structure/extension_hooks.test.sql` checks the shapes.
+
 ## Test helpers
 
 `tests.create_world()` builds org A (owner, admin, manager, staff, display, kiosk) and org B
@@ -54,3 +72,9 @@ first; these are the conventions for working in this directory.
 `tests.as_device(...)`, `tests.as_service()`, `tests.as_postgres()`. `tests.id('queue_a')` names
 fixtures; `tests.new_visit(name, queue)` creates a waiting visit. Never use SAVEPOINT rollbacks
 around pgTAP calls (they roll back pgTAP's counters); use `tests.catches` / `tests.probe`.
+
+A deployment with tables and actors of its own adds to these without editing them: its own
+`tests/helpers/_extensions.psql` (in place of the empty one here) defines
+`tests.create_world_extensions()`, which `tests.create_world()` calls last, and a
+`tests/rls/matrix.<name>.yaml` next to `matrix.yaml` lists its tables, extra actors and any actors
+it adds to existing tables (`allow_extra`). `pnpm db:compile-tests` reads both.
