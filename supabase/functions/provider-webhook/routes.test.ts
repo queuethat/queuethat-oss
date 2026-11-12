@@ -70,3 +70,25 @@ Deno.test('a built-in provider of the same name always wins', async () => {
   assert.deepEqual(await routes.endpointSecrets('twilio', 'e1'), secrets('org-twilio'));
   assert.deepEqual(dbReads, ['twilio']);
 });
+
+Deno.test("dropping an extension's secretsProvider keeps a class-based verifier working", async () => {
+  class Signed implements WebhookVerifier {
+    provider = 'shared';
+    secretsProvider = 'twilio';
+    #salt = 'x';
+    async verify() {
+      return this.#salt === 'x' ? { ok: true as const } : { ok: false as const, reason: 'mismatch' as const };
+    }
+    eventKeys() {
+      return ['k'];
+    }
+  }
+  const { routes } = setup({
+    shared: { verifier: new Signed(), handler: handler(), endpointSecrets: async () => secrets(null) },
+  });
+  const v = routes.verifiers.shared!;
+  assert.equal(v.secretsProvider, undefined);
+  assert.deepEqual(v.eventKeys(new Uint8Array()), ['k']);
+  const req = { rawBody: new Uint8Array(), headers: new Headers(), publicUrl: 'https://x.test' };
+  assert.deepEqual(await v.verify(req, 's', new Date()), { ok: true }, 'private fields still resolve');
+});

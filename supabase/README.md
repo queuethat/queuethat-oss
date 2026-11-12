@@ -82,7 +82,9 @@ deployment's rather than a business's (`provider_settings.mode` `platform`):
 | `functions/dispatch-notifications/extensions.ts` | `sharedSender({ env, functionsUrl })`: builds the channel for an org in mode `platform` | undefined: such sends end as `suppressed: channel_disabled` |
 | `functions/provider-webhook/extensions.ts` | `extensionRoutes({ rpc, env })`: extra `/provider-webhook/<name>/<endpoint>` routes with their verifier, handler and secrets | none |
 
-A built-in provider of the same name always wins. A verifier may name `storedFormKeys`: the only
+A built-in provider of the same name always wins. An extension route's signing secrets come only
+from its own `endpointSecrets`: its verifier's `secretsProvider` is ignored, so a route can never be
+pointed at a built-in provider's per-org secrets. A verifier may name `storedFormKeys`: the only
 form fields kept in the stored event, which must carry no guest phone number or text (I-13).
 
 ## Test helpers
