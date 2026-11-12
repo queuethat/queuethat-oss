@@ -108,7 +108,7 @@ select is((api.set_visit_answers((select id from v6), '{"reason": "cut", "triage
 select tests.act_as('other_owner');
 select throws_ok($$ select api.set_visit_answers((select id from v6), '{}', 0, gen_random_uuid()) $$,
   'P0001', 'not_found', 'org B cannot set org A answers');
-select is((select count(*)::int from app.visit_answers), 0, 'AC4: org B sees zero answers rows');
+select throws_ok($$ select count(*) from app.visit_answers $$, '42501', null, 'AC4: org B cannot read answers rows directly (F7b)');
 
 -- Guest-visible questions never include staff-only fields.
 select tests.as_postgres();
