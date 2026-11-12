@@ -104,7 +104,7 @@ Deno.serve(
     async reserve(outboxId) {
       const { data, error } = await api.rpc('reserve_send', { p_outbox_id: outboxId });
       if (error) throw new Error(error.message);
-      return (data as { decision: 'allowed' | 'cap_reached' | 'country_blocked' | 'budget_reached' }).decision;
+      return (data as { decision: string }).decision;
     },
     // A fresh registry per run: org secrets are read once per (org, channel) and gone with it.
     // LOCAL_PROVIDERS_ONLY defaults to true, so real providers need an explicit 'false'.
