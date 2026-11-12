@@ -130,7 +130,9 @@ describe('VisitList', () => {
     const row = visit({ ticket: 'A007', actions: ['call', 'no_show', 'remove'] });
     render(<VisitList visits={[row]} onAction={onAction} />);
     const user = userEvent.setup();
-    await user.click(screen.getByRole('button', { name: 'Remove A007' }));
+    await user.click(screen.getByRole('button', { name: 'More actions for A007' }));
+    await user.click(screen.getByRole('menuitem', { name: 'Remove' }));
+    expect(screen.getByTestId('confirm-guest').textContent).toBe('Guest: Dana (A007)');
     const confirm = screen.getByRole('button', { name: 'Remove' });
     expect(confirm).toHaveProperty('disabled', true);
     await user.click(confirm);
@@ -194,10 +196,43 @@ describe('VisitList', () => {
       screen.getByRole('button', { name }).className.includes('bg-primary');
     expect(filled('Call A020')).toBe(true);
     expect(filled('Start A021')).toBe(true);
-    expect(filled('Call again A021')).toBe(false);
+    // Call again is not a button on the row; it waits in the overflow menu.
+    expect(screen.queryByRole('button', { name: 'Call again A021' })).toBeNull();
   });
 
-  it('makes "send on" the primary action when a journey step is next, and Done secondary', () => {
+  it('keeps Remove and No-show out of the row until its menu opens, and never beside Call', async () => {
+    const row = visit({ ticket: 'A024', actions: ['call', 'no_show', 'remove'] });
+    render(<VisitList visits={[row]} onAction={vi.fn()} />);
+    const names = () => screen.getAllByRole('button').map((b) => b.getAttribute('aria-label'));
+    expect(names()).toEqual(['Call A024', 'More actions for A024']);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: 'More actions for A024' }));
+    expect(screen.getAllByRole('menuitem').map((i) => i.textContent)).toEqual([
+      'No-show',
+      'Remove',
+    ]);
+  });
+
+  it('offers recall from the menu and runs it', async () => {
+    const onAction = vi.fn();
+    const row = visit({ ticket: 'A025', status: 'called', actions: ['start', 'recall'] });
+    render(<VisitList visits={[row]} onAction={onAction} />);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: 'More actions for A025' }));
+    await user.click(screen.getByRole('menuitem', { name: 'Call again' }));
+    expect(onAction).toHaveBeenCalledWith(row, 'recall');
+  });
+
+  it('marks a called row with a status pill and an icon, not colour alone', () => {
+    render(
+      <VisitList visits={[visit({ ticket: 'A026', status: 'called', actions: ['start'] })]} />,
+    );
+    const pill = screen.getByText('Called').closest('[data-status]')!;
+    expect(pill.getAttribute('data-status')).toBe('called');
+    expect(pill.querySelector('svg')).not.toBeNull();
+  });
+
+  it('makes "send on" the primary action when a journey step is next, and Done moves to the menu', () => {
     render(
       <VisitList
         visits={[
@@ -215,13 +250,12 @@ describe('VisitList', () => {
     );
     const buttons = screen.getAllByRole('button');
     expect(buttons).toHaveLength(2);
-    const done = screen.getByRole('button', { name: 'Done with A023' });
-    expect(done.className).not.toContain('bg-primary');
-    const send = buttons.find((b) => b !== done)!;
-    expect(send.className).toContain('bg-primary');
+    expect(screen.queryByRole('button', { name: 'Done with A023' })).toBeNull();
+    expect(buttons[0]!.className).toContain('bg-primary');
+    expect(buttons[1]!.getAttribute('aria-label')).toBe('More actions for A023');
   });
 
-  it('draws the utility buttons quiet, so the main action stands out', () => {
+  it('puts details and history in the overflow menu, leaving the main action alone', async () => {
     render(
       <VisitList
         visits={[visit({ ticket: 'A022', actions: ['call'] })]}
@@ -230,10 +264,29 @@ describe('VisitList', () => {
         timeZone="UTC"
       />,
     );
-    for (const name of ['Details for A022', 'History of A022']) {
-      expect(screen.getByRole('button', { name }).className).toContain('bg-transparent');
-    }
+    expect(screen.queryByRole('button', { name: 'Details for A022' })).toBeNull();
     expect(screen.getByRole('button', { name: 'Call A022' }).className).toContain('bg-primary');
+    await userEvent.setup().click(screen.getByRole('button', { name: 'More actions for A022' }));
+    expect(screen.getAllByRole('menuitem').map((i) => i.textContent)).toEqual([
+      'Details',
+      'History',
+    ]);
+  });
+
+  it('opens the no-show confirmation when a keyboard shortcut asks for it, then clears the request', () => {
+    const row = visit({ ticket: 'A027', actions: ['call', 'no_show'] });
+    const cleared = vi.fn();
+    render(
+      <VisitList
+        visits={[row]}
+        onAction={vi.fn()}
+        confirmRequest={{ id: row.id, action: 'no_show' }}
+        onConfirmRequest={cleared}
+      />,
+    );
+    expect(screen.getByRole('dialog', { name: 'Mark A027 as a no-show?' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Keep' }));
+    expect(cleared).toHaveBeenCalled();
   });
 });
 

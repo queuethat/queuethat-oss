@@ -3,13 +3,16 @@ import {
   Badge,
   Button,
   Card,
-  ConfirmDestructive,
+  ConfirmDialog,
   Dialog,
   EmptyState,
   Icon,
   Input,
   LinkButton,
+  Menu,
+  StatusPill,
   iconRefresh,
+  type MenuItem,
 } from '@qm/ui';
 import { Link } from '@tanstack/react-router';
 import { useState, type ReactNode } from 'react';
@@ -32,7 +35,7 @@ import type { TextState } from './messages/api.ts';
 import { ChatBadge } from './chat/Unread.tsx';
 import { RowTags, VisitDetail, type OnSaveNotes } from './detail/VisitDetail.tsx';
 import { TagChips } from '../crm/tags/GuestTags.tsx';
-import { RemoveAndBlock } from './RemoveAndBlock.tsx';
+import { GuestLine, RemoveAndBlock } from './RemoveAndBlock.tsx';
 import { afterIdForMove } from './reorder/position.ts';
 import { SortableRow, SortableWaiting } from './reorder/SortableWaiting.tsx';
 import {
@@ -45,7 +48,10 @@ import {
   type VisitAction,
 } from './api.ts';
 
-/** The row actions this console offers, in button order; a row shows those it allows. */
+/**
+ * The row actions this console offers; a row shows those it allows. One is the row's button
+ * (`mainAction`); the rest sit in its overflow menu, in this order.
+ */
 const PRIMARY_ACTIONS = [
   'check_in',
   'call',
@@ -55,7 +61,7 @@ const PRIMARY_ACTIONS = [
   'requeue',
   'reinstate',
 ] as const satisfies readonly VisitAction[];
-/** Destructive actions sit apart from the primary ones and always confirm first (S-19). */
+/** Destructive actions live only in the overflow menu and always confirm first (S-19, I-9). */
 const DESTRUCTIVE_ACTIONS = ['no_show', 'remove'] as const satisfies readonly VisitAction[];
 
 /** The order a visit usually moves through the day: the first allowed one is the row's main action. */
@@ -70,12 +76,12 @@ const MAIN_ORDER = [
 ] as const satisfies readonly VisitAction[];
 
 /** The one action a row draws as primary; none when "send on" to the next queue takes that place. */
-export function mainAction(
-  actions: readonly VisitAction[],
+export function mainAction<A extends VisitAction>(
+  actions: readonly A[],
   journeyStep = false,
-): VisitAction | null {
+): A | null {
   if (journeyStep) return null;
-  return MAIN_ORDER.find((a) => actions.includes(a)) ?? null;
+  return (MAIN_ORDER.find((a) => actions.includes(a as A)) as A | undefined) ?? null;
 }
 
 /** Runs an action; a returned promise keeps a confirm dialog busy until it settles. */
@@ -87,6 +93,16 @@ export type OnVisitAction = (
 
 /** Puts a waiting visit just after `afterId` (null = first); resolves when the call settles. */
 export type OnVisitMove = (visit: ConsoleVisit, afterId: string | null) => void | Promise<unknown>;
+
+/** The dialog a row has open, if any; each is opened from its overflow menu. */
+type RowDialog =
+  'detail' | 'history' | 'priority' | 'assign' | 'transfer' | 'no_show' | 'remove' | 'block' | null;
+
+/** Asks one row to open its no-show or remove confirmation: what the keyboard shortcuts send. */
+export interface ConfirmRequest {
+  id: string;
+  action: (typeof DESTRUCTIVE_ACTIONS)[number];
+}
 
 /** Minutes since `iso`, never negative (a tablet's clock can run behind the server's). */
 export function minutesSince(iso: string, now: number): number {
@@ -135,7 +151,12 @@ export function VisitList({
   pendingIds,
   deliveryWarnings,
   textStates,
+  confirmRequest,
+  onConfirmRequest,
 }: {
+  /** Opens the confirmation for a row's no-show or remove (keyboard shortcuts); cleared by `onConfirmRequest`. */
+  confirmRequest?: ConfirmRequest | null;
+  onConfirmRequest?: () => void;
   /** Visits whose latest `called` message failed to reach the guest (N-12). */
   deliveryWarnings?: Set<string>;
   /** Whether each guest can receive texts (3-CG10), by visit id. */
@@ -244,6 +265,8 @@ export function VisitList({
                             timeZone={timeZone}
                             onBlock={onBlock}
                             groupWith={groupWith(v)}
+                            confirmRequest={confirmRequest?.id === v.id ? confirmRequest : null}
+                            onConfirmRequest={onConfirmRequest}
                             sort={sort}
                             move={{
                               index,
@@ -290,6 +313,8 @@ export function VisitList({
                           timeZone={timeZone}
                           onBlock={onBlock}
                           groupWith={groupWith(v)}
+                          confirmRequest={confirmRequest?.id === v.id ? confirmRequest : null}
+                          onConfirmRequest={onConfirmRequest}
                         />
                       </li>
                     ))}
@@ -328,9 +353,13 @@ function Row({
   timeZone,
   onBlock,
   groupWith = [],
+  confirmRequest,
+  onConfirmRequest,
   sort,
   move,
 }: {
+  confirmRequest?: ConfirmRequest | null;
+  onConfirmRequest?: () => void;
   selected?: boolean;
   pending?: boolean;
   deliveryWarning?: boolean;
@@ -362,11 +391,13 @@ function Row({
   onBlock?: (visit: ConsoleVisit, reason: string, days: BlockDuration) => Promise<unknown>;
 }) {
   const { t } = useTranslation('staff');
-  const [detailOpen, setDetailOpen] = useState(false);
-  const [historyOpen, setHistoryOpen] = useState(false);
-  const [transferOpen, setTransferOpen] = useState(false);
-  const [assignOpen, setAssignOpen] = useState(false);
-  const [priorityOpen, setPriorityOpen] = useState(false);
+  const [opened, setDialog] = useState<RowDialog>(null);
+  // A shortcut's request shows its dialog until it closes; the menu opens the rest.
+  const dialog: RowDialog = opened ?? confirmRequest?.action ?? null;
+  const closeDialog = () => {
+    setDialog(null);
+    onConfirmRequest?.();
+  };
   const priorityClass = priorityClasses?.find((c) => c.id === visit.priorityClassId);
   const assignee = assignTargets
     ? assigneeLabel(visit, assignTargets, t('console.assign.someone'))
@@ -385,11 +416,85 @@ function Row({
   const minutes = minutesSince(visit.since, now);
   const { i18n } = useTranslation('staff');
   const arrival = state === 'expected' ? arrivalState(visit, now) : null;
+  const queueName = queues.find((q) => q.id === visit.journeyNextQueueId)?.name ?? '';
+  const call = (action: VisitAction) => () => void onAction?.(visit, action);
+  // One button per row: the guest's next step. Everything else waits in the overflow menu, so
+  // Remove never sits beside Call (DS-24).
+  const mainButton =
+    onAdvance && journeyStep ? (
+      <Button
+        loading={busy}
+        className="md:min-h-target-big"
+        aria-label={t('console.journey.sendLabel', { ticket: visit.ticket, queue: queueName })}
+        onClick={() => void onAdvance(visit)}
+      >
+        {t('console.journey.send', { queue: queueName })}
+      </Button>
+    ) : main ? (
+      <Button
+        loading={busy}
+        className="md:min-h-target-big"
+        aria-label={t(`console.actionLabel.${main}`, { ticket: visit.ticket })}
+        onClick={call(main)}
+      >
+        {t(`console.action.${main}`)}
+      </Button>
+    ) : null;
+  const menuItems: MenuItem[] = [
+    ...primary
+      .filter((action) => action !== main)
+      .map((action) => ({
+        id: action,
+        label: t(`console.action.${action}`),
+        onSelect: call(action),
+      })),
+    ...(onSaveNotes
+      ? [
+          {
+            id: 'detail',
+            label: t('console.detail.openLabel'),
+            onSelect: () => setDialog('detail'),
+          },
+        ]
+      : []),
+    ...(timeZone
+      ? [{ id: 'history', label: t('console.history.open'), onSelect: () => setDialog('history') }]
+      : []),
+    ...(onPriority && priorityClasses && priorityClasses.length > 0 && visit.status === 'waiting'
+      ? [
+          {
+            id: 'priority',
+            label: t('console.priority.open'),
+            onSelect: () => setDialog('priority'),
+          },
+        ]
+      : []),
+    ...(onAssign && assignTargets && visit.status === 'waiting'
+      ? [{ id: 'assign', label: t('console.assign.open'), onSelect: () => setDialog('assign') }]
+      : []),
+    ...(onTransfer && visit.status === 'waiting'
+      ? [
+          {
+            id: 'transfer',
+            label: t('console.transfer.open'),
+            onSelect: () => setDialog('transfer'),
+          },
+        ]
+      : []),
+    ...destructive.map((action) => ({
+      id: action,
+      label: t(`console.action.${action}`),
+      onSelect: () => setDialog(action),
+    })),
+    ...(onAction && onBlock && visit.actions.includes('remove')
+      ? [{ id: 'block', label: t('console.block.trigger'), onSelect: () => setDialog('block') }]
+      : []),
+  ];
   return (
     <Card
       aria-current={selected ? 'true' : undefined}
       data-selected={selected ? 'true' : undefined}
-      className={`flex flex-wrap items-center gap-4${sort?.dragging ? ' opacity-70 shadow-lg' : ''}${selected ? ' ring-4 ring-primary' : ''}`}
+      className={`flex flex-wrap items-center gap-4${visit.status === 'called' ? ' border-l-8 border-l-state-called-edge' : ''}${sort?.dragging ? ' opacity-70 shadow-lg' : ''}${selected ? ' ring-4 ring-primary' : ''}`}
     >
       {sort && move ? (
         <div className="flex shrink-0 gap-1">
@@ -425,6 +530,9 @@ function Row({
       ) : null}
       <span className="w-20 shrink-0 text-2xl font-bold tabular-nums">{visit.ticket}</span>
       {pending ? <Badge tone="warning">{t('console.offline.pending')}</Badge> : null}
+      {visit.status === 'called' ? (
+        <StatusPill status="called">{t('console.status.called')}</StatusPill>
+      ) : null}
       <div className="flex min-w-0 flex-1 flex-col">
         <span className="truncate text-lg font-medium">
           {visit.name ?? t('console.noName')}
@@ -479,140 +587,65 @@ function Row({
             ? t(`console.since.${state}Now`)
             : t(`console.since.${state}`, { count: minutes })}
       </span>
-      {primary.length > 0 ? (
-        <div className="flex gap-2">
-          {primary.map((action) => (
-            <Button
-              key={action}
-              variant={action === main ? 'primary' : 'secondary'}
-              aria-label={t(`console.actionLabel.${action}`, { ticket: visit.ticket })}
-              loading={busy}
-              onClick={() => void onAction?.(visit, action)}
-            >
-              {t(`console.action.${action}`)}
-            </Button>
-          ))}
-        </div>
+      {mainButton}
+      {menuItems.length > 0 ? (
+        <Menu
+          label={t('console.moreActions', { ticket: visit.ticket })}
+          triggerClassName="md:min-h-target-big"
+          items={menuItems}
+        />
       ) : null}
-      {onAdvance && journeyStep ? (
-        <Button
-          loading={busy}
-          aria-label={t('console.journey.sendLabel', {
-            ticket: visit.ticket,
-            queue: queues.find((q) => q.id === visit.journeyNextQueueId)?.name ?? '',
-          })}
-          onClick={() => void onAdvance(visit)}
-        >
-          {t('console.journey.send', {
-            queue: queues.find((q) => q.id === visit.journeyNextQueueId)?.name ?? '',
-          })}
-        </Button>
+      {dialog === 'detail' && onSaveNotes ? (
+        <VisitDetail
+          visit={visit}
+          suggestions={suggestions}
+          open
+          onClose={() => closeDialog()}
+          onSave={onSaveNotes}
+        />
       ) : null}
-      {onSaveNotes ? (
-        <>
-          <Button
-            variant="quiet"
-            aria-label={t('console.detail.open', { ticket: visit.ticket })}
-            onClick={() => setDetailOpen(true)}
-          >
-            {t('console.detail.openLabel')}
-          </Button>
-          {detailOpen ? (
-            <VisitDetail
-              visit={visit}
-              suggestions={suggestions}
-              open
-              onClose={() => setDetailOpen(false)}
-              onSave={onSaveNotes}
-            />
-          ) : null}
-        </>
+      {dialog === 'history' && timeZone ? (
+        <HistoryDrawer
+          visitId={visit.id}
+          ticket={visit.ticket}
+          timeZone={timeZone}
+          onClose={() => closeDialog()}
+        />
       ) : null}
-      {timeZone ? (
-        <>
-          <Button
-            variant="quiet"
-            aria-label={t('console.history.openFor', { ticket: visit.ticket })}
-            onClick={() => setHistoryOpen(true)}
-          >
-            {t('console.history.open')}
-          </Button>
-          {historyOpen ? (
-            <HistoryDrawer
-              visitId={visit.id}
-              ticket={visit.ticket}
-              timeZone={timeZone}
-              onClose={() => setHistoryOpen(false)}
-            />
-          ) : null}
-        </>
+      {dialog === 'priority' && onPriority && priorityClasses ? (
+        <PriorityDialog
+          visit={visit}
+          classes={priorityClasses}
+          onPriority={onPriority}
+          onClose={() => closeDialog()}
+        />
       ) : null}
-      {onPriority && priorityClasses && priorityClasses.length > 0 && visit.status === 'waiting' ? (
-        <>
-          <Button
-            variant="quiet"
-            aria-label={t('console.priority.openFor', { ticket: visit.ticket })}
-            onClick={() => setPriorityOpen(true)}
-          >
-            {t('console.priority.open')}
-          </Button>
-          {priorityOpen ? (
-            <PriorityDialog
-              visit={visit}
-              classes={priorityClasses}
-              onPriority={onPriority}
-              onClose={() => setPriorityOpen(false)}
-            />
-          ) : null}
-        </>
+      {dialog === 'assign' && onAssign && assignTargets ? (
+        <AssignDialog
+          visit={visit}
+          targets={assignTargets}
+          onAssign={onAssign}
+          onClose={() => closeDialog()}
+        />
       ) : null}
-      {onAssign && assignTargets && visit.status === 'waiting' ? (
-        <>
-          <Button
-            variant="quiet"
-            aria-label={t('console.assign.openFor', { ticket: visit.ticket })}
-            onClick={() => setAssignOpen(true)}
-          >
-            {t('console.assign.open')}
-          </Button>
-          {assignOpen ? (
-            <AssignDialog
-              visit={visit}
-              targets={assignTargets}
-              onAssign={onAssign}
-              onClose={() => setAssignOpen(false)}
-            />
-          ) : null}
-        </>
+      {dialog === 'transfer' && onTransfer ? (
+        <TransferDialog
+          visit={visit}
+          queues={queues}
+          onTransfer={onTransfer}
+          onClose={() => closeDialog()}
+        />
       ) : null}
-      {onTransfer && visit.status === 'waiting' ? (
-        <>
-          <Button
-            variant="quiet"
-            aria-label={t('console.transfer.openFor', { ticket: visit.ticket })}
-            onClick={() => setTransferOpen(true)}
-          >
-            {t('console.transfer.open')}
-          </Button>
-          {transferOpen ? (
-            <TransferDialog
-              visit={visit}
-              queues={queues}
-              onTransfer={onTransfer}
-              onClose={() => setTransferOpen(false)}
-            />
-          ) : null}
-        </>
+      {(dialog === 'no_show' || dialog === 'remove') && onAction ? (
+        <Destructive
+          visit={visit}
+          action={dialog}
+          onAction={onAction}
+          onClose={() => closeDialog()}
+        />
       ) : null}
-      {destructive.length > 0 && onAction ? (
-        <div className="flex gap-2 border-l border-border pl-4">
-          {destructive.map((action) => (
-            <Destructive key={action} visit={visit} action={action} onAction={onAction} />
-          ))}
-          {onBlock && visit.actions.includes('remove') ? (
-            <RemoveAndBlock visit={visit} onBlock={onBlock} />
-          ) : null}
-        </div>
+      {dialog === 'block' && onBlock ? (
+        <RemoveAndBlock visit={visit} onBlock={onBlock} onClose={() => closeDialog()} />
       ) : null}
     </Card>
   );
@@ -702,23 +735,27 @@ export function VisitListError({ onRetry }: { onRetry: () => void }) {
   );
 }
 
+/** The no-show or remove confirmation, opened from the row's overflow menu or a shortcut (I-9). */
 function Destructive({
   visit,
   action,
   onAction,
+  onClose,
 }: {
   visit: ConsoleVisit;
   action: (typeof DESTRUCTIVE_ACTIONS)[number];
   onAction: OnVisitAction;
+  onClose: () => void;
 }) {
   const { t } = useTranslation('staff');
   const [reason, setReason] = useState('');
   const needsReason = action === 'remove';
   return (
-    <ConfirmDestructive
-      triggerLabel={t(`console.action.${action}`)}
-      triggerAriaLabel={t(`console.actionLabel.${action}`, { ticket: visit.ticket })}
-      triggerVariant="secondary"
+    <ConfirmDialog
+      open
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
       title={t(`console.confirm.${action}.title`, { ticket: visit.ticket })}
       description={t(`console.confirm.${action}.body`)}
       confirmLabel={t(`console.confirm.${action}.confirm`)}
@@ -726,6 +763,7 @@ function Destructive({
       confirmDisabled={needsReason && reason.trim() === ''}
       onConfirm={() => onAction(visit, action, needsReason ? reason.trim() : undefined)}
     >
+      <GuestLine visit={visit} />
       {needsReason ? (
         <Input
           label={t('console.confirm.remove.reason')}
@@ -735,6 +773,6 @@ function Destructive({
           onChange={(event) => setReason(event.target.value)}
         />
       ) : null}
-    </ConfirmDestructive>
+    </ConfirmDialog>
   );
 }

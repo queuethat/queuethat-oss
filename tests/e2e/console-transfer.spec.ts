@@ -1,5 +1,5 @@
 import { expect, expectNoSeriousA11yViolations, signIn, test } from './fixtures.ts';
-import { guestJoins, openQueue } from './support/console.ts';
+import { guestJoins, openQueue, pickRowAction } from './support/console.ts';
 import { freshQueue } from './support/queues.ts';
 
 // 2A-ST3 (#136): transfer a waiting guest to another queue.
@@ -20,7 +20,7 @@ test('AC1: a transfer puts the guest in the other queue within 3 s and their sta
 
   const row = staff.getByTestId('section-waiting').getByTestId('visit');
   const ticket = ((await row.locator('span').first().textContent()) ?? '').trim();
-  await row.getByRole('button', { name: `Transfer ${ticket}` }).click();
+  await pickRowAction(row, 'Transfer', ticket);
   const dialog = staff.getByRole('dialog', { name: /^Transfer / });
   await expect(dialog).toContainText('keeps their place by join time');
   await dialog.getByLabel('To queue').selectOption({ label: to.name });

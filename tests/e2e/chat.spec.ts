@@ -1,6 +1,6 @@
 import postgres from 'postgres';
 import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
-import { guestJoins, openQueue } from './support/console.ts';
+import { guestJoins, openQueue, pickRowAction } from './support/console.ts';
 import { freshQueue } from './support/queues.ts';
 
 // 2B-G4 (#250): a guest message badges the staff row within 3 s and the reply reaches the guest.
@@ -36,7 +36,7 @@ test('AC1: a guest message badges the row and the staff reply reaches the guest'
   const row = staff.getByTestId('section-waiting').getByTestId('visit');
   await expect(row.getByTestId('chat-badge')).toBeVisible({ timeout: 3_000 });
 
-  await staff.getByRole('button', { name: /^Details for / }).click();
+  await pickRowAction(staff, 'Details');
   await staff.getByRole('button', { name: 'On our way' }).click();
   await expect(guest.getByText('On our way')).toBeVisible({ timeout: 3_000 });
 });

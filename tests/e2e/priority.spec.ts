@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { randomUUID } from 'node:crypto';
 import { demo } from '../fixtures/demo.ts';
 import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
-import { guestJoins, openQueue } from './support/console.ts';
+import { guestJoins, openQueue, pickRowAction } from './support/console.ts';
 import { supabaseEnv } from './support/env.ts';
 import { freshQueue } from './support/queues.ts';
 
@@ -45,10 +45,7 @@ test('AC1: staff move a guest ahead with a priority class, and can clear it', as
   const rows = page.getByTestId('section-waiting').getByTestId('visit');
   await expect(rows.first()).toContainText('First Fay');
 
-  await rows
-    .nth(1)
-    .getByRole('button', { name: /^Set priority for / })
-    .click();
+  await pickRowAction(rows.nth(1), 'Priority');
   const dialog = page.getByRole('dialog', { name: /^Priority for / });
   await dialog.getByLabel('Priority').selectOption({ label: className });
   await expectNoSeriousA11yViolations(page);
@@ -58,10 +55,7 @@ test('AC1: staff move a guest ahead with a priority class, and can clear it', as
   await expect(rows.first()).toContainText('Second Sid');
   await expect(rows.first().getByTestId('priority-badge')).toContainText(className);
 
-  await rows
-    .first()
-    .getByRole('button', { name: /^Set priority for / })
-    .click();
+  await pickRowAction(rows.first(), 'Priority');
   await page
     .getByRole('dialog', { name: /^Priority for / })
     .getByLabel('Priority')
