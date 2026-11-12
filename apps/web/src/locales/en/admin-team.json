@@ -77,6 +77,9 @@
     "rate_limited": "Too many invitations. Try again later.",
     "send_failed": "The email could not be sent, so no invitation was created. Try again.",
     "org_suspended": "This organization is suspended.",
+    "limitReached": "The team is full: it has all the members it can have.",
+    "limitReachedCount_one": "The team is full: it can have {{count}} member.",
+    "limitReachedCount_other": "The team is full: it can have {{count}} members.",
     "not_found": "That person is no longer on the team.",
     "unknown": "Something went wrong. Try again."
   },
