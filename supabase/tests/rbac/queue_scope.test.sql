@@ -20,6 +20,7 @@ insert into app.visit_answers (visit_id, org_id, location_id, answers) values
   (tests.id('va2'), tests.id('org_a'), tests.id('loc_a'), '{"f": "two"}');
 
 -- Counts the rows of the two visits this test created (the world holds other visits too).
+-- Answers are not counted here: they are read only through api.get_visit_answers (F7b, see pg_temp.reads).
 create function pg_temp.seen(p_table text) returns int language plpgsql as $$
 declare n int;
 begin
@@ -28,6 +29,14 @@ begin
   return n;
 end $$;
 grant execute on function pg_temp.seen(text) to authenticated;
+-- Whether the caller may read the visit's answers: F7b revoked the direct SELECT, so the only read is api.get_visit_answers.
+create function pg_temp.reads(p_visit text) returns boolean language plpgsql as $$
+begin
+  perform api.get_visit_answers(tests.id(p_visit));
+  return true;
+exception when sqlstate 'P0001' then return false;
+end $$;
+grant execute on function pg_temp.reads(text) to authenticated;
 create function pg_temp.access(p_queue text, p_org text default 'org_a') returns boolean language sql as
   $$ select private.has_queue_access(tests.id(p_org), tests.id(p_queue), 'staff') $$;
 grant execute on function pg_temp.access(text, text) to authenticated;
@@ -37,7 +46,7 @@ select tests.as_postgres();
 select is((select scope_staff_to_lines from app.organizations where id = tests.id('org_a')), false, 'the setting is off by default');
 select tests.as_user(tests.id('scoped'));
 select is(pg_temp.seen('visits'), 2, 'off: a listed member still sees both queues');
-select is(pg_temp.seen('visit_answers'), 2, 'off: and both queues'' answers');
+select is(pg_temp.reads('va') and pg_temp.reads('va2'), true, 'off: and both queues'' answers');
 select is(pg_temp.access('queue_a2'), true, 'off: has_queue_access is true for the other queue');
 select tests.act_as('staff');
 select is(pg_temp.seen('visits'), 2, 'off: unscoped staff see both queues');
@@ -56,21 +65,21 @@ select is((select scope_staff_to_lines from app.organizations where id = tests.i
 select tests.as_user(tests.id('scoped'));
 select is(pg_temp.seen('visits'), 1, 'on: a scoped member sees one visit');
 select is((select queue_id from app.visits where id in (tests.id('va'), tests.id('va2'))), tests.id('queue_a'), 'on: it is in their queue');
-select is(pg_temp.seen('visit_answers'), 1, 'on: and only their queue''s answers');
+select is(pg_temp.reads('va') and not pg_temp.reads('va2'), true, 'on: and only their queue''s answers');
 select is(pg_temp.seen('visit_events'), 1, 'on: visit events follow the visits');
 select is(pg_temp.access('queue_a'), true, 'on: access to their own queue');
 select is(pg_temp.access('queue_a2'), false, 'on: no access to the other queue');
 select is(pg_temp.access('queue_b', 'org_a'), false, 'a queue from another org does not pass under this org id');
 select tests.act_as('staff');
 select is(pg_temp.seen('visits'), 2, 'on: unscoped staff (front desk) see every queue');
-select is(pg_temp.seen('visit_answers'), 2, 'on: and every queue''s answers');
+select is(pg_temp.reads('va') and pg_temp.reads('va2'), true, 'on: and every queue''s answers');
 select tests.act_as('manager');
 select is(pg_temp.seen('visits'), 2, 'on: a manager is unaffected');
 
 -- Cross tenant: the other org's owner sees none of this and gets no access.
 select tests.act_as('other_owner');
 select is(pg_temp.seen('visits'), 0, 'cross-tenant: no visits');
-select is(pg_temp.seen('visit_answers'), 0, 'cross-tenant: no answers');
+select is(pg_temp.reads('va') or pg_temp.reads('va2'), false, 'cross-tenant: no answers');
 select is(pg_temp.access('queue_a'), false, 'cross-tenant: no queue access');
 
 -- Assigning scope: owner only, own org's queues only, staff only, never empty.
