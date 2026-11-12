@@ -17,6 +17,11 @@ export interface WebhookVerifier {
   secretsProvider?: string;
   /** The handler's reply is the HTTP response (TwiML), and a replayed request is answered again. */
   inlineResponse?: boolean;
+  /**
+   * Form fields kept in the stored event. A form body (Twilio, Plivo) carries guests' phone
+   * numbers and texts, so by default none of it is stored (I-13); name only fields without them.
+   */
+  storedFormKeys?: string[];
   /** The body sent when an inline handler fails or does not run. */
   failureReply?: string;
   /** `secret` is one candidate; the caller tries each secret of the endpoint (rotation). */

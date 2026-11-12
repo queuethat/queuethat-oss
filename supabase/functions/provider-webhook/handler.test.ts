@@ -164,3 +164,32 @@ Deno.test('a failing handler is recorded on the event and still answered 200', a
   assert.equal((await handler(twilioReq())).status, 200);
   assert.deepEqual(processed, [[5, 'TypeError']], 'only the error type is stored, never its message');
 });
+
+Deno.test('a form body is stored only as the fields its verifier names; without any, not at all', async () => {
+  const stored: unknown[] = [];
+  const verifier = (storedFormKeys?: string[]) => ({
+    provider: 'shared',
+    storedFormKeys,
+    verify: async () => ({ ok: true as const }),
+    eventKeys: (_raw: Uint8Array, form?: URLSearchParams) => [form?.get('MessageSid') ?? 'none'],
+  });
+  const run = (storedFormKeys?: string[]) =>
+    createProviderWebhookHandler({
+      publicFunctionsUrl: BASE,
+      endpointSecrets: async () => ({ orgId: null, secrets: ['s'] }),
+      async record(_p, _key, _org, payload) {
+        stored.push(payload);
+        return { eventId: stored.length, isDuplicate: false };
+      },
+      async markProcessed() {},
+      handlers: {},
+      verifiers: { shared: verifier(storedFormKeys) },
+    })(new Request(`${BASE}/provider-webhook/shared/${A}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ MessageSid: 'SM1', MessageStatus: 'delivered', From: '+15550001111', Body: 'hi' }).toString(),
+    }));
+  assert.equal((await run(['MessageSid', 'MessageStatus', 'ErrorCode'])).status, 200);
+  assert.equal((await run()).status, 200);
+  assert.deepEqual(stored, [{ MessageSid: 'SM1', MessageStatus: 'delivered' }, null]);
+});
