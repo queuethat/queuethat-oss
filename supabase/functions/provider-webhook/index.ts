@@ -4,6 +4,7 @@ import { supabaseDeps } from './deps.ts';
 import { createObserver } from '../_shared/observe.ts';
 import { createProviderWebhookHandler } from './handler.ts';
 import { extensionRoutes } from './extensions.ts';
+import { withExtensionRoutes } from './routes.ts';
 import { verifiers } from './verify/index.ts';
 import { createMetaHandler } from './handlers/meta.ts';
 import { type ApplyDeliveryStatus, twilioStatusHandler } from './handlers/twilio-status.ts';
@@ -74,7 +75,7 @@ const suppressByMessage = async (orgId: string, provider: string, sid: string, r
   return data === true;
 };
 
-// Routes the deployment adds (extensions.ts; none here). A built-in provider of the same name wins.
+// Routes the deployment adds (extensions.ts; none here), joined to the built-in ones by routes.ts.
 const extra = extensionRoutes({
   rpc: async (fn, args) => {
     const { data, error } = await api.rpc(fn, args);
@@ -83,35 +84,34 @@ const extra = extensionRoutes({
   },
   env: (name) => Deno.env.get(name),
 });
-const extraOnly = (name: string) => Object.hasOwn(extra, name) && !Object.hasOwn(verifiers, name);
-const extraBy = <T>(pick: (r: (typeof extra)[string]) => T) =>
-  Object.fromEntries(Object.entries(extra).filter(([n]) => extraOnly(n)).map(([n, r]) => [n, pick(r)]));
+
+const routes = withExtensionRoutes({
+  verifiers,
+  endpointSecrets: (provider, endpointId) => db.endpointSecrets(provider, endpointId),
+  // WhatsApp handlers register here as 3-WA3 lands. A Twilio request is
+  // either a status callback (MessageStatus) or a guest's text; each handler ignores the other.
+  handlers: {
+    resend: resendHandler(applyStatus, suppressByMessage),
+    postmark: postmarkHandler(applyStatus, suppressByMessage),
+    telnyx: createTelnyxHandler(applyStatus, db.processInbound),
+    vonage: createVonageHandler(applyStatus, db.processInbound),
+    plivo: createPlivoHandler(applyStatus, db.processInbound),
+    twilio: async (ctx) => {
+      await twilioStatus(ctx);
+      await twilioInbound(ctx);
+    },
+    'twilio-voice': twilioVoice,
+    meta,
+    stripe: stripePayments,
+    square,
+  },
+}, extra);
 
 Deno.serve(
   observe.serve(createProviderWebhookHandler({
-    endpointSecrets: (provider, endpointId) =>
-      extraOnly(provider) ? extra[provider]!.endpointSecrets(endpointId) : db.endpointSecrets(provider, endpointId),
-    verifiers: { ...verifiers, ...extraBy((r) => r.verifier) },
+    ...routes,
     record: db.record,
     markProcessed: db.markProcessed,
-    // WhatsApp handlers register here as 3-WA3 lands. A Twilio request is
-    // either a status callback (MessageStatus) or a guest's text; each handler ignores the other.
-    handlers: {
-      resend: resendHandler(applyStatus, suppressByMessage),
-      postmark: postmarkHandler(applyStatus, suppressByMessage),
-      telnyx: createTelnyxHandler(applyStatus, db.processInbound),
-      vonage: createVonageHandler(applyStatus, db.processInbound),
-      plivo: createPlivoHandler(applyStatus, db.processInbound),
-      twilio: async (ctx) => {
-        await twilioStatus(ctx);
-        await twilioInbound(ctx);
-      },
-      'twilio-voice': twilioVoice,
-      meta,
-      stripe: stripePayments,
-      square,
-      ...extraBy((r) => r.handler),
-    },
     publicFunctionsUrl: Deno.env.get('PUBLIC_FUNCTIONS_URL') ?? `${env('SUPABASE_URL')}/functions/v1`,
     log: observe.log,
     error: observe.error,
