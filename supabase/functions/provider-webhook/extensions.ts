@@ -7,6 +7,7 @@ import type { WebhookVerifier } from './verify/types.ts';
 
 /** One route, `/provider-webhook/<name>/<endpoint>`. A built-in provider of the same name wins. */
 export interface ExtensionRoute {
+  /** Its `secretsProvider` is ignored: the route's secrets come only from `endpointSecrets`. */
   verifier: WebhookVerifier;
   handler: WebhookHandler;
   /** The endpoint's signing secrets (orgId null for a deployment-wide route), or null when unknown. */
