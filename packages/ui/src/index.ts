@@ -22,6 +22,7 @@ export { TicketNumber, type TicketNumberProps, type TicketNumberSize } from './T
 export { BigButton, Button, type ButtonProps, type ButtonVariant } from './Button.tsx';
 export { Card } from './Card.tsx';
 export { ConfirmDestructive, type ConfirmDestructiveProps } from './ConfirmDestructive.tsx';
+export { ConfirmDialog, type ConfirmDialogProps } from './ConfirmDialog.tsx';
 export { ConnectionIndicator, type ConnectionState } from './ConnectionIndicator.tsx';
 export { DataTable, type DataColumn, type DataTableProps } from './DataTable.tsx';
 export { Dialog, type DialogProps } from './Dialog.tsx';

@@ -1,5 +1,5 @@
 import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
-import { guestJoins, openQueue } from './support/console.ts';
+import { guestJoins, openQueue, pickRowAction } from './support/console.ts';
 import { freshQueue } from './support/queues.ts';
 
 // 2A-ST6 (#139): a visit's history, from its row and from "Done today".
@@ -21,7 +21,7 @@ test('AC1: an undone call is struck through with who undid it, and finished visi
     .click();
   await expect(staff.getByTestId('section-waiting')).toContainText('History Hana');
 
-  await staff.getByRole('button', { name: `History of ${ticket}` }).click();
+  await pickRowAction(staff, 'History', ticket);
   const drawer = staff.getByRole('dialog', { name: `History of ${ticket}` });
   const entries = drawer.getByTestId('history-entry');
   await expect(entries.filter({ hasText: 'Joined the line' })).toHaveCount(1);

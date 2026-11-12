@@ -1,4 +1,5 @@
 import type { Browser, Page } from '@playwright/test';
+import { pickRowAction } from './support/console.ts';
 import { createClient } from '@supabase/supabase-js';
 import { randomUUID } from 'node:crypto';
 import { expect, LIVE_TIMEOUT_MS, signIn, test } from './fixtures.ts';
@@ -151,7 +152,7 @@ test('a day in the shop on two tablets, the TV and the guests’ phones @core', 
   });
 
   await test.step('a mistaken no-show for Ben is undone from the toast', async () => {
-    await chair2.getByRole('button', { name: `No-show ${ben.display_ticket}` }).click();
+    await pickRowAction(chair2, 'No-show', ben.display_ticket);
     await chair2.getByRole('button', { name: 'Mark no-show' }).click();
     await expect(section(chair1, 'called')).not.toContainText('Ben', { timeout: LIVE_MS });
     // The newest toast is the no-show's; the call's may still be up. Wait until it is there, or
