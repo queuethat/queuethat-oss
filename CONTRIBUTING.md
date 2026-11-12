@@ -67,9 +67,9 @@ pnpm exec playwright install webkit && pnpm exec playwright install-deps webkit
 On a pull request GitHub runs less than that, to answer quickly: the static and database checks
 as before, but of the browser tests only the core journeys on desktop Chrome
 (`pnpm test:e2e:core`, a few minutes), and none for a change that only touches documentation.
-The whole browser suite runs on `main` after the merge and every night. So a green pull request
-does not prove that nothing outside the core journeys broke: that shows up as a red run on
-`main`. `pnpm ci:local` is how you find out before merging. That run on `main` retries a failed
+The whole browser suite runs on `development` and `main` after each merge and every night. So a green
+pull request does not prove that nothing outside the core journeys broke: that shows up as a red run
+on `development`. `pnpm ci:local` is how you find out before merging. That full run retries a failed
 browser test once and lists the ones that then passed as "flaky" in its summary; a test that keeps
 appearing there is a bug to fix.
 
@@ -87,9 +87,15 @@ never edit or hand-merge them. CI fails when one is stale.
 | `packages/domain/src/generated/`                                               | `pnpm db:reset && pnpm gen:consent`                      |
 | `docs/api/openapi-v1.json`                                                     | `pnpm openapi:v1`                                        |
 
+## Branches
+
+- `development` is where work lands. Every pull request targets it.
+- `main` is the released line that self-hosters run. It moves only by a release pull request from
+  `development`, never by a feature pull request.
+
 ## Making a change
 
-1. Branch from `main`. Write the test first where you can.
+1. Branch from `development` and target it. Write the test first where you can.
 2. Keep it small: one concern per pull request, under about 400 changed lines excluding generated
    files. CI warns above that.
 3. Title the pull request `type(area): summary`, for example `fix(web): keep the join button
