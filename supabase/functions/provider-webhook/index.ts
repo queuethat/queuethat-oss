@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 import { supabaseDeps } from './deps.ts';
 import { createObserver } from '../_shared/observe.ts';
 import { createProviderWebhookHandler } from './handler.ts';
+import { extensionRoutes } from './extensions.ts';
+import { verifiers } from './verify/index.ts';
 import { createMetaHandler } from './handlers/meta.ts';
 import { type ApplyDeliveryStatus, twilioStatusHandler } from './handlers/twilio-status.ts';
 import { createPlivoHandler } from './handlers/plivo.ts';
@@ -72,9 +74,24 @@ const suppressByMessage = async (orgId: string, provider: string, sid: string, r
   return data === true;
 };
 
+// Routes the deployment adds (extensions.ts; none here). A built-in provider of the same name wins.
+const extra = extensionRoutes({
+  rpc: async (fn, args) => {
+    const { data, error } = await api.rpc(fn, args);
+    if (error) throw new Error(error.message);
+    return data;
+  },
+  env: (name) => Deno.env.get(name),
+});
+const extraOnly = (name: string) => Object.hasOwn(extra, name) && !Object.hasOwn(verifiers, name);
+const extraBy = <T>(pick: (r: (typeof extra)[string]) => T) =>
+  Object.fromEntries(Object.entries(extra).filter(([n]) => extraOnly(n)).map(([n, r]) => [n, pick(r)]));
+
 Deno.serve(
   observe.serve(createProviderWebhookHandler({
-    endpointSecrets: (provider, endpointId) => db.endpointSecrets(provider, endpointId),
+    endpointSecrets: (provider, endpointId) =>
+      extraOnly(provider) ? extra[provider]!.endpointSecrets(endpointId) : db.endpointSecrets(provider, endpointId),
+    verifiers: { ...verifiers, ...extraBy((r) => r.verifier) },
     record: db.record,
     markProcessed: db.markProcessed,
     // WhatsApp handlers register here as 3-WA3 lands. A Twilio request is
@@ -93,6 +110,7 @@ Deno.serve(
       meta,
       stripe: stripePayments,
       square,
+      ...extraBy((r) => r.handler),
     },
     publicFunctionsUrl: Deno.env.get('PUBLIC_FUNCTIONS_URL') ?? `${env('SUPABASE_URL')}/functions/v1`,
     log: observe.log,
