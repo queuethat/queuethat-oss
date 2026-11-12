@@ -21,6 +21,11 @@ import {
 } from '@qm/ui';
 import type { LinkProps } from '@tanstack/react-router';
 import { useTranslation } from '../../../lib/translation.tsx';
+import {
+  adminPageUrl,
+  installedExtensions,
+  type ExtensionAdminPage,
+} from '../../../extensions/index.ts';
 import type { en } from '../../../locales/en/index.ts';
 import { useCurrentLocation, useCurrentOrg } from '../../auth/current.ts';
 import type { SectionId } from '../tabs/sectionTabs.ts';
@@ -243,21 +248,40 @@ export interface NavFilter {
   multiLocation: boolean;
 }
 
-/** Pure: applies the role filters to the table above. Empty groups are dropped. */
+/**
+ * Pure: applies the role filters to the table above and appends the installed extensions' pages
+ * that ask for a nav entry, at the end of the group they name. Empty groups are dropped.
+ */
 export function buildGroups(
   filter: NavFilter,
   label: (key: ItemKey) => string,
   groupLabel: (id: GroupId) => string,
   sectionLabel: (id: SectionId) => string,
+  extensionPages: ExtensionAdminPage[] = installedExtensions().adminPages,
+  extensionLabel: (labelKey: string) => string = (k) => k,
 ): NavGroup<AdminNavItem>[] {
   const admin = filter.role === 'owner' || filter.role === 'admin';
+  const extra = (group: GroupId): AdminNavItem[] =>
+    extensionPages.flatMap((p) =>
+      p.nav && p.nav.group === group && (!p.nav.adminOnly || admin)
+        ? [
+            {
+              id: `x:${p.path}`,
+              // Not a file route of its own: served by /admin/x/$ (src/routes/admin/x.$.tsx).
+              to: adminPageUrl(p) as LinkProps['to'],
+              icon: p.nav.icon,
+              label: extensionLabel(p.nav.labelKey),
+            },
+          ]
+        : [],
+    );
   return GROUPS.map(({ id, entries }) => ({
     id,
     label: id === 'danger' ? undefined : groupLabel(id),
     defaultOpen: id === 'run' ? true : undefined,
     items: entries
       .filter((e) => (!e.adminOnly || admin) && (!e.multiLocation || filter.multiLocation))
-      .map((e) => ({
+      .map((e): AdminNavItem => ({
         id: e.key,
         to: e.to,
         exact: e.exact,
@@ -266,7 +290,8 @@ export function buildGroups(
         hidden: e.hidden,
         under: e.under,
         sidebarLabel: e.sidebarLabel && sectionLabel(e.sidebarLabel),
-      })),
+      }))
+      .concat(extra(id)),
   })).filter((g) => g.items.length > 0);
 }
 
@@ -310,12 +335,15 @@ export function useNavFilter(): NavFilter {
 
 /** The groups this member may see, translated. */
 export function useAdminNavGroups(): NavGroup<AdminNavItem>[] {
-  const { t } = useTranslation('admin-nav');
+  const { t, i18n } = useTranslation('admin-nav');
   return buildGroups(
     useNavFilter(),
     (key) => t(`items.${key}`),
     (id) => t(`groups.${id as Exclude<GroupId, 'danger'>}`),
     (id) => t(`sections.${id}`),
+    installedExtensions().adminPages,
+    // An extension's own namespace (`ns:key`), which it registers itself.
+    (labelKey) => (i18n.t as (key: string) => string)(labelKey),
   );
 }
 

@@ -13,6 +13,7 @@ import { DeletionBanner } from '../features/admin/settings/danger/DeletionBanner
 import { SuspendedBanner } from '../features/admin/support/SuspendedBanner.tsx';
 import { HelpLink } from '../features/admin/support/HelpLink.tsx';
 import { ContactSupportButton } from '../features/admin/support/ContactSupport.tsx';
+import { ExtensionBanners } from '../extensions/ExtensionBanners.tsx';
 
 /** Staff console and admin: tablet-first (768-1280px), large targets. */
 export function StaffLayout({ area }: { area: 'staff' | 'admin' | 'onboarding' | 'auth' }) {
@@ -33,6 +34,7 @@ export function StaffLayout({ area }: { area: 'staff' | 'admin' | 'onboarding' |
                 {area === 'admin' ? <DeletionBanner /> : null}
                 <SuspendedBanner />
                 <MfaRequiredBanner />
+                <ExtensionBanners area={area} />
               </>
             ) : null}
             <header className="flex flex-col gap-3 px-6 pt-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
