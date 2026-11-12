@@ -102,7 +102,7 @@ select throws_ok($$ select api.set_booking_answers('tok-gone', '{"allergy": "x"}
 
 -- Erasure and cross-tenant.
 select tests.act_as('other_owner');
-select is((select count(*)::int from app.form_responses), 0, 'cross-tenant: another org''s owner reads no responses');
+select throws_ok($$ select count(*) from app.form_responses $$, '42501', null, 'cross-tenant: another org''s owner cannot read responses directly (F7b)');
 select tests.as_postgres();
 select private.anonymize_appointments(tests.id('org_a'), array[(select id from ap)]);
 select is((select count(*)::int from app.form_responses where appointment_id = (select id from ap)) +
