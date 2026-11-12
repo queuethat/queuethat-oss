@@ -13,7 +13,7 @@ import {
 
 // M6 (#1293): a provider opens on their own line plus "Anyone available"; the front desk sees every
 // line on one screen; Call next on a provider line falls back to the pool (M4, in the database).
-test.skip(process.env.E2E_PILOT === '1', 'needs the service role to set up lines');
+test.skip(process.env.E2E_PILOT === '1', 'needs the service role to set up lines'); // #32
 test.use({ staffUser: null });
 
 const env = supabaseEnv();
