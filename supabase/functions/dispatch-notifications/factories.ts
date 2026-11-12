@@ -2,7 +2,8 @@
 // PROVIDER_FIELDS. Each reads only the keys that spec lists. Settings that can't build a channel
 // (a missing field, a constructor that refuses a value) resolve to no channel, not a throw: a throw
 // would leave the outbox row leased and claimed again every run, while no channel ends it as
-// `suppressed: channel_disabled`. Only mode `own` (the business's own provider account) builds one.
+// `suppressed: channel_disabled`. Mode `own` (the business's own provider account) builds one here;
+// mode `platform` (the deployment's shared sender) builds one only through FactoryOptions.shared.
 //
 // Relative imports, not '@qm/*': the e2e specs load this file in Node, which has no workspace link.
 import { PROVIDER_FIELDS } from '../../../packages/domain/src/provider-fields.ts';
@@ -28,9 +29,25 @@ export interface FactoryOptions {
    */
   apiBase?: Partial<Record<string, string>>;
   fetch?: typeof fetch;
+  /**
+   * The deployment's shared sender for orgs in mode `platform` (extensions.ts). Absent, or
+   * answering null, such sends end as `suppressed: channel_disabled`.
+   */
+  shared?: SharedSender;
 }
 
 type Settings = Parameters<ProviderFactory>[0];
+
+/**
+ * Builds the shared sender's channel for one org's settings. `common` carries the deployment's
+ * test overrides (API origin, fetch) for that provider. Throwing counts as null.
+ */
+export type SharedSender = (
+  channel: 'email' | 'sms' | 'whatsapp',
+  provider: string,
+  settings: Settings,
+  common: { apiBase?: string; fetch?: typeof fetch },
+) => NotificationChannel | null;
 
 const text = (v: unknown): string => (typeof v === 'string' ? v.trim() : '');
 
@@ -39,9 +56,17 @@ function guarded(
   channel: 'email' | 'sms' | 'whatsapp',
   provider: string,
   build: (get: (key: string) => string, s: Settings) => NotificationChannel,
+  shared?: (s: Settings) => NotificationChannel | null,
 ): ProviderFactory {
   const spec = PROVIDER_FIELDS[channel][provider]!;
   return (settings) => {
+    if (settings.mode === 'platform') {
+      try {
+        return shared?.(settings) ?? null;
+      } catch {
+        return null;
+      }
+    }
     if (settings.mode !== 'own') return null;
     const get = (key: string) =>
       text(spec.secrets.includes(key) ? settings.secrets[key] : settings.config[key]);
@@ -71,6 +96,8 @@ export function providerFactories(opts: FactoryOptions = {}): Record<string, Pro
     ...(base[name] && { baseUrl: base[name] }),
     ...(opts.fetch && { fetch: opts.fetch }),
   });
+  const shared = (channel: 'email' | 'sms' | 'whatsapp', name: string) =>
+    opts.shared && ((s: Settings) => opts.shared!(channel, name, s, common(name)));
   // `{functions}/provider-webhook/{provider}/{endpoint}`: what the webhook URL on the settings page shows.
   const reportUrl = (provider: string, s: Settings): string | undefined => {
     const endpoint = text(s.config.endpoint_id);
@@ -88,7 +115,7 @@ export function providerFactories(opts: FactoryOptions = {}): Record<string, Pro
         statusCallbackUrl: reportUrl('twilio', s),
         segments: smsSegments,
         ...common('twilio'),
-      })),
+      }), shared('sms', 'twilio')),
     telnyx: guarded('sms', 'telnyx', (get, s) =>
       telnyxChannel({
         apiKey: get('api_key'),
@@ -96,7 +123,7 @@ export function providerFactories(opts: FactoryOptions = {}): Record<string, Pro
         webhookUrl: reportUrl('telnyx', s),
         segments: smsSegments,
         ...common('telnyx'),
-      })),
+      }), shared('sms', 'telnyx')),
     vonage: guarded('sms', 'vonage', (get, s) =>
       vonageChannel({
         apiKey: get('api_key'),
@@ -105,7 +132,7 @@ export function providerFactories(opts: FactoryOptions = {}): Record<string, Pro
         statusUrl: reportUrl('vonage', s),
         segments: smsSegments,
         ...common('vonage'),
-      })),
+      }), shared('sms', 'vonage')),
     plivo: guarded('sms', 'plivo', (get, s) =>
       plivoChannel({
         authId: get('auth_id'),
@@ -114,18 +141,18 @@ export function providerFactories(opts: FactoryOptions = {}): Record<string, Pro
         statusUrl: reportUrl('plivo', s),
         segments: smsSegments,
         ...common('plivo'),
-      })),
+      }), shared('sms', 'plivo')),
     postmark: guarded('email', 'postmark', (get) =>
       postmarkEmailChannel({
         ...emailCommon('postmark', get),
         ...(get('message_stream') && { messageStream: get('message_stream') }),
-      })),
-    resend: guarded('email', 'resend', (get) => resendEmailChannel(emailCommon('resend', get))),
+      }), shared('email', 'postmark')),
+    resend: guarded('email', 'resend', (get) => resendEmailChannel(emailCommon('resend', get)), shared('email', 'resend')),
     meta: guarded('whatsapp', 'meta', (get) =>
       whatsappCloudChannel({
         phoneNumberId: get('phone_number_id'),
         accessToken: get('access_token'),
         ...common('meta'),
-      })),
+      }), shared('whatsapp', 'meta')),
   };
 }

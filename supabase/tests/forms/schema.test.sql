@@ -42,7 +42,7 @@ select lives_ok($$ insert into app.form_responses (org_id, location_id, form_ver
 select throws_ok($$ insert into app.form_targets (org_id, location_id, form_id, queue_id, channel)
   values (tests.id('org_b'), tests.id('loc_b'), tests.id('f2'), tests.id('queue_a'), 'walk_in') $$, '23503', null, 'a target cannot reference another organisation''s form');
 select tests.act_as('other_owner');
-select is((select count(*)::int from app.form_responses), 0, 'another organisation sees no responses');
+select throws_ok($$ select count(*) from app.form_responses $$, '42501', null, 'another organisation cannot read responses directly (F7b)');
 
 select * from finish();
 rollback;

@@ -1,6 +1,7 @@
 // #920: provider factories with fake settings. Run with `pnpm test:functions`.
 import assert from 'node:assert/strict';
 import { PROVIDER_FIELDS } from '../../../packages/domain/src/provider-fields.ts';
+import type { NotificationChannel } from '../../../packages/providers/src/index.ts';
 import { providerFactories } from './factories.ts';
 
 const ENDPOINT = '0a1b2c3d-0000-4000-8000-00000000e001';
@@ -126,4 +127,28 @@ Deno.test('a sender address or name that could add a second From address gives n
   assert.equal(factories.resend!(settings({ sender_email: 'a@b.co, c@d.co' })), null);
   assert.equal(factories.resend!(settings({ sender_name: 'Shop <ceo@bank.com>' })), null);
   assert.equal(factories.resend!(settings({ sender_name: "Joe's Barber" }))?.kind, 'email');
+});
+
+Deno.test('mode platform builds a channel only through the deployment shared sender', () => {
+  const calls: unknown[][] = [];
+  const fake = { kind: 'sms' } as unknown as NotificationChannel;
+  const withShared = providerFactories({
+    apiBase: { twilio: 'http://fake' },
+    shared: (channel, provider, settings, common) => {
+      calls.push([channel, provider, settings.mode, common.apiBase]);
+      return provider === 'twilio' ? fake : null;
+    },
+  });
+  const platform = { mode: 'platform', config: {}, secrets: {} };
+  assert.equal(withShared.twilio!(platform), fake);
+  assert.equal(withShared.telnyx!(platform), null);
+  assert.deepEqual(calls[0], ['sms', 'twilio', 'platform', 'http://fake']);
+  // own settings never reach the shared sender
+  withShared.twilio!({ mode: 'own', config: GOOD.twilio!.config, secrets: GOOD.twilio!.secrets });
+  assert.equal(calls.length, 2);
+  // a shared sender that throws gives no channel
+  const throwing = providerFactories({ shared: () => { throw new Error('bad env'); } });
+  assert.equal(throwing.twilio!(platform), null);
+  // without one, platform gives none
+  assert.equal(factories.twilio!(platform), null);
 });
