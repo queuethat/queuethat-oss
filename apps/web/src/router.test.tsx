@@ -112,21 +112,23 @@ describe('route groups', () => {
   });
 
   // A2 (#42): signed out, the staff and admin areas send you to sign-in and remember the way back.
-  it.each(['/staff', '/admin', '/onboarding'])(
-    '%s redirects a signed-out user to sign-in',
-    async (path) => {
-      const router = createAppRouter(createMemoryHistory({ initialEntries: [path] }));
-      await router.load();
-      render(
-        <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
-        </QueryClientProvider>,
-      );
-      expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeTruthy();
-      expect(router.state.location.pathname).toBe('/auth/sign-in');
-      expect(router.state.location.search).toEqual({ next: path });
-    },
-  );
+  // /staff is where sign-in lands anyway, so it needs no ?next= and the address stays clean.
+  it.each([
+    ['/staff', {}],
+    ['/admin', { next: '/admin' }],
+    ['/onboarding', { next: '/onboarding' }],
+  ])('%s redirects a signed-out user to sign-in', async (path, search) => {
+    const router = createAppRouter(createMemoryHistory({ initialEntries: [path] }));
+    await router.load();
+    render(
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>,
+    );
+    expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeTruthy();
+    expect(router.state.location.pathname).toBe('/auth/sign-in');
+    expect(router.state.location.search).toEqual(search);
+  });
 
   it('/q/demo-barber renders the join page inside the guest layout', async () => {
     vi.stubEnv('VITE_SUPABASE_URL', 'http://db.test');

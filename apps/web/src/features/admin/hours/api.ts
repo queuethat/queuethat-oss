@@ -89,3 +89,52 @@ export function useSaveHours(locationId: string, orgId: string) {
     onSettled: () => queryClient.invalidateQueries({ queryKey: hoursKey(locationId) }),
   });
 }
+
+/** When non-urgent texts and emails may go out, in local `HH:MM` (Q1, #1240). */
+export interface SendWindow {
+  start: string;
+  end: string;
+}
+
+const sendWindowKey = (locationId: string) => ['admin', 'send-window', locationId];
+
+/** The location's message window, read under RLS. */
+export const sendWindowQuery = (locationId: string) =>
+  queryOptions({
+    queryKey: sendWindowKey(locationId),
+    queryFn: async (): Promise<SendWindow> => {
+      const { data, error } = await supabase
+        .schema('app')
+        .from('locations')
+        .select('send_window_start, send_window_end')
+        .eq('id', locationId)
+        .single();
+      if (error) throw new Error(errorCode(error));
+      return { start: clock(data.send_window_start), end: clock(data.send_window_end) };
+    },
+  });
+
+/**
+ * Saves the window. The database owns the legal envelope: a time outside it is refused with
+ * `send_window_out_of_bounds`, and an end before the start by a check constraint (`invalid_input`
+ * here). Only admins and owners may update a location.
+ */
+export function useSaveSendWindow(locationId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (next: SendWindow) => {
+      const { data, error } = await supabase
+        .schema('app')
+        .from('locations')
+        .update({ send_window_start: next.start, send_window_end: next.end })
+        .eq('id', locationId)
+        .select('id');
+      if (error) {
+        const code = errorCode(error);
+        throw new Error(code === 'unknown' && error.code === '23514' ? 'invalid_input' : code);
+      }
+      if (data.length === 0) throw new Error('permission_denied');
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: sendWindowKey(locationId) }),
+  });
+}

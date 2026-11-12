@@ -1,0 +1,138 @@
+{
+  "key": "device_repair",
+  "version": 1,
+  "tier": 1,
+  "mode": "both",
+  "health_tagged": false,
+  "name": {
+    "en": "Phone and computer repair",
+    "es": "Reparación de celulares y computadoras"
+  },
+  "description": {
+    "en": "Screen, battery and repair drop-offs plus pick-ups, walk-in or booked, with two repair desks.",
+    "es": "Entregas para reparación de pantallas, baterías y más, y recogidas, con cita o sin cita, con dos mostradores."
+  },
+  "keywords": {
+    "en": [
+      "phone repair",
+      "computer repair",
+      "screen repair",
+      "laptop",
+      "tablet",
+      "electronics"
+    ],
+    "es": [
+      "reparación de celulares",
+      "reparación de computadoras",
+      "pantalla",
+      "laptop",
+      "tableta",
+      "electrónica"
+    ]
+  },
+  "queues": [
+    {
+      "name": {
+        "en": "Repair desk",
+        "es": "Mostrador de reparación"
+      },
+      "prefix": "R",
+      "show_eta": true,
+      "services": [
+        {
+          "name": {
+            "en": "Screen repair",
+            "es": "Reparación de pantalla"
+          },
+          "minutes": 45
+        },
+        {
+          "name": {
+            "en": "Battery replacement",
+            "es": "Cambio de batería"
+          },
+          "minutes": 30
+        },
+        {
+          "name": {
+            "en": "Diagnosis",
+            "es": "Diagnóstico"
+          },
+          "minutes": 15
+        },
+        {
+          "name": {
+            "en": "Drop off a repair",
+            "es": "Dejar un equipo para reparar"
+          },
+          "minutes": 10
+        },
+        {
+          "name": {
+            "en": "Pick up a repair",
+            "es": "Recoger un equipo reparado"
+          },
+          "minutes": 5
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "label": {
+        "en": "Repair desk 1",
+        "es": "Mostrador 1"
+      },
+      "kind": "desk"
+    },
+    {
+      "label": {
+        "en": "Repair desk 2",
+        "es": "Mostrador 2"
+      },
+      "kind": "desk"
+    }
+  ],
+  "form": {
+    "name": {
+      "en": "About your device",
+      "es": "Sobre tu equipo"
+    },
+    "fields": [
+      {
+        "key": "device",
+        "type": "short_text",
+        "required": true,
+        "label": {
+          "en": "Device and model",
+          "es": "Equipo y modelo"
+        },
+        "help": {
+          "en": "For example \"iPhone 13\" or \"Dell laptop\".",
+          "es": "Por ejemplo \"iPhone 13\" o \"laptop Dell\"."
+        },
+        "sensitivity": "normal"
+      },
+      {
+        "key": "issue",
+        "type": "short_text",
+        "required": true,
+        "label": {
+          "en": "What's wrong with it?",
+          "es": "¿Qué le pasa?"
+        },
+        "help": {
+          "en": "For example \"cracked screen\". Please don't share passcodes here.",
+          "es": "Por ejemplo \"pantalla rota\". No compartas contraseñas aquí."
+        },
+        "sensitivity": "normal"
+      }
+    ]
+  },
+  "booking": {
+    "slot_minutes": 15,
+    "buffer_after_minutes": 5,
+    "min_notice_minutes": 60,
+    "max_days_ahead": 30
+  }
+}

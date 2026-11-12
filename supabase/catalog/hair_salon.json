@@ -1,0 +1,182 @@
+{
+  "key": "hair_salon",
+  "version": 1,
+  "tier": 1,
+  "mode": "both",
+  "health_tagged": false,
+  "name": {
+    "en": "Hair salon",
+    "es": "Salón de belleza"
+  },
+  "description": {
+    "en": "Cuts, blow-dries and colour, booked or walk-in, with a line per stylist and an \"Anyone available\" option.",
+    "es": "Cortes, peinados y color, con cita o sin cita, con una fila por estilista y la opción \"Cualquiera disponible\"."
+  },
+  "keywords": {
+    "en": [
+      "hair salon",
+      "hairdresser",
+      "stylist",
+      "colour",
+      "color",
+      "blow-dry",
+      "highlights"
+    ],
+    "es": [
+      "peluquería",
+      "salón",
+      "estilista",
+      "tinte",
+      "color",
+      "peinado",
+      "mechas"
+    ]
+  },
+  "queues": [
+    {
+      "name": {
+        "en": "Salon",
+        "es": "Salón"
+      },
+      "prefix": "S",
+      "show_eta": true,
+      "services": [
+        {
+          "name": {
+            "en": "Cut and style",
+            "es": "Corte y peinado"
+          },
+          "minutes": 45
+        },
+        {
+          "name": {
+            "en": "Clipper cut",
+            "es": "Corte con máquina"
+          },
+          "minutes": 30
+        },
+        {
+          "name": {
+            "en": "Wash and blow-dry",
+            "es": "Lavado y secado"
+          },
+          "minutes": 30
+        },
+        {
+          "name": {
+            "en": "Root colour",
+            "es": "Tinte de raíz"
+          },
+          "minutes": 90
+        },
+        {
+          "name": {
+            "en": "Full colour",
+            "es": "Tinte completo"
+          },
+          "minutes": 120
+        },
+        {
+          "name": {
+            "en": "Highlights",
+            "es": "Mechas"
+          },
+          "minutes": 150
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "label": {
+        "en": "Chair 1",
+        "es": "Silla 1"
+      },
+      "kind": "chair"
+    },
+    {
+      "label": {
+        "en": "Chair 2",
+        "es": "Silla 2"
+      },
+      "kind": "chair"
+    },
+    {
+      "label": {
+        "en": "Chair 3",
+        "es": "Silla 3"
+      },
+      "kind": "chair"
+    },
+    {
+      "label": {
+        "en": "Chair 4",
+        "es": "Silla 4"
+      },
+      "kind": "chair"
+    }
+  ],
+  "providers": {
+    "noun": {
+      "en": "stylist",
+      "es": "estilista"
+    },
+    "default_count": 3,
+    "pool": true
+  },
+  "form": {
+    "name": {
+      "en": "About your visit",
+      "es": "Sobre tu visita"
+    },
+    "fields": [
+      {
+        "key": "first_visit",
+        "type": "yes_no",
+        "label": {
+          "en": "Is this your first visit with us?",
+          "es": "¿Es tu primera visita con nosotros?"
+        },
+        "sensitivity": "normal"
+      },
+      {
+        "key": "hair_length",
+        "type": "single_choice",
+        "label": {
+          "en": "How long is your hair now?",
+          "es": "¿Qué tan largo tienes el pelo ahora?"
+        },
+        "options": [
+          {
+            "en": "Short",
+            "es": "Corto"
+          },
+          {
+            "en": "Medium",
+            "es": "Mediano"
+          },
+          {
+            "en": "Long",
+            "es": "Largo"
+          }
+        ],
+        "sensitivity": "normal"
+      },
+      {
+        "key": "style_notes",
+        "type": "short_text",
+        "label": {
+          "en": "What would you like done?",
+          "es": "¿Qué te gustaría hacerte?"
+        },
+        "sensitivity": "normal"
+      }
+    ]
+  },
+  "booking": {
+    "slot_minutes": 15,
+    "buffer_after_minutes": 10,
+    "min_notice_minutes": 60,
+    "max_days_ahead": 60
+  }
+}

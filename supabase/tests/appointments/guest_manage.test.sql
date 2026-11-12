@@ -27,8 +27,8 @@ select (select token from api.book_appointment((select slug from ctx), tests.id(
 grant select on tok to public;
 
 -- AC1
-select is((select (to_jsonb(api.get_appointment((select ann from tok))) - 'starts_at' - 'ends_at' - 'as_of') - 'status' - 'service_name' - 'location_name' - 'location_slug' - 'can_reschedule' - 'can_cancel'),
-  '{}'::jsonb, 'AC1: the response holds no field beyond times, status, names and flags');
+select is((select (to_jsonb(api.get_appointment((select ann from tok))) - 'starts_at' - 'ends_at' - 'as_of') - 'status' - 'service_name' - 'location_name' - 'location_slug' - 'can_reschedule' - 'can_cancel' - 'provider_name'),
+  '{}'::jsonb, 'AC1: the response holds no field beyond times, status, names (service, location, provider line) and flags');
 select is((select (api.get_appointment((select ann from tok))).can_reschedule), true, 'a booking a week out can be moved');
 
 -- AC3: a full target changes nothing

@@ -1,0 +1,139 @@
+# Manual check of the production database's migrations, and a way to apply them by hand.
+#
+# Migrations are normally applied by Supabase's GitHub integration when main is pushed
+# (docs/ops/database-deploy.md). This workflow never runs on a push, so the two cannot both act
+# on one. Use it to read first: it prints the remote migration history and what a push would
+# apply. Clear dry_run only when the integration is switched off or its step has failed, and
+# after reading the dry run.
+#
+# Until the three secrets exist the job reports "not configured" and passes without touching
+# anything.
+name: Database migrations (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Only show the remote history and what would be applied. Clear this to apply by hand (main only, integration off or failed).
+        type: boolean
+        default: true
+
+# One run at a time, and a run that has started is never cancelled: a migration stopped halfway
+# is worse than a late one.
+concurrency:
+  group: deploy-database
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Required reviewers on this environment (Settings → Environments) make every run wait for
+    # approval. The secrets below belong on the environment, not the repository.
+    environment: production
+    steps:
+      - name: Check configuration
+        id: plan
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          APPLY: ${{ inputs.dry_run == false }}
+          REF: ${{ github.ref }}
+        run: |
+          missing=()
+          [ -n "$SUPABASE_ACCESS_TOKEN" ] || missing+=(SUPABASE_ACCESS_TOKEN)
+          [ -n "$SUPABASE_DB_PASSWORD" ] || missing+=(SUPABASE_DB_PASSWORD)
+          [ -n "$SUPABASE_PROJECT_REF" ] || missing+=(SUPABASE_PROJECT_REF)
+          if [ "${#missing[@]}" -gt 0 ]; then
+            msg="The manual database workflow is not configured: missing ${missing[*]}. Nothing was applied. See docs/ops/database-deploy.md."
+            echo "::notice title=Not configured::$msg"
+            echo "$msg" >> "$GITHUB_STEP_SUMMARY"
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$APPLY" = true ] && [ "$REF" != refs/heads/main ]; then
+            echo "::error::Migrations are applied from main only. Run this branch as a dry run."
+            exit 1
+          fi
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+          echo "apply=$APPLY" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.plan.outputs.configured == 'true'
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+        if: steps.plan.outputs.configured == 'true'
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: steps.plan.outputs.configured == 'true'
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        if: steps.plan.outputs.configured == 'true'
+
+      # The same guards as scripts/ci-static.sh, once more on the exact commit being applied.
+      - name: Migration guards
+        if: steps.plan.outputs.configured == 'true'
+        run: |
+          node scripts/check-migrations.mjs
+          node scripts/check-hosted-functions.mjs
+
+      - name: Link the production project
+        id: link
+        if: steps.plan.outputs.configured == 'true'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: pnpm exec supabase link --project-ref "$SUPABASE_PROJECT_REF"
+
+      - name: Show the remote history and what would be applied
+        if: steps.plan.outputs.configured == 'true'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          set -o pipefail
+          pnpm exec supabase migration list --remote
+          pnpm exec supabase db push --remote --skip-vault --dry-run 2>&1 | tee "$RUNNER_TEMP/push.log"
+
+      # Only when the integration is off or has failed. --skip-vault: supabase/config.toml describes
+      # the local stack; nothing in it may overwrite a production Vault secret. Only migrations newer
+      # than the newest applied one are pushed.
+      - name: Apply migrations by hand
+        if: steps.plan.outputs.configured == 'true' && steps.plan.outputs.apply == 'true'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          set -o pipefail
+          pnpm exec supabase db push --remote --skip-vault --yes 2>&1 | tee "$RUNNER_TEMP/push.log"
+
+      - name: Explain a refused push
+        if: failure() && steps.link.outcome == 'success'
+        run: |
+          log="$RUNNER_TEMP/push.log"
+          [ -f "$log" ] || exit 0
+          if grep -q 'to be inserted before the last migration' "$log"; then
+            echo "::error title=Out-of-order migration::A migration file is older than the newest one applied to production and is not in the remote history. The CLI refuses it and nothing was applied here, but the Supabase integration would run it on the next push to main. See 'The manual workflow' in docs/ops/database-deploy.md."
+          elif grep -q 'not found in local migrations directory' "$log"; then
+            echo "::error title=Unknown migration in production::Production records a migration that is not in this commit. Nothing was applied. See 'When the integration's step fails' in docs/ops/database-deploy.md."
+          fi
+
+      - name: Migration list after applying
+        if: ${{ !cancelled() && steps.plan.outputs.apply == 'true' && steps.link.outcome == 'success' }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: pnpm exec supabase migration list --remote
+
+      - name: Summary
+        if: steps.plan.outputs.configured == 'true'
+        env:
+          APPLY: ${{ steps.plan.outputs.apply }}
+        run: |
+          if [ "$APPLY" = true ]; then echo "Applied pending migrations to production by hand from \`${GITHUB_SHA::8}\`." >> "$GITHUB_STEP_SUMMARY"
+          else echo "Dry run for \`${GITHUB_SHA::8}\`: nothing was applied. The remote history and the pending migrations are in the log of \"Show the remote history and what would be applied\"." >> "$GITHUB_STEP_SUMMARY"; fi

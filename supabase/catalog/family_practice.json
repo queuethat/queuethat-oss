@@ -1,0 +1,143 @@
+{
+  "key": "family_practice",
+  "version": 1,
+  "tier": 1,
+  "mode": "both",
+  "health_tagged": true,
+  "name": {
+    "en": "Family practice",
+    "es": "Consultorio de medicina familiar"
+  },
+  "description": {
+    "en": "A personal line for each doctor, plus an optional \"Anyone available\" line. Ticket numbers only on screens; no visit details in messages.",
+    "es": "Una fila propia para cada médico y una fila opcional \"Cualquiera disponible\". Solo números en las pantallas; ningún detalle de la visita en los mensajes."
+  },
+  "keywords": {
+    "en": [
+      "family doctor",
+      "family practice",
+      "medical office",
+      "GP",
+      "physician",
+      "clinic"
+    ],
+    "es": [
+      "médico de familia",
+      "medicina familiar",
+      "consultorio",
+      "médico general",
+      "clínica"
+    ]
+  },
+  "queues": [
+    {
+      "name": {
+        "en": "Appointments",
+        "es": "Citas"
+      },
+      "prefix": "F",
+      "show_eta": true,
+      "services": [
+        {
+          "name": {
+            "en": "Visit",
+            "es": "Consulta"
+          },
+          "minutes": 15
+        },
+        {
+          "name": {
+            "en": "New patient visit",
+            "es": "Consulta de paciente nuevo"
+          },
+          "minutes": 30
+        },
+        {
+          "name": {
+            "en": "Annual check-up",
+            "es": "Revisión anual"
+          },
+          "minutes": 30
+        },
+        {
+          "name": {
+            "en": "Forms and notes",
+            "es": "Formularios y justificantes"
+          },
+          "minutes": 10
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "label": {
+        "en": "Exam room 1",
+        "es": "Consultorio 1"
+      },
+      "kind": "room"
+    },
+    {
+      "label": {
+        "en": "Exam room 2",
+        "es": "Consultorio 2"
+      },
+      "kind": "room"
+    },
+    {
+      "label": {
+        "en": "Exam room 3",
+        "es": "Consultorio 3"
+      },
+      "kind": "room"
+    }
+  ],
+  "providers": {
+    "noun": {
+      "en": "doctor",
+      "es": "médico"
+    },
+    "default_count": 3,
+    "pool": true
+  },
+  "form": {
+    "name": {
+      "en": "Before your visit",
+      "es": "Antes de tu consulta"
+    },
+    "fields": [
+      {
+        "key": "new_patient",
+        "type": "yes_no",
+        "label": {
+          "en": "Is this your first visit here?",
+          "es": "¿Es tu primera visita aquí?"
+        },
+        "help": {
+          "en": "New patients may be asked to fill in a registration form at the front desk.",
+          "es": "Es posible que en recepción pidamos a los pacientes nuevos que llenen un formulario de registro."
+        },
+        "sensitivity": "normal"
+      },
+      {
+        "key": "reason",
+        "type": "short_text",
+        "label": {
+          "en": "Reason for the visit, in a few words",
+          "es": "Motivo de la visita, en pocas palabras"
+        },
+        "help": {
+          "en": "For example \"sore throat\". Please don't include medical history; the doctor will ask.",
+          "es": "Por ejemplo \"dolor de garganta\". No incluyas tu historial médico; el médico te preguntará."
+        },
+        "sensitivity": "sensitive"
+      }
+    ]
+  },
+  "booking": {
+    "slot_minutes": 15,
+    "buffer_after_minutes": 0,
+    "min_notice_minutes": 120,
+    "max_days_ahead": 60
+  }
+}

@@ -105,5 +105,9 @@
     "minutes_other": "About {{count}} minutes to fill in.",
     "retention_one": "Answers are kept for {{count}} day, then deleted.",
     "retention_other": "Answers are kept for {{count}} days, then deleted."
+  },
+  "waiverBanner": {
+    "title": "A starting point, not legal advice. Have your own counsel review before using.",
+    "retention": "Signed waiver records are deleted after your waiver retention period: 365 days unless you change it under Waiver records. Export what you need to keep."
   }
 }

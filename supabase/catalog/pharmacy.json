@@ -1,0 +1,104 @@
+{
+  "key": "pharmacy",
+  "version": 1,
+  "tier": 1,
+  "mode": "walk_in",
+  "health_tagged": true,
+  "name": {
+    "en": "Pharmacy counter",
+    "es": "Mostrador de farmacia"
+  },
+  "description": {
+    "en": "Pick-ups, drop-offs and pharmacist questions in one line. Ticket numbers only on screens, and no medicine names anywhere.",
+    "es": "Recogidas, entregas de recetas y consultas al farmacéutico en una sola fila. Solo números en las pantallas y ningún nombre de medicamento."
+  },
+  "keywords": {
+    "en": [
+      "pharmacy",
+      "drugstore",
+      "pharmacist",
+      "prescription pick-up",
+      "chemist"
+    ],
+    "es": [
+      "farmacia",
+      "farmacéutico",
+      "recoger receta",
+      "droguería",
+      "botica"
+    ]
+  },
+  "queues": [
+    {
+      "name": {
+        "en": "Pharmacy",
+        "es": "Farmacia"
+      },
+      "prefix": "R",
+      "show_eta": true,
+      "services": [
+        {
+          "name": {
+            "en": "Pick up",
+            "es": "Recoger"
+          },
+          "minutes": 5
+        },
+        {
+          "name": {
+            "en": "Drop off a prescription",
+            "es": "Entregar una receta"
+          },
+          "minutes": 10
+        },
+        {
+          "name": {
+            "en": "Talk to the pharmacist",
+            "es": "Hablar con el farmacéutico"
+          },
+          "minutes": 10
+        },
+        {
+          "name": {
+            "en": "Vaccination",
+            "es": "Vacunación"
+          },
+          "minutes": 15
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "label": {
+        "en": "Pick-up counter",
+        "es": "Mostrador de recogida"
+      },
+      "kind": "counter"
+    },
+    {
+      "label": {
+        "en": "Consultation room",
+        "es": "Sala de consulta"
+      },
+      "kind": "room"
+    }
+  ],
+  "form": {
+    "name": {
+      "en": "Before you wait",
+      "es": "Antes de esperar"
+    },
+    "fields": [
+      {
+        "key": "for_someone_else",
+        "type": "yes_no",
+        "label": {
+          "en": "Are you here for someone else?",
+          "es": "¿Vienes de parte de otra persona?"
+        },
+        "sensitivity": "normal"
+      }
+    ]
+  }
+}

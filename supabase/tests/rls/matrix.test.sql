@@ -2,7 +2,7 @@
 -- Source: supabase/tests/rls/matrix.yaml
 begin;
 \ir ../helpers/_setup.psql
-select plan(3457);
+select plan(3489);
 
 select tests.create_world();
 
@@ -331,6 +331,38 @@ select is(tests.probe('staff', 'with x as (delete from app.org_privacy where org
 select is(tests.probe('display', 'with x as (delete from app.org_privacy where org_id = tests.id(''org_a'') returning 1) select count(*) from x'), 'deny', 'app.org_privacy delete as display: deny');
 select is(tests.probe('kiosk', 'with x as (delete from app.org_privacy where org_id = tests.id(''org_a'') returning 1) select count(*) from x'), 'deny', 'app.org_privacy delete as kiosk: deny');
 select is(tests.probe('other_owner', 'with x as (delete from app.org_privacy where org_id = tests.id(''org_a'') returning 1) select count(*) from x'), 'deny', 'app.org_privacy delete as other_owner: deny');
+select is(tests.probe('anon', 'select count(*) from app.member_phones where id = tests.id(''member_phone_a'')'), 'deny', 'app.member_phones select as anon: deny');
+select is(tests.probe('owner', 'select count(*) from app.member_phones where id = tests.id(''member_phone_a'')'), 'allow', 'app.member_phones select as owner: allow');
+select is(tests.probe('admin', 'select count(*) from app.member_phones where id = tests.id(''member_phone_a'')'), 'deny', 'app.member_phones select as admin: deny');
+select is(tests.probe('manager', 'select count(*) from app.member_phones where id = tests.id(''member_phone_a'')'), 'deny', 'app.member_phones select as manager: deny');
+select is(tests.probe('staff', 'select count(*) from app.member_phones where id = tests.id(''member_phone_a'')'), 'deny', 'app.member_phones select as staff: deny');
+select is(tests.probe('display', 'select count(*) from app.member_phones where id = tests.id(''member_phone_a'')'), 'deny', 'app.member_phones select as display: deny');
+select is(tests.probe('kiosk', 'select count(*) from app.member_phones where id = tests.id(''member_phone_a'')'), 'deny', 'app.member_phones select as kiosk: deny');
+select is(tests.probe('other_owner', 'select count(*) from app.member_phones where id = tests.id(''member_phone_a'')'), 'deny', 'app.member_phones select as other_owner: deny');
+select is(tests.probe('anon', 'with x as (insert into app.member_phones (org_id, user_id, phone_e164) values (tests.id(''org_a''), tests.id(''admin''), ''+14155550101'') returning 1) select count(*) from x'), 'deny', 'app.member_phones insert as anon: deny');
+select is(tests.probe('owner', 'with x as (insert into app.member_phones (org_id, user_id, phone_e164) values (tests.id(''org_a''), tests.id(''admin''), ''+14155550101'') returning 1) select count(*) from x'), 'deny', 'app.member_phones insert as owner: deny');
+select is(tests.probe('admin', 'with x as (insert into app.member_phones (org_id, user_id, phone_e164) values (tests.id(''org_a''), tests.id(''admin''), ''+14155550101'') returning 1) select count(*) from x'), 'deny', 'app.member_phones insert as admin: deny');
+select is(tests.probe('manager', 'with x as (insert into app.member_phones (org_id, user_id, phone_e164) values (tests.id(''org_a''), tests.id(''admin''), ''+14155550101'') returning 1) select count(*) from x'), 'deny', 'app.member_phones insert as manager: deny');
+select is(tests.probe('staff', 'with x as (insert into app.member_phones (org_id, user_id, phone_e164) values (tests.id(''org_a''), tests.id(''admin''), ''+14155550101'') returning 1) select count(*) from x'), 'deny', 'app.member_phones insert as staff: deny');
+select is(tests.probe('display', 'with x as (insert into app.member_phones (org_id, user_id, phone_e164) values (tests.id(''org_a''), tests.id(''admin''), ''+14155550101'') returning 1) select count(*) from x'), 'deny', 'app.member_phones insert as display: deny');
+select is(tests.probe('kiosk', 'with x as (insert into app.member_phones (org_id, user_id, phone_e164) values (tests.id(''org_a''), tests.id(''admin''), ''+14155550101'') returning 1) select count(*) from x'), 'deny', 'app.member_phones insert as kiosk: deny');
+select is(tests.probe('other_owner', 'with x as (insert into app.member_phones (org_id, user_id, phone_e164) values (tests.id(''org_a''), tests.id(''admin''), ''+14155550101'') returning 1) select count(*) from x'), 'deny', 'app.member_phones insert as other_owner: deny');
+select is(tests.probe('anon', 'with x as (update app.member_phones set phone_e164 = phone_e164 where id = tests.id(''member_phone_a'') returning 1) select count(*) from x'), 'deny', 'app.member_phones update as anon: deny');
+select is(tests.probe('owner', 'with x as (update app.member_phones set phone_e164 = phone_e164 where id = tests.id(''member_phone_a'') returning 1) select count(*) from x'), 'deny', 'app.member_phones update as owner: deny');
+select is(tests.probe('admin', 'with x as (update app.member_phones set phone_e164 = phone_e164 where id = tests.id(''member_phone_a'') returning 1) select count(*) from x'), 'deny', 'app.member_phones update as admin: deny');
+select is(tests.probe('manager', 'with x as (update app.member_phones set phone_e164 = phone_e164 where id = tests.id(''member_phone_a'') returning 1) select count(*) from x'), 'deny', 'app.member_phones update as manager: deny');
+select is(tests.probe('staff', 'with x as (update app.member_phones set phone_e164 = phone_e164 where id = tests.id(''member_phone_a'') returning 1) select count(*) from x'), 'deny', 'app.member_phones update as staff: deny');
+select is(tests.probe('display', 'with x as (update app.member_phones set phone_e164 = phone_e164 where id = tests.id(''member_phone_a'') returning 1) select count(*) from x'), 'deny', 'app.member_phones update as display: deny');
+select is(tests.probe('kiosk', 'with x as (update app.member_phones set phone_e164 = phone_e164 where id = tests.id(''member_phone_a'') returning 1) select count(*) from x'), 'deny', 'app.member_phones update as kiosk: deny');
+select is(tests.probe('other_owner', 'with x as (update app.member_phones set phone_e164 = phone_e164 where id = tests.id(''member_phone_a'') returning 1) select count(*) from x'), 'deny', 'app.member_phones update as other_owner: deny');
+select is(tests.probe('anon', 'with x as (delete from app.member_phones where id = tests.id(''member_phone_a'') returning 1) select count(*) from x'), 'deny', 'app.member_phones delete as anon: deny');
+select is(tests.probe('owner', 'with x as (delete from app.member_phones where id = tests.id(''member_phone_a'') returning 1) select count(*) from x'), 'deny', 'app.member_phones delete as owner: deny');
+select is(tests.probe('admin', 'with x as (delete from app.member_phones where id = tests.id(''member_phone_a'') returning 1) select count(*) from x'), 'deny', 'app.member_phones delete as admin: deny');
+select is(tests.probe('manager', 'with x as (delete from app.member_phones where id = tests.id(''member_phone_a'') returning 1) select count(*) from x'), 'deny', 'app.member_phones delete as manager: deny');
+select is(tests.probe('staff', 'with x as (delete from app.member_phones where id = tests.id(''member_phone_a'') returning 1) select count(*) from x'), 'deny', 'app.member_phones delete as staff: deny');
+select is(tests.probe('display', 'with x as (delete from app.member_phones where id = tests.id(''member_phone_a'') returning 1) select count(*) from x'), 'deny', 'app.member_phones delete as display: deny');
+select is(tests.probe('kiosk', 'with x as (delete from app.member_phones where id = tests.id(''member_phone_a'') returning 1) select count(*) from x'), 'deny', 'app.member_phones delete as kiosk: deny');
+select is(tests.probe('other_owner', 'with x as (delete from app.member_phones where id = tests.id(''member_phone_a'') returning 1) select count(*) from x'), 'deny', 'app.member_phones delete as other_owner: deny');
 select is(tests.probe('anon', 'select count(*) from app.blocked_identities where id = tests.id(''block_a'')'), 'deny', 'app.blocked_identities select as anon: deny');
 select is(tests.probe('owner', 'select count(*) from app.blocked_identities where id = tests.id(''block_a'')'), 'allow', 'app.blocked_identities select as owner: allow');
 select is(tests.probe('admin', 'select count(*) from app.blocked_identities where id = tests.id(''block_a'')'), 'allow', 'app.blocked_identities select as admin: allow');

@@ -41,12 +41,8 @@
     "hasVisits": "An diesem Standort warten heute schon Gäste, daher kann keine Vorlage angewendet werden."
   },
   "templates": {
-    "heading": "Mit einer Vorlage starten",
-    "blank": "Leer starten",
-    "blankHint": "Benenne deine erste Warteschlange und Leistung selbst.",
     "privacyNote": "Datenschutz: Gäste erscheinen nur mit Ticketnummer. Namen werden nie auf Bildschirmen gezeigt.",
     "names": {
-      "barber": "Friseur oder Salon",
       "clinic": "Praxis",
       "restaurant": "Restaurant",
       "dmv_counter": "Servicestelle",
@@ -54,7 +50,6 @@
       "events": "Veranstaltungen und Check-in"
     },
     "descriptions": {
-      "barber": "Eine Laufkundschaft-Warteschlange mit Haarschnitt und Bart sowie drei Stühlen.",
       "clinic": "Nur Ticketnummern, allgemeine Termin- und Laufkundschaft-Leistungen und zwei Räume.",
       "restaurant": "Eine Warteliste mit einer Tischleistung und drei Tischen.",
       "dmv_counter": "Führerscheine und Zulassungen in einer Warteschlange mit drei Schaltern.",
@@ -68,7 +63,6 @@
     "apply": "Vorlage anwenden",
     "applyTitle": "Vorlage anwenden",
     "applyIntro": "Legt Warteschlangen, Leistungen und Schalter in einem Schritt an. Alles mit gleichem Namen bleibt erhalten. Nur vor dem ersten Gast des Tages möglich.",
-    "applyConfirm": "Vorlage anwenden",
     "cancel": "Abbrechen",
     "applied": "Vorlage angewendet."
   },
@@ -102,5 +96,34 @@
       "browser": "Sie erhalten eine Browser-Benachrichtigung, wenn du sie aufrufst. Auf dem iPhone müssen sie zuerst auf Teilen und dann auf Zum Home-Bildschirm tippen.",
       "tv": "Ein Fernseher im Wartebereich zeigt die aufgerufene Nummer."
     }
+  },
+  "catalog": {
+    "question": "Was für ein Geschäft ist das?",
+    "search": "Vorlagen suchen",
+    "searchHint": "Zum Beispiel Friseur, Praxis oder Restaurant.",
+    "matches": "Vorlagen",
+    "recommended": "{{name}} (empfohlen)",
+    "noMatch": "Keine Vorlage passt. Versuchen Sie ein anderes Wort.",
+    "previewHeading": "Was Gäste sehen",
+    "previewLabel": "Vorschau von {{name}}",
+    "service": "{{name}}, etwa {{minutes}} Min.",
+    "questions": "Fragen vor dem Anstellen",
+    "optional": "{{label}} (optional)",
+    "waiver": "Gäste stimmen vor dem Anstellen einer Vereinbarung zu.",
+    "use": "Diese verwenden",
+    "basedOn": "Basiert auf {{name}} v{{version}}",
+    "change": "Ändern",
+    "orBlank": "Oder leer beginnen."
+  },
+  "providers": {
+    "heading": "Ihre Linien ({{noun}})",
+    "count": "Wie viele? (eine Linie je {{noun}})",
+    "countHint": "Jede Person bekommt eine eigene Linie mit eigenen Ticketbuchstaben. Leistungen und Formular der Vorlage gelten für jede Linie.",
+    "name": "Name {{noun}} {{n}}",
+    "defaultName": "{{noun}} {{n}}",
+    "pool": "Linie „Wer zuerst frei ist“ hinzufügen",
+    "poolHint": "Für Gäste ohne Wunsch: jede Person ({{noun}}) bedient sie, sobald die eigene Linie leer ist.",
+    "apply_one": "{{count}} Linie einrichten",
+    "apply_other": "{{count}} Linien einrichten"
   }
 }

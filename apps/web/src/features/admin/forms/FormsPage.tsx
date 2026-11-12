@@ -26,13 +26,14 @@ import {
   type Placement,
 } from './api.ts';
 import { EditorMount } from './EditorMount.tsx';
+import { STARTERS, starterForm } from './waivers/starters.ts';
 import { WaiverExport } from './waivers/WaiverExport.tsx';
 
 const KNOWN_ERRORS = ['permission_denied', 'invalid_input', 'not_found'];
 
 /** The location's forms: create, edit (new version for every target on publish), attach, detach. */
 export function FormsPage() {
-  const { t } = useTranslation('admin-forms');
+  const { t, i18n } = useTranslation('admin-forms');
   const toast = useToast();
   const role = useCurrentOrg()?.role;
   const org = useCurrentOrg();
@@ -41,7 +42,7 @@ export function FormsPage() {
   const health = useQuery({ ...healthTaggedQuery(org?.id ?? ''), enabled: !!org });
   const places = useQuery({ ...placementsQuery(location?.id ?? ''), enabled: !!location });
   const change = useChangeForms({ id: org?.id ?? '', locationId: location?.id ?? '' });
-  // 'new', a form id, or null; attaching names the form whose attach panel is open.
+  // 'new', 'starter:<key>', a form id, or null; attaching names the form whose attach panel is open.
   const [editing, setEditing] = useState<string | null>(null);
   const [attaching, setAttaching] = useState<string | null>(null);
   if (!location || !org || !forms.data || !places.data) {
@@ -65,6 +66,9 @@ export function FormsPage() {
       },
     );
   const open = form(editing, forms.data);
+  const starter = editing?.startsWith('starter:')
+    ? starterForm(editing.slice('starter:'.length), i18n.language)
+    : null;
 
   return (
     <div
@@ -94,6 +98,7 @@ export function FormsPage() {
           <EditorMount
             key={editing}
             form={open}
+            starter={starter}
             healthTagged={health.data ?? false}
             pending={change.isPending}
             onCancel={() => setEditing(null)}
@@ -166,6 +171,28 @@ export function FormsPage() {
           ))}
         </ul>
       )}
+      {canManage && editing === null && library < FORM_LIMIT ? (
+        <section className="flex flex-col gap-2" aria-labelledby="sample-waivers">
+          <h2 id="sample-waivers" className="text-lg font-semibold">
+            {t('starters.title')}
+          </h2>
+          <p className="text-sm text-muted">{t('starters.intro')}</p>
+          <div className="flex flex-wrap gap-2">
+            {STARTERS.map((s) => {
+              const name = starterForm(s.key, i18n.language)?.name ?? s.key;
+              return (
+                <Button
+                  key={s.key}
+                  variant="secondary"
+                  onClick={() => setEditing(`starter:${s.key}`)}
+                >
+                  {t('starters.use', { name })}
+                </Button>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
       {canManage && editing === null ? <WaiverExport /> : null}
     </div>
   );

@@ -35,12 +35,8 @@
     "hasVisits": "This location already has guests today, so a template can't be applied."
   },
   "templates": {
-    "heading": "Start from a template",
-    "blank": "Start blank",
-    "blankHint": "Name your own first queue and service.",
     "privacyNote": "Privacy: guests appear by ticket number only. Names are never shown on screens.",
     "names": {
-      "barber": "Barber or salon",
       "clinic": "Clinic",
       "restaurant": "Restaurant",
       "dmv_counter": "Service counter",
@@ -48,7 +44,6 @@
       "events": "Events and check-in"
     },
     "descriptions": {
-      "barber": "A walk-in queue with Haircut and Beard services and three chairs.",
       "clinic": "Ticket numbers only, generic Appointment and Walk-in services and two rooms.",
       "restaurant": "A waitlist with a table service and three tables.",
       "dmv_counter": "Licences and Registrations in one queue with three counters.",
@@ -61,7 +56,6 @@
     "apply": "Apply a template",
     "applyTitle": "Apply a template",
     "applyIntro": "Adds queues, services and counters in one step. Anything with the same name is kept. Only possible before today's first guest.",
-    "applyConfirm": "Apply template",
     "cancel": "Cancel",
     "applied": "Template applied.",
     "summary_one": "Created {{count}} queue, {{services}} services and {{counters}} counters."
@@ -102,5 +96,34 @@
       "browser": "They get a browser alert when you call them. On iPhone they must first tap Share, then Add to Home Screen.",
       "tv": "A TV in your waiting room shows the number being called."
     }
+  },
+  "catalog": {
+    "question": "What kind of business is this?",
+    "search": "Search templates",
+    "searchHint": "For example barber, clinic or restaurant.",
+    "matches": "Templates",
+    "recommended": "{{name}} (recommended)",
+    "noMatch": "No template matches. Try another word.",
+    "previewHeading": "What guests see",
+    "previewLabel": "Preview of {{name}}",
+    "service": "{{name}}, about {{minutes}} min",
+    "questions": "Questions before joining",
+    "optional": "{{label}} (optional)",
+    "waiver": "Guests accept an agreement before joining.",
+    "use": "Use this",
+    "basedOn": "Based on {{name}} v{{version}}",
+    "change": "Change",
+    "orBlank": "Or start blank."
+  },
+  "providers": {
+    "heading": "Your {{noun}} lines",
+    "count": "How many? (one line per {{noun}})",
+    "countHint": "Each gets their own line and ticket letters. The template's services and form go on every line.",
+    "name": "Name of {{noun}} {{n}}",
+    "defaultName": "{{noun}} {{n}}",
+    "pool": "Add an “Anyone available” line",
+    "poolHint": "For guests with no preference: any {{noun}} serves it once their own line is empty.",
+    "apply_one": "Set up {{count}} line",
+    "apply_other": "Set up {{count}} lines"
   }
 }

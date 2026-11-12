@@ -93,5 +93,10 @@
       "body": "The oldest was agreed on {{date}}. Download them now if you need to keep them. Deletion follows the retention period below and is not delayed.",
       "export": "Download these records"
     }
+  },
+  "starters": {
+    "title": "Sample waivers",
+    "intro": "Start from a generic sample and edit it for your business. Nothing is saved until you save or publish.",
+    "use": "Use sample: {{name}}"
   }
 }

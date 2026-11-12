@@ -98,13 +98,14 @@ export function useLocationWait(slug: string, publicUpdatedAt: number) {
  * database says which row it names (`selected`) and ignores anything that names no line here.
  * It has no pulse of its own (the join page follows one queue's); it refreshes on the 30 s poll and
  * when the tab regains focus, and joining is checked by the database anyway, so a stale count is cosmetic.
+ * `live = false` skips the poll for pages that only need the names (the booking page, M7).
  */
-export function useLocationLines(slug: string, forLine: string | null) {
+export function useLocationLines(slug: string, forLine: string | null, live = true) {
   return useQuery({
     queryKey: ['guest', 'location-lines', slug, forLine],
     queryFn: () => guestRpc('get_location_lines', { p_location_slug: slug, p_for: forLine }),
     retry: (count, error) => errorCode(error) !== 'not_found' && count < 2,
-    refetchInterval: POLL_MS,
+    refetchInterval: live ? POLL_MS : false,
     refetchOnWindowFocus: 'always',
     refetchOnReconnect: 'always',
   });

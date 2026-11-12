@@ -117,6 +117,13 @@ tables:
       insert: [owner, admin]
       update: [owner, admin]
 
+  app.member_phones: # S2b (#1389): a member's own phone; only that member reads it, writes go through api.*_member_phone
+    where: id = tests.id('member_phone_a')
+    update: phone_e164 = phone_e164
+    insert: (org_id, user_id, phone_e164) values (tests.id('org_a'), tests.id('admin'), '+14155550101')
+    allow:
+      select: [owner]
+
   app.blocked_identities: # 2P-PRV5 (#192): written only by api.block_from_visit / api.unblock
     where: id = tests.id('block_a')
     update: reason = reason

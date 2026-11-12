@@ -483,13 +483,13 @@ verify_jwt = false
 # Signed-in owners and admins call it with their own JWT; api.create_invitation decides who may invite.
 verify_jwt = true
 
-[functions.pair-device]
-# An unpaired display or kiosk calls it with no Supabase session; the 6-digit pairing code is the
-# gate, and api.redeem_pairing_code rate-limits failed codes per client and overall.
-verify_jwt = false
-
 [functions.dev-sms-inbound]
 # Dev simulator for guest SMS replies. Signed-in staff only, and 404 unless DEV_INBOX_ENABLED=true.
+verify_jwt = true
+
+[functions.pair-device]
+# A kiosk or display redeems a pairing code here before it has a session; the web app sends the anon key as its bearer, so the
+# gateway check stays on (this is how it was deployed by hand). The one-time code, checked by the database, is the gate.
 verify_jwt = true
 
 [functions.public-join]

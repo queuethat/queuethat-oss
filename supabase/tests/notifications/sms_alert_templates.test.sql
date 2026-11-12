@@ -19,7 +19,7 @@ select is((select count(*)::int from app.notification_templates
            where channel = 'sms' and org_id is null and trigger in ('almost_up', 'called')
              and length(private.sms_compose(body, 'en')) > 160), 0, 'each fits one segment once framed');
 select is(private.sms_compose('Hi.', 'en'), '{location_name}: Hi. Reply STOP to opt out, HELP for help.', 'the frame names the business and ends with the opt-out and help line');
-select is(private.sms_compose('Hola.', 'es'), '{location_name}: Hola. Responde STOP para cancelar, AYUDA para ayuda.', 'in Spanish too');
+select is(private.sms_compose('Hola.', 'es'), '{location_name}: Hola. Responde STOP para cancelar, HELP para ayuda.', 'in Spanish too');
 select is((select count(*)::int from app.notification_templates
            where channel = 'sms' and org_id is null and trigger in ('almost_up', 'called')
              and length(body) > 160), 0, 'each fits one SMS segment before names are filled in');

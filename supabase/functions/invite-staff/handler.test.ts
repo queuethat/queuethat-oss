@@ -58,6 +58,20 @@ Deno.test('creates the invitation as the caller, mails a link and never returns 
   ]);
 });
 
+Deno.test('M3b: passes the invited lines to the database, null when none are given', async () => {
+  const seen: (string[] | null)[] = [];
+  const { handle } = fakes({
+    createInvitation: (_jwt, input) => {
+      seen.push(input.queue_ids);
+      return Promise.resolve(invitation());
+    },
+  });
+  const line = '6f1d2c3e-1111-4222-8333-444455556666';
+  assert.equal((await handle(post({ ...BODY, queue_ids: [line] }))).status, 200);
+  assert.equal((await handle(post(BODY))).status, 200);
+  assert.deepEqual(seen, [[line], null]);
+});
+
 Deno.test('a request without a bearer token is 401 and touches nothing', async () => {
   const { handle, calls } = fakes();
   assert.equal((await handle(post(BODY, null))).status, 401);
@@ -68,6 +82,8 @@ Deno.test('a malformed body is 400', async () => {
   const { handle } = fakes();
   assert.equal((await handle(post({ ...BODY, org_id: 'nope' }))).status, 400);
   assert.equal((await handle(post({ ...BODY, location_ids: ['x'] }))).status, 400);
+  assert.equal((await handle(post({ ...BODY, queue_ids: ['x'] }))).status, 400);
+  assert.equal((await handle(post({ ...BODY, queue_ids: 'all' }))).status, 400);
   assert.equal((await handle(post({ ...BODY, email: 5 }))).status, 400);
 });
 

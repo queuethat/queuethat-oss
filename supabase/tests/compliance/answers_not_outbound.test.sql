@@ -11,7 +11,7 @@
 -- search can see it). The Edge Function half is scripts/check-answers-not-in-outbound.mjs.
 begin;
 \ir ../helpers/_setup.psql
-select plan(23);
+select plan(24);
 delete from vault.secrets where name in ('dispatcher_url', 'dispatcher_key');
 select tests.create_world();
 select tests.new_id(k) from unnest(array['k1', 'k2', 'k3']) k;
@@ -79,8 +79,8 @@ select is((select array_agg(n.nspname || '.' || p.proname order by n.nspname, p.
            from pg_proc p join pg_namespace n on n.oid = p.pronamespace
            where n.nspname in ('api', 'api_v1', 'app', 'private', 'public')
              and regexp_replace(p.prosrc, 'delete\s+from\s+app\.(visit_answers|form_responses)', '', 'gi') ~* '(visit_answers|form_responses)'),
-  array['api.set_booking_answers', 'api.set_visit_answers', 'private.carry_booking_answers', 'private.join_core'],
-  'C6: only the answer writers (join_core, set_visit_answers, set_booking_answers) and carry_booking_answers (copies a booking''s answers to its visit row) touch the answers table; nothing else reads it server-side');
+  array['api.get_visit_answers', 'api.set_booking_answers', 'api.set_visit_answers', 'private.carry_booking_answers', 'private.export_guest_answers', 'private.join_core'],
+  'C6: only the answer writers (join_core, set_visit_answers, set_booking_answers), carry_booking_answers (copies a booking''s answers to its visit row), the audited staff read (get_visit_answers, F7) and the audited admin per-guest export (export_guest_answers, #1311) touch the answers table; nothing else reads it server-side');
 select is((select array_agg(n.nspname || '.' || p.proname order by n.nspname, p.proname)
            from pg_proc p join pg_namespace n on n.oid = p.pronamespace
            where n.nspname in ('api', 'api_v1', 'app', 'private', 'public')
@@ -181,11 +181,19 @@ select is((select count(*)::int from tests.claimed where what = 'webhooks' and b
 select tests.as_anon();
 select is((select tests.has_canary(to_jsonb(s)::text) from api.get_visit_status((select token from tests.join_out where name = 'v1')) s limit 1),
   false, 'AC: the guest status page carries no answers');
+-- #1311: v1 belongs to a known guest so the per-guest export can be asked for it.
+select tests.as_postgres();
+insert into app.guests (id, org_id, first_name) values (tests.new_id('guest_pat'), tests.id('org_a'), 'Pat');
+select private.set_actor('system', null);
+update app.visits set guest_id = tests.id('guest_pat') where id = tests.vid('v1');
 select tests.act_as('admin');
 select is((select count(*)::int from api.export_guests(tests.id('org_a')) g where tests.has_canary(to_jsonb(g)::text)), 0,
   'AC: the guest CSV export carries no answers');
+-- #1311: the guest's own export holds the guest's own answers (right of access); any other guest's export holds none.
+select is((select tests.has_canary(to_jsonb(e)::text) from api.export_guest_data(tests.id('guest_pat')) e),
+  true, 'AC (#1311): the per-guest data export holds that guest''s own answers');
 select is((select tests.has_canary(to_jsonb(e)::text) from api.export_guest_data(tests.id('guest_a')) e),
-  false, 'AC: the per-guest data export carries no answers (a right-of-access gap, not a leak: see the PR)');
+  false, 'AC (#1311): the per-guest data export contains only that guest''s answers');
 select tests.as_postgres();
 select is((select count(*)::int from app.visit_events e where tests.has_canary(to_jsonb(e)::text)), 0,
   'AC: visit events (the feed behind webhooks and exports) carry no answers');

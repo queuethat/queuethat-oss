@@ -30,6 +30,8 @@ export interface AppointmentStatus {
   can_reschedule: boolean;
   can_cancel: boolean;
   as_of: string;
+  /** The provider line's name when booked on one (M7); null for a pool or general line. */
+  provider_name?: string | null;
 }
 
 /** The location's name, timezone and services (every queue's, once each) by its poster slug. */

@@ -277,13 +277,14 @@ function EditMember({
   const [roleId, setRoleId] = useState<string | null>(customRoleId);
   const save = useSetMemberRole(orgId);
   const assign = useAssignRole(orgId);
-  // Lines: only owners write memberships, and the choice matters only while the org setting is on.
-  const scoped = useQuery({ ...scopeStaffQuery(orgId), enabled: actorRole === 'owner' });
-  const heldLines = useQuery({ ...memberLinesQuery(orgId), enabled: actorRole === 'owner' });
+  // Lines: owners and admins set them (api.set_member_lines); they matter only while the org setting is on.
+  const managesLines = canManageTeam(actorRole);
+  const scoped = useQuery({ ...scopeStaffQuery(orgId), enabled: managesLines });
+  const heldLines = useQuery({ ...memberLinesQuery(orgId), enabled: managesLines });
   const setLines = useSetMemberLines(orgId);
   const currentLines = heldLines.data?.[member.id] ?? null;
   const [queueIds, setQueueIds] = useState<string[] | null>(currentLines);
-  const canPickLines = actorRole === 'owner' && role === 'staff' && scoped.data === true;
+  const canPickLines = managesLines && role === 'staff' && scoped.data === true;
   // Custom roles are staff-based and owner-assigned; the database clears one on promotion.
   const canPickRole = actorRole === 'owner' && role === 'staff' && customRoles.length > 0;
   const failure = errorKey(save.error ?? assign.error ?? setLines.error);
@@ -427,6 +428,10 @@ function InviteDialog({ orgId, role }: { orgId: string; role: string }) {
   const [name, setName] = useState('');
   const [invitedRole, setInvitedRole] = useState<MemberRole>('staff');
   const [locationIds, setLocationIds] = useState<string[] | null>(null);
+  const [queueIds, setQueueIds] = useState<string[] | null>(null);
+  // M3b: a front-desk invite can name its lines while the org limits staff to their lines.
+  const scoped = useQuery(scopeStaffQuery(orgId));
+  const canPickLines = invitedRole === 'staff' && scoped.data === true;
   const invite = useInviteStaff(orgId);
   const failure = errorKey(invite.error);
 
@@ -437,7 +442,13 @@ function InviteDialog({ orgId, role }: { orgId: string; role: string }) {
   const submit = (event: FormEvent) => {
     event.preventDefault();
     invite.mutate(
-      { email, role: invitedRole, locationIds, displayName: name },
+      {
+        email,
+        role: invitedRole,
+        locationIds,
+        displayName: name,
+        queueIds: canPickLines ? queueIds : null,
+      },
       {
         onSuccess: () => {
           toast.show({ message: t('invite.sent', { email: email.trim() }), tone: 'success' });
@@ -445,6 +456,7 @@ function InviteDialog({ orgId, role }: { orgId: string; role: string }) {
           setName('');
           setInvitedRole('staff');
           setLocationIds(null);
+          setQueueIds(null);
           close();
         },
       },
@@ -493,6 +505,9 @@ function InviteDialog({ orgId, role }: { orgId: string; role: string }) {
               allLabel={t('invite.allLocations')}
             />
           </Advanced>
+          {canPickLines ? (
+            <LinePicker orgId={orgId} value={queueIds} onChange={setQueueIds} />
+          ) : null}
           <p role="alert" className="font-medium text-danger-strong empty:hidden">
             {failure ? t(failure) : null}
           </p>
@@ -504,7 +519,10 @@ function InviteDialog({ orgId, role }: { orgId: string; role: string }) {
               type="submit"
               loading={invite.isPending}
               loadingLabel={t('invite.sending')}
-              disabled={locationIds !== null && locationIds.length === 0}
+              disabled={
+                (locationIds !== null && locationIds.length === 0) ||
+                (canPickLines && queueIds !== null && queueIds.length === 0)
+              }
             >
               {t('invite.send')}
             </Button>

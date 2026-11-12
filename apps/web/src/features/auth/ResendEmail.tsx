@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from '../../lib/translation.tsx';
 import { authErrorCode, useResendConfirmation } from './api.ts';
 import { useAuthCaptcha } from './AuthCaptcha.tsx';
+import { nextSearch } from './next.ts';
 
 /** Seconds before the confirmation email can be asked for again. */
 export const RESEND_WAIT_SECONDS = 60;
@@ -39,7 +40,7 @@ export function ResendEmail({ email, next }: { email: string; next: string }) {
           <p className="flex flex-wrap gap-x-4">
             <Link
               to="/auth/sign-in"
-              search={{ next }}
+              search={nextSearch(next)}
               className="inline-flex min-h-target items-center font-medium underline"
             >
               {t('resend.signIn')}

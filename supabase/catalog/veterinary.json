@@ -1,0 +1,161 @@
+{
+  "key": "veterinary",
+  "version": 1,
+  "tier": 1,
+  "mode": "both",
+  "health_tagged": true,
+  "name": {
+    "en": "Veterinary clinic",
+    "es": "Clínica veterinaria"
+  },
+  "description": {
+    "en": "Exams, vaccines and sick visits, booked or walk-in, with a line per veterinarian. Ticket numbers only on screens.",
+    "es": "Consultas, vacunas y visitas por enfermedad, con cita o sin cita, con una fila por veterinario. Solo números en las pantallas."
+  },
+  "keywords": {
+    "en": [
+      "vet",
+      "veterinary",
+      "animal hospital",
+      "pet clinic",
+      "vaccines"
+    ],
+    "es": [
+      "veterinaria",
+      "veterinario",
+      "clínica veterinaria",
+      "mascotas",
+      "vacunas"
+    ]
+  },
+  "queues": [
+    {
+      "name": {
+        "en": "Reception",
+        "es": "Recepción"
+      },
+      "prefix": "V",
+      "show_eta": true,
+      "services": [
+        {
+          "name": {
+            "en": "Wellness exam",
+            "es": "Revisión general"
+          },
+          "minutes": 30
+        },
+        {
+          "name": {
+            "en": "Vaccines",
+            "es": "Vacunas"
+          },
+          "minutes": 15
+        },
+        {
+          "name": {
+            "en": "Sick or injured pet",
+            "es": "Mascota enferma o herida"
+          },
+          "minutes": 30
+        },
+        {
+          "name": {
+            "en": "Follow-up",
+            "es": "Seguimiento"
+          },
+          "minutes": 15
+        },
+        {
+          "name": {
+            "en": "Nail trim",
+            "es": "Corte de uñas"
+          },
+          "minutes": 10
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "label": {
+        "en": "Exam room 1",
+        "es": "Consultorio 1"
+      },
+      "kind": "room"
+    },
+    {
+      "label": {
+        "en": "Exam room 2",
+        "es": "Consultorio 2"
+      },
+      "kind": "room"
+    }
+  ],
+  "providers": {
+    "noun": {
+      "en": "veterinarian",
+      "es": "veterinario"
+    },
+    "default_count": 2,
+    "pool": true
+  },
+  "form": {
+    "name": {
+      "en": "About your pet",
+      "es": "Sobre tu mascota"
+    },
+    "fields": [
+      {
+        "key": "pet_name",
+        "type": "short_text",
+        "label": {
+          "en": "Pet's name",
+          "es": "Nombre de tu mascota"
+        },
+        "sensitivity": "normal"
+      },
+      {
+        "key": "species",
+        "type": "single_choice",
+        "label": {
+          "en": "Species",
+          "es": "Especie"
+        },
+        "options": [
+          {
+            "en": "Dog",
+            "es": "Perro"
+          },
+          {
+            "en": "Cat",
+            "es": "Gato"
+          },
+          {
+            "en": "Other",
+            "es": "Otra"
+          }
+        ],
+        "sensitivity": "normal"
+      },
+      {
+        "key": "reason",
+        "type": "short_text",
+        "label": {
+          "en": "Reason for the visit, in a few words",
+          "es": "Motivo de la visita, en pocas palabras"
+        },
+        "help": {
+          "en": "For example \"limping\" or \"annual vaccines\". The vet will ask for details.",
+          "es": "Por ejemplo \"cojea\" o \"vacunas anuales\". El veterinario te pedirá los detalles."
+        },
+        "sensitivity": "sensitive"
+      }
+    ]
+  },
+  "booking": {
+    "slot_minutes": 15,
+    "buffer_after_minutes": 5,
+    "min_notice_minutes": 60,
+    "max_days_ahead": 60
+  }
+}

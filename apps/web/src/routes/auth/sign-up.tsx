@@ -7,7 +7,7 @@ import { useAuthCaptcha } from '../../features/auth/AuthCaptcha.tsx';
 import { AuthCard, readCredentials } from '../../features/auth/AuthForm.tsx';
 import { CodeForm } from '../../features/auth/CodeForm.tsx';
 import { ResendEmail } from '../../features/auth/ResendEmail.tsx';
-import { safeNext } from '../../features/auth/next.ts';
+import { nextSearch, safeNext } from '../../features/auth/next.ts';
 import { legalUrls } from '../../features/marketing/company.ts';
 import { LegalLink } from '../../features/marketing/LegalLink.tsx';
 
@@ -37,7 +37,7 @@ function SignUpPage() {
           {t('signUp.haveAccount')}{' '}
           <Link
             to="/auth/sign-in"
-            search={{ next }}
+            search={nextSearch(next)}
             className="inline-flex min-h-target items-center font-medium underline"
           >
             {t('signUp.toSignIn')}

@@ -1,0 +1,145 @@
+{
+  "key": "barber",
+  "version": 2,
+  "tier": 1,
+  "mode": "both",
+  "health_tagged": false,
+  "name": {
+    "en": "Barber",
+    "es": "Barbería"
+  },
+  "description": {
+    "en": "A walk-in line for cuts, fades and beards, with a line per barber and an \"Anyone available\" option.",
+    "es": "Una fila sin cita para cortes, degradados y barbas, con una fila por barbero y la opción \"Cualquiera disponible\"."
+  },
+  "keywords": {
+    "en": [
+      "barber",
+      "barbershop",
+      "haircut",
+      "fade",
+      "beard",
+      "shave"
+    ],
+    "es": [
+      "barbería",
+      "barbero",
+      "corte",
+      "degradado",
+      "barba",
+      "afeitado"
+    ]
+  },
+  "queues": [
+    {
+      "name": {
+        "en": "Walk-ins",
+        "es": "Sin cita"
+      },
+      "prefix": "A",
+      "show_eta": true,
+      "services": [
+        {
+          "name": {
+            "en": "Haircut",
+            "es": "Corte de pelo"
+          },
+          "minutes": 30
+        },
+        {
+          "name": {
+            "en": "Skin fade",
+            "es": "Degradado a piel"
+          },
+          "minutes": 40
+        },
+        {
+          "name": {
+            "en": "Beard trim",
+            "es": "Arreglo de barba"
+          },
+          "minutes": 15
+        },
+        {
+          "name": {
+            "en": "Haircut and beard",
+            "es": "Corte y barba"
+          },
+          "minutes": 45
+        },
+        {
+          "name": {
+            "en": "Kids' cut (under 12)",
+            "es": "Corte infantil (menores de 12)"
+          },
+          "minutes": 20
+        },
+        {
+          "name": {
+            "en": "Hot towel shave",
+            "es": "Afeitado con toalla caliente"
+          },
+          "minutes": 30
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "label": {
+        "en": "Chair 1",
+        "es": "Silla 1"
+      },
+      "kind": "chair"
+    },
+    {
+      "label": {
+        "en": "Chair 2",
+        "es": "Silla 2"
+      },
+      "kind": "chair"
+    },
+    {
+      "label": {
+        "en": "Chair 3",
+        "es": "Silla 3"
+      },
+      "kind": "chair"
+    }
+  ],
+  "providers": {
+    "noun": {
+      "en": "barber",
+      "es": "barbero"
+    },
+    "default_count": 3,
+    "pool": true
+  },
+  "form": {
+    "name": {
+      "en": "Before your cut",
+      "es": "Antes de tu corte"
+    },
+    "fields": [
+      {
+        "key": "style_notes",
+        "type": "short_text",
+        "label": {
+          "en": "What are you getting today?",
+          "es": "¿Qué te vas a hacer hoy?"
+        },
+        "help": {
+          "en": "For example \"number 2 on the sides, scissors on top\".",
+          "es": "Por ejemplo \"número 2 a los lados, tijera arriba\"."
+        },
+        "sensitivity": "normal"
+      }
+    ]
+  },
+  "booking": {
+    "slot_minutes": 15,
+    "buffer_after_minutes": 5,
+    "min_notice_minutes": 30,
+    "max_days_ahead": 30
+  }
+}

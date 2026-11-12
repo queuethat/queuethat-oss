@@ -1,32 +1,30 @@
 import { errorCode } from '@qm/domain';
 import { Button } from '@qm/ui';
 import { useState } from 'react';
-import { useTranslation } from '../../lib/translation.tsx';
-import type { NotesTarget } from '../console/api.ts';
+import { useTranslation } from '../../../../lib/translation.tsx';
+import type { Answers } from '../../../guest/api.ts';
+import { FormFields } from '../../../guest/FormFields.tsx';
+import { draftFrom, formAnswers, type FormDraft } from '../../../guest/formFields.ts';
+import type { NotesTarget } from '../../api.ts';
 import { useSetVisitAnswers, useVisitAnswers } from './api.ts';
-import { answersPayload, type Draft } from './fields.ts';
-import { IntakeFields } from './IntakeFields.tsx';
 
 /**
- * A visit's intake answers on the console detail sheet (Q-8): every answer is shown, and the
- * staff-only questions can be filled in. Nothing is required of staff; the database validates.
+ * A visit's form answers on the console detail sheet (F7, #1283): the guest's answers read-only, the
+ * staff-only questions editable. Every read goes through `api.get_visit_answers`, which logs the
+ * access; nothing here decides validity, the database does on save.
  */
-export function StaffAnswers({ visit }: { visit: NotesTarget }) {
+export function VisitAnswers({ visit }: { visit: NotesTarget }) {
   const { t } = useTranslation('staff');
-  const data = useVisitAnswers(visit);
+  const data = useVisitAnswers(visit.id);
   const save = useSetVisitAnswers(visit);
-  const [draft, setDraft] = useState<Draft | null>(null);
+  const [draft, setDraft] = useState<FormDraft | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   if (!data.data || data.data.fields.length === 0) return null;
   const { fields, answers } = data.data;
-  const mine = fields.filter((f) => f.staffOnly);
-  const theirs = fields.filter((f) => !f.staffOnly);
+  const mine = fields.filter((f) => f.staffOnly && f.type !== 'heading');
+  const theirs = fields.filter((f) => !f.staffOnly && f.type !== 'heading');
   // The form starts from what is saved and follows it until the first edit.
-  const values: Draft =
-    draft ??
-    (Object.fromEntries(
-      mine.flatMap((f) => (f.key in answers ? [[f.key, String(answers[f.key])]] : [])),
-    ) as Draft);
+  const values = draft ?? draftFrom(mine, answers);
   const answered = theirs.filter((f) => f.key in answers);
 
   const onSave = () => {
@@ -35,7 +33,7 @@ export function StaffAnswers({ visit }: { visit: NotesTarget }) {
       theirs.flatMap((f) => (f.key in answers ? [[f.key, answers[f.key]!]] : [])),
     );
     save.mutate(
-      { ...kept, ...answersPayload(mine, values) },
+      { ...kept, ...formAnswers(mine, values) },
       {
         onSuccess: () => {
           setDraft(null);
@@ -66,7 +64,7 @@ export function StaffAnswers({ visit }: { visit: NotesTarget }) {
             <div key={f.key} className="contents">
               <dt className="text-muted">{f.label}</dt>
               <dd className="font-medium">
-                {formatAnswer(answers[f.key]!, t('console.intake.yes'))}
+                {formatAnswer(answers[f.key]!, t('console.intake.yes'), t('console.intake.no'))}
               </dd>
             </div>
           ))}
@@ -77,12 +75,11 @@ export function StaffAnswers({ visit }: { visit: NotesTarget }) {
       ) : null}
       {mine.length > 0 ? (
         <>
-          <IntakeFields
+          <FormFields
             fields={mine.map((f) => ({ ...f, required: false }))}
             draft={values}
             errors={errors}
             legend={t('console.intake.staffOnly')}
-            marks={false}
             onChange={(key, value) => setDraft({ ...values, [key]: value })}
           />
           {save.isError && Object.keys(errors).length === 0 ? (
@@ -101,6 +98,11 @@ export function StaffAnswers({ visit }: { visit: NotesTarget }) {
   );
 }
 
-function formatAnswer(value: string | number | boolean, yes: string): string {
-  return typeof value === 'boolean' ? (value ? yes : '') : String(value);
+/** One stored answer as text: yes or no, the ticked options, or the name a guest signed with. */
+export function formatAnswer(value: Answers[string], yes: string, no: string): string {
+  if (typeof value === 'boolean') return value ? yes : no;
+  if (Array.isArray(value)) return value.join(', ');
+  if (typeof value === 'object')
+    return value.guardian_name ? `${value.name} (${value.guardian_name})` : value.name;
+  return String(value);
 }

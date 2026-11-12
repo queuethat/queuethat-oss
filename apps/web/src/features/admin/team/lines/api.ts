@@ -54,22 +54,20 @@ export const memberLinesQuery = (orgId: string) =>
   });
 
 /**
- * Sets one staff member's lines (null = all). Only owners may write memberships, so for anyone
- * else no row changes and this throws `permission_denied`. A promoted member is reset by the database.
+ * `api.set_member_lines`: one staff member's lines (null = all). Owners and admins (a location-scoped
+ * admin only within their locations). Errors: `forbidden_role`, `invalid_input`, `permission_denied`.
  */
 export function useSetMemberLines(orgId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: { membershipId: string; queueIds: string[] | null }) => {
-      const { data, error } = await supabase
-        .schema('app')
-        .from('memberships')
-        .update({ queue_ids: input.queueIds })
-        .eq('id', input.membershipId)
-        .eq('org_id', orgId)
-        .select('id');
+      const { error } = await supabase.rpc('set_member_lines', {
+        p_membership_id: input.membershipId,
+        // PostgREST sends a JSON null for "every line".
+        p_queue_ids: input.queueIds as string[],
+        p_idempotency_key: crypto.randomUUID(),
+      });
       if (error) throw new Error(errorCode(error));
-      if (data.length === 0) throw new Error('permission_denied');
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: key(orgId) }),
   });

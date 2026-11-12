@@ -9,6 +9,8 @@ const m = vi.hoisted(() => ({
   role: 'owner',
   scoped: false,
   updates: [] as { table: string; patch: unknown }[],
+  rpcs: [] as { fn: string; args: Record<string, unknown> }[],
+  invites: [] as Record<string, unknown>[],
 }));
 
 /** A chainable stand-in for the supabase query builder, keyed by table. */
@@ -36,8 +38,14 @@ function builder(table: string) {
 vi.mock('../../../../lib/supabase.ts', () => ({
   supabase: {
     schema: () => ({ from: (table: string) => builder(table) }),
-    rpc: vi.fn(async (fn: string) =>
-      fn === 'list_members'
+    functions: {
+      invoke: vi.fn(async (_name: string, opts: { body: Record<string, unknown> }) => {
+        m.invites.push(opts.body);
+        return { data: { sent: true }, error: null };
+      }),
+    },
+    rpc: vi.fn(async (fn: string, args: Record<string, unknown>) =>
+      (m.rpcs.push({ fn, args }), fn === 'list_members')
         ? {
             data: [
               {
@@ -70,6 +78,8 @@ beforeEach(() => {
   m.role = 'owner';
   m.scoped = false;
   m.updates = [];
+  m.rpcs = [];
+  m.invites = [];
 });
 afterEach(cleanup);
 
@@ -122,7 +132,56 @@ describe('limit staff to their own lines', () => {
     fireEvent.click(await within(dialog).findByLabelText(/Chair 1/));
     fireEvent.click(within(dialog).getByRole('button', { name: 'Save changes' }));
     await waitFor(() =>
-      expect(m.updates).toContainEqual({ table: 'memberships', patch: { queue_ids: ['q1'] } }),
+      expect(m.rpcs).toContainEqual({
+        fn: 'set_member_lines',
+        args: expect.objectContaining({ p_membership_id: 'mem', p_queue_ids: ['q1'] }),
+      }),
     );
+  });
+
+  it('M3b: an admin sets lines too, through the RPC rather than a table write', async () => {
+    m.role = 'admin';
+    m.scoped = true;
+    renderTeam();
+    fireEvent.click(await screen.findByRole('button', { name: /Edit Ana/ }));
+    const dialog = screen.getByRole('dialog');
+    fireEvent.click(await within(dialog).findByLabelText(/Chair 1/));
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save changes' }));
+    await waitFor(() => expect(m.rpcs.map((r) => r.fn)).toContain('set_member_lines'));
+    expect(m.updates.filter((u) => u.table === 'memberships')).toEqual([]);
+  });
+});
+
+describe('M3b: inviting with lines', () => {
+  async function openInvite() {
+    renderTeam();
+    fireEvent.click(await screen.findByRole('button', { name: 'Invite someone' }));
+    return screen.getByRole('dialog');
+  }
+
+  it('offers no lines while the org setting is off, and sends none', async () => {
+    m.role = 'admin';
+    const dialog = await openInvite();
+    expect(within(dialog).queryByText('Lines this person works')).toBeNull();
+    fireEvent.change(within(dialog).getByLabelText(/Email address/), {
+      target: { value: 'new@x.test' },
+    });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Send invitation' }));
+    await waitFor(() => expect(m.invites).toHaveLength(1));
+    expect(m.invites[0]?.queue_ids).toBeNull();
+  });
+
+  it('sends the picked lines for a front-desk invite while the setting is on', async () => {
+    m.role = 'admin';
+    m.scoped = true;
+    const dialog = await openInvite();
+    await within(dialog).findByText('Lines this person works');
+    fireEvent.change(within(dialog).getByLabelText(/Email address/), {
+      target: { value: 'new@x.test' },
+    });
+    fireEvent.click(await within(dialog).findByLabelText(/Chair 1/));
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Send invitation' }));
+    await waitFor(() => expect(m.invites).toHaveLength(1));
+    expect(m.invites[0]).toMatchObject({ role: 'staff', queue_ids: ['q1'] });
   });
 });

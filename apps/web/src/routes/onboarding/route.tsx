@@ -7,7 +7,7 @@ export const Route = createFileRoute('/onboarding')({
   beforeLoad: async (args) => {
     const [{ requireNonMember }] = await Promise.all([
       import('../../features/auth/guard.ts'),
-      loadNamespaces('onboarding', 'auth'),
+      loadNamespaces('onboarding', 'auth', 'admin-integrations', 'admin-templates'),
     ]);
     await requireNonMember(args);
   },

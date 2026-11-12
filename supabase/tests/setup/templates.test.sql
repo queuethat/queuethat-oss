@@ -10,15 +10,17 @@ values (tests.new_id('loc_new'), tests.id('org_a'), 'New place', 'new-place-a', 
 
 select tests.new_id('key_1');
 select tests.act_as('admin');
-select is((select count(*) from api.list_industry_templates()), 6::bigint, 'six templates are listed');
+select is((select count(*) from api.list_industry_templates()), (select count(distinct key) from app.template_catalog),
+  'every catalog template is listed');
 select is((select health_tagged from api.list_industry_templates() where key = 'clinic'), true, 'only the clinic is health-tagged');
 
 -- AC1: barber.
-select is((api.apply_industry_template(tests.id('loc_new'), 'barber', tests.id('key_1'))).services_created, 2,
-  'AC1: the barber template creates two services');
+select is((api.apply_industry_template(tests.id('loc_new'), 'barber', tests.id('key_1'))).services_created, 6,
+  'AC1: the barber template (v2, T5) creates six services');
 select is((select array_agg(s.name || ' ' || s.expected_minutes order by s.name)
            from app.services s where s.location_id = tests.id('loc_new')),
-  array['Beard 15', 'Haircut 30'], 'AC1: Haircut 30 min and Beard 15 min');
+  array['Beard trim 15', 'Haircut 30', 'Haircut and beard 45', 'Hot towel shave 30', 'Kids'' cut (under 12) 20', 'Skin fade 40'],
+  'AC1: barber services in English with their minutes');
 select is((select array_agg(c.label order by c.label) from app.counters c where c.location_id = tests.id('loc_new')),
   array['Chair 1', 'Chair 2', 'Chair 3'], 'AC1: counters Chair 1-3');
 select is((select count(*) from app.queues q where q.location_id = tests.id('loc_new')), 1::bigint, 'AC1: one queue');

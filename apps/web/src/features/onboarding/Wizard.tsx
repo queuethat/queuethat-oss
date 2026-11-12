@@ -10,7 +10,9 @@ import {
   type Created,
 } from './api.ts';
 import { LineLive } from './LineLive.tsx';
-import { TemplatePicker } from './templates.tsx';
+import { CatalogPicker } from './catalog/CatalogPicker.tsx';
+import type { CatalogEntry } from './catalog/api.ts';
+import { defaultProviders, ProviderFields } from './providers/ProviderFields.tsx';
 
 const STEPS = 3;
 
@@ -30,6 +32,7 @@ export function Wizard() {
     expectedMinutes: 10,
     templateKey: null,
   }));
+  const [template, setTemplate] = useState<CatalogEntry | null>(null);
   const [created, setCreated] = useState<Created | null>(null);
   const [finished, setFinished] = useState<Created | null>(null);
   const heading = useRef<HTMLLegendElement>(null);
@@ -146,13 +149,31 @@ export function Wizard() {
             <legend ref={heading} tabIndex={-1} className="text-lg font-semibold outline-none">
               {t('queue.heading')}
             </legend>
-            <TemplatePicker
-              value={setup.templateKey}
-              onChange={(templateKey) => setSetup((s) => ({ ...s, templateKey }))}
+            <CatalogPicker
+              chosen={template}
+              hint={setup.businessName}
+              busy={setUp.isPending}
+              onUse={(entry) => {
+                setTemplate(entry);
+                setSetup((s) => ({
+                  ...s,
+                  templateKey: entry?.key ?? null,
+                  providers: entry?.providers ? defaultProviders(entry.providers, t) : null,
+                }));
+              }}
             />
+            {template?.providers && setup.providers ? (
+              <ProviderFields
+                noun={template.providers.noun}
+                value={setup.providers}
+                onChange={(providers) => setSetup((s) => ({ ...s, providers }))}
+              />
+            ) : null}
             {setup.templateKey ? null : (
               <>
-                <p>{t('queue.intro')}</p>
+                <p>
+                  {t('catalog.orBlank')} {t('queue.intro')}
+                </p>
                 <Input label={t('queue.name')} required maxLength={80} {...fields.queueName} />
                 <Input label={t('queue.service')} required maxLength={80} {...fields.serviceName} />
                 <Input

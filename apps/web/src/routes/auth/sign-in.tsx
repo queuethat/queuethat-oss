@@ -11,7 +11,7 @@ import {
 import { useAuthCaptcha } from '../../features/auth/AuthCaptcha.tsx';
 import { AuthCard, readCredentials } from '../../features/auth/AuthForm.tsx';
 import { CodeForm } from '../../features/auth/CodeForm.tsx';
-import { safeNext } from '../../features/auth/next.ts';
+import { nextSearch, safeNext } from '../../features/auth/next.ts';
 import { ResendEmail } from '../../features/auth/ResendEmail.tsx';
 
 export const Route = createFileRoute('/auth/sign-in')({
@@ -49,7 +49,7 @@ function SignInPage() {
           {t('signIn.noAccount')}{' '}
           <Link
             to="/auth/sign-up"
-            search={{ next }}
+            search={nextSearch(next)}
             className="inline-flex min-h-target items-center font-medium underline"
           >
             {t('signIn.toSignUp')}

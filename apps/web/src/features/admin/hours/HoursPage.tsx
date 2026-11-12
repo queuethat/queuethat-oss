@@ -14,6 +14,7 @@ import {
   type WeekHours,
 } from './api.ts';
 import { ExceptionsSection } from './exceptions/ExceptionsSection.tsx';
+import { SendWindowSection } from './SendWindowSection.tsx';
 import { crossesMidnight, intervalEnds, weekdayName } from './summary.ts';
 
 /** Monday first; the database numbers Sunday 0. */
@@ -47,6 +48,11 @@ export function HoursPage() {
         orgId={org.id}
         tz={settings.data.settings.tz}
         weekly={hours.data}
+        readOnly={readOnly}
+      />
+      <SendWindowSection
+        locationId={location.id}
+        tz={settings.data.settings.tz}
         readOnly={readOnly}
       />
     </>

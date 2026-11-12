@@ -1,0 +1,151 @@
+{
+  "key": "dental",
+  "version": 1,
+  "tier": 1,
+  "mode": "both",
+  "health_tagged": true,
+  "name": {
+    "en": "Dental office",
+    "es": "Consultorio dental"
+  },
+  "description": {
+    "en": "Check-ups, cleanings and urgent visits, mostly booked, with a line per dentist. Ticket numbers only on screens; no visit details in messages.",
+    "es": "Revisiones, limpiezas y urgencias, sobre todo con cita, con una fila por dentista. Solo números en las pantallas; ningún detalle de la visita en los mensajes."
+  },
+  "keywords": {
+    "en": [
+      "dentist",
+      "dental",
+      "dental office",
+      "teeth cleaning",
+      "hygienist",
+      "orthodontist"
+    ],
+    "es": [
+      "dentista",
+      "dental",
+      "consultorio dental",
+      "limpieza dental",
+      "higienista",
+      "odontólogo"
+    ]
+  },
+  "queues": [
+    {
+      "name": {
+        "en": "Appointments",
+        "es": "Citas"
+      },
+      "prefix": "D",
+      "show_eta": true,
+      "services": [
+        {
+          "name": {
+            "en": "Check-up and cleaning",
+            "es": "Revisión y limpieza"
+          },
+          "minutes": 60
+        },
+        {
+          "name": {
+            "en": "New patient exam",
+            "es": "Revisión de paciente nuevo"
+          },
+          "minutes": 60
+        },
+        {
+          "name": {
+            "en": "Urgent visit",
+            "es": "Visita urgente"
+          },
+          "minutes": 30
+        },
+        {
+          "name": {
+            "en": "Treatment visit",
+            "es": "Tratamiento"
+          },
+          "minutes": 60
+        },
+        {
+          "name": {
+            "en": "Follow-up",
+            "es": "Seguimiento"
+          },
+          "minutes": 20
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "label": {
+        "en": "Dental chair 1",
+        "es": "Sillón dental 1"
+      },
+      "kind": "chair"
+    },
+    {
+      "label": {
+        "en": "Dental chair 2",
+        "es": "Sillón dental 2"
+      },
+      "kind": "chair"
+    },
+    {
+      "label": {
+        "en": "Dental chair 3",
+        "es": "Sillón dental 3"
+      },
+      "kind": "chair"
+    }
+  ],
+  "providers": {
+    "noun": {
+      "en": "dentist",
+      "es": "dentista"
+    },
+    "default_count": 2,
+    "pool": true
+  },
+  "form": {
+    "name": {
+      "en": "Before your visit",
+      "es": "Antes de tu visita"
+    },
+    "fields": [
+      {
+        "key": "new_patient",
+        "type": "yes_no",
+        "label": {
+          "en": "Is this your first visit here?",
+          "es": "¿Es tu primera visita aquí?"
+        },
+        "help": {
+          "en": "New patients may be asked to fill in a registration form at the front desk.",
+          "es": "Es posible que en recepción pidamos a los pacientes nuevos que llenen un formulario de registro."
+        },
+        "sensitivity": "normal"
+      },
+      {
+        "key": "reason",
+        "type": "short_text",
+        "label": {
+          "en": "Reason for the visit, in a few words",
+          "es": "Motivo de la visita, en pocas palabras"
+        },
+        "help": {
+          "en": "For example \"cleaning\". Please don't include medical history; the dentist will ask.",
+          "es": "Por ejemplo \"limpieza\". No incluyas tu historial médico; el dentista te preguntará."
+        },
+        "sensitivity": "sensitive"
+      }
+    ]
+  },
+  "booking": {
+    "slot_minutes": 15,
+    "buffer_after_minutes": 10,
+    "min_notice_minutes": 240,
+    "max_days_ahead": 90
+  }
+}

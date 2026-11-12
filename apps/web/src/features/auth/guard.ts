@@ -2,6 +2,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import { redirect, type ParsedLocation } from '@tanstack/react-router';
 import { membershipsQuery, sessionQuery } from './api.ts';
 import { needsMfaChallenge } from './mfa/api.ts';
+import { nextSearch } from './next.ts';
 
 interface GuardContext {
   context: { queryClient: QueryClient };
@@ -16,7 +17,7 @@ interface GuardContext {
  */
 export async function requireSession({ context, location }: GuardContext) {
   const session = await context.queryClient.ensureQueryData(sessionQuery);
-  if (!session) throw redirect({ to: '/auth/sign-in', search: { next: location.href } });
+  if (!session) throw redirect({ to: '/auth/sign-in', search: nextSearch(location.href) });
   const kind: unknown = session.user.app_metadata?.kind;
   if (kind === 'display' || kind === 'kiosk') throw redirect({ to: `/${kind}` });
   return session;
@@ -35,7 +36,7 @@ export async function requireMember(args: GuardContext) {
   if (memberships.length === 0) throw redirect({ to: '/onboarding' });
   // An enrolled account passes its second factor before reaching the floor or the admin.
   if (await needsMfaChallenge())
-    throw redirect({ to: '/auth/mfa', search: { next: args.location.href } });
+    throw redirect({ to: '/auth/mfa', search: nextSearch(args.location.href) });
 }
 
 /** Guard for `/onboarding`: signed in and not yet a member of anything. */

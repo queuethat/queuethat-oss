@@ -8,16 +8,24 @@ import {
 } from './support/accounts.ts';
 import type { Page } from '@playwright/test';
 
-// ORG-14 (#93): a new owner picks an industry template, or starts blank.
+// ORG-14 (#93), T3 (#1297): a new owner answers "What kind of business is this?" or starts blank.
 test.use({ staffUser: null });
 
-async function toTemplateStep(staff: Page) {
+/** Searches the catalog, checks the recommended pick and its guest preview, then uses it. */
+async function useTemplate(page: Page, search: string, name: string) {
+  await page.getByLabel('Search templates').fill(search);
+  await expect(page.getByRole('radio', { name: `${name} (recommended)` })).toBeChecked();
+  await expect(page.getByRole('region', { name: `Preview of ${name}` })).toBeVisible();
+  await page.getByRole('button', { name: 'Use this' }).click();
+}
+
+async function toTemplateStep(staff: Page, businessName = `Templates ${Date.now()}`) {
   const email = await confirmedAccount();
   await staff.goto('/auth/sign-in?next=%2Fonboarding');
   await staff.getByLabel('Email').fill(email);
   await staff.getByLabel('Password').fill(NEW_ACCOUNT_PASSWORD);
   await staff.getByRole('button', { name: 'Sign in', exact: true }).click();
-  await staff.getByLabel('Business name').fill(`Templates ${Date.now()}`);
+  await staff.getByLabel('Business name').fill(businessName);
   await staff.getByRole('button', { name: 'Next' }).click();
   await staff.getByLabel('Location name').fill('Main Street');
   await staff.getByLabel('Time zone').fill('Europe/Berlin');
@@ -29,30 +37,55 @@ test('picking Barber creates its queue, services and chairs, then links to edit 
   devices,
 }) => {
   const { staff } = devices;
-  const email = await toTemplateStep(staff);
+  // The business name alone recommends Barber, with a preview of the guest's choices.
+  const email = await toTemplateStep(staff, `Fade Barber ${Date.now()}`);
+  await expect(staff.getByText('What kind of business is this?')).toBeVisible();
+  await expect(staff.getByRole('radio', { name: 'Barber (recommended)' })).toBeChecked();
+  const preview = staff.getByRole('region', { name: 'Preview of Barber' });
+  await expect(preview).toContainText('Haircut, about 30 min');
   await expectNoSeriousA11yViolations(staff);
-  await staff.getByRole('button', { name: /Barber or salon/ }).click();
+  await staff.getByRole('button', { name: 'Use this' }).click();
+  await expect(staff.getByText('Based on Barber v2')).toBeVisible();
   await expect(staff.getByLabel('Queue name')).toHaveCount(0);
   await staff.getByRole('button', { name: 'Create my business' }).click();
 
   await expect(staff.getByText('Your line is live')).toBeVisible();
-  await expect(staff.getByRole('status')).toHaveText('Created 1 queue, 2 services and 3 counters.');
+  await expect(staff.getByRole('status')).toHaveText(
+    'Created 4 queues, 24 services and 3 counters.',
+  );
   await expectNoSeriousA11yViolations(staff);
   const rows = await readAs(email, [
-    'queues?select=name',
+    'queues?select=name,kind&order=name',
     'services?select=name,expected_minutes&order=name',
     'counters?select=label&order=label',
   ]);
+  // Every line carries the same six services; compare them once.
+  const unique = (list: unknown) => [
+    ...new Map((list as { name: string }[]).map((x) => [x.name, x])).values(),
+  ];
+  rows[1] = unique(rows[1]);
   expect(rows).toEqual([
-    [{ name: 'Walk-ins' }],
+    // Three barbers' own lines plus "Anyone available", each with the template's services (T4).
     [
-      { name: 'Beard', expected_minutes: 15 },
+      { name: 'Anyone available', kind: 'pool' },
+      { name: 'Barber 1', kind: 'provider' },
+      { name: 'Barber 2', kind: 'provider' },
+      { name: 'Barber 3', kind: 'provider' },
+    ],
+    [
+      { name: 'Beard trim', expected_minutes: 15 },
       { name: 'Haircut', expected_minutes: 30 },
+      { name: 'Haircut and beard', expected_minutes: 45 },
+      { name: 'Hot towel shave', expected_minutes: 30 },
+      { name: "Kids' cut (under 12)", expected_minutes: 20 },
+      { name: 'Skin fade', expected_minutes: 40 },
     ],
     [{ label: 'Chair 1' }, { label: 'Chair 2' }, { label: 'Chair 3' }],
   ]);
   await staff.getByRole('link', { name: 'Edit queues and services' }).click();
   await expect(staff).toHaveURL(/\/admin\/queues$/);
+  // The copy remembers where it came from.
+  await expect(staff.getByTestId('template-origin').first()).toHaveText('Based on Barber v2');
 });
 
 test('the clinic card explains that names are never shown, and the guardrail holds', async ({
@@ -60,9 +93,11 @@ test('the clinic card explains that names are never shown, and the guardrail hol
 }) => {
   const { staff } = devices;
   const email = await toTemplateStep(staff);
-  const card = staff.getByRole('button', { name: /Clinic/ });
-  await expect(card).toContainText('Names are never shown on screens');
-  await card.click();
+  await staff.getByLabel('Search templates').fill('walk-in clinic');
+  await expect(staff.getByRole('region', { name: 'Preview of Walk-in clinic' })).toContainText(
+    'Names are never shown on screens',
+  );
+  await useTemplate(staff, 'walk-in clinic', 'Walk-in clinic');
   await staff.getByRole('button', { name: 'Create my business' }).click();
   await expect(staff.getByText('Your line is live')).toBeVisible();
   const [orgs] = await readAs(email, ['organizations?select=health_tagged']);
@@ -72,7 +107,7 @@ test('the clinic card explains that names are never shown, and the guardrail hol
 test('AC1 (data): picking Restaurant sets party size 1-12 on its queue', async ({ devices }) => {
   const { staff } = devices;
   const email = await toTemplateStep(staff);
-  await staff.getByRole('button', { name: /Restaurant/ }).click();
+  await useTemplate(staff, 'restaurant', 'Restaurant');
   await staff.getByRole('button', { name: 'Create my business' }).click();
   await expect(staff.getByText('Your line is live')).toBeVisible();
   const [queues] = await readAs(email, [
@@ -95,10 +130,10 @@ test('AC1 (data): picking Restaurant sets party size 1-12 on its queue', async (
 test('AC2: Start blank behaves like the original wizard', async ({ devices }) => {
   const { staff } = devices;
   await toTemplateStep(staff);
-  await expect(staff.getByRole('button', { name: /Start blank/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  // Nothing is used until "Use this"; Enter in the search box never submits the step.
+  await staff.getByLabel('Search templates').fill('nothing like this');
+  await staff.getByLabel('Search templates').press('Enter');
+  await expect(staff.getByText('No template matches. Try another word.')).toBeVisible();
   await expect(staff.getByLabel('Queue name')).toHaveValue('Walk-ins');
   await staff.getByRole('button', { name: 'Create my business' }).click();
   await expect(staff.getByText('Your line is live')).toBeVisible();
@@ -112,8 +147,7 @@ test('an owner applies a template from the location page while it has no visits'
   const { email } = await ownerOfNewBusiness();
   await signInTo(staff, email, '/admin/location');
   await staff.getByRole('button', { name: 'Apply a template' }).click();
-  await staff.getByRole('button', { name: /Service counter/ }).click();
-  await staff.getByRole('button', { name: 'Apply template' }).click();
+  await useTemplate(staff, 'service counter', 'Service counter');
   await expect(staff.getByText('Template applied.')).toBeVisible();
   const [queues] = await readAs(email, ['queues?select=name']);
   expect(queues).toEqual([{ name: 'Counter service' }]);

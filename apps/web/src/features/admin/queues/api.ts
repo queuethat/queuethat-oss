@@ -61,6 +61,8 @@ export type AlertTrigger = (typeof ALERT_TRIGGERS)[number];
 
 export interface QueueRow extends QueueSettings {
   id: string;
+  /** The catalog template and version this queue was copied from (T1), or null when hand-made. */
+  origin: { template: string; version: number } | null;
 }
 
 export const NEW_QUEUE: QueueSettings = {
@@ -98,7 +100,7 @@ export const queuesQuery = (locationId: string) =>
         .schema('app')
         .from('queues')
         .select(
-          'id, name, ticket_prefix, capacity, servers_on_duty, show_eta, join_rate_per_min, online_joins_per_hour, party_size_enabled, party_size_min, party_size_max, auto_no_show_enabled, grace_minutes, no_show_warning_seconds, serving_reminder_minutes, notify_triggers, almost_up_threshold, assignment_strategy, join_later_enabled, join_later_max_hours, join_restriction, sms_keyword',
+          'id, name, ticket_prefix, capacity, servers_on_duty, show_eta, join_rate_per_min, online_joins_per_hour, party_size_enabled, party_size_min, party_size_max, auto_no_show_enabled, grace_minutes, no_show_warning_seconds, serving_reminder_minutes, notify_triggers, almost_up_threshold, assignment_strategy, join_later_enabled, join_later_max_hours, join_restriction, sms_keyword, origin_template, origin_version',
         )
         .eq('location_id', locationId)
         .is('archived_at', null)
@@ -128,6 +130,10 @@ export const queuesQuery = (locationId: string) =>
         joinLaterEnabled: q.join_later_enabled,
         joinLaterMaxHours: q.join_later_max_hours,
         smsKeyword: q.sms_keyword,
+        origin:
+          q.origin_template && q.origin_version
+            ? { template: q.origin_template, version: q.origin_version }
+            : null,
       }));
     },
   });
