@@ -72,6 +72,19 @@ hook once it exists (that would overwrite a deployment's body). Add a new hook r
 one. Each hook's `COMMENT ON FUNCTION` starts with `Extension hook:` and states its contract;
 `tests/structure/extension_hooks.test.sql` checks the shapes.
 
+### Edge Function extension files
+
+Two functions have one file a deployment replaces with its own copy, for a sender that is the
+deployment's rather than a business's (`provider_settings.mode` `platform`):
+
+| File | Export | Here |
+| --- | --- | --- |
+| `functions/dispatch-notifications/extensions.ts` | `sharedSender({ env, functionsUrl })`: builds the channel for an org in mode `platform` | undefined: such sends end as `suppressed: channel_disabled` |
+| `functions/provider-webhook/extensions.ts` | `extensionRoutes({ rpc, env })`: extra `/provider-webhook/<name>/<endpoint>` routes with their verifier, handler and secrets | none |
+
+A built-in provider of the same name always wins. A verifier may name `storedFormKeys`: the only
+form fields kept in the stored event, which must carry no guest phone number or text (I-13).
+
 ## Test helpers
 
 `tests.create_world()` builds org A (owner, admin, manager, staff, display, kiosk) and org B

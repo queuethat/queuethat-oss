@@ -1,4 +1,5 @@
 import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
+import { pickRowAction } from './support/console.ts';
 import { seedGuest, tryStaffAdd, uniquePhone } from './support/guests.ts';
 import { freshQueue } from './support/queues.ts';
 
@@ -17,7 +18,7 @@ test('AC1+AC2: a blocked phone cannot rejoin until the block is lifted', async (
   await staff.goto('/staff');
   await staff.getByRole('tab', { name: queue.name }).click();
   const row = staff.getByTestId('visit').filter({ hasText: name });
-  await row.getByRole('button', { name: /^Remove and block/ }).click();
+  await pickRowAction(row, 'Remove and block');
   const dialog = staff.getByRole('dialog', { name: /^Remove and block/ });
   const confirm = dialog.getByRole('button', { name: 'Remove and block' });
   await expect(confirm).toBeDisabled();

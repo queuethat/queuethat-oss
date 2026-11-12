@@ -1,5 +1,5 @@
 import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
-import { guestJoins, openQueue } from './support/console.ts';
+import { guestJoins, openQueue, pickRowAction } from './support/console.ts';
 import { freshQueue } from './support/queues.ts';
 
 // 2B-J6 (#244): a guest adds a companion; staff see the party size and the name within 3 s.
@@ -18,7 +18,7 @@ test('AC1: a companion added by the guest shows on the staff console', async ({ 
 
   const row = staff.getByTestId('section-waiting').getByTestId('visit');
   await expect(row).toContainText('2', { timeout: 3_000 });
-  await staff.getByRole('button', { name: /^Details for / }).click();
+  await pickRowAction(staff, 'Details');
   await expect(staff.getByRole('button', { name: 'Remove Maya' })).toBeVisible({ timeout: 3_000 });
 
   // The guest removes Maya again, after the small confirm.

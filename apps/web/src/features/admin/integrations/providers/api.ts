@@ -40,7 +40,7 @@ export const providerSettingsQuery = (orgId: string) =>
         .schema('app')
         .from('provider_settings')
         .select(
-          'kind:channel, provider, config, secret_hints, endpoint_id, messaging_campaign_ref, verified_at, enabled',
+          'kind:channel, provider, mode, config, secret_hints, endpoint_id, messaging_campaign_ref, verified_at, enabled',
         )
         .eq('org_id', orgId);
       if (error) throw new Error(errorCode(error));
@@ -53,8 +53,9 @@ export const webhookUrl = (provider: string, endpointId: string) =>
   `${appConfig().supabaseUrl}/functions/v1/provider-webhook/${provider}/${endpointId}`;
 
 /**
- * `api.set_provider_settings`. A business always sends through its own provider account (`own`).
- * Errors: `invalid_input`, `permission_denied`.
+ * `api.set_provider_settings`: `own` (the business's provider account) or `platform` (the
+ * deployment's shared sender, src/extensions). Errors: `platform_mode_unavailable`,
+ * `invalid_input`, `permission_denied`.
  */
 export function useSaveProviderSettings(orgId: string) {
   const queryClient = useQueryClient();
@@ -62,7 +63,7 @@ export function useSaveProviderSettings(orgId: string) {
     mutationFn: async (input: {
       kind: SettingsChannel;
       provider: string;
-      mode: 'own';
+      mode: string;
       config: Record<string, string>;
       secrets: Record<string, string>;
     }) => {
@@ -75,7 +76,13 @@ export function useSaveProviderSettings(orgId: string) {
         p_secrets: input.secrets,
         p_idempotency_key: crypto.randomUUID(),
       });
-      if (error) throw new Error(errorCode(error));
+      if (error) {
+        throw new Error(
+          (error as { message?: string }).message === 'platform_mode_unavailable'
+            ? 'platform_mode_unavailable'
+            : errorCode(error),
+        );
+      }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: settingsKey(orgId) }),
   });

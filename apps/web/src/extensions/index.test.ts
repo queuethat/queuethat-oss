@@ -1,6 +1,13 @@
 import { iconHome } from '@qm/ui';
 import { describe, expect, it } from 'vitest';
-import { adminPageUrl, bannersFor, findAdminPage, installedExtensions } from './index.ts';
+import {
+  adminPageUrl,
+  bannersFor,
+  findAdminPage,
+  hasSharedSender,
+  installedExtensions,
+  slotLoader,
+} from './index.ts';
 import { extensions } from './installed.ts';
 import type { WebExtensions } from './types.ts';
 
@@ -22,6 +29,19 @@ describe('web extensions', () => {
     expect(installedExtensions().adminPages).toEqual([]);
     expect(findAdminPage('billing')).toBeUndefined();
     expect(bannersFor('admin')).toEqual([]);
+    expect(slotLoader('integrations.top')).toBeUndefined();
+    expect(hasSharedSender()).toBe(false);
+  });
+
+  it('finds a slot and the shared sender flag when a deployment sets them', () => {
+    const withSlots: WebExtensions = {
+      ...set,
+      slots: { 'onboarding.live': load },
+      sharedSender: true,
+    };
+    expect(slotLoader('onboarding.live', withSlots)).toBe(load);
+    expect(slotLoader('onboarding.alerts', withSlots)).toBeUndefined();
+    expect(hasSharedSender(withSlots)).toBe(true);
   });
 
   it('finds a page by its path segment only', () => {

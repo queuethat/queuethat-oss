@@ -24,6 +24,11 @@
     "meta": "WhatsApp Business (Meta)",
     "stripe": "Stripe"
   },
+  "mode": {
+    "label": "Account",
+    "own": "My own account",
+    "platform": "Platform account"
+  },
   "fields": {
     "sender_email": "Sender email address",
     "region": "Region",
@@ -70,6 +75,7 @@
     "campaign_ref": "Enter your 10DLC campaign reference (required for US numbers)."
   },
   "errors": {
+    "platform_mode_unavailable": "This deployment has no platform account. Use your own account.",
     "unknown": "Something went wrong. Try again.",
     "invalid_input": "Check the values and try again.",
     "permission_denied": "You are not allowed to do that."

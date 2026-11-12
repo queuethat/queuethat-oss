@@ -7,8 +7,9 @@ import { canManageRole, grantablePresets } from './api.ts';
 import { TeamPage } from './TeamPage.tsx';
 
 const m = vi.hoisted(() => ({ role: 'owner' }));
+const invoke = vi.hoisted(() => vi.fn());
 vi.mock('../../../lib/supabase.ts', () => ({
-  supabase: { rpc: vi.fn(async () => ({ data: [], error: null })) },
+  supabase: { rpc: vi.fn(async () => ({ data: [], error: null })), functions: { invoke } },
 }));
 vi.mock('../../auth/api.ts', () => ({ useSession: () => ({ data: { user: { id: 'me' } } }) }));
 vi.mock('../../auth/current.ts', () => ({
@@ -68,5 +69,21 @@ describe('invite dialog', () => {
         .map((r) => (r as HTMLInputElement).value),
     ).toEqual(['manager', 'staff']);
     expect(within(dialog).queryByLabelText(/Make this person an Admin/)).toBeNull();
+  });
+
+  it('a full team is explained with its limit, not as an unknown error', async () => {
+    const response = new Response(JSON.stringify({ error: 'plan_limit_reached', limit: 3 }), {
+      status: 402,
+    });
+    invoke.mockResolvedValue({ data: null, error: { context: response } });
+    const dialog = await openInvite('owner');
+    fireEvent.change(within(dialog).getByLabelText(/email/i), {
+      target: { value: 'new@example.test' },
+    });
+    fireEvent.submit(within(dialog).getByLabelText(/email/i).closest('form')!);
+    expect(
+      await within(dialog).findByText('The team is full: it can have 3 members.'),
+    ).toBeTruthy();
+    expect(within(dialog).queryByText(/Something went wrong/)).toBeNull();
   });
 });

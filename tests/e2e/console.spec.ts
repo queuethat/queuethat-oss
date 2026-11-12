@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { pickRowAction } from './support/console.ts';
 import { createClient } from '@supabase/supabase-js';
 import { randomUUID } from 'node:crypto';
 import { demo } from '../fixtures/demo.ts';
@@ -232,7 +233,7 @@ test('C4 AC1: a single tap on Remove does nothing until a reason and confirm', a
   const row = staff.getByTestId('visit').filter({ hasText: 'Remove me' });
   const ticket = (await row.locator('span').first().textContent()) ?? '';
 
-  await row.getByRole('button', { name: `Remove ${ticket}` }).click();
+  await pickRowAction(row, 'Remove', ticket);
   const dialog = staff.getByRole('dialog', { name: `Remove ${ticket} from the line?` });
   const confirm = dialog.getByRole('button', { name: 'Remove', exact: true });
   await expect(confirm).toBeDisabled();
@@ -274,7 +275,7 @@ test('C4: a guest moves from called to serving to done, and a no-show can be rei
   await staff.getByRole('button', { name: `Done with ${full}` }).click();
   await expect(staff.getByTestId('visit').filter({ hasText: 'Full visit' })).toHaveCount(0);
 
-  await staff.getByRole('button', { name: `No-show ${late}` }).click();
+  await pickRowAction(staff, 'No-show', late);
   await staff
     .getByRole('dialog', { name: `Mark ${late} as a no-show?` })
     .getByRole('button', { name: 'Mark no-show' })
@@ -349,7 +350,7 @@ test('C5 AC1: a guest marked no-show by mistake gets their place back with Undo 
   await expect(waiting).toHaveCount(3);
   const ben = (await waiting.nth(1).locator('span').first().textContent()) ?? '';
 
-  await staff.getByRole('button', { name: `No-show ${ben}` }).click();
+  await pickRowAction(staff, 'No-show', ben);
   await staff.getByRole('button', { name: 'Mark no-show' }).click();
   const toasts = staff.getByRole('region', { name: 'Notifications' });
   await expect(toasts.getByText(`Marked ${ben} as a no-show.`)).toBeVisible();
@@ -376,7 +377,7 @@ test('C5: a called guest can be called again, and a call can be undone', async (
 
   await staff.getByRole('button', { name: `Call ${ticket}` }).click();
   await expect(staff.getByTestId('section-called')).toContainText('Dee');
-  await staff.getByRole('button', { name: `Call again ${ticket}` }).click();
+  await pickRowAction(staff, 'Call again', ticket);
   await expect(toasts.getByText(`Called ${ticket} again.`)).toBeVisible();
 
   // Undo reverses the latest action only: the recall, so Dee stays called.

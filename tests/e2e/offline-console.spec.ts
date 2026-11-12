@@ -1,5 +1,5 @@
 import { expect, signIn, test } from './fixtures.ts';
-import { guestJoins, openQueue } from './support/console.ts';
+import { guestJoins, openQueue, pickRowAction } from './support/console.ts';
 import { freshQueue } from './support/queues.ts';
 
 // 2B-S5 (#275): an offline action that conflicts waits for a person; nothing is applied silently.
@@ -29,7 +29,7 @@ test('AC1: tablet A starts offline while tablet B marks the guest no-show; A see
   await expect(a.getByText('Offline: 1 action waiting.')).toBeVisible();
 
   // Meanwhile tablet B marks the same guest no-show.
-  await b.getByRole('button', { name: `No-show ${ticket}` }).click();
+  await pickRowAction(b, 'No-show', ticket);
   await b.getByRole('button', { name: 'Mark no-show' }).click();
   await expect(b.getByTestId('section-no_show')).toContainText('Clash Cleo');
 

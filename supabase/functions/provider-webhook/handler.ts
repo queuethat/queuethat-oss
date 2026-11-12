@@ -134,13 +134,18 @@ export function createProviderWebhookHandler(deps: ProviderWebhookDeps): (req: R
       return json(403, { error: reason });
     }
 
-    // Only a JSON body is kept. A form body (Twilio, Plivo) carries guests' phone numbers and texts
-    // and is not stored (I-13).
+    // A JSON body is kept. A form body (Twilio, Plivo) carries guests' phone numbers and texts and
+    // is not stored (I-13), except the fields its verifier names as free of them.
     let payload: unknown = null;
-    try {
-      payload = JSON.parse(new TextDecoder().decode(rawBody));
-    } catch {
-      payload = null;
+    if (form && verifier.storedFormKeys) {
+      const keys = verifier.storedFormKeys;
+      payload = Object.fromEntries(keys.flatMap((k) => (form.has(k) ? [[k, form.get(k)]] : [])));
+    } else {
+      try {
+        payload = JSON.parse(new TextDecoder().decode(rawBody));
+      } catch {
+        payload = null;
+      }
     }
 
     const handler = Object.hasOwn(deps.handlers, provider) ? deps.handlers[provider] : undefined;

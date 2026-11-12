@@ -2,6 +2,7 @@ import { errorCode } from '@qm/domain';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../../lib/supabase.ts';
 import { selectLocation } from '../../auth/current.ts';
+import { asLimitReached } from '../limits.ts';
 
 /** What the admin types to add a location. A blank slug lets the database derive it from the name. */
 export interface NewLocation {
@@ -25,7 +26,7 @@ export function useAddLocation() {
         p_tz: input.timeZone,
         p_slug: input.slug.trim() || undefined,
       });
-      if (error) throw new Error(errorCode(error));
+      if (error) throw asLimitReached(error) ?? new Error(errorCode(error));
       return { locationId: data.location_id!, slug: data.slug! };
     },
     onSuccess: async ({ locationId }) => {

@@ -243,10 +243,9 @@ tables:
     where: visit_id = tests.id('visit_a')
     update: answers = answers
     insert: (org_id, location_id, visit_id, answers) values (tests.id('org_a'), tests.id('loc_a'), tests.id('visit_a'), '{}')
-    allow:
-      select: [owner, admin, manager, staff]
+    allow: {} # F7b (#1396): read only through api.get_visit_answers, which logs the access
 
-  # F1 (#1277) forms: authenticated may only read; writes come with the F2/F5 definer functions.
+  # F1 (#1277) forms: authenticated may only read (except form_responses, F7b); writes come with the F2/F5 definer functions.
   app.forms:
     where: id = tests.id('form_a')
     update: name = name
@@ -272,8 +271,7 @@ tables:
     where: id = tests.id('form_response_a')
     update: answers = answers
     insert: (org_id, location_id, form_version_id, visit_id, answers) values (tests.id('org_a'), tests.id('loc_a'), tests.id('form_version_a'), tests.id('visit_a'), '{}')
-    allow:
-      select: [owner, admin, manager, staff]
+    allow: {} # F7b (#1396): read only through api.get_visit_answers, which logs the access
 
   # W2 (#1304) waiver evidence: written by a trigger only; staff of the location read it.
   app.waiver_acceptances:
