@@ -13,6 +13,8 @@ import { defineConfig, devices } from '@playwright/test';
 const baseURL = process.env.PUBLIC_URL;
 if (!baseURL)
   throw new Error('Set PUBLIC_URL to the pilot web app, e.g. https://queue.example.com');
+// The other specs build their own org and location with the service role and are skipped here
+// by design; see "Why the pilot runs only that journey" in tests/e2e/README.md.
 // Read by tests/e2e/support (shop, env, users) to take the pilot path.
 process.env.E2E_PILOT = '1';
 
