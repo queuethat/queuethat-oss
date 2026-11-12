@@ -1,3 +1,4 @@
+import { iconHome } from '@qm/ui';
 import { describe, expect, it } from 'vitest';
 import { filterPalette } from './GoToPalette.tsx';
 import { buildGroups, currentItemId, sidebarGroups } from './navModel.ts';
@@ -230,5 +231,48 @@ describe('admin nav model', () => {
     expect(filterPalette(groups, 'routing').map((r) => r.item.id)).toEqual(['routing']);
     expect(filterPalette(groups, 'priority').map((r) => r.item.id)).toEqual(['priority']);
     expect(filterPalette(groups, 'zzz')).toEqual([]);
+  });
+});
+
+describe('extension pages in the nav', () => {
+  const load = () => Promise.resolve({ default: () => null });
+  const pages = [
+    {
+      path: 'billing',
+      load,
+      nav: { group: 'account' as const, icon: iconHome, labelKey: 'x:billing' },
+    },
+    {
+      path: 'secret',
+      load,
+      nav: { group: 'setup' as const, icon: iconHome, labelKey: 'x:secret', adminOnly: true },
+    },
+    { path: 'no-nav', load },
+  ];
+  const withPages = (role: string) =>
+    buildGroups({ role, multiLocation: false }, label, group, group, pages, (k) => `T(${k})`);
+
+  it('adds none in this repository', () => {
+    expect(ids(build('owner')).filter((id) => id.startsWith('x:'))).toEqual([]);
+  });
+
+  it('appends each page with a nav entry to the end of its group, translated', () => {
+    const account = withPages('owner').find((g) => g.id === 'account');
+    expect(account?.items.at(-1)).toMatchObject({
+      id: 'x:billing',
+      to: '/admin/x/billing',
+      label: 'T(x:billing)',
+    });
+    expect(ids(withPages('owner'))).toContain('x:secret');
+    expect(ids(withPages('owner'))).not.toContain('x:no-nav');
+  });
+
+  it('hides admin-only extension pages from staff', () => {
+    expect(ids(withPages('staff'))).toContain('x:billing');
+    expect(ids(withPages('staff'))).not.toContain('x:secret');
+  });
+
+  it('marks an extension page current when it is open', () => {
+    expect(currentItemId(withPages('owner'), '/admin/x/billing')).toBe('x:billing');
   });
 });

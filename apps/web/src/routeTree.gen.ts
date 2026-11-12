@@ -104,6 +104,7 @@ import { Route as AdminReportsAskRouteImport } from './routes/admin/reports/ask'
 import { Route as AdminReportsCustomRouteImport } from './routes/admin/reports/custom'
 import { Route as AdminReportsSchedulesRouteImport } from './routes/admin/reports/schedules'
 import { Route as AdminSettingsDangerRouteImport } from './routes/admin/settings/danger'
+import { Route as AdminXSplatRouteImport } from './routes/admin/x.$'
 import { Route as AdminQueuesQueueIdIntakeRouteImport } from './routes/admin/queues/$queueId_.intake'
 import { Route as AdminQueuesQueueIdMessagesRouteImport } from './routes/admin/queues/$queueId_.messages'
 
@@ -584,6 +585,11 @@ const AdminSettingsDangerRoute = AdminSettingsDangerRouteImport.update({
   path: '/settings/danger',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminXSplatRoute = AdminXSplatRouteImport.update({
+  id: '/x/$',
+  path: '/x/$',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminQueuesQueueIdIntakeRoute =
   AdminQueuesQueueIdIntakeRouteImport.update({
     id: '/queues/$queueId_/intake',
@@ -690,6 +696,7 @@ export interface FileRoutesByFullPath {
   '/admin/reports/custom': typeof AdminReportsCustomRoute
   '/admin/reports/schedules': typeof AdminReportsSchedulesRoute
   '/admin/settings/danger': typeof AdminSettingsDangerRoute
+  '/admin/x/$': typeof AdminXSplatRoute
   '/admin/guests/': typeof AdminGuestsIndexRoute
   '/admin/privacy/': typeof AdminPrivacyIndexRoute
   '/admin/queues/': typeof AdminQueuesIndexRoute
@@ -785,6 +792,7 @@ export interface FileRoutesByTo {
   '/admin/reports/custom': typeof AdminReportsCustomRoute
   '/admin/reports/schedules': typeof AdminReportsSchedulesRoute
   '/admin/settings/danger': typeof AdminSettingsDangerRoute
+  '/admin/x/$': typeof AdminXSplatRoute
   '/admin/guests': typeof AdminGuestsIndexRoute
   '/admin/privacy': typeof AdminPrivacyIndexRoute
   '/admin/queues': typeof AdminQueuesIndexRoute
@@ -885,6 +893,7 @@ export interface FileRoutesById {
   '/admin/reports/custom': typeof AdminReportsCustomRoute
   '/admin/reports/schedules': typeof AdminReportsSchedulesRoute
   '/admin/settings/danger': typeof AdminSettingsDangerRoute
+  '/admin/x/$': typeof AdminXSplatRoute
   '/admin/guests/': typeof AdminGuestsIndexRoute
   '/admin/privacy/': typeof AdminPrivacyIndexRoute
   '/admin/queues/': typeof AdminQueuesIndexRoute
@@ -986,6 +995,7 @@ export interface FileRouteTypes {
     | '/admin/reports/custom'
     | '/admin/reports/schedules'
     | '/admin/settings/danger'
+    | '/admin/x/$'
     | '/admin/guests/'
     | '/admin/privacy/'
     | '/admin/queues/'
@@ -1081,6 +1091,7 @@ export interface FileRouteTypes {
     | '/admin/reports/custom'
     | '/admin/reports/schedules'
     | '/admin/settings/danger'
+    | '/admin/x/$'
     | '/admin/guests'
     | '/admin/privacy'
     | '/admin/queues'
@@ -1180,6 +1191,7 @@ export interface FileRouteTypes {
     | '/admin/reports/custom'
     | '/admin/reports/schedules'
     | '/admin/settings/danger'
+    | '/admin/x/$'
     | '/admin/guests/'
     | '/admin/privacy/'
     | '/admin/queues/'
@@ -1877,6 +1889,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsDangerRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/x/$': {
+      id: '/admin/x/$'
+      path: '/x/$'
+      fullPath: '/admin/x/$'
+      preLoaderRoute: typeof AdminXSplatRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/queues/$queueId_/intake': {
       id: '/admin/queues/$queueId_/intake'
       path: '/queues/$queueId/intake'
@@ -1958,6 +1977,7 @@ interface AdminRouteRouteChildren {
   AdminReportsCustomRoute: typeof AdminReportsCustomRoute
   AdminReportsSchedulesRoute: typeof AdminReportsSchedulesRoute
   AdminSettingsDangerRoute: typeof AdminSettingsDangerRoute
+  AdminXSplatRoute: typeof AdminXSplatRoute
   AdminGuestsIndexRoute: typeof AdminGuestsIndexRoute
   AdminPrivacyIndexRoute: typeof AdminPrivacyIndexRoute
   AdminQueuesIndexRoute: typeof AdminQueuesIndexRoute
@@ -2018,6 +2038,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminReportsCustomRoute: AdminReportsCustomRoute,
   AdminReportsSchedulesRoute: AdminReportsSchedulesRoute,
   AdminSettingsDangerRoute: AdminSettingsDangerRoute,
+  AdminXSplatRoute: AdminXSplatRoute,
   AdminGuestsIndexRoute: AdminGuestsIndexRoute,
   AdminPrivacyIndexRoute: AdminPrivacyIndexRoute,
   AdminQueuesIndexRoute: AdminQueuesIndexRoute,

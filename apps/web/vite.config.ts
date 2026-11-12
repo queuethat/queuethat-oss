@@ -5,9 +5,11 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { appVersion } from './scripts/app-version.ts';
 import { staticHeaders } from './scripts/static-headers.ts';
+import { webExtensions } from './scripts/extensions.ts';
 
 export default defineConfig({
   plugins: [
+    webExtensions(),
     tanstackRouter({ target: 'react', autoCodeSplitting: true }),
     react(),
     tailwindcss(),
