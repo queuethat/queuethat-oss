@@ -1,6 +1,6 @@
 import { demoUsers } from '../fixtures/demo.ts';
 import { expect, expectNoSeriousA11yViolations, signIn, test } from './fixtures.ts';
-import { guestJoins, openQueue } from './support/console.ts';
+import { guestJoins, openQueue, pickRowAction } from './support/console.ts';
 import { freshQueue } from './support/queues.ts';
 
 // 2A-ST14 (#147): assign a waiting guest to a person; only their Call next picks the guest.
@@ -22,9 +22,7 @@ test('AC1: a guest assigned to another person is skipped by Call next and keeps 
   const alpha = (page: typeof staff) =>
     page.getByTestId('section-waiting').getByTestId('visit').filter({ hasText: 'Assigned Alpha' });
   const ticket = ((await alpha(staff).locator('span').first().textContent()) ?? '').trim();
-  await alpha(staff)
-    .getByRole('button', { name: `Assign ${ticket}` })
-    .click();
+  await pickRowAction(alpha(staff), 'Assign', ticket);
   const dialog = staff.getByRole('dialog', { name: `Assign ${ticket}` });
   await dialog.getByLabel('Person').selectOption(demoUsers.e2eOwner.id);
   await expectNoSeriousA11yViolations(staff);
@@ -51,9 +49,7 @@ test('AC1: a guest assigned to another person is skipped by Call next and keeps 
 
   // Unassign opens the guest to everyone again.
   await staff.getByRole('button', { name: 'Clear filters' }).click();
-  await alpha(staff)
-    .getByRole('button', { name: `Assign ${ticket}` })
-    .click();
+  await pickRowAction(alpha(staff), 'Assign', ticket);
   await staff
     .getByRole('dialog', { name: `Assign ${ticket}` })
     .getByRole('button', { name: 'Unassign' })

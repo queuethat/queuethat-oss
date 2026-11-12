@@ -142,7 +142,8 @@
         "confirm": "Remove",
         "reason": "Reason",
         "reasonHint": "Required. For example: asked to leave, duplicate ticket."
-      }
+      },
+      "guest": "Guest: {{name}} ({{ticket}})"
     },
     "texts": {
       "on": "Texts on",
@@ -689,6 +690,10 @@
       "callNext": "Call next for {{line}}",
       "open": "Open {{line}}",
       "openShort": "Open"
+    },
+    "moreActions": "More actions for {{ticket}}",
+    "status": {
+      "called": "Called"
     }
   },
   "planning": {

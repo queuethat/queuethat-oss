@@ -1,4 +1,4 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import postgres from 'postgres';
 import { LIVE_TIMEOUT_MS } from '../fixtures.ts';
@@ -143,4 +143,16 @@ export async function activateLaterVisits(queueId: string): Promise<void> {
   } finally {
     await sql.end();
   }
+}
+
+/**
+ * Runs a console row's overflow-menu item ("More actions for A-042" > "No-show"). Every row action
+ * except the one main button lives there. `scope` is a page or one row; pass `ticket` when it
+ * holds several rows.
+ */
+export async function pickRowAction(scope: Page | Locator, item: string, ticket?: string) {
+  await scope
+    .getByRole('button', { name: ticket ? `More actions for ${ticket}` : /^More actions for / })
+    .click();
+  await scope.getByRole('menuitem', { name: item, exact: true }).click();
 }

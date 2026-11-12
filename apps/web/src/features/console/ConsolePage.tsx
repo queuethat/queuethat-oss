@@ -1,6 +1,6 @@
 import { useDeliveryWarnings, useTextStates } from './messages/api.ts';
 import { errorCode, formatLocalTime } from '@qm/domain';
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import type { CountryCode } from '@qm/ui/phone';
 import {
   Badge,
@@ -53,7 +53,7 @@ import { Timeline } from './timeline/Timeline.tsx';
 import { ServingReminders } from './serving-reminder/ServingReminders.tsx';
 import { useServingReminders } from './serving-reminder/useServingReminders.ts';
 import { SoundAlerts } from './SoundAlerts.tsx';
-import { VisitList, VisitListError } from './VisitList.tsx';
+import { VisitList, VisitListError, type ConfirmRequest } from './VisitList.tsx';
 import { ConsoleSearch } from './search/ConsoleSearch.tsx';
 import { applyFilters, useFilters } from './search/filters.ts';
 import { assigneeLabel, type AssignTargets, type OnAssign } from './assign/AssignDialog.tsx';
@@ -152,6 +152,8 @@ export function ConsolePage({
   const [view, setView] = useState<'queue' | 'timeline'>('queue');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [confirmRequest, setConfirmRequest] = useState<ConfirmRequest | null>(null);
+  const clearConfirmRequest = useCallback(() => setConfirmRequest(null), []);
   const [shortcutsOn, setShortcutsOn] = useShortcutsEnabled();
   // The newest undoable event this screen produced, for the U shortcut.
   const lastUndo = useRef<{ eventId: number; ticket: string } | null>(null);
@@ -384,12 +386,8 @@ export function ConsolePage({
     };
     const confirmFor = (action: 'no_show' | 'remove') => {
       if (!selected?.actions.includes(action)) return;
-      // Opens the row's normal ConfirmDestructive; the shortcut never acts on its own.
-      document
-        .querySelector<HTMLElement>(
-          `[aria-label="${CSS.escape(t(`console.actionLabel.${action}`, { ticket: selected.ticket }))}"]`,
-        )
-        ?.click();
+      // Asks the row to open its normal confirmation; the shortcut never acts on its own.
+      setConfirmRequest({ id: selected.id, action });
     };
     const step = (by: 1 | -1) => {
       if (ordered.length === 0) return;
@@ -628,6 +626,8 @@ export function ConsolePage({
               />
               {visits.data ? (
                 <VisitList
+                  confirmRequest={confirmRequest}
+                  onConfirmRequest={clearConfirmRequest}
                   selectedId={selectedId}
                   pendingIds={pendingIds}
                   visits={applyFilters(inQueue, filters, { userId, counterId: myCounter })}

@@ -1,5 +1,5 @@
 import { expect, test } from './fixtures.ts';
-import { guestJoins, openQueue } from './support/console.ts';
+import { guestJoins, openQueue, pickRowAction } from './support/console.ts';
 import { freshQueue } from './support/queues.ts';
 
 // The console leads with the day's work: Call next, then the line, then the queue controls.
@@ -61,4 +61,41 @@ test('Scan guest QR sits with the counter picker, above the queue', async ({ dev
   const scan = await staff.getByRole('button', { name: 'Scan guest QR' }).boundingBox();
   const tabs = await staff.getByRole('tab').first().boundingBox();
   expect(scan!.y).toBeLessThan(tabs!.y);
+});
+
+// DS-24: Remove and No-show are never next to Call; they wait in the overflow menu, and each
+// control on the row is a comfortable target.
+test('a row shows Call and a menu; Remove is not adjacent to Call and sits behind a confirm', async ({
+  devices,
+}) => {
+  const { staff } = devices;
+  const queue = await freshQueue();
+  await guestJoins('Menu Mo', queue.id);
+  await openQueue(staff, queue.id);
+
+  const row = staff.getByTestId('section-waiting').getByTestId('visit').first();
+  const ticket = ((await row.locator('span').first().textContent()) ?? '').trim();
+  const call = row.getByRole('button', { name: `Call ${ticket}` });
+  const more = row.getByRole('button', { name: `More actions for ${ticket}` });
+  await expect(row.getByRole('button', { name: /^Remove / })).toHaveCount(0);
+  await expect(row.getByRole('button', { name: /^No-show / })).toHaveCount(0);
+
+  const width = staff.viewportSize()!.width;
+  const floor = width >= 768 ? 56 : 48;
+  for (const control of [call, more]) {
+    expect((await control.boundingBox())!.height).toBeGreaterThanOrEqual(floor);
+  }
+
+  await more.click();
+  const remove = staff.getByRole('menuitem', { name: 'Remove', exact: true });
+  await expect(remove).toBeVisible();
+  expect((await remove.boundingBox())!.height).toBeGreaterThanOrEqual(floor);
+  await staff.keyboard.press('Escape');
+
+  // Removing still asks first, and names the guest.
+  await pickRowAction(row, 'Remove', ticket);
+  const dialog = staff.getByRole('dialog', { name: `Remove ${ticket} from the line?` });
+  await expect(dialog.getByTestId('confirm-guest')).toContainText('Menu Mo');
+  await dialog.getByRole('button', { name: 'Keep' }).click();
+  await expect(row).toBeVisible();
 });
