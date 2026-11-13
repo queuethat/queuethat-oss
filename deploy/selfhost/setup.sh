@@ -166,6 +166,7 @@ trap 'rm -f "$tmp"' EXIT
   echo "PG_META_CRYPTO_KEY=$(hex 16)"
   echo "DASHBOARD_PASSWORD=$(hex 12)"
   echo "DISPATCH_SECRET=$(hex 32)"
+  echo "POW_SECRET=$(hex 32)"
   echo "REALTIME_DB_ENC_KEY=$(hex 8)"
   echo "DISABLE_SIGNUP=$disable_signup"
   echo "ENABLE_EMAIL_AUTOCONFIRM=false"

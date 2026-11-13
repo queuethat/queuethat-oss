@@ -16,8 +16,10 @@ COPY supabase/migrations ./supabase/migrations
 COPY supabase/functions ./supabase/functions
 COPY supabase/seeds/10_demo_org.sql ./demo-seed.sql
 COPY packages/domain/src ./packages/domain/src
+COPY packages/providers/src ./packages/providers/src
+COPY packages/db-types/src ./packages/db-types/src
 COPY deploy/selfhost/functions-main ./deploy/selfhost/functions-main
 COPY deploy/selfhost/check-secrets.sh deploy/selfhost/known-demo-keys.sha256 ./
-COPY deploy/selfhost/migrate/entrypoint.sh ./entrypoint.sh
+COPY deploy/selfhost/migrate/entrypoint.sh deploy/selfhost/migrate/publish-functions.sh ./
 
 ENTRYPOINT ["sh", "/app/entrypoint.sh"]

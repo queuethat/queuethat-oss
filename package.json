@@ -34,7 +34,7 @@
     "ci:local": "bash scripts/ci-local.sh",
     "openapi:v1": "node scripts/export-openapi.ts",
     "simulate:day": "node scripts/simulate-day.ts",
-    "test:selfhost": "bats deploy/selfhost/tests && bash deploy/selfhost/tests/check-compose.sh"
+    "test:selfhost": "bats deploy/selfhost/tests && bash deploy/selfhost/tests/check-compose.sh && bash deploy/selfhost/tests/check-functions.sh"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",

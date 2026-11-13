@@ -67,6 +67,12 @@ jobs:
           QM_WEB_IMAGE=queue-web:local bash tests/check-web-image.sh --no-build
           bash tests/check-routing.sh
 
+      - name: Functions boot (each one that imports packages/providers)
+        working-directory: .
+        run: |
+          set -a; . deploy/selfhost/.env; set +a
+          SELFHOST_URL=http://localhost SELFHOST_ANON_KEY=$ANON_KEY bash deploy/selfhost/tests/check-functions-live.sh
+
       - name: Smoke journey
         working-directory: .
         run: |

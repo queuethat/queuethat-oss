@@ -4,8 +4,11 @@
 !supabase/functions
 !supabase/seeds/10_demo_org.sql
 !packages/domain/src
+!packages/providers/src
+!packages/db-types/src
 !deploy/selfhost/functions-main
 !deploy/selfhost/check-secrets.sh
 !deploy/selfhost/known-demo-keys.sha256
 !deploy/selfhost/migrate/entrypoint.sh
+!deploy/selfhost/migrate/publish-functions.sh
 **/*.test.ts
