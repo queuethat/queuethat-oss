@@ -7,7 +7,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/../../.."
 
-DENO=${DENO:-"pnpm exec deno"}
+# Resolved from the repository root: pnpm exec does not work from the temporary directory below.
+DENO=${DENO:-$(pnpm bin)/deno}
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
