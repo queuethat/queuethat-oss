@@ -45,7 +45,7 @@ value() { sed -n "s/^$1=//p" "$2"; }
   "$DIR/setup.sh" --non-interactive --env-file "$WORK/a/.env"
   "$DIR/setup.sh" --non-interactive --env-file "$WORK/b/.env"
   for name in POSTGRES_PASSWORD JWT_SECRET ANON_KEY SERVICE_ROLE_KEY SECRET_KEY_BASE VAULT_ENC_KEY \
-    PG_META_CRYPTO_KEY DASHBOARD_PASSWORD DISPATCH_SECRET VAPID_PUBLIC_KEY VAPID_PRIVATE_KEY; do
+    PG_META_CRYPTO_KEY DASHBOARD_PASSWORD DISPATCH_SECRET POW_SECRET VAPID_PUBLIC_KEY VAPID_PRIVATE_KEY; do
     a=$(value "$name" "$WORK/a/.env")
     [ -n "$a" ]
     [ "$a" != "$(value "$name" "$WORK/b/.env")" ]

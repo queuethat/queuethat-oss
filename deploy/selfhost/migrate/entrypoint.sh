@@ -101,16 +101,6 @@ notify pgrst, 'reload schema';
 SQL
 
 echo "migrate: publishing functions"
-# A fresh copy each time, so a function deleted in a release disappears. The functions import
-# @qm/domain by a path relative to the repository; in the volume it sits beside them.
-find /functions -mindepth 1 -maxdepth 1 -exec rm -rf {} +
-cp -R supabase/functions/. /functions/
-mkdir -p /functions/packages
-cp -R packages/domain /functions/packages/
-cp -R deploy/selfhost/functions-main /functions/main
-find /functions -name '*.test.ts' -delete
-for config in /functions/*/deno.json; do
-  sed -i 's#\.\./\.\./\.\./packages/#../packages/#' "$config"
-done
+sh /app/publish-functions.sh /app /functions
 
 echo "migrate: done"

@@ -286,6 +286,11 @@ services:
       VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
       VAPID_SUBJECT: ${VAPID_SUBJECT:-}
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+      # public-join (guest join behind a CAPTCHA): the only origin it answers, and which CAPTCHA.
+      # Empty PUBLIC_JOIN means guests join directly and the function is not used.
+      PUBLIC_URL: ${PUBLIC_URL}
+      CAPTCHA_PROVIDER: ${PUBLIC_JOIN:-}
+      POW_SECRET: ${POW_SECRET:-}
     volumes:
       - functions:/home/deno/functions:ro
       - deno-cache:/root/.cache/deno
