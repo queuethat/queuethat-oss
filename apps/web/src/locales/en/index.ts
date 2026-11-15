@@ -1,3 +1,4 @@
+import type { ExtensionLocaleResources } from '../../extensions/types.ts';
 import account from './account.json';
 import admin from './admin.json';
 import adminNav from './admin-nav.json';
@@ -104,4 +105,5 @@ export const en = {
   eta,
 };
 
-export type Namespace = keyof typeof en;
+/** A namespace of this app's or, once a deployment declares them, of its extensions. */
+export type Namespace = keyof typeof en | keyof ExtensionLocaleResources;

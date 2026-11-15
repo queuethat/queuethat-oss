@@ -4,7 +4,8 @@ import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadNamespaces } from '../../../../lib/i18n.ts';
-import { logToCsv, type LogEntry } from './api.ts';
+import { logToCsv } from './api.ts';
+import { entry } from './testEntry.ts';
 import { IncidentLog } from './IncidentLog.tsx';
 
 const m = vi.hoisted(() => ({ rpc: vi.fn(), rows: [] as unknown[] }));
@@ -15,19 +16,6 @@ vi.mock('../../../../lib/supabase.ts', () => {
   };
   for (const method of ['select', 'order', 'eq', 'limit', 'is']) chain[method] = () => chain;
   return { supabase: { rpc: m.rpc, schema: () => ({ from: () => chain }) } };
-});
-
-const entry = (over: Partial<LogEntry>): LogEntry => ({
-  id: crypto.randomUUID(),
-  kind: 'data_exposure',
-  title: 'Tablet left unlocked',
-  description: null,
-  data_categories: ['contact'],
-  detected_at: '2026-11-09T00:00:00Z',
-  people_affected: null,
-  actions_taken: null,
-  regulator_notified: null,
-  ...over,
 });
 
 function setup() {
@@ -90,5 +78,12 @@ describe('IncidentLog', () => {
     expect(lines).toHaveLength(2);
     expect(lines[1]).toContain(`"'=HYPERLINK(""x"")"`);
     expect(lines[1]).toContain('"line, one"');
+  });
+
+  it('shows a notice the deployment sent as text, not as an editable description', async () => {
+    m.rows = [entry({ source: 'platform_notice', notice_body: 'We found a problem.' })];
+    setup();
+    expect((await screen.findByTestId('notice-text')).textContent).toBe('We found a problem.');
+    expect(screen.getAllByLabelText('What happened')).toHaveLength(1); // the report form's only
   });
 });

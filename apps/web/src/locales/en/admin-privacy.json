@@ -170,6 +170,7 @@
       "notAdvice": "Information, not advice. Recording an incident here does not notify a regulator or your guests; your privacy officer decides that.",
       "submit": "Report incident",
       "logged": "Added to your log.",
+      "reported": "Reported and added to your log.",
       "kind": {
         "unauthorized_access": "Unauthorized access",
         "data_exposure": "Data exposure",
@@ -183,11 +184,14 @@
         "detected": "Detected",
         "kind": "Kind",
         "title": "Title",
+        "source": "Source",
         "description": "What happened",
         "categories": "Data involved",
         "people": "People affected",
         "actions": "What you did",
-        "regulator": "Told"
+        "regulator": "Told",
+        "noticeSent": "Notice sent",
+        "acknowledged": "Confirmed read"
       }
     },
     "guestNotice": {

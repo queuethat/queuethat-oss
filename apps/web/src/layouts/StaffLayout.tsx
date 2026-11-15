@@ -36,7 +36,9 @@ export function StaffLayout({ area }: { area: 'staff' | 'admin' | 'onboarding' |
                 <MfaRequiredBanner />
                 <ExtensionBanners area={area} />
               </>
-            ) : null}
+            ) : (
+              <ExtensionBanners area="onboarding" />
+            )}
             <header className="flex flex-col gap-3 px-6 pt-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
               {/* Brand over the location, not beside it: side by side it pushed the one-row header past its
                   width at 1280 px and dropped Sign out to a second row. */}

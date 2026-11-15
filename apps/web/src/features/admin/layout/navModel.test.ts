@@ -275,4 +275,32 @@ describe('extension pages in the nav', () => {
   it('marks an extension page current when it is open', () => {
     expect(currentItemId(withPages('owner'), '/admin/x/billing')).toBe('x:billing');
   });
+
+  it('keeps a hidden page out of the sidebar, under the item it names, and drops pages not offered', () => {
+    const hiddenPage = {
+      path: 'billing',
+      load,
+      nav: {
+        group: 'account' as const,
+        icon: iconHome,
+        labelKey: 'x:billing',
+        hidden: true,
+        under: 'usage',
+      },
+    };
+    const groups = buildGroups({ role: 'owner', multiLocation: false }, label, group, group, [
+      hiddenPage,
+    ]);
+    expect(ids(groups)).toContain('x:billing');
+    expect(ids(sidebarGroups(groups))).not.toContain('x:billing');
+    expect(currentItemId(groups, '/admin/x/billing')).toBe('usage');
+    const notOffered = buildGroups(
+      { role: 'owner', multiLocation: false, extensionPages: new Set() },
+      label,
+      group,
+      group,
+      [hiddenPage],
+    );
+    expect(ids(notOffered)).not.toContain('x:billing');
+  });
 });

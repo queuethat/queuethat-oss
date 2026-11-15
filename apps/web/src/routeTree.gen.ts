@@ -28,6 +28,7 @@ import { Route as VRouteRouteImport } from './routes/v/route'
 import { Route as WRouteRouteImport } from './routes/w/route'
 import { Route as ATokenRouteImport } from './routes/a/$token'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminSplatRouteImport } from './routes/admin/$'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin/analytics'
 import { Route as AdminAppointmentsRouteImport } from './routes/admin/appointments'
 import { Route as AdminAvailabilityRouteImport } from './routes/admin/availability'
@@ -201,6 +202,11 @@ const ATokenRoute = ATokenRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminSplatRoute = AdminSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
@@ -622,6 +628,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/u': typeof URoute
   '/a/$token': typeof ATokenRoute
+  '/admin/$': typeof AdminSplatRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/availability': typeof AdminAvailabilityRoute
@@ -718,6 +725,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/u': typeof URoute
   '/a/$token': typeof ATokenRoute
+  '/admin/$': typeof AdminSplatRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/availability': typeof AdminAvailabilityRoute
@@ -819,6 +827,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/u': typeof URoute
   '/a/$token': typeof ATokenRoute
+  '/admin/$': typeof AdminSplatRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/availability': typeof AdminAvailabilityRoute
@@ -921,6 +930,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/u'
     | '/a/$token'
+    | '/admin/$'
     | '/admin/analytics'
     | '/admin/appointments'
     | '/admin/availability'
@@ -1017,6 +1027,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/u'
     | '/a/$token'
+    | '/admin/$'
     | '/admin/analytics'
     | '/admin/appointments'
     | '/admin/availability'
@@ -1117,6 +1128,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/u'
     | '/a/$token'
+    | '/admin/$'
     | '/admin/analytics'
     | '/admin/appointments'
     | '/admin/availability'
@@ -1355,6 +1367,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/$': {
+      id: '/admin/$'
+      path: '/$'
+      fullPath: '/admin/$'
+      preLoaderRoute: typeof AdminSplatRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/analytics': {
@@ -1925,6 +1944,7 @@ const ARouteRouteWithChildren =
   ARouteRoute._addFileChildren(ARouteRouteChildren)
 
 interface AdminRouteRouteChildren {
+  AdminSplatRoute: typeof AdminSplatRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminAppointmentsRoute: typeof AdminAppointmentsRoute
   AdminAvailabilityRoute: typeof AdminAvailabilityRoute
@@ -1986,6 +2006,7 @@ interface AdminRouteRouteChildren {
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminSplatRoute: AdminSplatRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminAppointmentsRoute: AdminAppointmentsRoute,
   AdminAvailabilityRoute: AdminAvailabilityRoute,

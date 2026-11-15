@@ -6,7 +6,9 @@ import {
   findAdminPage,
   hasSharedSender,
   installedExtensions,
+  redirectFor,
   slotLoader,
+  tabPagesFor,
 } from './index.ts';
 import { extensions } from './installed.ts';
 import type { WebExtensions } from './types.ts';
@@ -61,5 +63,40 @@ describe('web extensions', () => {
     expect(() => installedExtensions({ adminPages: [page], banners: [] })).toThrow(/bad path/);
     const dup = { path: 'a', load };
     expect(() => installedExtensions({ adminPages: [dup, dup], banners: [] })).toThrow(/duplicate/);
+  });
+
+  it('redirects an old admin address, and anything under it, to its page', () => {
+    const moved: WebExtensions = {
+      ...set,
+      redirects: [
+        { from: 'billing', to: 'billing' },
+        { from: 'settings/support', to: 'hidden-page' },
+      ],
+    };
+    expect(installedExtensions(moved)).toBe(moved);
+    expect(redirectFor('/admin/billing', moved)).toBe('/admin/x/billing');
+    expect(redirectFor('/admin/billing/', moved)).toBe('/admin/x/billing');
+    expect(redirectFor('/admin/settings/support/x', moved)).toBe('/admin/x/hidden-page');
+    expect(redirectFor('/admin/billings', moved)).toBeUndefined();
+    expect(redirectFor('/admin/settings', moved)).toBeUndefined();
+    expect(redirectFor('/admin/billing')).toBeUndefined();
+  });
+
+  it('rejects a redirect to no page, or from an extension address', () => {
+    const to = { ...set, redirects: [{ from: 'billing', to: 'nope' }] };
+    expect(() => installedExtensions(to)).toThrow(/no page/);
+    const from = { ...set, redirects: [{ from: 'x/billing', to: 'billing' }] };
+    expect(() => installedExtensions(from)).toThrow(/bad from/);
+  });
+
+  it('lists the pages that join a section', () => {
+    const tabbed: WebExtensions = {
+      adminPages: [{ path: 'billing', load, tab: { section: 'plan', labelKey: 'x:b' } }],
+      banners: [{ id: 'setup', areas: ['onboarding'], load }],
+    };
+    expect(tabPagesFor('plan', tabbed).map((p) => p.path)).toEqual(['billing']);
+    expect(tabPagesFor('privacy', tabbed)).toEqual([]);
+    expect(bannersFor('onboarding', tabbed).map((b) => b.id)).toEqual(['setup']);
+    expect(bannersFor('admin', tabbed)).toEqual([]);
   });
 });
