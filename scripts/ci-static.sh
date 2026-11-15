@@ -37,6 +37,11 @@ else
   echo "warning: local Supabase is not running; bundle size measured without the real anon key" >&2
 fi
 run pnpm build
+# A deployment that builds this tree with code of its own adds its checks here, in a file this
+# repository never ships, so this script stays the same in both.
+if [ -f scripts/ci-static.extra.sh ]; then
+  run bash scripts/ci-static.extra.sh
+fi
 
 if [ "${#failed[@]}" -gt 0 ]; then
   printf 'ci-static FAILED:\n' >&2

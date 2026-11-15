@@ -47,3 +47,29 @@ export function loadMatrix(names, read) {
   }
   return { actors, tables, globalTables, errors };
 }
+
+/** security-definer-allowlist.txt first, then each security-definer-allowlist.<name>.txt. */
+export function allowlistFiles(names) {
+  const extra = names.filter((n) => /^security-definer-allowlist\.[\w-]+\.txt$/.test(n)).sort();
+  return ['security-definer-allowlist.txt', ...extra];
+}
+
+/** Parses allowlist files ([name, text] pairs) into {name, anon}; returns problems in `errs`. */
+export function parseAllowlists(files, errs) {
+  const seen = new Map();
+  const out = [];
+  for (const [file, text] of files) {
+    for (const l of text
+      .split('\n')
+      .map((x) => x.replace(/#.*/, '').trim())
+      .filter(Boolean)) {
+      const [name, flag, ...rest] = l.split(/\s+/);
+      if (rest.length || (flag && flag !== 'anon') || !/^\w+\.\w+$/.test(name))
+        throw new Error(`Bad allowlist line in ${file}: "${l}"`);
+      if (seen.has(name)) errs.push(`${name}: in both ${seen.get(name)} and ${file}`);
+      seen.set(name, file);
+      out.push({ name, anon: flag === 'anon' });
+    }
+  }
+  return out;
+}

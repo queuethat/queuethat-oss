@@ -129,13 +129,20 @@ export interface WebExtensions {
    * choose it instead of its own provider account.
    */
   sharedSender?: boolean;
+  /**
+   * Help articles of the deployment's own, listed after this app's on the Help page. Each id needs
+   * `help.articles.<id>.title` and `.body` (a list of lines) in `admin-support`, from
+   * `localeOverrides`.
+   */
+  helpArticles?: string[];
   /** Old admin addresses that now open an extension page. */
   redirects?: ExtensionRedirect[];
   /**
-   * Strings the deployment changes in this app's own namespaces, per language and namespace, merged
-   * over the shipped file when that namespace loads (bundled ones: when the app starts). Return
-   * undefined for none. Use it for wording only: new strings belong in the deployment's own
-   * namespaces (`ExtensionLocaleResources`).
+   * Strings the deployment changes or adds in this app's own namespaces, per language and namespace,
+   * merged over the shipped file when that namespace loads (bundled ones: when the app starts).
+   * Return undefined for none. Use it for wording, and for the strings this app looks up by key on
+   * a deployment's behalf (nav and tab labels, `helpArticles`). Strings only the deployment's own
+   * components read belong in its own namespaces (`ExtensionLocaleResources`), which are typed.
    */
   localeOverrides?: (lng: string, ns: string) => Promise<Record<string, unknown> | undefined>;
 }

@@ -1,3 +1,4 @@
+import { installedExtensions } from '../../../extensions/index.ts';
 import { useTranslation } from '../../../lib/translation.tsx';
 
 /** Article ids, in reading order. Each has `help.articles.<id>.{title,body[]}` in `admin-support`. */
@@ -18,8 +19,15 @@ export const HELP_ANCHOR = 'help';
  * Short self-serve answers shown on the Help page. A contents list links to each article by
  * anchor; the text lives in the lazy `admin-support` namespace so no route or guest bytes are added.
  */
-export function HelpArticles() {
+export function HelpArticles({
+  extra = installedExtensions().helpArticles ?? [],
+}: {
+  /** A deployment's own articles, after these; their text comes with its wording. */
+  extra?: readonly string[];
+}) {
   const { t } = useTranslation('admin-support');
+  // A deployment's ids are not in this app's typed keys; their strings sit at the same paths.
+  const ids = [...HELP_ARTICLE_IDS, ...extra] as (typeof HELP_ARTICLE_IDS)[number][];
   return (
     <section className="flex flex-col gap-4" aria-labelledby="help-title" id={HELP_ANCHOR}>
       <h2 id="help-title" className="text-xl font-semibold">
@@ -28,7 +36,7 @@ export function HelpArticles() {
       <p>{t('help.intro')}</p>
       <nav aria-label={t('help.contents')}>
         <ul className="flex flex-col">
-          {HELP_ARTICLE_IDS.map((id) => (
+          {ids.map((id) => (
             <li key={id}>
               <a
                 href={`#help-${id}`}
@@ -40,7 +48,7 @@ export function HelpArticles() {
           ))}
         </ul>
       </nav>
-      {HELP_ARTICLE_IDS.map((id) => (
+      {ids.map((id) => (
         <article
           key={id}
           id={`help-${id}`}
