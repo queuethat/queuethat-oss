@@ -26,7 +26,7 @@ import {
   installedExtensions,
   type ExtensionAdminPage,
 } from '../../../extensions/index.ts';
-import { useVisibleExtensionPages } from '../../../extensions/visible.ts';
+import { visibleExtensionPages } from '../../../extensions/visible.ts';
 import type { en } from '../../../locales/en/index.ts';
 import { useCurrentLocation, useCurrentOrg } from '../../auth/current.ts';
 import type { SectionId } from '../tabs/sectionTabs.ts';
@@ -338,8 +338,7 @@ export function useNavFilter(): NavFilter {
   const org = useCurrentOrg();
   const role = org?.role;
   const { locations } = useCurrentLocation();
-  const extensionPages = useVisibleExtensionPages({ orgId: org?.id, role });
-  return { role, multiLocation: locations.length > 1, extensionPages };
+  return { role, multiLocation: locations.length > 1, extensionPages: visibleExtensionPages(role) };
 }
 
 /** The groups this member may see, translated. */

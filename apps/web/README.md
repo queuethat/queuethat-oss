@@ -25,7 +25,7 @@ first; these are the conventions specific to the web app.
   not a new file route: every file route adds bytes to the guest root chunk.
 
 - **Extensions**: a deployment can add admin pages (served at `/admin/x/<path>`, optionally with a
-  nav entry or as a tab of a tabbed section, offered to whom its `useVisible` hook says, and with
+  nav entry or as a tab of a tabbed section, offered to the `roles` it lists, and with
   `redirects` from old `/admin` addresses), banners for the staff, admin and onboarding areas, help
   articles, and its own strings (typed namespaces through `ExtensionLocaleResources`, wording over
   this app's through `localeOverrides`) without editing this app. It builds with

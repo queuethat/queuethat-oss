@@ -1,29 +1,24 @@
-import { renderHook } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type { WebExtensions } from './types.ts';
-import { useVisibleExtensionPages } from './visible.ts';
+import { visibleExtensionPages } from './visible.ts';
 
 const load = () => Promise.resolve({ default: () => null });
 
-describe('useVisibleExtensionPages', () => {
-  it('offers every page without a hook, and asks each hook with the member', () => {
-    const useVisible = vi.fn((who: { role: string | undefined }) => who.role === 'owner');
+describe('visibleExtensionPages', () => {
+  it('offers a page without roles to everyone, and one with roles only to those roles', () => {
     const set: WebExtensions = {
       adminPages: [
         { path: 'open', load },
-        { path: 'owners', load, useVisible },
+        { path: 'owners', load, roles: ['owner'] },
       ],
       banners: [],
     };
-    const owner = renderHook(() => useVisibleExtensionPages({ orgId: 'o', role: 'owner' }, set));
-    expect([...owner.result.current]).toEqual(['open', 'owners']);
-    expect(useVisible).toHaveBeenCalledWith({ orgId: 'o', role: 'owner' });
-    const staff = renderHook(() => useVisibleExtensionPages({ orgId: 'o', role: 'staff' }, set));
-    expect([...staff.result.current]).toEqual(['open']);
+    expect([...visibleExtensionPages('owner', set)]).toEqual(['open', 'owners']);
+    expect([...visibleExtensionPages('staff', set)]).toEqual(['open']);
+    expect([...visibleExtensionPages(undefined, set)]).toEqual(['open']);
   });
 
   it('offers nothing in this repository', () => {
-    const { result } = renderHook(() => useVisibleExtensionPages({ orgId: 'o', role: 'owner' }));
-    expect(result.current.size).toBe(0);
+    expect(visibleExtensionPages('owner').size).toBe(0);
   });
 });

@@ -35,11 +35,12 @@ export interface ExtensionAdminPage {
    */
   tab?: { section: ExtensionTabSection; labelKey: string; first?: boolean };
   /**
-   * Whether this member is offered the page (its nav entry and tab). A React hook, called on every
-   * admin render in a fixed order, so it may use queries. Unset: offered to everyone `nav` allows.
-   * It only hides links: the page itself must still handle a member who opens its URL directly.
+   * The roles offered the page (its nav entry and tab), for example `['owner']`. Unset: everyone
+   * `nav.adminOnly` allows. It only hides links: the page itself must still handle a member who
+   * opens its URL directly. (A plain list, not a hook: this module sits in every route's chunk, so
+   * it must not import data code.)
    */
-  useVisible?: (who: { orgId: string | undefined; role: string | undefined }) => boolean;
+  roles?: string[];
 }
 
 /** The admin sections that wear a tab bar (features/admin/tabs/sectionTabs.ts). */
@@ -119,6 +120,8 @@ export type ExtensionSlots = {
  * is a breaking change for every deployment that builds with extensions.
  */
 export interface WebExtensions {
+  // Keep the module that exports this light: the router imports it into every route's chunk, the
+  // guest pages' too. Load pages, banners, slots and strings with dynamic import().
   adminPages: ExtensionAdminPage[];
   banners: ExtensionBanner[];
   /** Components for the slots in ExtensionSlotProps. */
