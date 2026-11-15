@@ -191,6 +191,21 @@ Deno.test('a verified custom domain may call; other hosts, http and ports may no
   assert.equal(joins.length, 1);
 });
 
+Deno.test('custom-domain lookups are limited per network and refusals are not cached', async () => {
+  let calls = 0;
+  const { handler } = setup({
+    ipLimit: 1,
+    isCustomDomain: () => {
+      calls += 1;
+      return Promise.resolve(false);
+    },
+  });
+  for (let i = 0; i < 10; i++) {
+    assert.equal((await handler(post({}, { origin: `https://h${i}.example` }))).status, 403);
+  }
+  assert.equal(calls, 6, 'six lookups per network per window (ipLimit * 6), then none');
+});
+
 Deno.test('a failing custom-domain lookup refuses, and the public origin never needs one', async () => {
   const errors: string[] = [];
   const { handler } = setup({
