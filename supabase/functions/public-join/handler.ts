@@ -80,8 +80,13 @@ export interface PublicJoinDeps {
   requestPhoneCode(token: string, ip: string | null): Promise<{ state: string; resend_after: string | null }>;
   /** sha256(ip + daily salt), hex. */
   hashIp(ip: string): Promise<string>;
-  /** PUBLIC_URL: the only origin allowed to call. */
+  /** PUBLIC_URL: the app's own origin, always allowed to call. */
   publicUrl: string;
+  /**
+   * api.resolve_custom_domain with the service role: true when `host` is a verified custom domain
+   * of an active org, whose join pages (https only) may call too. Absent: PUBLIC_URL only.
+   */
+  isCustomDomain?(host: string): Promise<boolean>;
   /** The header the deployment's proxy sets with the real client address. Default x-real-ip. */
   clientIpHeader?: 'x-real-ip' | 'cf-connecting-ip';
   ipLimit?: number;
@@ -169,16 +174,48 @@ export function createPublicJoinHandler(deps: PublicJoinDeps): (req: Request) =>
   const codeLimit = deps.codeLimit ?? 5;
   const codeWindow = deps.codeWindowSeconds ?? 600;
   const now = deps.now ?? Date.now;
-  const allowedOrigin = new URL(deps.publicUrl).origin;
+  const appOrigin = new URL(deps.publicUrl).origin;
   const error = deps.error ?? (() => {});
+  // Verified custom domains change rarely; remember each verified one for a minute per instance.
+  // Refusals are not cached (random hosts would crowd out real ones); instead every lookup counts
+  // against a per-network limit, so unknown origins cannot drive unbounded database reads.
+  const domainCache = new Map<string, number>();
+
+  async function allowed(origin: string, network: () => Promise<string>): Promise<boolean> {
+    if (origin === appOrigin) return true;
+    if (!deps.isCustomDomain) return false;
+    let url: URL;
+    try {
+      url = new URL(origin);
+    } catch {
+      return false;
+    }
+    // An origin is scheme://host[:port]; anything else (path, plain http, a port) is not a join page.
+    if (url.protocol !== 'https:' || url.port !== '' || url.origin !== origin) return false;
+    const cachedAt = domainCache.get(url.hostname);
+    if (cachedAt !== undefined && now() - cachedAt < 60_000) return true;
+    if (!(await deps.hit(`origin:${await network()}`, ipLimit * 6, ipWindow))) return false;
+    let ok = false;
+    try {
+      ok = await deps.isCustomDomain(url.hostname);
+    } catch (cause) {
+      error('public-join custom domain check failed', cause);
+      return false;
+    }
+    if (ok) {
+      if (domainCache.size >= 1000) domainCache.clear();
+      domainCache.set(url.hostname, now());
+    }
+    return ok;
+  }
 
   const baseHeaders = (origin: string | null): Record<string, string> => ({
     'Content-Type': 'application/json',
     'Cache-Control': 'no-store',
     Vary: 'Origin',
-    ...(origin === allowedOrigin
+    ...(origin !== null
       ? {
-          'Access-Control-Allow-Origin': allowedOrigin,
+          'Access-Control-Allow-Origin': origin,
           'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
           'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
           'Access-Control-Expose-Headers': 'Retry-After',
@@ -191,7 +228,17 @@ export function createPublicJoinHandler(deps: PublicJoinDeps): (req: Request) =>
   }
 
   return async (req) => {
-    const origin = req.headers.get('origin');
+    // Only the header our own proxy sets is believed (as deployment_settings.client_ip_header);
+    // the others are the client's to write. Anything that is not an address counts as unknown.
+    const raw = req.headers.get(deps.clientIpHeader ?? 'x-real-ip')?.trim() ?? '';
+    const ip = isAddress(raw) ? raw : null;
+    let hashed: Promise<string> | null = null;
+    const network = () => (hashed ??= deps.hashIp(ip ?? 'unknown'));
+
+    const sent = req.headers.get('origin');
+    const permitted = sent === null || (await allowed(sent, network));
+    // CORS headers name only a permitted origin.
+    const origin = permitted ? sent : null;
     const json = (status: number, body: unknown, extra: Record<string, string> = {}) =>
       new Response(JSON.stringify(body), { status, headers: { ...baseHeaders(origin), ...extra } });
     const tooMany = (windowSeconds: number) =>
@@ -200,14 +247,10 @@ export function createPublicJoinHandler(deps: PublicJoinDeps): (req: Request) =>
     if (req.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: baseHeaders(origin) });
     }
-    if (origin !== null && origin !== allowedOrigin) return json(403, { error: 'forbidden' });
+    if (!permitted) return json(403, { error: 'forbidden' });
 
     const url = new URL(req.url);
-    // Only the header our own proxy sets is believed (as deployment_settings.client_ip_header);
-    // the others are the client's to write. Anything that is not an address counts as unknown.
-    const raw = req.headers.get(deps.clientIpHeader ?? 'x-real-ip')?.trim() ?? '';
-    const ip = isAddress(raw) ? raw : null;
-    const ipHash = await deps.hashIp(ip ?? 'unknown');
+    const ipHash = await network();
 
     if (req.method === 'GET' && url.pathname.endsWith('/challenge')) {
       if (!deps.captcha.issueChallenge) return json(404, { error: 'not_found' });

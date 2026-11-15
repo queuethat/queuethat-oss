@@ -15,7 +15,9 @@ POST /functions/v1/public-join               { queueId, serviceId?, name, phone?
 Answers: `200 { token, display_ticket, status }`; `400 invalid_input | captcha_failed`;
 `403 onsite_code_required | onsite_code_invalid | onsite_required | org_suspended | forbidden`; `404 not_found`;
 `409 queue_not_accepting | capacity_reached | too_many_active_visits`; `429 rate_limited` with
-`Retry-After`; `500 unknown`. Bodies over 4 KB (counted as they stream in), unknown fields and other origins are refused.
+`Retry-After`; `500 unknown`. Bodies over 4 KB (counted as they stream in), unknown fields and other origins are refused. Allowed origins are `PUBLIC_URL` and, over https
+on the default port, any verified custom domain of an active org (`api.resolve_custom_domain`,
+cached for a minute per instance), so join pages on a business's own domain work too.
 
 ## Turning the join page over to it
 
@@ -32,7 +34,7 @@ Unset keeps the direct RPC path (and the `join-pass` flow) until 2A-JN4. The CSP
 
 | Variable | Meaning |
 | --- | --- |
-| `PUBLIC_URL` | The join page's origin. The only origin CORS allows. |
+| `PUBLIC_URL` | The join page's origin. CORS allows it and verified custom domains. |
 | `CAPTCHA_PROVIDER` | `turnstile`, `pow` or `dev`. `dev` accepts everything and starts only when `ENVIRONMENT` is `local`, `development`, `dev` or `test` (unset or `production` is refused). |
 | `TURNSTILE_SECRET_KEY` | Turnstile only. siteverify has a 3 s timeout and fails closed. |
 | `POW_SECRET` | Proof of work only: HMAC key for challenges (use 32 random bytes). `POW_DIFFICULTY` sets the leading zero bits (default 16, about 1-2 s on a phone). |

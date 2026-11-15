@@ -3,8 +3,8 @@ import { demo } from '../fixtures/demo.ts';
 import { expect, signIn, test } from './fixtures.ts';
 import { supabaseEnv } from './support/env.ts';
 
-// O3 (#74). The report-only CSP must already pass on every screen, so enforcing it later
-// breaks nothing. Runs against the production build behind `vite preview` (which sends
+// O3 (#74), audit WEB-2. The enforced CSP must pass on every screen: a violation here is
+// something production blocks. Runs against the production build behind `vite preview` (which sends
 // public/_headers), never the dev server, whose injected inline styles would always fail.
 
 const previewUrl = process.env.E2E_PREVIEW_URL!;
@@ -68,9 +68,7 @@ for (const path of guestPaths) {
   test(`${path} raises no CSP violations`, async ({ page }) => {
     const report = await watchCsp(page);
     const response = await page.goto(`${previewUrl}${path}`, { waitUntil: 'networkidle' });
-    expect(response?.headers()['content-security-policy-report-only']).toContain(
-      "style-src 'self'",
-    );
+    expect(response?.headers()['content-security-policy']).toContain("style-src 'self'");
     expect(await report()).toEqual({ violations: [], consoleErrors: [] });
   });
 }

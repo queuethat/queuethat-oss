@@ -48,7 +48,7 @@ grep -q 'SUPABASE_URL: "http://two.test"' <<<"$cb" || bad "instance B does not t
 grep -q "$anon" <<<"$ca" || bad "config.js lacks the anon key"
 
 headers=$(curl -fsI "http://127.0.0.1:$(port qm-web-a)/v/abc")
-grep -qi '^content-security-policy-report-only:.*script-src .self. https://challenges.cloudflare.com https://js.stripe.com;' <<<"$headers" || bad "no script-src without unsafe-inline in the CSP"
+grep -qi '^content-security-policy:.*script-src .self. https://challenges.cloudflare.com https://js.stripe.com https://\*.js.stripe.com;' <<<"$headers" || bad "no script-src without unsafe-inline in the CSP"
 grep -qi "unsafe-inline" <<<"$headers" && bad "the CSP allows unsafe-inline"
 grep -qi 'connect-src .self. http://one.test ws://one.test' <<<"$headers" || bad "the CSP does not name this install's API origin"
 curl -fs "http://127.0.0.1:$(port qm-web-a)/v/abc" | grep -Eq '<script(\s[^>]*)?>[^<]' && bad "index.html has an inline script"

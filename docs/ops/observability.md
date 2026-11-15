@@ -25,9 +25,9 @@ at build time. Without it, nothing is sent and the SDK is never downloaded.
   part of the guest-route JS budget, and errors thrown before it loads are reported once it
   does.
 - **CSP.** `connect-src` allows `https://*.sentry.io` in `apps/web/public/_headers` and
-  `deploy/selfhost/Caddyfile`. A self-hosted GlitchTip needs its origin added to both. When the
-  CSP moves from report-only to enforced, narrow it to the DSN's own ingest host (for example
-  `https://o123.ingest.us.sentry.io`).
+  `deploy/selfhost/Caddyfile`. A self-hosted GlitchTip needs its origin added to both. The CSP is
+  enforced, so a DSN on another host is blocked until it is added. Narrowing it to the DSN's own
+  ingest host (for example `https://o123.ingest.us.sentry.io`) is a follow-up (audit WEB-3).
 
 ### Setup checklist
 

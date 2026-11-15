@@ -61,18 +61,48 @@ export function headersForPath(rules: HeaderRule[], path: string): Record<string
 }
 
 /**
- * Makes `vite preview` send the headers from `public/_headers`, so what we test locally is
- * what Cloudflare Pages serves. Not applied to the dev server, whose HMR client needs
- * inline scripts and a websocket to itself.
+ * Adds a local API to the CSP's connect-src and img-src when it is plain http on a loopback
+ * host, the local Supabase stack that e2e runs `vite preview` against. Any other API URL leaves
+ * the headers as the file states them, so a preview of a real deployment sends the real policy.
  */
-export function staticHeaders(file: URL): Plugin {
+export function allowLocalApi(
+  headers: Record<string, string>,
+  apiUrl: string | undefined,
+): Record<string, string> {
+  let api: URL;
+  try {
+    api = new URL(apiUrl ?? '');
+  } catch {
+    return headers;
+  }
+  if (api.protocol !== 'http:' || !['127.0.0.1', 'localhost', '[::1]'].includes(api.hostname)) {
+    return headers;
+  }
+  const csp = headers['Content-Security-Policy'];
+  if (!csp) return headers;
+  const ws = api.origin.replace(/^http/, 'ws');
+  return {
+    ...headers,
+    'Content-Security-Policy': csp
+      .replace(/connect-src ([^;]*)/, `connect-src $1 ${api.origin} ${ws}`)
+      .replace(/img-src ([^;]*)/, `img-src $1 ${api.origin}`),
+  };
+}
+
+/**
+ * Makes `vite preview` send the headers from `public/_headers`, so what we test locally is
+ * what Cloudflare Pages serves, apart from allowLocalApi for the local stack. Not applied to
+ * the dev server, whose HMR client needs inline scripts and a websocket to itself.
+ */
+export function staticHeaders(file: URL, apiUrl?: string): Plugin {
   return {
     name: 'qm-static-headers',
     configurePreviewServer(server) {
       const rules = parseHeadersFile(readFileSync(file, 'utf8'));
       server.middlewares.use((req, res, next) => {
         const path = new URL(req.url ?? '/', 'http://localhost').pathname;
-        for (const [name, value] of Object.entries(headersForPath(rules, path))) {
+        const headers = allowLocalApi(headersForPath(rules, path), apiUrl);
+        for (const [name, value] of Object.entries(headers)) {
           res.setHeader(name, value);
         }
         next();

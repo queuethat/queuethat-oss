@@ -71,6 +71,11 @@ export function supabaseDeps(createClient: CreateClient, env: PublicJoinEnv): Pu
     captcha: buildVerifier(env, hit),
     hit,
     publicUrl: env.publicUrl,
+    async isCustomDomain(host) {
+      const { data, error } = await admin.schema('api').rpc('resolve_custom_domain', { p_host: host });
+      if (error) throw new Error(error.message);
+      return typeof data === 'string' && data !== '';
+    },
     clientIpHeader: env.clientIpHeader,
     ipLimit: env.ipLimit,
     ipWindowSeconds: env.ipWindowSeconds,

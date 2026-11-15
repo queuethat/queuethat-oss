@@ -240,7 +240,7 @@ Concurrency: mutating RPCs take `p_idempotency_key`; visit transitions also take
 
 **Edge Functions.** Each declares `auth: jwt | public | webhook` in a manifest; CI fails on `--no-verify-jwt` for anything not marked `public` or `webhook`. Logs redact E.164 numbers and emails.
 
-**Headers.** CSP without inline scripts (report-only during the pilot), HSTS, `frame-ancestors 'none'` except a future widget route, `nosniff`, `no-referrer` on guest routes.
+**Headers.** CSP without inline scripts (enforced; report-only during the pilot), HSTS, `frame-ancestors 'none'` except a future widget route, `nosniff`, `no-referrer` on guest routes.
 
 ## 6. Privacy and compliance
 
