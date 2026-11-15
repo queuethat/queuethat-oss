@@ -13,7 +13,7 @@ export default defineConfig({
     tanstackRouter({ target: 'react', autoCodeSplitting: true }),
     react(),
     tailwindcss(),
-    staticHeaders(new URL('./public/_headers', import.meta.url)),
+    staticHeaders(new URL('./public/_headers', import.meta.url), process.env.VITE_SUPABASE_URL),
     appVersion(),
     // O1 (#72). Custom service worker (src/sw.ts) so the push handler (N5) lives in the same file.
     // features/pwa registers the worker itself and decides per tab when a waiting version applies.
