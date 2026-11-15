@@ -1,4 +1,5 @@
 import type { i18n as I18n } from 'i18next';
+import { extensions } from '../extensions/installed.ts';
 import { createI18n } from './i18n-core.ts';
 import common from '../locales/en/common.json';
 import display from '../locales/en/display.json';
@@ -28,8 +29,37 @@ const i18next = createI18n({
   // The join and status strings answer `t('join.…')` and `t('status.…')` of the `guest` namespace.
   fallbackNS: ['guest-join', 'guest-status'],
   resources: bundled,
-  load: async (lng, ns) => (await lazy[`../locales/${lng}/${ns}.json`]?.())?.default,
+  load: async (lng, ns) => {
+    const shipped = (await lazy[`../locales/${lng}/${ns}.json`]?.())?.default;
+    const changed = await extensions.localeOverrides?.(lng, ns);
+    return changed ? deepMerge(shipped ?? {}, changed) : shipped;
+  },
 }) as unknown as I18n;
+
+/** `over` laid onto `base`, nested objects merged; neither is changed. */
+export function deepMerge(
+  base: Record<string, unknown>,
+  over: Record<string, unknown>,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = { ...base };
+  for (const [key, value] of Object.entries(over)) {
+    const was = out[key];
+    out[key] =
+      value && typeof value === 'object' && !Array.isArray(value) && was && typeof was === 'object'
+        ? deepMerge(was as Record<string, unknown>, value as Record<string, unknown>)
+        : value;
+  }
+  return out;
+}
+
+// A deployment's wording for the bundled namespaces arrives once the app has started.
+if (extensions.localeOverrides) {
+  for (const ns of Object.keys(bundled)) {
+    void extensions.localeOverrides('en', ns).then((changed) => {
+      if (changed) i18next.addResourceBundle('en', ns, changed, true, true);
+    });
+  }
+}
 
 /**
  * Loads an area's namespaces before its screens render. Call it from the area's layout route

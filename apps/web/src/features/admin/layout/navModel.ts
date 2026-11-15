@@ -26,6 +26,7 @@ import {
   installedExtensions,
   type ExtensionAdminPage,
 } from '../../../extensions/index.ts';
+import { visibleExtensionPages } from '../../../extensions/visible.ts';
 import type { en } from '../../../locales/en/index.ts';
 import { useCurrentLocation, useCurrentOrg } from '../../auth/current.ts';
 import type { SectionId } from '../tabs/sectionTabs.ts';
@@ -246,6 +247,8 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
 export interface NavFilter {
   role: string | undefined;
   multiLocation: boolean;
+  /** Installed extension pages this member is offered; unset offers them all. */
+  extensionPages?: ReadonlySet<string>;
 }
 
 /**
@@ -263,7 +266,10 @@ export function buildGroups(
   const admin = filter.role === 'owner' || filter.role === 'admin';
   const extra = (group: GroupId): AdminNavItem[] =>
     extensionPages.flatMap((p) =>
-      p.nav && p.nav.group === group && (!p.nav.adminOnly || admin)
+      p.nav &&
+      p.nav.group === group &&
+      (!p.nav.adminOnly || admin) &&
+      (!filter.extensionPages || filter.extensionPages.has(p.path))
         ? [
             {
               id: `x:${p.path}`,
@@ -271,6 +277,8 @@ export function buildGroups(
               to: adminPageUrl(p) as LinkProps['to'],
               icon: p.nav.icon,
               label: extensionLabel(p.nav.labelKey),
+              hidden: p.nav.hidden,
+              under: p.nav.under,
             },
           ]
         : [],
@@ -325,12 +333,12 @@ export function currentItemId(
   return (shown?.find((i) => i.id === best.item.under) ?? shown?.[0])?.id;
 }
 
-/** What this member's role and location count allow them to see. */
+/** What this member's role, location count and the installed extensions allow them to see. */
 export function useNavFilter(): NavFilter {
   const org = useCurrentOrg();
   const role = org?.role;
   const { locations } = useCurrentLocation();
-  return { role, multiLocation: locations.length > 1 };
+  return { role, multiLocation: locations.length > 1, extensionPages: visibleExtensionPages(role) };
 }
 
 /** The groups this member may see, translated. */

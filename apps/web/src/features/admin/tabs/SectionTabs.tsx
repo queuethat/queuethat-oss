@@ -28,7 +28,10 @@ function TabLinks({
   current: string | undefined;
   quiet?: boolean;
 }) {
-  const { t } = useTranslation('admin-nav');
+  const { t, i18n } = useTranslation('admin-nav');
+  // An extension tab's label is in the extension's own namespace (`ns:key`).
+  const tabLabel = (tab: SectionTab) =>
+    tab.extension ? (i18n.t as (key: string) => string)(tab.labelKey) : t(tab.labelKey);
   return (
     <nav aria-label={label}>
       <ul className="flex gap-2 overflow-x-auto">
@@ -42,7 +45,7 @@ function TabLinks({
                 aria-current={selected ? 'page' : 'false'}
                 className={`${BASE} ${LOOK[quiet ? 'sub' : 'tab'][selected ? 'on' : 'off']}`}
               >
-                {t(tab.labelKey)}
+                {tabLabel(tab)}
               </Link>
             </li>
           );
@@ -64,7 +67,11 @@ export function SectionFrame({ children }: { children: ReactNode }) {
   const section = sectionAt(pathname);
   if (!section) return children;
   const admin = filter.role === 'owner' || filter.role === 'admin';
-  const tabs = section.tabs({ admin, multiLocation: filter.multiLocation });
+  const tabs = section.tabs({
+    admin,
+    multiLocation: filter.multiLocation,
+    extensionPages: filter.extensionPages,
+  });
   const current = currentTabId(tabs, pathname);
   return (
     <div className={`mx-auto flex ${section.width} flex-col gap-6`}>

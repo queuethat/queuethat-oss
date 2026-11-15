@@ -1,6 +1,8 @@
 import { Button, Input, Select, Skeleton, Textarea, useToast } from '@qm/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
+import { ExtensionSlot } from '../../../../extensions/ExtensionSlot.tsx';
+import { slotLoader } from '../../../../extensions/index.ts';
 import { useTranslation } from '../../../../lib/translation.tsx';
 import { GuestNoticePanel } from './guest-notice/GuestNoticePanel.tsx';
 import {
@@ -16,16 +18,21 @@ const HEADERS = [
   'detected',
   'kind',
   'title',
+  'source',
   'description',
   'categories',
   'people',
   'actions',
   'regulator',
+  'noticeSent',
+  'acknowledged',
 ] as const;
 
 /**
  * The business's own incident log (C9, #1275): "Report a suspected incident" adds an entry, and
- * the business records what it did about it. The export is the 24-month record. Information only: nothing here files a report with a regulator.
+ * the business records what it did about it. The export is the 24-month record. Information only:
+ * nothing here files a report with a regulator. A deployment can add entries of its own (a notice
+ * it sent: `notice_body` set) and per-entry actions through the `incidents.entry` slot.
  */
 export function IncidentLog({
   orgId,
@@ -138,13 +145,22 @@ function Entry({
         {when.format(new Date(entry.detected_at))} ·{' '}
         {t(`privacy.incidents.kind.${entry.kind as 'other'}`)}
       </p>
+      {entry.notice_body ? (
+        // A notice the deployment sent: its text is the sender's, so it is shown, not edited.
+        <p className="whitespace-pre-wrap" data-testid="notice-text">
+          {entry.notice_body}
+        </p>
+      ) : null}
+      <ExtensionSlot name="incidents.entry" props={{ orgId, entry, canEdit }} />
       {canEdit ? (
         <form className="flex flex-col gap-2" onSubmit={save}>
-          <Textarea
-            label={t('privacy.incidents.description')}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
+          {entry.notice_body ? null : (
+            <Textarea
+              label={t('privacy.incidents.description')}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          )}
           <Input
             label={t('privacy.incidents.people')}
             type="number"
@@ -186,15 +202,19 @@ function Report({ orgId }: { orgId: string }) {
   const [kind, setKind] = useState<string>(KINDS[0]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  // Only a deployment that installs the report slot sends reports anywhere; it starts on there.
+  const [notify, setNotify] = useState(() => slotLoader('incidents.report') !== undefined);
   const submit = (event: FormEvent) => {
     event.preventDefault();
     report.mutate(
-      { kind, title, description },
+      { kind, title, description, notify },
       {
         onSuccess: () => {
           setTitle('');
           setDescription('');
-          toast.show({ message: t('privacy.incidents.logged') });
+          toast.show({
+            message: t(notify ? 'privacy.incidents.reported' : 'privacy.incidents.logged'),
+          });
         },
       },
     );
@@ -227,6 +247,7 @@ function Report({ orgId }: { orgId: string }) {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
+      <ExtensionSlot name="incidents.report" props={{ notify, setNotify }} />
       <p className="text-muted">{t('privacy.incidents.notAdvice')}</p>
       <div>
         <Button type="submit" disabled={!title.trim() || report.isPending}>

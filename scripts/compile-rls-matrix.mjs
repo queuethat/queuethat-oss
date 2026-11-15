@@ -6,11 +6,13 @@
 //   actors        extra actors, set up by its own tests.create_world_extensions()
 //   global_tables, tables   as in matrix.yaml; a table already listed is an error
 //   allow_extra   { <table>: { <op>: [actors] } } added to a table listed elsewhere
+// Its SECURITY DEFINER functions go the same way: security-definer-allowlist.<name>.txt next to
+// security-definer-allowlist.txt, same format; a function listed twice is an error.
 //
 //   supabase/tests/helpers/_generated.psql   allowlists the structural tests read
 //   supabase/tests/rls/matrix.test.sql       one assertion per table x actor x operation
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { loadMatrix } from './rls-matrix.mjs';
+import { allowlistFiles, loadMatrix, parseAllowlists } from './rls-matrix.mjs';
 
 const root = new URL('../supabase/', import.meta.url).pathname;
 const OPS = ['select', 'insert', 'update', 'delete'];
@@ -22,18 +24,12 @@ const loaded = loadMatrix(matrixFiles, (n) => readFileSync(`${root}tests/rls/${n
 const { tables, globalTables } = loaded;
 const ACTORS = loaded.actors;
 
-const allowlist = readFileSync(`${root}security-definer-allowlist.txt`, 'utf8')
-  .split('\n')
-  .map((l) => l.replace(/#.*/, '').trim())
-  .filter(Boolean)
-  .map((l) => {
-    const [name, flag, ...rest] = l.split(/\s+/);
-    if (rest.length || (flag && flag !== 'anon') || !/^\w+\.\w+$/.test(name))
-      throw new Error(`Bad allowlist line: "${l}"`);
-    return { name, anon: flag === 'anon' };
-  });
-
 const errors = [...loaded.errors];
+
+const allowlist = parseAllowlists(
+  allowlistFiles(readdirSync(root)).map((f) => [f, readFileSync(`${root}${f}`, 'utf8')]),
+  errors,
+);
 const lit = (s) => `'${String(s).replaceAll("'", "''")}'`;
 const arr = (xs) => (xs.length ? `array[${xs.map(lit).join(', ')}]::text[]` : `'{}'::text[]`);
 

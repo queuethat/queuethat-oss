@@ -8,7 +8,7 @@ import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import axe from 'axe-core';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { loadNamespaces } from '../../../lib/i18n.ts';
+import i18n, { loadNamespaces } from '../../../lib/i18n.ts';
 import { HELP_ARTICLE_IDS, HelpArticles } from './HelpArticles.tsx';
 import { HelpLink } from './HelpLink.tsx';
 
@@ -25,6 +25,25 @@ async function view(ui: React.ReactNode) {
 }
 
 describe('HelpArticles', () => {
+  it("lists a deployment's own articles after these, with its strings", async () => {
+    i18n.addResourceBundle(
+      'en',
+      'admin-support',
+      {
+        help: { articles: { billing: { title: 'Billing and plans', body: ['Open Billing.'] } } },
+      },
+      true,
+      true,
+    );
+    await view(<HelpArticles extra={['billing']} />);
+    const contents = await screen.findByRole('navigation', { name: 'Articles' });
+    const links = within(contents).getAllByRole('link');
+    expect(links).toHaveLength(8);
+    expect(links.at(-1)?.textContent).toBe('Billing and plans');
+    expect(links.at(-1)?.getAttribute('href')).toBe('#help-billing');
+    expect(screen.getByRole('heading', { name: 'Billing and plans' })).toBeTruthy();
+  });
+
   it('renders the seven articles, each with 5 to 8 lines, linked from a contents list', async () => {
     await view(<HelpArticles />);
     expect(HELP_ARTICLE_IDS).toHaveLength(7);

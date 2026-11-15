@@ -84,3 +84,40 @@ describe('sectionAt', () => {
     expect(sectionAt('/admin/help')).toBeUndefined();
   });
 });
+
+describe('extension pages as tabs', () => {
+  const load = () => Promise.resolve({ default: () => null });
+  const pages = [
+    {
+      path: 'billing',
+      load,
+      tab: { section: 'plan' as const, labelKey: 'x:billing', first: true },
+    },
+    { path: 'extra', load, tab: { section: 'plan' as const, labelKey: 'x:extra' } },
+  ];
+
+  it('adds none in this repository', () => {
+    expect(ids(tabsAt('/admin/usage'))).toEqual(['usage']);
+    expect(sectionAt('/admin/x/billing')).toBeUndefined();
+  });
+
+  it('puts a first page before the section tabs and the rest after, and wears the bar', () => {
+    const section = sectionAt('/admin/x/billing', pages);
+    expect(section?.id).toBe('plan');
+    const tabs = section!.tabs(access());
+    expect(ids(tabs)).toEqual(['x:billing', 'usage', 'x:extra']);
+    expect(tabs[0]).toMatchObject({
+      to: '/admin/x/billing',
+      labelKey: 'x:billing',
+      extension: true,
+    });
+    expect(currentTabId(tabs, '/admin/x/billing')).toBe('x:billing');
+  });
+
+  it('leaves out a page the member is not offered', () => {
+    const tabs = sectionAt('/admin/usage', pages)!.tabs(
+      access({ extensionPages: new Set(['extra']) }),
+    );
+    expect(ids(tabs)).toEqual(['usage', 'x:extra']);
+  });
+});

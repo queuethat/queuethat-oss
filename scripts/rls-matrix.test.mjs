@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BASE_ACTORS, loadMatrix } from './rls-matrix.mjs';
+import { allowlistFiles, BASE_ACTORS, loadMatrix, parseAllowlists } from './rls-matrix.mjs';
 
 const files = {
   'matrix.yaml': `
@@ -71,5 +71,38 @@ allow_extra:
       'matrix.z.yaml: app.visits is already listed; use allow_extra to add actors',
       'matrix.z.yaml: allow_extra names app.nope, which no matrix lists',
     ]);
+  });
+});
+
+describe('security definer allowlists', () => {
+  it('reads the main list first, then each deployment list, ignoring other files', () => {
+    expect(
+      allowlistFiles([
+        'config.toml',
+        'security-definer-allowlist.hosted.txt',
+        'security-definer-allowlist.txt',
+        'security-definer-allowlist.txt.bak',
+      ]),
+    ).toEqual(['security-definer-allowlist.txt', 'security-definer-allowlist.hosted.txt']);
+  });
+
+  it('joins the lists and reports a function listed in two', () => {
+    const errs = [];
+    const list = parseAllowlists(
+      [
+        ['security-definer-allowlist.txt', 'api.join_queue anon\n# note\napi.a\n'],
+        ['security-definer-allowlist.hosted.txt', 'api.platform_x\napi.a\n'],
+      ],
+      errs,
+    );
+    expect(list.map((x) => x.name)).toEqual(['api.join_queue', 'api.a', 'api.platform_x', 'api.a']);
+    expect(list[0].anon).toBe(true);
+    expect(errs).toEqual([
+      'api.a: in both security-definer-allowlist.txt and security-definer-allowlist.hosted.txt',
+    ]);
+  });
+
+  it('rejects a malformed line, naming its file', () => {
+    expect(() => parseAllowlists([['x.txt', 'api.a guest']], [])).toThrow(/x.txt/);
   });
 });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createI18n } from './i18n-core.ts';
-import i18n, { loadNamespaces, syncDocumentLanguage } from './i18n.ts';
+import i18n, { deepMerge, loadNamespaces, syncDocumentLanguage } from './i18n.ts';
 
 describe('i18n', () => {
   it('t() resolves a key from a namespace', () => {
@@ -86,5 +86,18 @@ describe('i18n-core rules shared with i18next', () => {
     expect(i.t('hi')).toBe('Hola');
     expect(i.t('n.a')).toBe('A');
     expect(i.getFixedT('en')('hi', { name: 'B' })).toBe('Hi B, {{ missing }}');
+  });
+});
+
+describe('deepMerge (a deployment’s wording over a shipped namespace)', () => {
+  it('replaces leaves, merges nested objects and changes neither input', () => {
+    const base = { a: 'one', nested: { b: 'two', c: 'three' } };
+    const over = { nested: { c: 'THREE' }, d: 'four' };
+    expect(deepMerge(base, over)).toEqual({
+      a: 'one',
+      nested: { b: 'two', c: 'THREE' },
+      d: 'four',
+    });
+    expect(base.nested.c).toBe('three');
   });
 });

@@ -6,21 +6,7 @@ import { supabase } from '../../../../lib/supabase.ts';
 // #1275 (C9): the business's incident log. Reads are plain RLS selects (admins and owners); every
 // write goes through an RPC.
 
-const COLUMNS =
-  'id, kind, title, description, data_categories, detected_at, people_affected, actions_taken, regulator_notified';
-
-export type LogEntry = Pick<
-  Database['app']['Tables']['org_incident_log']['Row'],
-  | 'id'
-  | 'kind'
-  | 'title'
-  | 'description'
-  | 'data_categories'
-  | 'detected_at'
-  | 'people_affected'
-  | 'actions_taken'
-  | 'regulator_notified'
->;
+export type LogEntry = Database['app']['Tables']['org_incident_log']['Row'];
 
 export const KINDS = [
   'unauthorized_access',
@@ -42,7 +28,7 @@ export const incidentLogQuery = (orgId: string) =>
       const { data, error } = await supabase
         .schema('app')
         .from('org_incident_log')
-        .select(COLUMNS)
+        .select('*')
         .eq('org_id', orgId)
         .order('detected_at', { ascending: false })
         .limit(500);
@@ -79,6 +65,11 @@ export interface Report {
   kind: string;
   title: string;
   description: string;
+  /**
+   * Passed to `report_incident(p_notify_platform)`. This app never sends a report anywhere; a
+   * deployment that does lets the business choose through the `incidents.report` slot.
+   */
+  notify: boolean;
 }
 
 /** Files a suspected incident as an entry in the business's own log. */
@@ -91,8 +82,7 @@ export function useReportIncident(orgId: string) {
         p_kind: r.kind,
         p_title: r.title,
         p_description: r.description,
-        // The log is the business's own: nothing is sent to anyone else.
-        p_notify_platform: false,
+        p_notify_platform: r.notify,
         p_idempotency_key: crypto.randomUUID(),
       });
       if (error) throw new Error(errorCode(error));
@@ -115,11 +105,14 @@ export function logToCsv(headers: string[], rows: LogEntry[]): string {
       r.detected_at,
       r.kind,
       r.title,
+      r.source,
       r.description,
       r.data_categories.join(';'),
       r.people_affected,
       r.actions_taken,
       r.regulator_notified,
+      r.notice_sent_at,
+      r.acknowledged_at,
     ]
       .map(field)
       .join(','),

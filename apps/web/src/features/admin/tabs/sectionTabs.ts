@@ -1,9 +1,15 @@
 import type { LinkProps } from '@tanstack/react-router';
+import {
+  adminPageUrl,
+  installedExtensions,
+  type ExtensionAdminPage,
+  type ExtensionTabSection,
+} from '../../../extensions/index.ts';
 import type { en } from '../../../locales/en/index.ts';
 
 type ItemKey = keyof (typeof en)['admin-nav']['items'];
 
-export type SectionId = 'insights' | 'connections' | 'developers' | 'privacy' | 'plan';
+export type SectionId = ExtensionTabSection;
 
 export type TabLabelKey =
   `items.${ItemKey}` | 'insights.reports' | 'insights.scheduled' | 'insights.compare';
@@ -14,11 +20,15 @@ export interface SectionTab {
   /** The tab is current for this path and everything under it. */
   prefix: string;
   labelKey: TabLabelKey;
+  /** An extension page's tab: `labelKey` is in the extension's own namespace (`ns:key`). */
+  extension?: boolean;
 }
 
 export interface TabAccess {
   admin: boolean;
   multiLocation: boolean;
+  /** Installed extension pages this member is offered; unset offers them all. */
+  extensionPages?: ReadonlySet<string>;
 }
 
 interface Section {
@@ -122,9 +132,39 @@ const SECTIONS: Section[] = [
 const under = (pathname: string, prefix: string) =>
   pathname === prefix || pathname.startsWith(`${prefix}/`);
 
-/** The section whose pages hold `pathname`, if any. */
-export function sectionAt(pathname: string): Section | undefined {
-  return SECTIONS.find((s) => s.prefixes.some((prefix) => under(pathname, prefix)));
+/** A section with the installed extension pages that join it (`ExtensionAdminPage.tab`). */
+function withExtensions(section: Section, pages: ExtensionAdminPage[]): Section {
+  const own = pages.filter((p) => p.tab?.section === section.id);
+  if (own.length === 0) return section;
+  const asTab = (p: ExtensionAdminPage): SectionTab => ({
+    id: `x:${p.path}`,
+    to: adminPageUrl(p) as LinkProps['to'],
+    prefix: adminPageUrl(p),
+    labelKey: p.tab!.labelKey as TabLabelKey,
+    extension: true,
+  });
+  return {
+    ...section,
+    prefixes: [...section.prefixes, ...own.map(adminPageUrl)],
+    tabs: (access) => {
+      const shown = own.filter((p) => !access.extensionPages || access.extensionPages.has(p.path));
+      return [
+        ...shown.filter((p) => p.tab!.first).map(asTab),
+        ...section.tabs(access),
+        ...shown.filter((p) => !p.tab!.first).map(asTab),
+      ];
+    },
+  };
+}
+
+/** The section whose pages hold `pathname`, if any, with its extension tabs. */
+export function sectionAt(
+  pathname: string,
+  pages: ExtensionAdminPage[] = installedExtensions().adminPages,
+): Section | undefined {
+  return SECTIONS.map((s) => withExtensions(s, pages)).find((s) =>
+    s.prefixes.some((prefix) => under(pathname, prefix)),
+  );
 }
 
 /** The three report pages: scheduled ones are for admins, the others for everyone. */
