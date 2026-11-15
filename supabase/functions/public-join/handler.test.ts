@@ -165,6 +165,43 @@ Deno.test('preflight allows only the public origin', async () => {
   assert.equal(ok.headers.get('access-control-allow-origin'), ORIGIN);
 });
 
+Deno.test('a verified custom domain may call; other hosts, http and ports may not', async () => {
+  const asked: string[] = [];
+  let calls = 0;
+  const { handler, joins } = setup({
+    isCustomDomain: (host) => {
+      asked.push(host);
+      calls += 1;
+      return Promise.resolve(host === 'join.barber.example');
+    },
+  });
+  const custom = 'https://join.barber.example';
+  const pre = await handler(new Request('https://x/', { method: 'OPTIONS', headers: { origin: custom } }));
+  assert.equal(pre.headers.get('access-control-allow-origin'), custom);
+  const res = await handler(post({}, { origin: custom }));
+  assert.equal(res.status, 200);
+  assert.equal(res.headers.get('access-control-allow-origin'), custom);
+  assert.equal(calls, 1, 'the answer is cached');
+  for (const origin of ['https://evil.example', 'http://join.barber.example', 'https://join.barber.example:8443']) {
+    const refused = await handler(post({}, { origin }));
+    assert.equal(refused.status, 403, origin);
+    assert.equal(refused.headers.get('access-control-allow-origin'), null, origin);
+  }
+  assert.deepEqual(asked, ['join.barber.example', 'evil.example']);
+  assert.equal(joins.length, 1);
+});
+
+Deno.test('a failing custom-domain lookup refuses, and the public origin never needs one', async () => {
+  const errors: string[] = [];
+  const { handler } = setup({
+    isCustomDomain: () => Promise.reject(new Error('db down')),
+    error: (line) => errors.push(line),
+  });
+  assert.equal((await handler(post({}, { origin: 'https://join.barber.example' }))).status, 403);
+  assert.equal((await handler(post())).status, 200);
+  assert.equal(errors.length, 1);
+});
+
 Deno.test('GET /challenge issues a proof-of-work challenge only for the pow provider', async () => {
   const pow = powVerifier({ secret: 's', difficulty: 8 });
   const { handler } = setup({}, pow);
