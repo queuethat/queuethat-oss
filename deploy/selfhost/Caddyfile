@@ -7,8 +7,7 @@
 # entrypoint sets SITE_ADDRESS, QM_API_ORIGIN and QM_API_WS_ORIGIN from PUBLIC_URL.
 (security_headers) {
 	header {
-		Content-Security-Policy "frame-ancestors 'none'; object-src 'none'; base-uri 'self'"
-		Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://js.stripe.com; frame-src https://challenges.cloudflare.com https://js.stripe.com https://hooks.stripe.com; style-src 'self'; img-src 'self' data: blob: {$QM_API_ORIGIN}; font-src 'self'; connect-src 'self' {$QM_API_ORIGIN} {$QM_API_WS_ORIGIN} https://*.sentry.io https://api.stripe.com; worker-src 'self'; manifest-src 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'"
+		Content-Security-Policy "default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://js.stripe.com https://*.js.stripe.com; frame-src https://challenges.cloudflare.com https://js.stripe.com https://*.js.stripe.com https://hooks.stripe.com; style-src 'self'; img-src 'self' data: blob: {$QM_API_ORIGIN}; font-src 'self'; connect-src 'self' {$QM_API_ORIGIN} {$QM_API_WS_ORIGIN} https://*.sentry.io https://api.stripe.com; worker-src 'self'; manifest-src 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'"
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options "nosniff"
 		X-Frame-Options "DENY"
@@ -23,8 +22,7 @@
 	# The embeddable join widget (J7, #245) is meant to sit in other sites' iframes.
 	@widget path /w/*
 	header @widget -X-Frame-Options
-	header @widget Content-Security-Policy "frame-ancestors *; object-src 'none'; base-uri 'self'"
-	header @widget Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://js.stripe.com; frame-src https://challenges.cloudflare.com https://js.stripe.com https://hooks.stripe.com; style-src 'self'; img-src 'self' data: blob: {$QM_API_ORIGIN}; font-src 'self'; connect-src 'self' {$QM_API_ORIGIN} {$QM_API_WS_ORIGIN} https://*.sentry.io https://api.stripe.com; worker-src 'self'; manifest-src 'self'; form-action 'self'; frame-ancestors *; object-src 'none'; base-uri 'self'"
+	header @widget Content-Security-Policy "default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://js.stripe.com https://*.js.stripe.com; frame-src https://challenges.cloudflare.com https://js.stripe.com https://*.js.stripe.com https://hooks.stripe.com; style-src 'self'; img-src 'self' data: blob: {$QM_API_ORIGIN}; font-src 'self'; connect-src 'self' {$QM_API_ORIGIN} {$QM_API_WS_ORIGIN} https://*.sentry.io https://api.stripe.com; worker-src 'self'; manifest-src 'self'; form-action 'self'; frame-ancestors *; object-src 'none'; base-uri 'self'"
 }
 
 {
