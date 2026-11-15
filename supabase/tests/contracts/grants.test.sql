@@ -26,7 +26,8 @@ select set_eq(
         'record_webhook_event', 'mark_webhook_processed', 'process_inbound_message', 'get_channel_config',
         'get_webhook_secret', 'reserve_send', 'get_whatsapp_send', 'claim_payment_jobs', 'report_payment_result', 'apply_payment_event', 'begin_payment', 'begin_pos_payment', 'begin_pos_payment_by_code', 'attach_payment_intent', 'resolve_custom_domain', 'record_domain_check',
         'apply_delivery_status', 'pending_price_reconciliation', 'apply_provider_price', 'suppress_by_message', 'guest_request_phone_code',
-        'claim_integration_jobs', 'report_integration_result', 'consume_integration_state', 'save_integration_tokens', 'revoke_integration'],
+        'claim_integration_jobs', 'report_integration_result', 'consume_integration_state', 'save_integration_tokens', 'revoke_integration']
+  || tests.extension_closed_api_functions(),
   'only the dispatcher, health, pair-device, unsubscribe, join-pass, public-join, calendar-feed, purge-org, dev-simulator, link-code, webhook-delivery, provider-webhook, dispatcher-limit, payment-job, domain-check and delivery-status functions are closed to signed-in users');
 
 select is_empty(

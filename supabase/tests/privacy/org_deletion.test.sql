@@ -55,7 +55,9 @@ declare t record; n bigint; bad text := '';
 begin
   for t in select c.table_name from information_schema.columns c
            join information_schema.tables x using (table_schema, table_name)
-           where c.table_schema = 'app' and c.column_name = 'org_id' and x.table_type = 'BASE TABLE' loop
+           where c.table_schema = 'app' and c.column_name = 'org_id' and x.table_type = 'BASE TABLE'
+             -- tables a deployment keeps on purpose (private.ext_purge_keep_tables)
+             and c.table_name <> all (private.ext_purge_keep_tables()) loop
     execute format('select count(*) from app.%I where org_id = %L', t.table_name, tests.id('org_a')) into n;
     if n > 0 then bad := bad || t.table_name || ' '; end if;
   end loop;
