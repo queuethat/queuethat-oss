@@ -194,8 +194,9 @@ select throws_ok($$ update app.platform_flags set support_inbox = 'not an addres
 -- ---------------------------------------------------------------- the email names no plan and no operator console
 select ok((select not (vars ? 'plan') from app.notifications where template_key = 'support_request'),
   'the support email carries no plan');
-select ok((select body not like '%{{plan}}%' and body not like '%/platform/%' from app.notification_templates
-           where trigger = 'support_request' and org_id is null),
+select ok(not tests.is_public_build() or (select body not like '%{{plan}}%' and body not like '%/platform/%'
+                                          from app.notification_templates
+                                          where trigger = 'support_request' and org_id is null),
   'and its template mentions neither a plan nor an operator console page');
 
 select * from finish();

@@ -6,3 +6,18 @@
 
 create function tests.create_world_extensions() returns void
 language plpgsql as $$ begin null; end $$;
+
+/**
+ * api functions a deployment adds that signed-in users must not call (service-role jobs and
+ * webhooks), beyond the ones tests/contracts/grants.test.sql lists. None here.
+ */
+create function tests.extension_closed_api_functions() returns text[]
+language sql immutable as $$ select '{}'::text[] $$;
+
+/**
+ * True in this repository's own build; a deployment's copy of this file returns false. A test uses
+ * it only to keep a claim about the absence of hosted features (no plan, no operator console)
+ * to the public build, never to skip a behaviour both builds share.
+ */
+create function tests.is_public_build() returns boolean
+language sql immutable as $$ select true $$;
