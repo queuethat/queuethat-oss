@@ -11,6 +11,8 @@ comment on column ops.org_deletion_log.auth_users_deleted is
  * Also deletes the auth users of the org's members (and its creator) unless an ON DELETE CASCADE
  * foreign key outside the auth schema still references them, for example a membership in another
  * org. A login that cannot be deleted is kept with a warning; the org is still purged.
+ * Contract for extension code: a table whose rows must keep a login alive (for example a hosted
+ * operator role) references auth.users ON DELETE CASCADE; set-null keys do not hold a login.
  * Needs the database owner; not callable via the API. Returns orgs purged.
  */
 -- redefines ops.purge_deleted_orgs from 20261112094019_extension_hooks_2.sql
@@ -77,10 +79,15 @@ begin
       raise exception 'purge_incomplete' using detail = array_to_string(v_pending, ',');
     end if;
     delete from app.organizations where id = v_org;
+    foreach t in array v_tables || 'organizations'::text loop
+      execute format('alter table app.%I enable trigger user', t);
+    end loop;
     -- A login goes with the org unless something still holds it through an ON DELETE CASCADE key
     -- (a membership in another org, a hosted platform role, ...), which would otherwise delete
     -- that row too. Keys are read from the catalog, so tables added later are covered. Set-null
-    -- references (authorship columns) are cleared by the delete, as their keys say.
+    -- references (authorship columns) are cleared by the delete, as their keys say. This runs after
+    -- the triggers are back on, so clearing another org's row goes through its guards; a guard that
+    -- refuses keeps the login (warning), never the org purge.
     v_deleted := 0;
     foreach v_user in array v_users loop
       v_kept := false;
@@ -100,13 +107,11 @@ begin
       continue when v_kept;
       begin -- one login that cannot go is kept and reported; the org purge still completes
         delete from auth.users where id = v_user;
+        delete from private.mfa_failures where user_id = v_user;
         v_deleted := v_deleted + 1;
       exception when others then
         raise warning 'purge_deleted_orgs: org % kept a login: %', v_org, sqlerrm;
       end;
-    end loop;
-    foreach t in array v_tables || 'organizations'::text loop
-      execute format('alter table app.%I enable trigger user', t);
     end loop;
     insert into ops.org_deletion_log (org_id, requested_at, auth_users_deleted)
     values (v_org, v_requested, v_deleted);

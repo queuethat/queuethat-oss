@@ -9,7 +9,8 @@
 # The full CSP is enforced (security audit WEB-2). The outside origins are Turnstile and Stripe.js
 # (booking payments), plus the Supabase API and Sentry for connect-src. There is no report-to
 # endpoint yet (deferred to observability, O6); tests/e2e/csp.spec.ts fails on any violation,
-# in Chromium and WebKit.
+# in Chromium and WebKit. A deployment whose API is not on *.supabase.co (custom domain, self-hosted)
+# or whose Sentry DSN is not on *.sentry.io must add that origin to connect-src, or calls are blocked.
 /*
   Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://js.stripe.com https://*.js.stripe.com; frame-src https://challenges.cloudflare.com https://js.stripe.com https://*.js.stripe.com https://hooks.stripe.com; style-src 'self'; img-src 'self' data: blob: https://*.supabase.co; font-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.sentry.io https://api.stripe.com; worker-src 'self'; manifest-src 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'
   Strict-Transport-Security: max-age=31536000; includeSubDomains
