@@ -357,7 +357,7 @@ services:
   studio:
     <<: *restart
     profiles: [studio]
-    image: ghcr.io/supabase/studio:2026.11.09-sha-1567384@sha256:09990d7831762e788b6d14bee7be40d452d45433b51a1592aaf3105bb126bbe2
+    image: ghcr.io/supabase/studio:2026.11.16-sha-51bd16d@sha256:1d847a896b82ae841c9f6b260c50c6c46f38e162e91e3691e237d5162a996807
     depends_on:
       meta: { condition: service_started }
     ports:
