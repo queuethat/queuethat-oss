@@ -181,7 +181,7 @@ services:
 
   storage:
     <<: *restart
-    image: ghcr.io/supabase/storage-api:v1.92.0@sha256:02aa65dacc7d061ac60a9c1d846ef08cd775295d7c98d0cb4fa97c483fad59f7
+    image: ghcr.io/supabase/storage-api:v1.95.0@sha256:833558845aafcfd493c33a4258cc8def1a7c6b3c20dd3b35aacfd2d89aa79558
     depends_on:
       db: { condition: service_healthy }
       rest: { condition: service_started }
