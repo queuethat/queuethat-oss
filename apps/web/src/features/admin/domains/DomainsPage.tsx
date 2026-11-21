@@ -16,7 +16,7 @@ import { useCurrentLocation, useCurrentOrg } from '../../auth/current.ts';
 import {
   canManageDomains,
   domainsQuery,
-  mainHostname,
+  dnsTarget,
   useAddDomain,
   useRemoveDomain,
   useVerifyDomain,
@@ -156,7 +156,7 @@ function DomainList({ orgId }: { orgId: string }) {
                   <CopyValue label={t('records.txtValue')} value={d.verification_token} />
                 </div>
               )}
-              <CopyValue label={t('records.cname', { host: d.hostname })} value={mainHostname()} />
+              <CopyValue label={t('records.cname', { host: d.hostname })} value={dnsTarget()} />
             </li>
           ))}
         </ul>

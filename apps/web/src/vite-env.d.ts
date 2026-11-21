@@ -24,6 +24,8 @@ interface ImportMetaEnv {
   readonly VITE_TERMS_URL?: string;
   readonly VITE_PRIVACY_URL?: string;
   readonly VITE_SUPPORT_EMAIL?: string;
+  /** Where a custom domain's CNAME should point, when not the main host (a deployment's TLS layer). */
+  readonly VITE_DOMAIN_CNAME?: string;
 }
 
 interface ImportMeta {

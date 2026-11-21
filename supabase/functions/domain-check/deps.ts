@@ -19,7 +19,7 @@ export function supabaseDeps(
 ): Omit<DomainCheckDeps, 'secret' | 'log' | 'txt'> {
   const noSession = { auth: { persistSession: false, autoRefreshToken: false } };
   const admin = createClient(env.url, env.serviceRoleKey, noSession);
-  const columns = 'id, hostname, verification_token';
+  const columns = 'id, org_id, hostname, verification_token, status';
 
   return {
     async resolve(host) {

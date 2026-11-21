@@ -12,13 +12,18 @@
 //   401 not signed in · 404 unknown or foreign domain · 502 DNS resolver unreachable (no strike)
 // POST {}  Authorization: Bearer <DISPATCH_SECRET>        daily re-verification (pg_cron via pg_net)
 //   200 { checked, failed }   every verified domain re-checked; three failures in a row disable one
+// A deployment can react to a status change and to the end of the daily re-check (extensions.ts).
+import type { DomainStatus, DomainStatusChange } from './extensions.ts';
+
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const HOST = /^[a-z0-9.-]{1,253}$/;
 
 export interface DomainToCheck {
   id: string;
+  org_id: string;
   hostname: string;
   verification_token: string;
+  status: DomainStatus;
 }
 
 export class NotSignedInError extends Error {}
@@ -35,6 +40,10 @@ export interface DomainCheckDeps {
   record(domainId: string, ok: boolean): Promise<string>;
   /** TXT values at `name` (DNS-over-HTTPS). An empty list means no such record; throws ResolverError if it could not ask. */
   txt(name: string): Promise<string[]>;
+  /** extensions.ts `onDomainStatusChange`. Optional so a test can leave it out. */
+  onStatusChange?(change: DomainStatusChange): Promise<void>;
+  /** extensions.ts `onRecheckComplete`. */
+  onRecheckComplete?(verifiedHostnames: readonly string[]): Promise<void>;
   /** DISPATCH_SECRET; shorter than 32 characters means nobody may run the re-check. */
   secret: string;
   log?(message: string): void;
@@ -74,6 +83,26 @@ export function createDomainCheckHandler(deps: DomainCheckDeps): (req: Request) 
     return values.some((v) => v.trim() === d.verification_token);
   }
 
+  /** Records one check and tells the deployment when the status really changed. */
+  async function checkAndRecord(d: DomainToCheck): Promise<{ ok: boolean; status: string }> {
+    const ok = await proven(d);
+    const status = await deps.record(d.id, ok);
+    if (status !== d.status && deps.onStatusChange) {
+      try {
+        await deps.onStatusChange({
+          domainId: d.id,
+          orgId: d.org_id,
+          hostname: d.hostname,
+          from: d.status,
+          to: status as DomainStatus,
+        });
+      } catch (e) {
+        log(`status hook failed for ${d.id}: ${String(e)}`);
+      }
+    }
+    return { ok, status };
+  }
+
   return async (req) => {
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
 
@@ -93,10 +122,16 @@ export function createDomainCheckHandler(deps: DomainCheckDeps): (req: Request) 
         let checked = 0;
         let failed = 0;
         for (const d of await deps.listVerified()) {
-          const ok = await proven(d);
-          await deps.record(d.id, ok);
+          const { ok } = await checkAndRecord(d);
           checked++;
           if (!ok) failed++;
+        }
+        if (deps.onRecheckComplete) {
+          try {
+            await deps.onRecheckComplete((await deps.listVerified()).map((d) => d.hostname));
+          } catch (e) {
+            log(`recheck hook failed: ${String(e)}`);
+          }
         }
         log(`recheck: ${checked} checked, ${failed} failed`);
         return json(200, { checked, failed });
@@ -107,7 +142,7 @@ export function createDomainCheckHandler(deps: DomainCheckDeps): (req: Request) 
       if (!UUID.test(id)) return json(400, { error: 'invalid_input' });
       const domain = await deps.findForCaller(bearer, id);
       if (!domain) return json(404, { error: 'not_found' });
-      const status = await deps.record(domain.id, await proven(domain));
+      const { status } = await checkAndRecord(domain);
       return json(200, { status });
     } catch (e) {
       if (e instanceof NotSignedInError) return json(401, { error: 'not_authenticated' });
