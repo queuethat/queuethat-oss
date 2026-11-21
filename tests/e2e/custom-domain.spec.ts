@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { demo } from '../fixtures/demo.ts';
 import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
 import { supabaseEnv } from './support/env.ts';
+import { freshQueue } from './support/queues.ts';
 
 // 3-DOM2 (#371): the admin page, host-based routing and the poster address.
 // The custom host is a hosts override: Playwright answers http://<host>/ from the dev server, and
@@ -113,5 +114,32 @@ test.describe('on a custom host', () => {
     await expect(guest).toHaveURL(
       new RegExp(`^${base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/(staff|auth)`),
     );
+  });
+
+  test('AC4 (#1438): /admin goes to the main host too', async ({ devices }, testInfo) => {
+    const { guest } = devices;
+    const base = testInfo.project.use.baseURL!;
+    await guest.route(`${base}/**`, (route) => route.continue());
+    await guest.goto(`http://${HOST}/admin/domains?x=1`);
+    await expect(guest).toHaveURL(new RegExp(`^${base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/`));
+  });
+
+  test('AC5 (#1438): a guest joins from the custom host, and the host holds no staff session', async ({
+    devices,
+  }) => {
+    const { guest } = devices;
+    const queue = await freshQueue();
+    await guest.goto(`http://${HOST}/q/${demo.locationSlug}`);
+    await guest.getByLabel('Queue').selectOption(queue.id);
+    await guest.getByLabel('First name').fill('Dora');
+    await guest.getByRole('button', { name: 'Join the queue' }).click();
+    await expect(guest).toHaveURL(new RegExp(`^http://${HOST.replace(/\./g, '\\.')}/v/[\\w-]+$`));
+    await expect(guest.getByTestId('ticket')).toBeVisible();
+    // Storage is per origin: whatever the browser holds for the main host is not here, and the guest
+    // page itself stores no sign-in (guests never sign in, I-7).
+    const authKeys = await guest.evaluate(() =>
+      Object.keys(localStorage).filter((k) => /^sb-.*-auth-token$/.test(k)),
+    );
+    expect(authKeys).toEqual([]);
   });
 });
