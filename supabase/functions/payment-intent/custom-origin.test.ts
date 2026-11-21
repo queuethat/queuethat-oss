@@ -66,3 +66,11 @@ Deno.test('without a lookup only the app origin is allowed; a failing lookup ref
   assert.equal(await g2('https://book.shop.test', () => Promise.resolve('n')), false);
   assert.deepEqual(errors, ['b custom domain check failed']);
 });
+
+Deno.test('a failing limiter or address hash refuses instead of throwing', async () => {
+  const a = gate({ hit: () => Promise.reject(new Error('db down')) });
+  assert.equal(await a.g('https://book.shop.test', a.net), false);
+  const b = gate();
+  assert.equal(await b.g('https://book.shop.test', () => Promise.reject(new Error('digest'))), false);
+  assert.deepEqual(b.log.lookups, []);
+});

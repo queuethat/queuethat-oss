@@ -40,9 +40,11 @@ export function createOriginGate(deps: OriginGateDeps): (origin: string, network
     if (url.protocol !== 'https:' || url.port !== '' || url.origin !== origin) return false;
     const cachedAt = cache.get(url.hostname);
     if (cachedAt !== undefined && now() - cachedAt < 60_000) return true;
-    if (!(await deps.hit(`${deps.bucket}:${await network()}`, deps.limit, deps.windowSeconds))) return false;
+    // Any failure (the limiter, the address hash, the lookup) refuses: a broken check never lets an origin in,
+    // and the caller still gets a normal 403 with its headers.
     let ok = false;
     try {
+      if (!(await deps.hit(`${deps.bucket}:${await network()}`, deps.limit, deps.windowSeconds))) return false;
       ok = await deps.isCustomDomain(url.hostname);
     } catch (cause) {
       deps.error?.(`${deps.bucket} custom domain check failed`, cause);
