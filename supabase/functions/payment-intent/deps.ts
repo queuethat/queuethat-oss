@@ -7,12 +7,17 @@ type CreateClient = (url: string, key: string, options: any) => any;
 export function supabaseDeps(
   createClient: CreateClient,
   env: { url: string; serviceRoleKey: string },
-): Pick<PaymentIntentDeps, 'begin' | 'beginPos' | 'beginPosByCode' | 'attach' | 'hit' | 'digest'> {
+): Pick<PaymentIntentDeps, 'begin' | 'beginPos' | 'beginPosByCode' | 'attach' | 'hit' | 'digest' | 'isCustomDomain'> {
   const client = createClient(env.url, env.serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
   const api = client.schema('api');
   return {
+    async isCustomDomain(host) {
+      const { data, error } = await api.rpc('resolve_custom_domain', { p_host: host });
+      if (error) throw new Error(error.message);
+      return typeof data === 'string' && data !== '';
+    },
     async begin(token, provider, idempotencyKey) {
       const { data, error } = await api.rpc('begin_payment', {
         p_token: token, p_provider: provider, p_idempotency_key: idempotencyKey,

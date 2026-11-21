@@ -13,6 +13,7 @@
 //   same answer as pos; 404 not_found for an unknown, expired, replaced or already-paid code (all alike)
 //   400 invalid_input   404 not_found (unknown token, as the status endpoint)   409 payment_not_required
 //   429 rate_limited    500 unknown
+import { createOriginGate } from '../_shared/custom-origin.ts';
 import type { PaymentProvider } from '@qm/providers';
 
 export interface PaymentPlan {
@@ -46,8 +47,10 @@ export interface PaymentIntentDeps {
   hit(key: string, limit: number, windowSeconds: number): Promise<boolean>;
   /** sha256 hex, so the rate-limit key never holds the token. */
   digest(value: string): Promise<string>;
-  /** PUBLIC_URL: the only browser origin allowed. */
+  /** PUBLIC_URL: the app's own origin, always allowed to call. */
   publicUrl: string;
+  /** True when the host is a verified custom domain of a business (api.resolve_custom_domain). */
+  isCustomDomain?(host: string): Promise<boolean>;
   error?(line: string, cause: unknown): void;
 }
 
@@ -59,20 +62,34 @@ export function clientKey(req: Request): string {
 
 export function createPaymentIntentHandler(deps: PaymentIntentDeps): (req: Request) => Promise<Response> {
   const error = deps.error ?? (() => {});
+  // The app's own origin and any verified custom domain (a guest on a business's own address pays
+  // from there); the same rule public-join applies, kept in one place.
+  const allowed = createOriginGate({
+    appOrigin: new URL(deps.publicUrl).origin,
+    isCustomDomain: deps.isCustomDomain?.bind(deps),
+    hit: deps.hit,
+    bucket: 'payorigin',
+    limit: 60,
+    windowSeconds: 600,
+    error,
+  });
   const headers = (origin: string | null) => ({
     'Content-Type': 'application/json',
     'Cache-Control': 'no-store',
-    'Access-Control-Allow-Origin': origin === deps.publicUrl ? deps.publicUrl : 'null',
+    'Access-Control-Allow-Origin': origin ?? 'null',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     Vary: 'Origin',
   });
   return async (req) => {
-    const origin = req.headers.get('origin');
+    const sent = req.headers.get('origin');
+    const permitted = sent === null || (await allowed(sent, () => deps.digest(clientKey(req))));
+    // CORS headers name only a permitted origin.
+    const origin = permitted ? sent : null;
     const json = (status: number, body: unknown, extra: Record<string, string> = {}) =>
       new Response(JSON.stringify(body), { status, headers: { ...headers(origin), ...extra } });
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: headers(origin) });
-    if (origin !== null && origin !== deps.publicUrl) return json(403, { error: 'forbidden' });
+    if (!permitted) return json(403, { error: 'forbidden' });
     if (req.method !== 'POST') return json(405, { error: 'invalid_input' });
 
     const body = await req.json().catch(() => null);

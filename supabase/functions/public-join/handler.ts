@@ -17,6 +17,7 @@
 //   429 rate_limited (+ Retry-After)           500 unknown
 // Raw IP addresses are only hashed (sha256 of ip + a daily salt) and never stored or logged.
 
+import { createOriginGate } from '../_shared/custom-origin.ts';
 import type { CaptchaVerifier } from '../../../packages/providers/src/captcha/verifier.ts';
 
 /** A database error as PostgREST reports it: message is the code, details is the DETAIL. */
@@ -176,38 +177,16 @@ export function createPublicJoinHandler(deps: PublicJoinDeps): (req: Request) =>
   const now = deps.now ?? Date.now;
   const appOrigin = new URL(deps.publicUrl).origin;
   const error = deps.error ?? (() => {});
-  // Verified custom domains change rarely; remember each verified one for a minute per instance.
-  // Refusals are not cached (random hosts would crowd out real ones); instead every lookup counts
-  // against a per-network limit, so unknown origins cannot drive unbounded database reads.
-  const domainCache = new Map<string, number>();
-
-  async function allowed(origin: string, network: () => Promise<string>): Promise<boolean> {
-    if (origin === appOrigin) return true;
-    if (!deps.isCustomDomain) return false;
-    let url: URL;
-    try {
-      url = new URL(origin);
-    } catch {
-      return false;
-    }
-    // An origin is scheme://host[:port]; anything else (path, plain http, a port) is not a join page.
-    if (url.protocol !== 'https:' || url.port !== '' || url.origin !== origin) return false;
-    const cachedAt = domainCache.get(url.hostname);
-    if (cachedAt !== undefined && now() - cachedAt < 60_000) return true;
-    if (!(await deps.hit(`origin:${await network()}`, ipLimit * 6, ipWindow))) return false;
-    let ok = false;
-    try {
-      ok = await deps.isCustomDomain(url.hostname);
-    } catch (cause) {
-      error('public-join custom domain check failed', cause);
-      return false;
-    }
-    if (ok) {
-      if (domainCache.size >= 1000) domainCache.clear();
-      domainCache.set(url.hostname, now());
-    }
-    return ok;
-  }
+  const allowed = createOriginGate({
+    appOrigin,
+    isCustomDomain: deps.isCustomDomain?.bind(deps),
+    hit: deps.hit,
+    bucket: 'origin',
+    limit: ipLimit * 6,
+    windowSeconds: ipWindow,
+    now,
+    error: (line, cause) => error('public-join custom domain check failed', cause),
+  });
 
   const baseHeaders = (origin: string | null): Record<string, string> => ({
     'Content-Type': 'application/json',

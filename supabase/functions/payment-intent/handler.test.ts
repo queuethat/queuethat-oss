@@ -9,7 +9,8 @@ const PLAN: PaymentPlan = {
   cancel_cutoff_hours: 24, release_after: 'served',
 };
 
-function setup(plan: PaymentPlan | PlanError = PLAN, allow = true) {
+function setup(plan: PaymentPlan | PlanError = PLAN, allow = true, verified: string[] = []) {
+  const lookups: string[] = [];
   const log = { begun: [] as string[], attached: [] as unknown[], created: [] as unknown[] };
   const fake = new FakePaymentProvider('x');
   const provider = {
@@ -22,6 +23,10 @@ function setup(plan: PaymentPlan | PlanError = PLAN, allow = true) {
     provider,
     publishableKey: 'pk_test_1',
     publicUrl: PUBLIC,
+    async isCustomDomain(host) {
+      lookups.push(host);
+      return verified.includes(host);
+    },
     async begin(token) {
       log.begun.push(token);
       if (plan instanceof PlanError) throw plan;
@@ -41,7 +46,7 @@ function setup(plan: PaymentPlan | PlanError = PLAN, allow = true) {
     async hit() { return allow; },
     async digest(v) { return `d-${v.length}`; },
   });
-  return { handler, log };
+  return { handler, log, lookups };
 }
 const post = (body: unknown, origin: string | null = PUBLIC) =>
   new Request('https://x.test/payment-intent', {
@@ -145,4 +150,47 @@ Deno.test('4-PAY2: spellings of one code share a rate-limit bucket', async () =>
   const first = keys.filter((k) => k.startsWith('paycode:d-'));
   assert.equal(first[0], first[1]);
   assert.ok(keys.includes('paycode:all'));
+});
+
+Deno.test('#62: a verified custom domain may pay, with its own origin in the CORS answer', async () => {
+  const { handler, log } = setup(PLAN, true, ['book.shop.test']);
+  const res = await handler(post({ token: 'tok-12345678', idempotency_key: 'k1' }, 'https://book.shop.test'));
+  assert.equal(res.status, 200);
+  assert.equal(res.headers.get('access-control-allow-origin'), 'https://book.shop.test');
+  assert.equal(log.created.length, 1);
+  const pre = await handler(new Request('https://x.test/payment-intent', { method: 'OPTIONS', headers: { origin: 'https://book.shop.test' } }));
+  assert.equal(pre.status, 204);
+  assert.equal(pre.headers.get('access-control-allow-origin'), 'https://book.shop.test');
+});
+
+Deno.test('#62: an unverified host, plain http and a port are refused before any payment is begun', async () => {
+  const { handler, log, lookups } = setup(PLAN, true, ['book.shop.test']);
+  for (const origin of ['https://evil.test', 'http://book.shop.test', 'https://book.shop.test:8443']) {
+    const res = await handler(post({ token: 'tok-12345678', idempotency_key: 'k1' }, origin));
+    assert.equal(res.status, 403, origin);
+    assert.equal(res.headers.get('access-control-allow-origin'), 'null', origin);
+  }
+  assert.deepEqual(lookups, ['evil.test']);
+  assert.deepEqual(log.begun, []);
+});
+
+Deno.test('#62: a failing domain lookup refuses, and the app origin never needs one', async () => {
+  const { handler, lookups } = setup();
+  assert.equal((await handler(post({ token: 'tok-12345678', idempotency_key: 'k1' }))).status, 200);
+  assert.deepEqual(lookups, []);
+  const broken = createPaymentIntentHandler({
+    provider: new FakePaymentProvider('x'), publishableKey: '', publicUrl: PUBLIC,
+    isCustomDomain: () => Promise.reject(new Error('db down')),
+    begin: () => Promise.reject(new Error('unreachable')), beginPos: () => Promise.reject(new Error('unreachable')),
+    beginPosByCode: () => Promise.reject(new Error('unreachable')), attach: async () => {},
+    hit: async () => true, digest: async (v) => v,
+  });
+  assert.equal((await broken(post({ token: 'tok-12345678', idempotency_key: 'k1' }, 'https://book.shop.test'))).status, 403);
+});
+
+Deno.test('#62: domain lookups are limited per network and a refused origin is never cached', async () => {
+  const { handler, lookups } = setup(PLAN, false, ['book.shop.test']);
+  const res = await handler(post({ token: 'tok-12345678', idempotency_key: 'k1' }, 'https://book.shop.test'));
+  assert.equal(res.status, 403);
+  assert.deepEqual(lookups, []);
 });
