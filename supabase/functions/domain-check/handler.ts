@@ -17,6 +17,15 @@ import type { DomainStatus, DomainStatusChange } from './extensions.ts';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const HOST = /^[a-z0-9.-]{1,253}$/;
+/**
+ * What api.add_custom_domain accepts (private.normalize_hostname): two or more labels of at most 63
+ * characters, a letter-initial TLD, so never an IP literal. A name that cannot match is refused
+ * before the database is asked: the TLS layer's `ask` is reachable by anyone who can open a TLS
+ * handshake with any server name.
+ */
+const PLAUSIBLE = /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]([a-z0-9-]{0,61}[a-z0-9])?$/;
+const NEGATIVE_TTL_MS = 60_000;
+const NEGATIVE_MAX = 2000;
 
 export interface DomainToCheck {
   id: string;
@@ -47,6 +56,8 @@ export interface DomainCheckDeps {
   /** DISPATCH_SECRET; shorter than 32 characters means nobody may run the re-check. */
   secret: string;
   log?(message: string): void;
+  /** Milliseconds, for the negative answer cache. Tests pass a fake. */
+  now?(): number;
 }
 
 const CORS = {
@@ -77,6 +88,13 @@ function bareHost(raw: string): string {
 
 export function createDomainCheckHandler(deps: DomainCheckDeps): (req: Request) => Promise<Response> {
   const log = deps.log ?? (() => {});
+  const now = deps.now ?? Date.now;
+  /**
+   * Hosts the database recently said "not ours" (until the time in the value). Per instance and
+   * best effort: a runtime that starts a fresh worker per request never hits it, and the plausibility
+   * check above still applies. Dropped when a check in this instance verifies the host.
+   */
+  const unknown = new Map<string, number>();
 
   async function proven(d: DomainToCheck): Promise<boolean> {
     const values = await deps.txt(`_queue-verify.${d.hostname}`);
@@ -87,6 +105,7 @@ export function createDomainCheckHandler(deps: DomainCheckDeps): (req: Request) 
   async function checkAndRecord(d: DomainToCheck): Promise<{ ok: boolean; status: string }> {
     const ok = await proven(d);
     const status = await deps.record(d.id, ok);
+    if (status === 'verified') unknown.delete(d.hostname);
     if (status !== d.status && deps.onStatusChange) {
       try {
         await deps.onStatusChange({
@@ -109,9 +128,14 @@ export function createDomainCheckHandler(deps: DomainCheckDeps): (req: Request) 
     if (req.method === 'GET') {
       const query = new URL(req.url).searchParams;
       const host = bareHost(query.get('host') ?? query.get('domain') ?? '');
-      if (!HOST.test(host)) return json(404, { error: 'not_found' });
+      if (!HOST.test(host) || !PLAUSIBLE.test(host)) return json(404, { error: 'not_found' });
+      const until = unknown.get(host);
+      if (until !== undefined && until > now()) return json(404, { error: 'not_found' });
       const slug = await deps.resolve(host);
-      return slug ? json(200, { location_slug: slug }) : json(404, { error: 'not_found' });
+      if (slug) return json(200, { location_slug: slug });
+      if (unknown.size >= NEGATIVE_MAX) unknown.delete(unknown.keys().next().value as string);
+      unknown.set(host, now() + NEGATIVE_TTL_MS);
+      return json(404, { error: 'not_found' });
     }
     if (req.method !== 'POST') return json(405, { error: 'invalid_input' });
 

@@ -137,6 +137,10 @@ services:
   ## Edge functions. These check their own secret or token (supabase/config.toml, verify_jwt =
   ## false), so guests, uptime checks, the database and paired devices call them with no API key.
   ## Every other function needs the API key at the gateway and verifies the caller's JWT itself.
+  ## A plain path is a prefix match, so a function named like the start of an open route's name
+  ## (domain-check-admin after domain-check) would skip the key check by accident. Kong 2.8 does not
+  ## accept anchored regular expressions here, so scripts/check-kong-open-routes.mjs fails the build
+  ## when a function directory name starts with an open route's name.
   - name: functions-v1-join-pass
     url: http://functions:9000/join-pass
     routes:

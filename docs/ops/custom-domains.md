@@ -41,3 +41,20 @@ issue that agrees to it (AGENTS.md).
 
 A hook that throws is logged and ignored: it never changes the check's answer, the domain's
 status or its failure count.
+
+## Limits and what to expect
+
+- **Anyone can start a TLS handshake with any server name**, and each unknown name makes Caddy ask
+  `domain-check` once. The function refuses names the database could never hold (no dot, IP literal,
+  label over 63 characters, bad characters) before it queries anything, and remembers an unknown
+  name for a minute where the runtime keeps the function warm. Self-host's function runtime may start
+  a fresh worker per request, in which case only the first check applies. The `ask` call also
+  bypasses Kong's rate limit (it goes straight to the function). If you expect hostile traffic, limit
+  new connections per source address at your firewall or load balancer.
+- **A verified name takes up to a minute to start answering** after a negative lookup (the cache
+  above); pressing "Check now" in the same function instance clears it at once.
+- **A disabled or removed domain keeps its certificate until Caddy stops using it.** The static app
+  it serves shows no tenant data (the page asks `domain-check`, which now answers 404, and falls
+  back to the main host's pages). We did not verify whether Caddy asks again before renewing, so
+  plan on a disabled name's certificate staying valid until it expires.
+- **No wildcard certificates.** Each name gets its own.

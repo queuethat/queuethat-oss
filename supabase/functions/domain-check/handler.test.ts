@@ -182,3 +182,32 @@ Deno.test("Caddy's ask sends ?domain=: a verified host answers 200, anything els
   assert.equal((await ask('evil.example')).status, 404);
   assert.equal((await handler(new Request('http://x/'))).status, 404);
 });
+
+Deno.test('names the database could never hold are refused before it is asked', async () => {
+  let asked = 0;
+  const { get } = setup({ resolve: () => (asked++, Promise.resolve(null)) });
+  for (const host of ['localhost', '203.0.113.7', '[::1]', 'a..com', `${'a'.repeat(64)}.com`, 'x.123', '-a.com']) {
+    assert.equal((await get(host)).status, 404, host);
+  }
+  assert.equal(asked, 0);
+});
+
+Deno.test('an unknown host is cached as unknown for a minute, and a check that verifies it clears that', async () => {
+  let clock = 1_000;
+  let asked = 0;
+  const { get, post, dns, state } = setup({
+    now: () => clock,
+    resolve: (host) => (asked++, Promise.resolve(state.status === 'verified' && host === DOMAIN.hostname ? 'barber-a' : null)),
+  });
+  assert.equal((await get('book.barber-a.com')).status, 404);
+  assert.equal((await get('book.barber-a.com')).status, 404);
+  assert.equal(asked, 1, 'the second answer came from the cache');
+  clock += 61_000;
+  assert.equal((await get('book.barber-a.com')).status, 404);
+  assert.equal(asked, 2, 'the cache expired');
+  assert.equal((await get('book.barber-a.com')).status, 404);
+  assert.equal(asked, 2);
+  dns['_queue-verify.book.barber-a.com'] = [DOMAIN.verification_token];
+  await post('admin-a');
+  assert.equal((await get('book.barber-a.com')).status, 200, 'verifying drops the cached "unknown"');
+});
