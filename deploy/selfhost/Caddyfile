@@ -28,6 +28,12 @@
 {
 	# Nothing may reconfigure Caddy over the network, and nothing is reported anywhere.
 	admin off
+	# A business's own hostname gets a certificate at its first visit, but only if the database says
+	# the name is verified: Caddy asks domain-check on the compose network (not through Kong) and
+	# requests nothing unless the answer is 200. Caddy sends ?domain=<name>.
+	on_demand_tls {
+		ask http://functions:9000/domain-check
+	}
 	servers {
 		# Whose X-Forwarded-For / CF-Connecting-IP to believe. Empty by default: the peer's own
 		# address is the client, so nobody can pick the key of the join rate limit. The tunnel
@@ -67,6 +73,26 @@
 	}
 
 	# Single-page app: any other path is a client route.
+	handle {
+		try_files {path} /index.html
+		file_server
+	}
+}
+
+# A verified custom hostname (docs/ops/custom-domains.md): the app's static files only. Staff and
+# admin pages redirect to the main host in the app itself (lib/host.ts), and the API stays on the
+# main host (the CSP's connect-src names it). Certificates for names that are not verified are
+# never requested: see on_demand_tls above.
+https:// {
+	tls {
+		on_demand
+	}
+	import security_headers
+	root * /srv
+	encode zstd gzip
+	@assets path /assets/*
+	header @assets Cache-Control "public, max-age=31536000, immutable"
+	header /config.js Cache-Control "no-store"
 	handle {
 		try_files {path} /index.html
 		file_server

@@ -17,6 +17,8 @@ done
 [[ $(code "$base/rest/v1/") == 401 ]] || bad "/rest/v1 without a key is not 401"
 [[ $(code -H "apikey: $anon" "$base/auth/v1/health") == 200 ]] || bad "/auth/v1/health with a key is not 200"
 [[ $(code "$base/functions/v1/health") == 200 ]] || bad "/functions/v1/health is not 200"
+# domain-check is open on purpose (the SPA and Caddy ask it with no key): an unknown host is a 404, never a 401.
+[[ $(code "$base/functions/v1/domain-check?host=not-ours.example.com") == 404 ]] || bad "/functions/v1/domain-check for an unknown host is not 404"
 
 # Guest pages: no-referrer and a CSP, on a client route and on the SPA shell.
 for path in /v/sometoken /q/some-queue /; do

@@ -17,8 +17,15 @@ failed daily checks in a row disable a verified domain.
 
 ## Who issues the certificate
 
-- **Self-host:** Caddy asks `GET <functions>/domain-check?host=<name>` before it requests a
-  certificate; only a verified host gets a 200. (The Caddyfile wiring is tracked in issue #58.)
+- **Self-host:** Caddy's on-demand TLS asks `GET http://functions:9000/domain-check?domain=<name>`
+  (on the compose network, not through Kong) at the first visit of a new name, and requests a
+  certificate only when the answer is 200, which only a verified hostname of an active org gets.
+  An unverified name fails the TLS handshake and Caddy contacts no certificate authority. The
+  `https://` catch-all site in `deploy/selfhost/Caddyfile` then serves the static app for that
+  host; staff and admin pages redirect to the main host, and the API stays on the main host.
+  Ports 80 and 443 must reach Caddy for every custom name (a tunnel that ends TLS elsewhere needs
+  its own certificate setup for those names). The public `/functions/v1/domain-check` Kong route
+  (120 requests a minute per address) lets the SPA ask the same question.
 - **A hosted deployment** may need to prepare the name first, for example add it to its hosting
   provider. It does that in its own copy of `supabase/functions/domain-check/extensions.ts`.
 
@@ -34,3 +41,20 @@ issue that agrees to it (AGENTS.md).
 
 A hook that throws is logged and ignored: it never changes the check's answer, the domain's
 status or its failure count.
+
+## Limits and what to expect
+
+- **Anyone can start a TLS handshake with any server name**, and each unknown name makes Caddy ask
+  `domain-check` once. The function refuses names the database could never hold (no dot, IP literal,
+  label over 63 characters, bad characters) before it queries anything, and remembers an unknown
+  name for a minute where the runtime keeps the function warm. Self-host's function runtime may start
+  a fresh worker per request, in which case only the first check applies. The `ask` call also
+  bypasses Kong's rate limit (it goes straight to the function). If you expect hostile traffic, limit
+  new connections per source address at your firewall or load balancer.
+- **A verified name takes up to a minute to start answering** after a negative lookup (the cache
+  above); pressing "Check now" in the same function instance clears it at once.
+- **A disabled or removed domain keeps its certificate until Caddy stops using it.** The static app
+  it serves shows no tenant data (the page asks `domain-check`, which now answers 404, and falls
+  back to the main host's pages). We did not verify whether Caddy asks again before renewing, so
+  plan on a disabled name's certificate staying valid until it expires.
+- **No wildcard certificates.** Each name gets its own.
