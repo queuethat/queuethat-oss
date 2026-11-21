@@ -58,3 +58,23 @@ status or its failure count.
   back to the main host's pages). We did not verify whether Caddy asks again before renewing, so
   plan on a disabled name's certificate staying valid until it expires.
 - **No wildcard certificates.** Each name gets its own.
+
+## What a custom host can and cannot reach (checked for #1438)
+
+The custom host is an alias for the guest pages. It runs the same web build as the main host, so
+this is what was checked, and where each answer lives.
+
+| Question | Answer |
+| --- | --- |
+| Staff, admin, devices, sign-in | `lib/host.ts`: any path outside `/q /v /a /b /o /w /u` redirects to `PUBLIC_URL`. e2e: `/staff` and `/admin`. |
+| Is the main host's session readable there? | No. The session is in `localStorage`, which is per origin; a guest page stores none (I-7). e2e: no `sb-*-auth-token` key after joining on a custom host. |
+| Can a Host header pick another tenant's location? | No. The slug comes only from `domain-check` for a verified host (the database), never from the request. Any `/q/<slug>` opens on any host, as on the main host: join pages are public. |
+| CORS | Status, appointment and widget calls are API calls that answer any origin (Supabase, and the self-host Kong `cors` plugin). `join-pass` and `unsubscribe` answer any origin and carry no cookies. `public-join` answers verified custom hosts only (https, no port, checked in the database, cached 60 s). |
+| Framing | The same `vercel.json` headers apply on every host: `frame-ancestors 'none'` everywhere except `/w/`, which any site may embed. |
+| Service worker | Registered per origin at `/sw.js`; a custom host gets its own worker and push subscription. `sw.js` is `no-cache`, so updates reach it as on the main host. |
+| Auth redirects | Sign-in builds its link from the current origin, but `/auth` is not a guest path: a custom host redirects to `PUBLIC_URL` before the page loads, so no sign-in link ever carries a custom host. |
+| CAPTCHA | `pow` (hosted today) has no hostname binding. **Turnstile does:** each custom host would have to be on the widget's hostname list, and Cloudflare has no wildcard for other people's domains, so a deployment that turns Turnstile on cannot serve custom hosts without a per-host call. Keep `VITE_PUBLIC_JOIN=pow` there. |
+
+Known gap: `payment-intent` (a guest paying for a booking) allows only `PUBLIC_URL` as the browser
+origin, so a paid booking started on a custom host is refused. Guest payments are off, so nothing is
+affected today; extend its origin check the way `public-join` does before turning them on.
