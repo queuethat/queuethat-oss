@@ -2,10 +2,12 @@
 import assert from 'node:assert/strict';
 import { createDomainCheckHandler, type DomainCheckDeps, type DomainToCheck, NotSignedInError, ResolverError } from './handler.ts';
 import { dohTxt } from './deps.ts';
+import type { DomainStatusChange } from './extensions.ts';
 
 const SECRET = 'dispatch-secret-0123456789abcdef0123456789';
 const ID = '6f1c1f0e-8d5a-4c55-9a1e-2b9f3c4d5e6f';
-const DOMAIN: DomainToCheck = { id: ID, hostname: 'book.barber-a.com', verification_token: 'a'.repeat(32) };
+const ORG = '0c9f2f7e-4a8d-4b61-8b0e-1d2c3b4a5f60';
+const DOMAIN: DomainToCheck = { id: ID, org_id: ORG, hostname: 'book.barber-a.com', verification_token: 'a'.repeat(32), status: 'pending' };
 
 function setup(over: Partial<DomainCheckDeps> = {}) {
   const state = { status: 'pending', records: [] as [string, boolean][] };
@@ -16,7 +18,7 @@ function setup(over: Partial<DomainCheckDeps> = {}) {
       if (jwt === 'expired') throw new NotSignedInError();
       return Promise.resolve(jwt === 'admin-a' && id === ID ? DOMAIN : null);
     },
-    listVerified: () => Promise.resolve(state.status === 'verified' ? [DOMAIN] : []),
+    listVerified: () => Promise.resolve(state.status === 'verified' ? [{ ...DOMAIN, status: 'verified' as const }] : []),
     record: (id, ok) => {
       state.records.push([id, ok]);
       if (ok) state.status = 'verified';
@@ -110,4 +112,54 @@ Deno.test('dohTxt joins quoted chunks, treats NXDOMAIN as empty, and a bad statu
   assert.deepEqual(await dohTxt(answer({ Status: 3 }))('n'), []);
   await assert.rejects(dohTxt(answer({ Status: 2 }))('n'), ResolverError);
   await assert.rejects(dohTxt(answer({}, 503))('n'), ResolverError);
+});
+
+Deno.test('the status hook fires once per real change, with database values only', async () => {
+  const changes: DomainStatusChange[] = [];
+  const { post, dns } = setup({ onStatusChange: (c) => (changes.push(c), Promise.resolve()) });
+  assert.equal((await post('admin-a')).status, 200); // no TXT record: pending to failed
+  dns['_queue-verify.book.barber-a.com'] = [DOMAIN.verification_token];
+  assert.equal((await post('admin-a')).status, 200); // pending is still what the fake serves: to verified
+  assert.deepEqual(changes, [
+    { domainId: ID, orgId: ORG, hostname: 'book.barber-a.com', from: 'pending', to: 'failed' },
+    { domainId: ID, orgId: ORG, hostname: 'book.barber-a.com', from: 'pending', to: 'verified' },
+  ]);
+});
+
+Deno.test('a check that leaves the status as it was does not call the hook', async () => {
+  const changes: DomainStatusChange[] = [];
+  const { post, dns, state } = setup({
+    onStatusChange: (c) => (changes.push(c), Promise.resolve()),
+    findForCaller: () => Promise.resolve({ ...DOMAIN, status: 'verified' }),
+  });
+  state.status = 'verified';
+  dns['_queue-verify.book.barber-a.com'] = [DOMAIN.verification_token];
+  assert.equal((await post('admin-a')).status, 200);
+  assert.deepEqual(changes, []);
+});
+
+Deno.test('a hook that throws changes neither the answer nor the recorded check', async () => {
+  const logs: string[] = [];
+  const { post, dns, state } = setup({
+    onStatusChange: () => Promise.reject(new Error('provider down')),
+    log: (m) => logs.push(m),
+  });
+  dns['_queue-verify.book.barber-a.com'] = [DOMAIN.verification_token];
+  const res = await post('admin-a');
+  assert.deepEqual(await res.json(), { status: 'verified' });
+  assert.deepEqual(state.records, [[ID, true]]);
+  assert.equal(logs.length, 1);
+});
+
+Deno.test('the daily re-check reports who is verified at its end, and survives a throwing hook', async () => {
+  const seen: (readonly string[])[] = [];
+  const { post, dns, state } = setup({ onRecheckComplete: (h) => (seen.push(h), Promise.resolve()) });
+  state.status = 'verified';
+  dns['_queue-verify.book.barber-a.com'] = [DOMAIN.verification_token];
+  assert.deepEqual(await (await post(SECRET, {})).json(), { checked: 1, failed: 0 });
+  assert.deepEqual(seen, [['book.barber-a.com']]);
+
+  const bad = setup({ onRecheckComplete: () => Promise.reject(new Error('boom')) });
+  bad.state.status = 'verified';
+  assert.equal((await bad.post(SECRET, {})).status, 200);
 });

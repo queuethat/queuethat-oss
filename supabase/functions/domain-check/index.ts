@@ -2,6 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { createObserver } from '../_shared/observe.ts';
 import { dohTxt, supabaseDeps } from './deps.ts';
+import { onDomainStatusChange, onRecheckComplete } from './extensions.ts';
 import { createDomainCheckHandler } from './handler.ts';
 
 function env(name: string): string {
@@ -20,6 +21,8 @@ Deno.serve(
       anonKey: env('SUPABASE_ANON_KEY'),
     }),
     txt: dohTxt(),
+    onStatusChange: onDomainStatusChange,
+    onRecheckComplete,
     secret: Deno.env.get('DISPATCH_SECRET') ?? '',
     log: observe.log,
   })),

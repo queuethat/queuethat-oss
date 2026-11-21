@@ -1,5 +1,6 @@
 import { errorCode } from '@qm/domain';
 import { queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { dnsTargetFor } from './dnsTarget.ts';
 import { appConfig } from '../../../lib/config.ts';
 import { supabase } from '../../../lib/supabase.ts';
 
@@ -100,11 +101,11 @@ export function useVerifyDomain(orgId: string) {
   });
 }
 
-/** The name a CNAME should point at: the main host guests and staff use. */
-export function mainHostname(): string {
-  try {
-    return new URL(appConfig().publicUrl || window.location.origin).hostname;
-  } catch {
-    return window.location.hostname;
-  }
+/** The name a CNAME should point at (see `dnsTargetFor`). */
+export function dnsTarget(): string {
+  return dnsTargetFor(
+    import.meta.env.VITE_DOMAIN_CNAME,
+    appConfig().publicUrl,
+    window.location.origin,
+  );
 }
