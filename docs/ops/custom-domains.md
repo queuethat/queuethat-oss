@@ -17,8 +17,15 @@ failed daily checks in a row disable a verified domain.
 
 ## Who issues the certificate
 
-- **Self-host:** Caddy asks `GET <functions>/domain-check?host=<name>` before it requests a
-  certificate; only a verified host gets a 200. (The Caddyfile wiring is tracked in issue #58.)
+- **Self-host:** Caddy's on-demand TLS asks `GET http://functions:9000/domain-check?domain=<name>`
+  (on the compose network, not through Kong) at the first visit of a new name, and requests a
+  certificate only when the answer is 200, which only a verified hostname of an active org gets.
+  An unverified name fails the TLS handshake and Caddy contacts no certificate authority. The
+  `https://` catch-all site in `deploy/selfhost/Caddyfile` then serves the static app for that
+  host; staff and admin pages redirect to the main host, and the API stays on the main host.
+  Ports 80 and 443 must reach Caddy for every custom name (a tunnel that ends TLS elsewhere needs
+  its own certificate setup for those names). The public `/functions/v1/domain-check` Kong route
+  (120 requests a minute per address) lets the SPA ask the same question.
 - **A hosted deployment** may need to prepare the name first, for example add it to its hosting
   provider. It does that in its own copy of `supabase/functions/domain-check/extensions.ts`.
 

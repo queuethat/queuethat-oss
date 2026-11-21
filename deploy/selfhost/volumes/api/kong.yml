@@ -183,6 +183,23 @@ services:
           - /functions/v1/unsubscribe
     plugins:
       - name: cors
+  # Public by design: the SPA asks it which location a custom hostname serves, and Caddy asks it
+  # (inside the compose network, not through here) before requesting a certificate. It answers only
+  # for a verified hostname and checks its own token or secret on every POST.
+  - name: functions-v1-domain-check
+    url: http://functions:9000/domain-check
+    routes:
+      - name: functions-v1-domain-check
+        strip_path: true
+        paths:
+          - /functions/v1/domain-check
+    plugins:
+      - name: cors
+      - name: rate-limiting
+        config:
+          minute: 120
+          limit_by: ip
+          policy: local
   - name: functions-v1-dispatch-notifications
     url: http://functions:9000/dispatch-notifications
     routes:

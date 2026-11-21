@@ -163,3 +163,22 @@ Deno.test('the daily re-check reports who is verified at its end, and survives a
   bad.state.status = 'verified';
   assert.equal((await bad.post(SECRET, {})).status, 200);
 });
+
+Deno.test("Caddy's ask sends ?domain=: a verified host answers 200, anything else 404", async () => {
+  const { dns, post, state } = setup();
+  dns['_queue-verify.book.barber-a.com'] = [DOMAIN.verification_token];
+  await post('admin-a');
+  assert.equal(state.status, 'verified');
+  const handler = createDomainCheckHandler({
+    resolve: (host) => Promise.resolve(host === DOMAIN.hostname ? 'barber-a' : null),
+    findForCaller: () => Promise.resolve(null),
+    listVerified: () => Promise.resolve([]),
+    record: () => Promise.resolve('verified'),
+    txt: () => Promise.resolve([]),
+    secret: SECRET,
+  });
+  const ask = (name: string) => handler(new Request(`http://x/?domain=${encodeURIComponent(name)}`));
+  assert.equal((await ask('book.barber-a.com')).status, 200);
+  assert.equal((await ask('evil.example')).status, 404);
+  assert.equal((await handler(new Request('http://x/'))).status, 404);
+});

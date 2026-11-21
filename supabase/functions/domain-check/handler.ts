@@ -1,10 +1,10 @@
 // 3-DOM1 (#370): domain-check. Answers "is this hostname ours, and which location does it serve?"
-// for the TLS layer (Caddy on-demand TLS `ask`, Cloudflare custom hostnames) and the SPA, and proves
+// for the TLS layer (Caddy on-demand TLS `ask`, a hosting provider's custom hostnames) and the SPA, and proves
 // ownership of a hostname with a DNS TXT record. An Edge Function because only it resolves DNS
 // (technical-design.md 3.5, rule 3: it adds a capability). The gateway's JWT check is off; each
 // route carries its own gate.
 //
-// GET  ?host=<hostname>                       public (Caddy `ask` compatible)
+// GET  ?host=<hostname>  (or ?domain=, the name Caddy's `ask` sends)   public
 //   200 { location_slug }  only for a verified hostname of an active org
 //   404 { error: "not_found" }  anything else, with no hint why
 // POST { domain_id }  Authorization: Bearer <user JWT>   an owner or admin of the domain's org
@@ -107,7 +107,8 @@ export function createDomainCheckHandler(deps: DomainCheckDeps): (req: Request) 
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
 
     if (req.method === 'GET') {
-      const host = bareHost(new URL(req.url).searchParams.get('host') ?? '');
+      const query = new URL(req.url).searchParams;
+      const host = bareHost(query.get('host') ?? query.get('domain') ?? '');
       if (!HOST.test(host)) return json(404, { error: 'not_found' });
       const slug = await deps.resolve(host);
       return slug ? json(200, { location_slug: slug }) : json(404, { error: 'not_found' });
