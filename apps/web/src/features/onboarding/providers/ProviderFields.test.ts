@@ -1,22 +1,25 @@
 import { describe, expect, it } from 'vitest';
-import { defaultProviders, MAX_PROVIDERS, resize } from './ProviderFields.tsx';
-
-const t = ((_: string, o: { noun: string; n: number }) => `${o.noun} ${o.n}`) as never;
-const label = (n: number) => `Doctor ${n}`;
+import { allNamed, defaultProviders, MAX_PROVIDERS, resize } from './ProviderFields.tsx';
 
 describe('provider setup', () => {
-  it('starts with the template count, capitalised names and its pool choice', () => {
-    expect(defaultProviders({ noun: 'doctor', defaultCount: 2, pool: true }, t)).toEqual({
-      names: ['Doctor 1', 'Doctor 2'],
+  it('starts with one unnamed line, whatever count the template suggests, and its pool choice', () => {
+    expect(defaultProviders({ noun: 'barber', defaultCount: 3, pool: true })).toEqual({
+      names: [''],
       pool: true,
     });
   });
 
-  it('keeps typed names when the count changes, and stays within 1 to 20', () => {
+  it('keeps typed names when the count changes; new lines start unnamed; stays within 1 to 20', () => {
     const typed = { names: ['Dr. Lee', 'Dr. Ng'], pool: false };
-    expect(resize(typed, 3, label).names).toEqual(['Dr. Lee', 'Dr. Ng', 'Doctor 3']);
-    expect(resize(typed, 1, label).names).toEqual(['Dr. Lee']);
-    expect(resize(typed, 0, label).names).toHaveLength(1);
-    expect(resize(typed, 99, label).names).toHaveLength(MAX_PROVIDERS);
+    expect(resize(typed, 3).names).toEqual(['Dr. Lee', 'Dr. Ng', '']);
+    expect(resize(typed, 1).names).toEqual(['Dr. Lee']);
+    expect(resize(typed, 0).names).toHaveLength(1);
+    expect(resize(typed, 99).names).toHaveLength(MAX_PROVIDERS);
+  });
+
+  it('is only complete when every line has a real name', () => {
+    expect(allNamed({ names: ['Sam', 'Alex'], pool: false })).toBe(true);
+    expect(allNamed({ names: ['Sam', ''], pool: false })).toBe(false);
+    expect(allNamed({ names: ['Sam', '   '], pool: false })).toBe(false);
   });
 });

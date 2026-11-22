@@ -28,6 +28,8 @@
       "amount": "Enter an amount above zero, such as 15 or 15.50.",
       "cutoff": "Enter a whole number of hours from 0 to 720."
     },
+    "notConnected": "Guests pay by card, so a card processor has to be connected first. Connect and enable one, then come back to ask for a deposit or a card hold on this service.",
+    "connectLink": "Connect a card processor",
     "errors": {
       "permission_denied": "Only managers can change payment settings.",
       "payments_not_connected": "Connect and enable a card processor under Integrations before asking guests to pay.",

@@ -1,9 +1,11 @@
-import { Button, Card, Input, Select, Spinner } from '@qm/ui';
+import { Button, Card, Input, LinkButton, Select, Spinner } from '@qm/ui';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from '../../../lib/translation.tsx';
 import {
   paymentPolicyQuery,
+  paymentsConnectedQuery,
   useSavePaymentPolicy,
   type PaymentMode,
   type PaymentPolicy,
@@ -22,7 +24,8 @@ interface Props {
 export function PaymentSettings({ service, org, canManage, onClose }: Props) {
   const { t } = useTranslation('payments');
   const policy = useQuery(paymentPolicyQuery(service.id));
-  if (!policy.data) return <Spinner label={t('admin.loading')} />;
+  const connected = useQuery(paymentsConnectedQuery(org.orgId));
+  if (!policy.data || connected.data === undefined) return <Spinner label={t('admin.loading')} />;
   return (
     <Card className="flex flex-col gap-4" data-testid="payment-settings">
       <div className="flex items-center justify-between gap-3">
@@ -32,11 +35,24 @@ export function PaymentSettings({ service, org, canManage, onClose }: Props) {
         </Button>
       </div>
       {canManage ? null : <p className="text-muted">{t('admin.readOnly')}</p>}
-      <PolicyForm
-        initial={policy.data}
-        target={{ ...org, serviceId: service.id }}
-        canManage={canManage}
-      />
+      {!connected.data && policy.data.mode === 'none' ? (
+        <div className="flex flex-col gap-3" data-testid="payments-not-connected">
+          <p>{t('admin.notConnected')}</p>
+          <LinkButton
+            variant="secondary"
+            className="self-start"
+            render={(p) => <Link to="/admin/integrations" {...p} />}
+          >
+            {t('admin.connectLink')}
+          </LinkButton>
+        </div>
+      ) : (
+        <PolicyForm
+          initial={policy.data}
+          target={{ ...org, serviceId: service.id }}
+          canManage={canManage}
+        />
+      )}
     </Card>
   );
 }

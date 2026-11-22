@@ -3,6 +3,7 @@ import { Outlet } from '@tanstack/react-router';
 import { useTranslation } from '../lib/translation.tsx';
 import { BrandLink } from './BrandLink.tsx';
 import { LocationSwitcher } from '../features/auth/LocationSwitcher.tsx';
+import { AccountMenu } from '../features/auth/AccountMenu.tsx';
 import { OperatorChip } from '../features/operator/OperatorChip.tsx';
 import { SessionLimits } from '../features/auth/SessionLimits.tsx';
 import { ChangePasswordLink } from '../features/auth/ChangePasswordLink.tsx';
@@ -46,12 +47,20 @@ export function StaffLayout({ area }: { area: 'staff' | 'admin' | 'onboarding' |
                 <BrandLink linked={area !== 'onboarding'} />
                 {area === 'onboarding' ? null : <LocationSwitcher />}
               </div>
-              <div className="flex flex-wrap items-center gap-2 sm:justify-end sm:gap-3">
-                {area === 'staff' || area === 'admin' ? <OperatorChip /> : null}
-                {area === 'admin' ? <HelpLink /> : null}
-                <ContactSupportButton />
-                <ChangePasswordLink />
-                <SignOutButton />
+              <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+                {area === 'admin' ? (
+                  <>
+                    <HelpLink />
+                    <AccountMenu />
+                  </>
+                ) : (
+                  <>
+                    {area === 'staff' ? <OperatorChip /> : null}
+                    <ContactSupportButton />
+                    <ChangePasswordLink />
+                    <SignOutButton />
+                  </>
+                )}
               </div>
             </header>
           </div>

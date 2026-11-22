@@ -47,6 +47,7 @@ export function AddLocationPage() {
         title={t('addLocation.title')}
         description={canAdd ? t('addLocation.intro') : t('addLocation.adminsOnly')}
       />
+      <ExtensionSlot name="limits.notice" props={{ kind: 'locations', role: org?.role }} />
       {limited ? (
         <ExtensionSlot
           name="limits.reached"

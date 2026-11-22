@@ -108,6 +108,7 @@ test.describe('as an owner', () => {
   }) => {
     const { staff } = devices;
     await staff.goto('/admin/location');
+    await staff.getByRole('tab', { name: 'Display' }).click();
     const section = staff.getByTestId('announce-settings');
     await section.getByLabel('French').check();
     await section.getByLabel('Repeat each call').selectOption('2');

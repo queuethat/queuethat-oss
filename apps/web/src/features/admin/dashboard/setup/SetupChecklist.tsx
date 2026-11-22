@@ -13,7 +13,8 @@ export interface SetupFacts {
 }
 
 type Step = 'line' | 'hours' | 'team' | 'screen' | 'poster';
-const ROUTES = {
+/** Where each first-run step goes; the wizard's last screen lists the same steps with the same words. */
+export const SETUP_ROUTES = {
   line: '/admin/queues',
   hours: '/admin/location/hours',
   team: '/admin/team',
@@ -95,7 +96,10 @@ export function SetupChecklist({
             </div>
             {done[step] ? null : (
               <div className="flex flex-wrap gap-2">
-                <LinkButton variant="secondary" render={(p) => <Link to={ROUTES[step]} {...p} />}>
+                <LinkButton
+                  variant="secondary"
+                  render={(p) => <Link to={SETUP_ROUTES[step]} {...p} />}
+                >
                   {t(`steps.${step}.action`)}
                 </LinkButton>
                 {step === 'poster' ? (
