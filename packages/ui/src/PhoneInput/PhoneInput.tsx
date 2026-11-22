@@ -141,19 +141,30 @@ export function PhoneInput({
       {...{ id: field.id, label, hint, hintId: field.hintId, error, errorId: field.errorId }}
     >
       <div className="flex gap-2">
-        <SelectControl
-          aria-label={countryLabel}
-          value={country}
-          disabled={disabled}
-          onChange={handleCountry}
-          wrapperClassName="w-32 max-w-[40%] shrink-0"
-        >
-          {countries.map((c) => (
-            <option key={c.code} value={c.code}>
-              {`+${c.dial} ${c.name}`}
-            </option>
-          ))}
-        </SelectControl>
+        {/* The closed picker shows "US +1" (a full name was cut off at 390 px, G-3); the list keeps
+            the full names, and the real select still carries the accessible name. */}
+        <div className="relative w-28 shrink-0">
+          <SelectControl
+            aria-label={countryLabel}
+            value={country}
+            disabled={disabled}
+            onChange={handleCountry}
+            className="text-transparent"
+          >
+            {countries.map((c) => (
+              <option key={c.code} value={c.code} className="text-fg">
+                {`+${c.dial} ${c.name}`}
+              </option>
+            ))}
+          </SelectControl>
+          <span
+            aria-hidden="true"
+            data-testid="phone-country-code"
+            className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
+          >
+            {`${country} +${getCountryCallingCode(country)}`}
+          </span>
+        </div>
         <input
           ref={inputRef}
           id={field.id}

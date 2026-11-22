@@ -227,13 +227,6 @@ export function StatusPage({ token }: { token: string }) {
           </Suspense>
         </QuietBoundary>
       ) : null}
-      {waiting || status === 'called' ? (
-        <QuietBoundary>
-          <Suspense fallback={null}>
-            <Party token={token} visit={v} />
-          </Suspense>
-        </QuietBoundary>
-      ) : null}
       {status === 'called' || status === 'serving' || status === 'served' ? (
         <QuietBoundary>
           <PosPay token={token} />
@@ -253,6 +246,15 @@ export function StatusPage({ token }: { token: string }) {
           </Suspense>
         </QuietBoundary>
       )}
+
+      {/* Below the wait and the venue's details (G-5): the party form is rarely needed. */}
+      {waiting || status === 'called' ? (
+        <QuietBoundary>
+          <Suspense fallback={null}>
+            <Party token={token} visit={v} />
+          </Suspense>
+        </QuietBoundary>
+      ) : null}
 
       {v.guest_actions?.includes('leave') ? <LeaveQueue token={token} /> : null}
       {v.guest_actions?.includes('undo_leave') ? (
@@ -284,6 +286,8 @@ function LeaveQueue({ token }: { token: string }) {
       <ConfirmDestructive
         triggerLabel={t('status.leave.trigger')}
         triggerVariant="secondary"
+        // Quieter than the answers above it (G-5); still a confirmed action (I-9).
+        triggerClassName="border-transparent! bg-transparent! text-muted underline"
         title={t('status.leave.title')}
         description={t('status.leave.body')}
         confirmLabel={t('status.leave.confirm')}

@@ -21,6 +21,8 @@
     "queueOption_one": "{{name}} ({{count}} esperando)",
     "queueOption_other": "{{name}} ({{count}} esperando)",
     "service": "¿Qué necesitas?",
+    "servicePlaceholder": "Elige una opción",
+    "serviceMissing": "Elige lo que necesitas para calcular tu espera.",
     "name": "Nombre",
     "nameMissing": "Escribe tu nombre para que el personal pueda llamarte.",
     "addPerson": "Añadir a otra persona",

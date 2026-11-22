@@ -80,28 +80,54 @@ test('AC1: a called guest taps "I\'m on my way" and staff see "On the way" withi
   await expect(staff.getByTestId('on-the-way-badge')).toHaveText('On the way', { timeout: 3_000 });
 });
 
-test('AC2: "I need more time" at position 2 shows the new position within 3 s, and the count runs down', async ({
+test('AC2: "I need more time" at position 1 shows the new position within 3 s, and the count runs down', async ({
   devices,
 }) => {
   const { guest } = devices;
   const queue = await freshQueue();
-  await join(queue.id, 'First');
-  const token = await join(queue.id, 'Second');
+  const token = await join(queue.id, 'First');
+  await join(queue.id, 'Second');
   await join(queue.id, 'Third');
   await join(queue.id, 'Fourth');
   await join(queue.id, 'Fifth');
   await join(queue.id, 'Sixth');
 
   await guest.goto(`/v/${token}`);
-  await expect(guest.getByTestId('position')).toContainText('2');
+  await expect(guest.getByTestId('position')).toContainText('1');
   await expect(guest.getByTestId('snoozes-left')).toContainText('2 extensions left');
 
   await guest.getByRole('button', { name: 'I need more time' }).click();
-  await expect(guest.getByTestId('position')).toContainText('4', { timeout: 3_000 });
+  await expect(guest.getByTestId('position')).toContainText('3', { timeout: 3_000 });
   await expect(guest.getByTestId('snoozes-left')).toContainText('1 extension left');
 
   await guest.getByRole('button', { name: 'I need more time' }).click();
-  await expect(guest.getByTestId('position')).toContainText('6', { timeout: 3_000 });
-  await expect(guest.getByTestId('snoozes-left')).toHaveText('No more extensions');
-  await expect(guest.getByRole('button', { name: 'I need more time' })).toBeDisabled();
+  await expect(guest.getByTestId('position')).toContainText('5', { timeout: 3_000 });
+  // Fifth in line: the database no longer offers it (G-4).
+  await expect(guest.getByRole('button', { name: 'I need more time' })).toHaveCount(0);
+});
+
+test('G-4: "I need more time" is hidden while waiting far back and shown once near the front', async ({
+  devices,
+}) => {
+  const { guest } = devices;
+  const queue = await freshQueue();
+  await join(queue.id, 'First');
+  await join(queue.id, 'Second');
+  await join(queue.id, 'Third');
+  const token = await join(queue.id, 'Fourth');
+
+  await guest.goto(`/v/${token}`);
+  await expect(guest.getByTestId('position')).toContainText('4');
+  await expect(guest.getByRole('button', { name: 'I need more time' })).toHaveCount(0);
+  await expect(guest.getByTestId('snoozes-left')).toHaveCount(0);
+
+  // Staff clear the line ahead: at third the answer appears.
+  const staff = await staffToken();
+  await rpc(
+    'call_next',
+    { p_queue_id: queue.id, p_counter_id: demo.counters.chair1, p_idempotency_key: randomUUID() },
+    staff,
+  );
+  await expect(guest.getByTestId('position')).toContainText('3', { timeout: 5_000 });
+  await expect(guest.getByRole('button', { name: 'I need more time' })).toBeVisible();
 });
