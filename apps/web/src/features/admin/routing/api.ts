@@ -61,7 +61,7 @@ export const routingQuery = (locationId: string) =>
           .order('name'),
         app
           .from('services')
-          .select('id, name, queues(name)')
+          .select('id, name, queue_services(queues(name))')
           .eq('location_id', locationId)
           .eq('active', true)
           .order('name'),
@@ -87,7 +87,7 @@ export const routingQuery = (locationId: string) =>
         services: services.data!.map((s): RoutingService => ({
           id: s.id,
           name: s.name,
-          queueName: s.queues?.name ?? '',
+          queueName: s.queue_services.flatMap((l) => (l.queues ? [l.queues.name] : [])).join(', '),
         })),
         fields: fields.data!.map((f): RoutingField => ({
           id: f.id,
