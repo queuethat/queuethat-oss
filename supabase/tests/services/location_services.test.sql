@@ -1,7 +1,7 @@
 -- #75 PR B: services belong to the location; queues offer them through app.queue_services.
 begin;
 \ir ../helpers/_setup.psql
-select plan(23);
+select plan(24);
 select tests.create_world();
 
 insert into app.queues (id, org_id, location_id, name, ticket_prefix, sort_order)
@@ -112,6 +112,13 @@ select is((api.apply_industry_template(tests.id('loc_old'), 'shape_old', gen_ran
   'old template shape: the copy per queue becomes one service');
 select is((select count(*)::int from app.queue_services where location_id = tests.id('loc_old')), 2,
   'old template shape: both queues offer it');
+
+-- A bookable service that no queue offers has no slots (appointments need a queue).
+select tests.as_postgres();
+insert into app.services (id, org_id, location_id, name) values (tests.new_id('orphan'), tests.id('org_a'), tests.id('loc_a'), 'Orphan');
+insert into app.booking_policies (org_id, location_id, service_id, bookable) values (tests.id('org_a'), tests.id('loc_a'), tests.id('orphan'), true);
+select is((select count(*)::int from private.slot_candidates(tests.id('orphan'), current_date, current_date + 7)), 0,
+  'a service no queue offers has no bookable slots');
 
 select * from finish();
 rollback;

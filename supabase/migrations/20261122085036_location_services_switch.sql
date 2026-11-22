@@ -14,7 +14,9 @@
 --   Visits and appointments are never rewritten (I-1); a retired copy keeps its history.
 
 alter table app.services alter column queue_id drop not null;
-alter table app.services add column merged_into_id uuid references app.services (id);
+alter table app.services add column merged_into_id uuid;
+-- Same-org only: a manager cannot point at (or probe for) another tenant's service.
+alter table app.services add foreign key (org_id, merged_into_id) references app.services (org_id, id);
 comment on column app.services.merged_into_id is
   'Set when this service was an identical copy retired by private.merge_identical_services; points at the survivor. Reports roll the copy into it.';
 comment on column app.queue_services.sort_order is
@@ -1097,6 +1099,8 @@ begin
   select * into s from app.services where id = p_service_id and active;
   select * into bp from app.booking_policies where service_id = p_service_id and bookable;
   if s.id is null or bp.id is null then return; end if;
+  -- #75: a service no queue offers cannot be booked (appointments need a queue).
+  if private.service_queue(s.id) is null then return; end if;
   select * into l from app.locations where id = s.location_id;
   if not exists (select 1 from app.organizations o where o.id = l.org_id and o.status = 'active') then return; end if;
   dur := coalesce(bp.duration_minutes, s.expected_minutes);
