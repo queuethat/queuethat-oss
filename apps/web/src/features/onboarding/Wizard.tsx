@@ -1,4 +1,5 @@
-import { Button, Card, Input, Stepper } from '@qm/ui';
+import { Button, Card, Disclosure, Input, Stepper } from '@qm/ui';
+import type { TFunction } from 'i18next';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from '../../lib/translation.tsx';
 import {
@@ -9,32 +10,61 @@ import {
   type BusinessSetup,
   type Created,
 } from './api.ts';
+import type { ProviderSetup } from './templates.tsx';
 import { LineLive } from './LineLive.tsx';
 import { CatalogPicker } from './catalog/CatalogPicker.tsx';
 import type { CatalogEntry } from './catalog/api.ts';
-import { defaultProviders, ProviderFields } from './providers/ProviderFields.tsx';
+import { allNamed, defaultProviders, ProviderFields } from './providers/ProviderFields.tsx';
+import { clearDraft, loadDraft, saveDraft } from './draft.ts';
 
 const STEPS = 3;
+
+type T = TFunction<'onboarding'>;
+
+/** "3 barbers, 6 services": what the owner just made, in their words, not table counts. */
+function summarise(t: T, entry: CatalogEntry, providers: ProviderSetup | null): string {
+  const services = new Set(entry.queues.flatMap((q) => q.services.map((s) => s.name))).size;
+  return providers && entry.providers
+    ? t('live.summaryProviders', {
+        count: providers.names.length,
+        noun: entry.providers.noun,
+        services,
+      })
+    : t('live.summaryQueues', { count: entry.queues.length, services });
+}
 
 /** Three short steps from a new account to a business with a working queue (A3, #43). */
 export function Wizard() {
   const { t } = useTranslation('onboarding');
   const setUp = useSetUpBusiness();
-  const [step, setStep] = useState(1);
+  // A reload mid-wizard resumes from what was typed (O-5, #65).
+  const [draft] = useState(loadDraft);
+  const [step, setStep] = useState(draft?.step ?? 1);
   const [zones] = useState(timeZones);
-  const [setup, setSetup] = useState<BusinessSetup>(() => ({
-    businessName: '',
-    locationName: '',
-    address: '',
-    timeZone: browserTimeZone(),
-    queueName: t('queue.defaultName'),
-    serviceName: t('queue.defaultService'),
-    expectedMinutes: 10,
-    templateKey: null,
-  }));
+  const [setup, setSetup] = useState<BusinessSetup>(
+    () =>
+      draft?.setup ?? {
+        businessName: '',
+        locationName: '',
+        address: '',
+        timeZone: browserTimeZone(),
+        queueName: t('queue.defaultName'),
+        serviceName: t('queue.defaultService'),
+        expectedMinutes: 10,
+        templateKey: null,
+      },
+  );
+  // The queue form under "Start blank" is closed unless the owner opens it; open means no template.
+  const [blank, setBlank] = useState(draft?.blank ?? false);
   const [template, setTemplate] = useState<CatalogEntry | null>(null);
   const [created, setCreated] = useState<Created | null>(null);
-  const [finished, setFinished] = useState<Created | null>(null);
+  const [finished, setFinished] = useState<{ created: Created; summary: string | null } | null>(
+    null,
+  );
+  const [unnamed, setUnnamed] = useState(false);
+  useEffect(() => {
+    if (!finished) saveDraft({ step, setup, blank });
+  }, [finished, step, setup, blank]);
   const heading = useRef<HTMLLegendElement>(null);
   // Focus follows the step so keyboard and screen-reader users land on its heading.
   useEffect(() => {
@@ -69,10 +99,26 @@ export function Wizard() {
     event.preventDefault();
     if (zoneInvalid) return;
     if (step < STEPS) return setStep(step + 1);
+    const useTemplate = !blank && template !== null;
+    const providers = useTemplate ? (setup.providers ?? null) : null;
+    // Every line shown is named; whitespace does not count as a name.
+    if (providers && !allNamed(providers)) return setUnnamed(true);
+    setUnnamed(false);
+    const final: BusinessSetup = {
+      ...setup,
+      templateKey: useTemplate ? template.key : null,
+      providers: providers && { ...providers, names: providers.names.map((n) => n.trim()) },
+    };
     setUp.mutate(
-      { setup, resume: created },
+      { setup: final, resume: created },
       {
-        onSuccess: (done) => setFinished(done),
+        onSuccess: (done) => {
+          clearDraft();
+          setFinished({
+            created: done,
+            summary: useTemplate ? summarise(t, template, providers) : null,
+          });
+        },
         onError: (error) => {
           if (error instanceof SetupError) setCreated(error.created);
         },
@@ -80,7 +126,7 @@ export function Wizard() {
     );
   };
 
-  if (finished) return <LineLive created={finished} />;
+  if (finished) return <LineLive created={finished.created} summary={finished.summary} />;
 
   return (
     <Card className="mx-auto mt-8 flex max-w-lg flex-col gap-4">
@@ -91,9 +137,11 @@ export function Wizard() {
         current={step - 1}
       />
       <p role="alert" className="font-medium text-danger-strong empty:hidden">
-        {failure
-          ? t(`errors.${known.includes(failure) ? failure : 'unknown'}` as 'errors.unknown')
-          : null}
+        {unnamed
+          ? t('errors.unnamed')
+          : failure
+            ? t(`errors.${known.includes(failure) ? failure : 'unknown'}` as 'errors.unknown')
+            : null}
       </p>
       <form className="flex flex-col gap-4" onSubmit={submit}>
         {step === 1 ? (
@@ -149,44 +197,51 @@ export function Wizard() {
             <legend ref={heading} tabIndex={-1} className="text-lg font-semibold outline-none">
               {t('queue.heading')}
             </legend>
-            <CatalogPicker
-              chosen={template}
-              hint={setup.businessName}
-              busy={setUp.isPending}
-              onUse={(entry) => {
-                setTemplate(entry);
-                setSetup((s) => ({
-                  ...s,
-                  templateKey: entry?.key ?? null,
-                  providers: entry?.providers ? defaultProviders(entry.providers, t) : null,
-                }));
-              }}
-            />
-            {template?.providers && setup.providers ? (
-              <ProviderFields
-                noun={template.providers.noun}
-                value={setup.providers}
-                onChange={(providers) => setSetup((s) => ({ ...s, providers }))}
+            {/* Stays mounted while blank is open so the pick and typed names survive closing it. */}
+            <div hidden={blank} className="flex flex-col gap-4">
+              <CatalogPicker
+                select
+                chosen={null}
+                initialKey={draft?.setup.templateKey ?? null}
+                hint={setup.businessName}
+                busy={setUp.isPending}
+                onUse={(entry) => {
+                  setTemplate(entry);
+                  // No match leaves the last pick alone; a restored draft keeps its typed names.
+                  if (entry)
+                    setSetup((s) =>
+                      s.templateKey === entry.key
+                        ? s
+                        : {
+                            ...s,
+                            templateKey: entry.key,
+                            providers: entry.providers ? defaultProviders(entry.providers) : null,
+                          },
+                    );
+                }}
               />
-            ) : null}
-            {setup.templateKey ? null : (
-              <>
-                <p>
-                  {t('catalog.orBlank')} {t('queue.intro')}
-                </p>
-                <Input label={t('queue.name')} required maxLength={80} {...fields.queueName} />
-                <Input label={t('queue.service')} required maxLength={80} {...fields.serviceName} />
-                <Input
-                  label={t('queue.minutes')}
-                  type="number"
-                  inputMode="numeric"
-                  min={1}
-                  max={600}
-                  required
-                  {...fields.expectedMinutes}
+              {!blank && template?.providers && setup.providers ? (
+                <ProviderFields
+                  noun={template.providers.noun}
+                  value={setup.providers}
+                  onChange={(providers) => setSetup((s) => ({ ...s, providers }))}
                 />
-              </>
-            )}
+              ) : null}
+            </div>
+            <Disclosure title={t('catalog.startBlank')} open={blank} onOpenChange={setBlank}>
+              <p>{t('queue.intro')}</p>
+              <Input label={t('queue.name')} required maxLength={80} {...fields.queueName} />
+              <Input label={t('queue.service')} required maxLength={80} {...fields.serviceName} />
+              <Input
+                label={t('queue.minutes')}
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={600}
+                required
+                {...fields.expectedMinutes}
+              />
+            </Disclosure>
           </fieldset>
         ) : null}
         <div className="flex justify-between gap-4">

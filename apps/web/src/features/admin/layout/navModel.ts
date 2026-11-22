@@ -59,7 +59,7 @@ interface Entry {
   sidebarLabel?: SectionId;
 }
 
-type GroupId = 'run' | 'team' | 'setup' | 'insights' | 'account' | 'danger';
+type GroupId = 'run' | 'team' | 'setup' | 'advanced' | 'insights' | 'account' | 'danger';
 
 /**
  * Every admin destination, grouped by the owner's job. `run` opens by default; the other labelled
@@ -93,19 +93,24 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
     entries: [
       { to: '/admin/location', key: 'location', icon: iconSliders, exact: true },
       { to: '/admin/queues', key: 'queues', icon: iconSliders },
+      { to: '/admin/location/hours', key: 'hours', icon: iconClock },
+      { to: '/admin/forms', key: 'forms', icon: iconList },
+      { to: '/admin/templates', key: 'templates', icon: iconBell },
+      { to: '/admin/poster', key: 'poster', icon: iconQr },
+    ],
+  },
+  {
+    id: 'advanced',
+    entries: [
       { to: '/admin/routing', key: 'routing', icon: iconSliders },
       { to: '/admin/queues/priority', key: 'priority', icon: iconSliders },
       { to: '/admin/resources', key: 'counters', icon: iconSliders },
       { to: '/admin/availability', key: 'availability', icon: iconCalendar },
-      { to: '/admin/location/hours', key: 'hours', icon: iconClock },
-      { to: '/admin/forms', key: 'forms', icon: iconList },
-      { to: '/admin/templates', key: 'templates', icon: iconBell },
       { to: '/admin/journeys', key: 'journeys', icon: iconList },
       { to: '/admin/branding', key: 'branding', icon: iconPencil },
       { to: '/admin/widget', key: 'widget', icon: iconQr },
       { to: '/admin/devices', key: 'devices', icon: iconMonitor },
       { to: '/admin/signage', key: 'signage', icon: iconMonitor },
-      { to: '/admin/poster', key: 'poster', icon: iconQr },
       { to: '/admin/blocks', key: 'blocks', icon: iconShield },
       { to: '/admin/location/new', key: 'addLocation', icon: iconSliders, adminOnly: true },
     ],

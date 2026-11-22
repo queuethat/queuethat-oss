@@ -30,6 +30,7 @@
   "errors": {
     "invalid_timezone": "Pick a time zone from the list.",
     "invalid_input": "Fill in the names.",
+    "unnamed": "Name every line before you continue.",
     "permission_denied": "This account can't create a business. Paired screens can't, for example.",
     "unknown": "Something went wrong. Your progress is saved; try again.",
     "hasVisits": "This location already has guests today, so a template can't be applied."
@@ -50,15 +51,13 @@
       "retail_repair": "Drop-off and Pick-up services at two desks.",
       "events": "A check-in queue with two desks and no wait estimates."
     },
-    "summary_other": "Created {{count}} queues, {{services}} services and {{counters}} counters.",
     "editQueues": "Edit queues and services",
     "editCounters": "Edit counters",
     "apply": "Apply a template",
     "applyTitle": "Apply a template",
     "applyIntro": "Adds queues, services and counters in one step. Anything with the same name is kept. Only possible before today's first guest.",
     "cancel": "Cancel",
-    "applied": "Template applied.",
-    "summary_one": "Created {{count}} queue, {{services}} services and {{counters}} counters."
+    "applied": "Template applied."
   },
   "steps": {
     "label": "Setup progress",
@@ -78,16 +77,10 @@
     "poster": "Print poster",
     "openPage": "Open join page",
     "tryIt": "Scan this with your phone, join, then call yourself from the console.",
-    "nextTitle": "Finish setting up",
-    "hours": "Set your opening hours",
-    "hoursHint": "Until you set hours, your line accepts guests at any time of day.",
-    "hoursAction": "Set hours",
-    "team": "Invite your team",
-    "teamHint": "Staff call the next guest from their own phone.",
-    "teamAction": "Invite staff",
-    "tv": "Pair a TV in your waiting room",
-    "tvHint": "Show who is being called. Optional.",
-    "tvAction": "Pair a TV",
+    "summaryProviders_one": "{{count}} {{noun}}, {{services}} services",
+    "summaryProviders_other": "{{count}} {{noun}}s, {{services}} services",
+    "summaryQueues_one": "{{count}} queue, {{services}} services",
+    "summaryQueues_other": "{{count}} queues, {{services}} services",
     "console": "Open the staff console",
     "dashboard": "Go to the dashboard",
     "alerts": {
@@ -113,7 +106,7 @@
     "use": "Use this",
     "basedOn": "Based on {{name}} v{{version}}",
     "change": "Change",
-    "orBlank": "Or start blank."
+    "startBlank": "Start blank instead"
   },
   "providers": {
     "heading": "Your {{noun}} lines",

@@ -3,7 +3,7 @@ import type { Database } from '@qm/db-types';
 import type { ComponentType } from 'react';
 
 /** The admin navigation groups an extension page can join. */
-export type ExtensionNavGroup = 'run' | 'team' | 'setup' | 'insights' | 'account';
+export type ExtensionNavGroup = 'run' | 'team' | 'setup' | 'advanced' | 'insights' | 'account';
 
 /**
  * A page served at `/admin/x/<path>`. The module loads only when the page opens, so extension
@@ -84,6 +84,12 @@ export interface ExtensionSlotProps {
     limit: number | undefined;
     role: string | undefined;
   };
+  /**
+   * Before a form that adds a team member (`members`) or a location (`locations`), so a deployment
+   * with plan limits can say what the plan allows before the person fills anything in. Renders
+   * nothing when none is installed; `limits.reached` still answers a refusal.
+   */
+  'limits.notice': { kind: 'members' | 'locations'; role: string | undefined };
   /** At the top of the Integrations page, above the channel cards. */
   'integrations.top': { orgId: string; role: string };
   /** One more item in the "how guests hear from you" list on the go-live screen. */

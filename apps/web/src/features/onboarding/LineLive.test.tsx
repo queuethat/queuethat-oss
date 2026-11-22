@@ -30,7 +30,7 @@ const view = () =>
     </QueryClientProvider>,
   );
 
-beforeAll(() => loadNamespaces('onboarding'));
+beforeAll(() => loadNamespaces('onboarding', 'admin-setup'));
 beforeEach(() => m.rpc.mockReset());
 afterEach(cleanup);
 

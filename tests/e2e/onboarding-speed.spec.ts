@@ -60,8 +60,8 @@ test('a new owner goes from sign-up to a printable QR poster in under a minute, 
   await (await expectNextNotSilentlyDisabled('Next')).click();
   screens += 1;
 
-  // First queue step: the defaults are accepted as they come.
-  await expect(staff.getByLabel('Queue name')).toHaveValue('Walk-ins');
+  // First queue step: the recommended template is accepted as it comes; one button, no extra choice.
+  await expect(staff.getByRole('button', { name: 'Use this' })).toHaveCount(0);
   await (await expectNextNotSilentlyDisabled('Create my business')).click();
   screens += 1;
 

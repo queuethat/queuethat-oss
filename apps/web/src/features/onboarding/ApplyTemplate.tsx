@@ -80,7 +80,7 @@ export function ApplyTemplate({ locationId }: { locationId: string }) {
             onUse={(entry) => {
               if (entry?.providers) {
                 setChosen(entry);
-                setProviders(defaultProviders(entry.providers, t));
+                setProviders(defaultProviders(entry.providers));
               } else if (entry) run(entry.key, null);
               else setChosen(null);
             }}
