@@ -7,6 +7,7 @@ import { useCurrentLocation, useCurrentOrg } from '../auth/current.ts';
 import { JoinQr } from '../admin/poster/JoinQr.tsx';
 import { SETUP_ROUTES } from '../admin/dashboard/setup/SetupChecklist.tsx';
 import { publicJoinUrl } from '../admin/poster/url.ts';
+import { FirstTest } from '../admin/dashboard/setup/FirstTest.tsx';
 import type { Created } from './api.ts';
 
 const FIRST_RUN_TITLE = 'title';
@@ -94,7 +95,6 @@ export function LineLive({
               {t('live.openPage')}
             </LinkButton>
           </div>
-          <p className="text-sm text-muted">{t('live.tryIt')}</p>
         </Card>
 
         <Card className="flex flex-col gap-4">
@@ -128,6 +128,8 @@ export function LineLive({
           ) : null}
         </Card>
       </div>
+
+      <FirstTest />
 
       <Card className="flex flex-col gap-2" data-testid="guest-alerts">
         <h2 className="text-lg font-semibold">{t('live.alerts.title')}</h2>

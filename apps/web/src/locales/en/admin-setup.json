@@ -30,5 +30,29 @@
       "action": "Open poster",
       "markDone": "I've printed it"
     }
+  },
+  "firstTest": {
+    "title": "Try it yourself in a minute",
+    "intro": "Join your own line from a phone, then call yourself. It shows you what your guests see.",
+    "doneTitle": "Your line works",
+    "doneIntro": "A guest joined and was called. This is what your guests will see.",
+    "skip": "Skip the test",
+    "close": "Close",
+    "steps": {
+      "open": {
+        "title": "Open your join link on your phone",
+        "hint": "Scan the QR code or open the link.",
+        "action": "Open join page"
+      },
+      "join": {
+        "title": "Join the line",
+        "hint": "Enter any name and tap Join."
+      },
+      "call": {
+        "title": "Call yourself from the console",
+        "hint": "Open the console and call the next guest.",
+        "action": "Open console"
+      }
+    }
   }
 }

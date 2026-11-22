@@ -2,6 +2,7 @@ import { queryOptions, useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '../../../../lib/supabase.ts';
 import { useSession } from '../../../auth/api.ts';
 import { useCurrentLocation, useCurrentOrg } from '../../../auth/current.ts';
+import { useLiveQuery } from '../../../../lib/live.ts';
 
 // DS-15 (#1019): what the Today checklist shows. The facts come from api.org_setup_state (the
 // database decides what "set up" means); the two things it cannot know, "printed the poster"
@@ -35,6 +36,8 @@ export function useSetupState(orgId: string | undefined, locationId: string | un
 export interface SetupProgress {
   posterPrinted?: boolean;
   dismissed?: boolean;
+  /** Hid the guided first-guest test (#68). */
+  firstTestDismissed?: boolean;
 }
 
 type AllProgress = Record<string, SetupProgress>;
@@ -66,4 +69,50 @@ export function useNoVisitsYet(): boolean {
   const { location } = useCurrentLocation();
   const org = useCurrentOrg();
   return useSetupState(org?.id, location?.id).data?.has_visit === false;
+}
+
+/** What the guided first-guest test ticks from, counted over the org's visits. */
+export interface FirstTestFacts {
+  /** Someone has joined a line (the owner on their own phone, usually). */
+  joined: boolean;
+  /** Any visit has been called. */
+  called: boolean;
+  /** Any visit has been served: the owner has a real day behind them, so the test is moot. */
+  served: boolean;
+}
+
+async function countVisits(orgId: string, filter: 'any' | 'called' | 'served') {
+  let q = supabase
+    .schema('app')
+    .from('visits')
+    .select('id', { count: 'exact', head: true })
+    .eq('org_id', orgId);
+  if (filter === 'called') q = q.not('called_at', 'is', null);
+  if (filter === 'served') q = q.eq('status', 'served');
+  const { count, error } = await q;
+  if (error) throw error;
+  return (count ?? 0) > 0;
+}
+
+/**
+ * Whether the org has any visit, a called visit and a served visit. Read from app.visits under the
+ * member's own RLS (no new RPC, #68) and refetched on every signal on the location's topic, so
+ * the test's steps tick without a reload. Disabled until there is an org to ask about.
+ */
+export function useFirstTestFacts(orgId: string | undefined, locationId: string | undefined) {
+  return useLiveQuery<FirstTestFacts>({
+    queryKey: ['admin', 'first-test', orgId, locationId],
+    queryFn: async () => {
+      const [joined, called, served] = await Promise.all([
+        countVisits(orgId ?? '', 'any'),
+        countVisits(orgId ?? '', 'called'),
+        countVisits(orgId ?? '', 'served'),
+      ]);
+      return { joined, called, served };
+    },
+    topic: locationId ? `loc:${locationId}` : null,
+    enabled: !!orgId && !!locationId,
+    jitterMs: 0,
+    retry: false,
+  });
 }

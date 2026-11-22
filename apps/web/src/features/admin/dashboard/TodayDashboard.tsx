@@ -7,6 +7,7 @@ import { EndOfDayCard } from './EndOfDayCard.tsx';
 import { RightNow } from './RightNowCard.tsx';
 import { useTodayStats } from './api.ts';
 import { useSetupProgress, useSetupState } from './setup/api.ts';
+import { FirstTest } from './setup/FirstTest.tsx';
 import { doneSteps, SetupChecklist } from './setup/SetupChecklist.tsx';
 
 const TILES = [
@@ -45,6 +46,7 @@ export function TodayDashboard() {
       />
       {showTiles ? <RightNow locationId={location?.id} timeZone={location?.tz ?? 'UTC'} /> : null}
       <LocationRollup />
+      <FirstTest />
       {checklist && setup ? (
         <SetupChecklist facts={setup} progress={progress} onProgress={update} />
       ) : null}
