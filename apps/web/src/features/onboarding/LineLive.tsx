@@ -5,8 +5,12 @@ import { useTranslation } from '../../lib/translation.tsx';
 import { ExtensionSlot } from '../../extensions/ExtensionSlot.tsx';
 import { useCurrentLocation, useCurrentOrg } from '../auth/current.ts';
 import { JoinQr } from '../admin/poster/JoinQr.tsx';
+import { SETUP_ROUTES } from '../admin/dashboard/setup/SetupChecklist.tsx';
 import { publicJoinUrl } from '../admin/poster/url.ts';
 import type { Created } from './api.ts';
+
+const FIRST_RUN_TITLE = 'title';
+const FIRST_RUN = ['hours', 'team', 'screen'] as const;
 
 /**
  * The last wizard screen: the line exists, so share it. The join link and QR come first because
@@ -14,8 +18,16 @@ import type { Created } from './api.ts';
  * Whether a queue with no hours accepts guests is the database's call (a location with no weekly
  * hours is open all day), so this screen only says what it does.
  */
-export function LineLive({ created }: { created: Created }) {
+export function LineLive({
+  created,
+  summary = null,
+}: {
+  created: Created;
+  /** What the owner just made, as one plain sentence ("3 barbers, 6 services"). */
+  summary?: string | null;
+}) {
   const { t } = useTranslation('onboarding');
+  const { t: ts } = useTranslation('admin-setup');
   const { location } = useCurrentLocation();
   const org = useCurrentOrg();
   const heading = useRef<HTMLHeadingElement>(null);
@@ -44,13 +56,9 @@ export function LineLive({ created }: { created: Created }) {
           {t('live.title', { name: location.name })}
         </h1>
         <p className="max-w-prose text-muted">{t('live.intro')}</p>
-        {template ? (
+        {summary ? (
           <p role="status" className="text-sm text-muted">
-            {t('templates.summary', {
-              count: template.queuesCreated,
-              services: template.servicesCreated,
-              counters: template.countersCreated,
-            })}
+            {summary}
           </p>
         ) : null}
       </div>
@@ -90,47 +98,23 @@ export function LineLive({ created }: { created: Created }) {
         </Card>
 
         <Card className="flex flex-col gap-4">
-          <h2 className="text-lg font-semibold">{t('live.nextTitle')}</h2>
+          <h2 className="text-lg font-semibold">{ts(FIRST_RUN_TITLE)}</h2>
           <ul className="flex flex-col gap-4">
-            <li className="flex flex-col gap-2">
-              <div>
-                <p className="font-semibold">{t('live.hours')}</p>
-                <p className="text-sm text-muted">{t('live.hoursHint')}</p>
-              </div>
-              <LinkButton
-                variant="secondary"
-                className="w-fit"
-                render={(p) => <Link to="/admin/location/hours" {...p} />}
-              >
-                {t('live.hoursAction')}
-              </LinkButton>
-            </li>
-            <li className="flex flex-col gap-2">
-              <div>
-                <p className="font-semibold">{t('live.team')}</p>
-                <p className="text-sm text-muted">{t('live.teamHint')}</p>
-              </div>
-              <LinkButton
-                variant="secondary"
-                className="w-fit"
-                render={(p) => <Link to="/admin/team" {...p} />}
-              >
-                {t('live.teamAction')}
-              </LinkButton>
-            </li>
-            <li className="flex flex-col gap-2">
-              <div>
-                <p className="font-semibold">{t('live.tv')}</p>
-                <p className="text-sm text-muted">{t('live.tvHint')}</p>
-              </div>
-              <LinkButton
-                variant="secondary"
-                className="w-fit"
-                render={(p) => <Link to="/admin/devices" {...p} />}
-              >
-                {t('live.tvAction')}
-              </LinkButton>
-            </li>
+            {FIRST_RUN.map((step) => (
+              <li key={step} className="flex flex-col gap-2">
+                <div>
+                  <p className="font-semibold">{ts(`steps.${step}.title`)}</p>
+                  <p className="text-sm text-muted">{ts(`steps.${step}.hint`)}</p>
+                </div>
+                <LinkButton
+                  variant="secondary"
+                  className="w-fit"
+                  render={(p) => <Link to={SETUP_ROUTES[step]} {...p} />}
+                >
+                  {ts(`steps.${step}.action`)}
+                </LinkButton>
+              </li>
+            ))}
           </ul>
           {template ? (
             <div className="flex flex-wrap gap-2 border-t border-border pt-4">
