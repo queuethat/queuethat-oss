@@ -38,7 +38,7 @@ export const journeysQuery = (locationId: string) =>
         supabase
           .schema('app')
           .from('services')
-          .select('id, name, journey_id, queues(name)')
+          .select('id, name, journey_id, queue_services(queues(name))')
           .eq('location_id', locationId)
           .eq('active', true)
           .order('name'),
@@ -57,7 +57,7 @@ export const journeysQuery = (locationId: string) =>
         services: services.data.map((s) => ({
           id: s.id,
           name: s.name,
-          queueName: s.queues?.name ?? '',
+          queueName: s.queue_services.flatMap((l) => (l.queues ? [l.queues.name] : [])).join(', '),
         })),
       };
     },
