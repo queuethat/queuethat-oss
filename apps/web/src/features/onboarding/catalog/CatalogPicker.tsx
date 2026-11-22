@@ -1,6 +1,6 @@
 import { Button, Card, Input, RadioGroup } from '@qm/ui';
 import { useQuery } from '@tanstack/react-query';
-import { useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from '../../../lib/translation.tsx';
 import { catalogQuery, rankCatalog, type CatalogEntry } from './api.ts';
 
@@ -24,6 +24,8 @@ export function CatalogPicker({
   onUse,
   hint = '',
   busy = false,
+  select = false,
+  initialKey = null,
 }: {
   /** The template in use, or null while choosing. */
   chosen: CatalogEntry | null;
@@ -32,15 +34,40 @@ export function CatalogPicker({
   /** Text to recommend from before anything is typed, such as the business name. */
   hint?: string;
   busy?: boolean;
+  /**
+   * The wizard's mode: there is no "Use this" button. The previewed template is the choice and is
+   * reported through `onUse` as it changes, so the step's one button ("Create my business") applies it.
+   */
+  select?: boolean;
+  /** Template to preselect, so a restored draft shows the same pick. */
+  initialKey?: string | null;
 }) {
   const { t, i18n } = useTranslation('onboarding');
   const name = useTemplateName();
   const headingId = useId();
   const { data: catalog = [] } = useQuery(catalogQuery(i18n.language));
   const [query, setQuery] = useState('');
-  const [picked, setPicked] = useState<string | null>(null);
+  const [picked, setPicked] = useState<string | null>(initialKey);
+  const latestUse = useRef(onUse);
+  useEffect(() => {
+    latestUse.current = onUse;
+  });
 
-  if (chosen)
+  const ranked = rankCatalog(catalog, query.trim() ? query : hint);
+  const recommended = ranked[0] ?? null;
+  const shown = (
+    query.trim() ? ranked : [...ranked.slice(0, 1), ...catalog.filter((e) => e !== recommended)]
+  ).slice(0, SHOWN);
+  const preview =
+    shown.find((e) => e.key === picked) ?? (picked === null ? recommended : null) ?? null;
+  const previewKey = preview?.key ?? null;
+  useEffect(() => {
+    if (select) latestUse.current(preview);
+    // Only a change of the previewed template is news; `preview` itself is rebuilt every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [select, previewKey]);
+
+  if (chosen && !select)
     return (
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p role="status" className="font-medium">
@@ -51,14 +78,6 @@ export function CatalogPicker({
         </Button>
       </div>
     );
-
-  const ranked = rankCatalog(catalog, query.trim() ? query : hint);
-  const recommended = ranked[0] ?? null;
-  const shown = (
-    query.trim() ? ranked : [...ranked.slice(0, 1), ...catalog.filter((e) => e !== recommended)]
-  ).slice(0, SHOWN);
-  const preview =
-    shown.find((e) => e.key === picked) ?? (picked === null ? recommended : null) ?? null;
 
   return (
     <div role="group" aria-labelledby={headingId} className="flex flex-col gap-3">
@@ -96,9 +115,11 @@ export function CatalogPicker({
       {preview ? (
         <>
           <TemplatePreview entry={preview} />
-          <Button className="self-start" loading={busy} onClick={() => onUse(preview)}>
-            {t('catalog.use')}
-          </Button>
+          {select ? null : (
+            <Button className="self-start" loading={busy} onClick={() => onUse(preview)}>
+              {t('catalog.use')}
+            </Button>
+          )}
         </>
       ) : null}
     </div>

@@ -12,11 +12,13 @@ import type { Page } from '@playwright/test';
 test.use({ staffUser: null });
 
 /** Searches the catalog, checks the recommended pick and its guest preview, then uses it. */
-async function useTemplate(page: Page, search: string, name: string) {
+async function useTemplate(page: Page, search: string, name: string, apply = false) {
   await page.getByLabel('Search templates').fill(search);
   await expect(page.getByRole('radio', { name: `${name} (recommended)` })).toBeChecked();
   await expect(page.getByRole('region', { name: `Preview of ${name}` })).toBeVisible();
-  await page.getByRole('button', { name: 'Use this' }).click();
+  // The wizard has no "Use this"; the location page's dialog still does.
+  if (apply) await page.getByRole('button', { name: 'Use this' }).click();
+  else await expect(page.getByRole('button', { name: 'Use this' })).toHaveCount(0);
 }
 
 async function toTemplateStep(staff: Page, businessName = `Templates ${Date.now()}`) {
@@ -44,15 +46,26 @@ test('picking Barber creates its queue, services and chairs, then links to edit 
   const preview = staff.getByRole('region', { name: 'Preview of Barber' });
   await expect(preview).toContainText('Haircut, about 30 min');
   await expectNoSeriousA11yViolations(staff);
-  await staff.getByRole('button', { name: 'Use this' }).click();
-  await expect(staff.getByText('Based on Barber v2')).toBeVisible();
+  // One button on the step; the blank queue form is collapsed.
+  await expect(staff.getByRole('button', { name: 'Use this' })).toHaveCount(0);
   await expect(staff.getByLabel('Queue name')).toHaveCount(0);
+  // One barber line to start, and a line with no name cannot be made.
+  await expect(staff.getByLabel('Name of barber 1')).toHaveValue('');
+  await staff.getByRole('button', { name: 'Create my business' }).click();
+  await expect(staff.getByText('Your line is live')).toHaveCount(0);
+  await staff.getByLabel('How many? (one line per barber)').fill('2');
+  await staff.getByLabel('Name of barber 1').fill('Sam');
+  await staff.getByLabel('Name of barber 2').fill('   ');
+  await staff.getByRole('button', { name: 'Create my business' }).click();
+  await expect(staff.getByText('Name every line before you continue.')).toBeVisible();
+  await staff.getByLabel('Name of barber 2').fill('Alex');
   await staff.getByRole('button', { name: 'Create my business' }).click();
 
   await expect(staff.getByText('Your line is live')).toBeVisible();
-  await expect(staff.getByRole('status')).toHaveText(
-    'Created 4 queues, 24 services and 3 counters.',
-  );
+  await expect(staff.getByRole('status').first()).toHaveText('2 barbers, 6 services');
+  // The live screen and Today share one first-run list and its words.
+  await expect(staff.getByRole('heading', { name: 'Get your line ready' })).toBeVisible();
+  await expect(staff.getByText('Pair a screen', { exact: true }).first()).toBeVisible();
   await expectNoSeriousA11yViolations(staff);
   const rows = await readAs(email, [
     'queues?select=name,kind&order=name',
@@ -65,12 +78,11 @@ test('picking Barber creates its queue, services and chairs, then links to edit 
   ];
   rows[1] = unique(rows[1]);
   expect(rows).toEqual([
-    // Three barbers' own lines plus "Anyone available", each with the template's services (T4).
+    // The two named barbers' lines plus "Anyone available"; no unnamed "Barber 3" (T4, #65).
     [
+      { name: 'Alex', kind: 'provider' },
       { name: 'Anyone available', kind: 'pool' },
-      { name: 'Barber 1', kind: 'provider' },
-      { name: 'Barber 2', kind: 'provider' },
-      { name: 'Barber 3', kind: 'provider' },
+      { name: 'Sam', kind: 'provider' },
     ],
     [
       { name: 'Beard trim', expected_minutes: 15 },
@@ -98,6 +110,9 @@ test('the clinic card explains that names are never shown, and the guardrail hol
     'Names are never shown on screens',
   );
   await useTemplate(staff, 'walk-in clinic', 'Walk-in clinic');
+  // If the template has personal lines, each needs a name before anything is made.
+  const lineName = staff.getByLabel(/^Name of .* 1$/);
+  if (await lineName.count()) await lineName.fill('Dr. Lee');
   await staff.getByRole('button', { name: 'Create my business' }).click();
   await expect(staff.getByText('Your line is live')).toBeVisible();
   const [orgs] = await readAs(email, ['organizations?select=health_tagged']);
@@ -130,14 +145,28 @@ test('AC1 (data): picking Restaurant sets party size 1-12 on its queue', async (
 test('AC2: Start blank behaves like the original wizard', async ({ devices }) => {
   const { staff } = devices;
   await toTemplateStep(staff);
-  // Nothing is used until "Use this"; Enter in the search box never submits the step.
+  // Enter in the search box never submits the step; "Start blank" opens the hand-made queue.
   await staff.getByLabel('Search templates').fill('nothing like this');
   await staff.getByLabel('Search templates').press('Enter');
   await expect(staff.getByText('No template matches. Try another word.')).toBeVisible();
+  await staff.getByRole('button', { name: 'Start blank instead' }).click();
   await expect(staff.getByLabel('Queue name')).toHaveValue('Walk-ins');
   await staff.getByRole('button', { name: 'Create my business' }).click();
   await expect(staff.getByText('Your line is live')).toBeVisible();
   await expect(staff.getByRole('link', { name: 'Edit queues and services' })).toHaveCount(0);
+});
+
+test('a reload mid-wizard keeps what was typed', async ({ devices }) => {
+  const { staff } = devices;
+  await toTemplateStep(staff, 'Reload Barber Shop');
+  await staff.getByLabel('Name of barber 1').fill('Sam');
+  await staff.reload();
+  await expect(staff.getByLabel('Name of barber 1')).toHaveValue('Sam');
+  await expect(staff.getByRole('radio', { name: 'Barber (recommended)' })).toBeChecked();
+  await staff.getByRole('button', { name: 'Back' }).click();
+  await expect(staff.getByLabel('Location name')).toHaveValue('Main Street');
+  await staff.getByRole('button', { name: 'Back' }).click();
+  await expect(staff.getByLabel('Business name')).toHaveValue('Reload Barber Shop');
 });
 
 test('an owner applies a template from the location page while it has no visits', async ({
@@ -148,7 +177,7 @@ test('an owner applies a template from the location page while it has no visits'
   await signInTo(staff, email, '/admin/location');
   await staff.getByRole('tab', { name: 'Advanced' }).click();
   await staff.getByRole('button', { name: 'Apply a template' }).click();
-  await useTemplate(staff, 'service counter', 'Service counter');
+  await useTemplate(staff, 'service counter', 'Service counter', true);
   await expect(staff.getByText('Template applied.')).toBeVisible();
   const [queues] = await readAs(email, ['queues?select=name']);
   expect(queues).toEqual([{ name: 'Counter service' }]);

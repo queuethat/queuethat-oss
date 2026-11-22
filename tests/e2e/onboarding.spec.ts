@@ -26,6 +26,9 @@ test('AC1: the wizard creates the org, location, owner membership and a default 
   await staff.getByLabel('Time zone').fill('Europe/Berlin');
   await expectNoSeriousA11yViolations(staff);
   await staff.getByRole('button', { name: 'Next' }).click();
+  // The template is the main path; the hand-made queue sits under "Start blank".
+  await expect(staff.getByLabel('Queue name')).toHaveCount(0);
+  await staff.getByRole('button', { name: 'Start blank instead' }).click();
   await expect(staff.getByLabel('Queue name')).toHaveValue('Walk-ins');
   await expect(staff.getByLabel('Usual minutes per customer')).toHaveValue('10');
   await staff.getByRole('button', { name: 'Create my business' }).click();

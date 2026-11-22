@@ -65,9 +65,14 @@ test('three doctors named by the owner get their own lines, a pool, and the form
   await staff.getByRole('button', { name: 'Next' }).click();
 
   await staff.getByLabel('Search templates').fill('test practice');
-  await staff.getByRole('button', { name: 'Use this' }).click();
-  await expect(staff.getByLabel('How many? (one line per doctor)')).toHaveValue('3');
-  await expect(staff.getByLabel('Name of doctor 3')).toHaveValue('Doctor 3');
+  // One unnamed line to start; nothing is made until every line shown has a name.
+  await expect(staff.getByLabel('How many? (one line per doctor)')).toHaveValue('1');
+  await expect(staff.getByLabel('Name of doctor 1')).toHaveValue('');
+  await staff.getByRole('button', { name: 'Create my business' }).click();
+  await expect(staff.getByLabel('Name of doctor 1')).toBeFocused();
+  await expect(staff.getByText('Your line is live')).toHaveCount(0);
+  await staff.getByLabel('How many? (one line per doctor)').fill('3');
+  await expect(staff.getByLabel('Name of doctor 3')).toHaveValue('');
   await staff.getByLabel('Name of doctor 1').fill('Dr. Lee');
   await staff.getByLabel('Name of doctor 2').fill('Dr. Patel');
   await staff.getByLabel('Name of doctor 3').fill('Dr. Ng');
