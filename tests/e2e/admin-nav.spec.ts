@@ -16,7 +16,7 @@ test.describe('owner', () => {
     for (const daily of ['Today', 'Live queue', 'Appointments', 'Guests', 'Message activity']) {
       await expect(nav.getByRole('link', { name: daily })).toBeVisible();
     }
-    for (const group of ['Team', 'Set up', 'Insights', 'Account']) {
+    for (const group of ['Team', 'Set up', 'Advanced', 'Insights', 'Account']) {
       await expect(nav.getByRole('button', { name: group })).toHaveAttribute(
         'aria-expanded',
         'false',
@@ -147,12 +147,30 @@ test.describe('owner', () => {
     );
   });
 
-  test('routing and priority sit under Set up and open from Go to…', async ({ devices }) => {
+  test('on a phone the Today page starts within the first 300 px, under one account menu', async ({
+    devices,
+  }) => {
+    const { staff } = devices;
+    await staff.setViewportSize({ width: 390, height: 800 });
+    await staff.goto('/admin');
+    const main = staff.getByRole('main');
+    await expect(main).toBeVisible();
+    const top = await main.evaluate((el) => el.getBoundingClientRect().top);
+    expect(top).toBeLessThan(300);
+    // The tablet buttons are not in the header; they live in the account menu.
+    await expect(staff.getByRole('button', { name: 'Switch operator' })).toHaveCount(0);
+    await staff.getByRole('button', { name: 'Account' }).click();
+    for (const item of ['Switch operator', 'Set my PIN', 'Change password']) {
+      await expect(staff.getByRole('menuitem', { name: item })).toBeVisible();
+    }
+  });
+
+  test('routing and priority sit under Advanced and open from Go to…', async ({ devices }) => {
     const { staff } = devices;
     await staff.setViewportSize({ width: 1280, height: 900 });
     await staff.goto('/admin/routing');
     const nav = staff.getByRole('navigation', { name: 'Admin' });
-    await expect(nav.getByRole('button', { name: 'Set up' })).toHaveAttribute(
+    await expect(nav.getByRole('button', { name: 'Advanced' })).toHaveAttribute(
       'aria-expanded',
       'true',
     );
@@ -160,7 +178,10 @@ test.describe('owner', () => {
       'aria-current',
       'page',
     );
-    await expect(nav.getByRole('link', { name: 'Queue setup' })).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Set up' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
 
     await staff.keyboard.press('Control+k');
     const dialog = staff.getByRole('dialog', { name: 'Go to' });
@@ -199,6 +220,7 @@ test.describe('staff', () => {
     const nav = staff.getByRole('navigation', { name: 'Admin' });
     await nav.getByRole('button', { name: 'Team' }).click();
     await nav.getByRole('button', { name: 'Set up' }).click();
+    await nav.getByRole('button', { name: 'Advanced' }).click();
     await nav.getByRole('button', { name: 'Account' }).click();
     await expect(nav.getByRole('link', { name: 'Opening hours' })).toBeVisible();
     for (const hidden of [

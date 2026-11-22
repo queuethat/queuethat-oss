@@ -22,7 +22,8 @@ test('submit a request as an owner (axe)', async ({ devices }) => {
   ];
 
   await signInTo(owner, email, '/admin');
-  await owner.getByRole('button', { name: 'Contact support' }).click();
+  await owner.getByRole('button', { name: 'Account' }).click();
+  await owner.getByRole('menuitem', { name: 'Contact support' }).click();
   const dialog = owner.getByRole('dialog', { name: 'Contact support' });
   await expect(dialog).toBeVisible();
   await expectNoSeriousA11yViolations(owner);

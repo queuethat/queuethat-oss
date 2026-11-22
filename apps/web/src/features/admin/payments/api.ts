@@ -24,6 +24,26 @@ export const DEFAULT_PAYMENT_POLICY: PaymentPolicy = {
   cancelCutoffHours: 24,
 };
 
+/**
+ * Whether the org has an enabled payments provider (the database's own "connected" switch,
+ * `private.payments_connected`). A read the person may not make counts as connected, so the form
+ * stays reachable and the database still has the last word.
+ */
+export const paymentsConnectedQuery = (orgId: string) =>
+  queryOptions({
+    queryKey: ['admin', 'payments-connected', orgId],
+    queryFn: async (): Promise<boolean> => {
+      const { data, error } = await supabase
+        .schema('app')
+        .from('provider_settings')
+        .select('enabled')
+        .eq('org_id', orgId)
+        .eq('channel', 'payments')
+        .maybeSingle();
+      return error ? true : !!data?.enabled;
+    },
+  });
+
 const key = (serviceId: string) => ['admin', 'payment-policy', serviceId];
 
 export const paymentPolicyQuery = (serviceId: string) =>

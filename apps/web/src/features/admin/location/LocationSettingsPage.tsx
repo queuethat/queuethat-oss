@@ -1,4 +1,4 @@
-import { Button, Checkbox, Input, LinkButton, PageHeader, Select, Skeleton } from '@qm/ui';
+import { Button, Checkbox, Input, LinkButton, PageHeader, Select, Skeleton, Tabs } from '@qm/ui';
 import { phoneCountries } from '@qm/ui/phone';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
@@ -17,6 +17,10 @@ import {
   useSaveLocationSettings,
   type LocationSettings,
 } from './api.ts';
+
+const SECTIONS = ['basics', 'display', 'advanced'] as const;
+type Section = (typeof SECTIONS)[number];
+const PANEL_ID = 'location-settings-panel';
 
 const KNOWN_ERRORS = ['invalid_timezone', 'permission_denied', 'display_names_locked'];
 
@@ -56,6 +60,7 @@ function LocationSettingsForm({
   const [zones] = useState(timeZones);
   const [countries] = useState(() => phoneCountries());
   const [copied, setCopied] = useState(false);
+  const [section, setSection] = useState<Section>('basics');
 
   const text = (
     key: Exclude<
@@ -159,136 +164,165 @@ function LocationSettingsForm({
             </LinkButton>
           )}
         </div>
-        <Input
-          label={t('location.address')}
-          autoComplete="street-address"
-          maxLength={300}
-          {...fields.address}
+        <Tabs
+          label={t('location.sections')}
+          panelId={PANEL_ID}
+          value={section}
+          onChange={(id) => setSection(id as Section)}
+          items={SECTIONS.map((id) => ({ id, label: t(`location.section.${id}`) }))}
         />
-        <Input
-          label={t('location.contact')}
-          hint={t('location.contactHint')}
-          maxLength={200}
-          {...fields.contact}
-        />
-        <Input
-          label={t('location.timeZone')}
-          hint={t('location.timeZoneHint')}
-          list="location-time-zones"
-          required
-          error={zoneInvalid ? t('errors.invalid_timezone') : undefined}
-          {...fields.tz}
-        />
-        <datalist id="location-time-zones">
-          {zones.map((zone) => (
-            <option key={zone} value={zone} />
-          ))}
-        </datalist>
-        <Select
-          label={t('location.country')}
-          hint={t('location.countryHint')}
-          value={settings.country}
-          disabled={readOnly}
-          onChange={(event) => {
-            save.reset();
-            setSettings((s) => ({ ...s, country: event.target.value }));
-          }}
+        <div
+          id={PANEL_ID}
+          role="tabpanel"
+          aria-label={t(`location.section.${section}`)}
+          className="flex flex-col gap-4"
         >
-          <option value="">{t('location.countryNotSet')}</option>
-          {countries.map((c) => (
-            <option key={c.code} value={c.code}>
-              {c.name}
-            </option>
-          ))}
-        </Select>
-        <Input
-          label={t('location.dayBoundary')}
-          hint={t('location.dayBoundaryHint')}
-          type="time"
-          required
-          {...fields.dayBoundary}
-        />
-        <Checkbox
-          label={t('location.displayNames')}
-          hint={t('location.displayNamesHint')}
-          checked={settings.displayNamesEnabled}
-          disabled={readOnly}
-          onChange={(event) => {
-            save.reset();
-            setSettings((s) => ({ ...s, displayNamesEnabled: event.target.checked }));
-          }}
-        />
-        <Select
-          label={t('location.printPaper')}
-          value={String(settings.printPaperMm)}
-          disabled={readOnly}
-          onChange={(event) => {
-            save.reset();
-            setSettings((s) => ({ ...s, printPaperMm: event.target.value === '58' ? 58 : 80 }));
-          }}
-        >
-          <option value="80">{t('location.printPaper80')}</option>
-          <option value="58">{t('location.printPaper58')}</option>
-        </Select>
-        <Input
-          label={t('location.printFooter')}
-          hint={t('location.printFooterHint')}
-          maxLength={120}
-          {...fields.printFooter}
-        />
-        <AnnounceSettings
-          value={settings}
-          readOnly={readOnly}
-          onChange={(next) => {
-            save.reset();
-            setSettings((s) => ({ ...s, ...next }));
-          }}
-        />
-        {settings.displayNamesEnabled ? (
-          <p
-            className="rounded-control border border-warning-strong bg-warning-soft p-3 text-warning-strong"
-            data-testid="display-names-warning"
-          >
-            {t('location.displayNamesWarning')}
-          </p>
-        ) : null}
-        <Checkbox
-          label={t('location.onsiteCode')}
-          hint={t('location.onsiteCodeHint')}
-          checked={settings.onsiteCodeRequired}
-          disabled={readOnly}
-          onChange={(event) => {
-            save.reset();
-            setSettings((s) => ({ ...s, onsiteCodeRequired: event.target.checked }));
-          }}
-        />
-        {settings.onsiteCodeRequired ? (
-          <Input
-            label={t('location.onsiteCodeMinutes')}
-            hint={t('location.onsiteCodeMinutesHint')}
-            type="number"
-            inputMode="numeric"
-            min={2}
-            max={60}
-            required
-            readOnly={readOnly}
-            value={settings.onsiteCodeRotateMinutes}
-            onChange={(event) => {
-              save.reset();
-              const minutes = Math.round(Number(event.target.value));
-              setSettings((s) => ({ ...s, onsiteCodeRotateMinutes: minutes }));
-            }}
-          />
-        ) : null}
-        <PositionFields
-          settings={settings}
-          readOnly={readOnly}
-          onChange={(next) => {
-            save.reset();
-            setSettings((s) => ({ ...s, ...next }));
-          }}
-        />
-        {readOnly ? null : <ApplyTemplate locationId={locationId} />}
+          {section === 'basics' ? (
+            <>
+              <Input
+                label={t('location.address')}
+                autoComplete="street-address"
+                maxLength={300}
+                {...fields.address}
+              />
+              <Input
+                label={t('location.contact')}
+                hint={t('location.contactHint')}
+                maxLength={200}
+                {...fields.contact}
+              />
+              <Input
+                label={t('location.timeZone')}
+                hint={t('location.timeZoneHint')}
+                list="location-time-zones"
+                required
+                error={zoneInvalid ? t('errors.invalid_timezone') : undefined}
+                {...fields.tz}
+              />
+              <datalist id="location-time-zones">
+                {zones.map((zone) => (
+                  <option key={zone} value={zone} />
+                ))}
+              </datalist>
+              <Select
+                label={t('location.country')}
+                hint={t('location.countryHint')}
+                value={settings.country}
+                disabled={readOnly}
+                onChange={(event) => {
+                  save.reset();
+                  setSettings((s) => ({ ...s, country: event.target.value }));
+                }}
+              >
+                <option value="">{t('location.countryNotSet')}</option>
+                {countries.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.name}
+                  </option>
+                ))}
+              </Select>
+              <Input
+                label={t('location.dayBoundary')}
+                hint={t('location.dayBoundaryHint')}
+                type="time"
+                required
+                {...fields.dayBoundary}
+              />
+            </>
+          ) : null}
+          {section === 'display' ? (
+            <>
+              <Checkbox
+                label={t('location.displayNames')}
+                hint={t('location.displayNamesHint')}
+                checked={settings.displayNamesEnabled}
+                disabled={readOnly}
+                onChange={(event) => {
+                  save.reset();
+                  setSettings((s) => ({ ...s, displayNamesEnabled: event.target.checked }));
+                }}
+              />
+              <Select
+                label={t('location.printPaper')}
+                value={String(settings.printPaperMm)}
+                disabled={readOnly}
+                onChange={(event) => {
+                  save.reset();
+                  setSettings((s) => ({
+                    ...s,
+                    printPaperMm: event.target.value === '58' ? 58 : 80,
+                  }));
+                }}
+              >
+                <option value="80">{t('location.printPaper80')}</option>
+                <option value="58">{t('location.printPaper58')}</option>
+              </Select>
+              <Input
+                label={t('location.printFooter')}
+                hint={t('location.printFooterHint')}
+                maxLength={120}
+                {...fields.printFooter}
+              />
+              <AnnounceSettings
+                value={settings}
+                readOnly={readOnly}
+                onChange={(next) => {
+                  save.reset();
+                  setSettings((s) => ({ ...s, ...next }));
+                }}
+              />
+              {settings.displayNamesEnabled ? (
+                <p
+                  className="rounded-control border border-warning-strong bg-warning-soft p-3 text-warning-strong"
+                  data-testid="display-names-warning"
+                >
+                  {t('location.displayNamesWarning')}
+                </p>
+              ) : null}
+            </>
+          ) : null}
+          {section === 'advanced' ? (
+            <>
+              <Checkbox
+                label={t('location.onsiteCode')}
+                hint={t('location.onsiteCodeHint')}
+                checked={settings.onsiteCodeRequired}
+                disabled={readOnly}
+                onChange={(event) => {
+                  save.reset();
+                  setSettings((s) => ({ ...s, onsiteCodeRequired: event.target.checked }));
+                }}
+              />
+              {settings.onsiteCodeRequired ? (
+                <Input
+                  label={t('location.onsiteCodeMinutes')}
+                  hint={t('location.onsiteCodeMinutesHint')}
+                  type="number"
+                  inputMode="numeric"
+                  min={2}
+                  max={60}
+                  required
+                  readOnly={readOnly}
+                  value={settings.onsiteCodeRotateMinutes}
+                  onChange={(event) => {
+                    save.reset();
+                    const minutes = Math.round(Number(event.target.value));
+                    setSettings((s) => ({ ...s, onsiteCodeRotateMinutes: minutes }));
+                  }}
+                />
+              ) : null}
+              <PositionFields
+                settings={settings}
+                readOnly={readOnly}
+                onChange={(next) => {
+                  save.reset();
+                  setSettings((s) => ({ ...s, ...next }));
+                }}
+              />
+              {readOnly ? null : <ApplyTemplate locationId={locationId} />}
+            </>
+          ) : null}
+        </div>
         {readOnly ? null : (
           <Button
             type="submit"

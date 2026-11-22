@@ -146,6 +146,7 @@ test('an owner applies a template from the location page while it has no visits'
   const { staff } = devices;
   const { email } = await ownerOfNewBusiness();
   await signInTo(staff, email, '/admin/location');
+  await staff.getByRole('tab', { name: 'Advanced' }).click();
   await staff.getByRole('button', { name: 'Apply a template' }).click();
   await useTemplate(staff, 'service counter', 'Service counter');
   await expect(staff.getByText('Template applied.')).toBeVisible();
