@@ -9,9 +9,11 @@ import { getOperator, subscribeOperator } from './session.ts';
 
 const MAX_PIN = 8;
 
-/** Who is working on this shared tablet, with Switch, Lock and Set my PIN (2A-TM5, #99). */
-export function OperatorChip() {
-  const { t } = useTranslation('auth');
+/**
+ * Operator state for a header: who is working, the actions on offer, and the dialogs and idle
+ * guard they need. Render `dialogs` once, wherever the actions are shown.
+ */
+export function useOperatorControls() {
   const operator = useSyncExternalStore(subscribeOperator, getOperator, () => null);
   const org = useCurrentOrg();
   const { location } = useCurrentLocation();
@@ -27,32 +29,55 @@ export function OperatorChip() {
     void queryClient.invalidateQueries();
   }, [operator?.userId, queryClient]);
 
-  if (!org || !location) return null;
+  const ready = !!org && !!location;
+  return {
+    operator,
+    ready,
+    openSwitch: () => setSwitching(true),
+    openPin: () => setSettingPin(true),
+    lock: () => void lockOperator(),
+    dialogs: ready ? (
+      <>
+        {switching ? (
+          <SwitchDialog
+            orgId={org.id}
+            locationId={location.id}
+            onClose={() => setSwitching(false)}
+          />
+        ) : null}
+        {settingPin ? <PinDialog orgId={org.id} onClose={() => setSettingPin(false)} /> : null}
+        {operator ? <IdleGuard /> : null}
+      </>
+    ) : null,
+  };
+}
+
+/** Who is working on this shared tablet, with Switch, Lock and Set my PIN (2A-TM5, #99). */
+export function OperatorChip() {
+  const { t } = useTranslation('auth');
+  const c = useOperatorControls();
+  if (!c.ready) return null;
   return (
     <div className="flex flex-wrap items-center gap-2" data-testid="operator-chip">
       <span className="font-medium">
-        {operator
-          ? t('operator.chip', { name: operator.displayName ?? t('operator.unnamed') })
+        {c.operator
+          ? t('operator.chip', { name: c.operator.displayName ?? t('operator.unnamed') })
           : t('operator.ownAccount')}
       </span>
-      <Button variant="secondary" onClick={() => setSwitching(true)}>
+      <Button variant="secondary" onClick={c.openSwitch}>
         {t('operator.switch')}
       </Button>
-      {operator ? (
-        <Button variant="secondary" onClick={() => void lockOperator()}>
+      {c.operator ? (
+        <Button variant="secondary" onClick={c.lock}>
           {t('operator.lock')}
         </Button>
       ) : (
         // set_my_pin refuses an operator token: a PIN changes only from the person's own login.
-        <Button variant="secondary" onClick={() => setSettingPin(true)}>
+        <Button variant="secondary" onClick={c.openPin}>
           {t('operator.setPin')}
         </Button>
       )}
-      {switching ? (
-        <SwitchDialog orgId={org.id} locationId={location.id} onClose={() => setSwitching(false)} />
-      ) : null}
-      {settingPin ? <PinDialog orgId={org.id} onClose={() => setSettingPin(false)} /> : null}
-      {operator ? <IdleGuard /> : null}
+      {c.dialogs}
     </div>
   );
 }

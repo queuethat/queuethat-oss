@@ -91,16 +91,28 @@ describe('admin nav model', () => {
       'run',
       'team',
       'setup',
+      'advanced',
       'insights',
       'account',
     ]);
   });
 
-  it('files queue setup, routing and priority together under Set up', () => {
-    const setup = build('owner').find((g) => g.id === 'setup')!;
-    expect(setup.items.map((i) => i.id)).toEqual(
-      expect.arrayContaining(['queues', 'routing', 'priority', 'counters', 'hours', 'poster']),
+  it('keeps Set up to the six first-day pages and files the rest under Advanced', () => {
+    const groups = build('owner');
+    const setup = groups.find((g) => g.id === 'setup')!;
+    expect(setup.items.map((i) => i.id)).toEqual([
+      'location',
+      'queues',
+      'hours',
+      'forms',
+      'templates',
+      'poster',
+    ]);
+    const advanced = groups.find((g) => g.id === 'advanced')!;
+    expect(advanced.items.map((i) => i.id)).toEqual(
+      expect.arrayContaining(['routing', 'priority', 'counters', 'availability', 'branding']),
     );
+    expect(advanced.defaultOpen).toBeUndefined();
   });
 
   it('puts integrations and developer tools under Account and Danger zone last, unlabelled', () => {

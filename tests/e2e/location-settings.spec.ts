@@ -13,6 +13,7 @@ test('AC1: staff see the settings read-only', async ({ devices }) => {
     await expect(staff.getByLabel(label)).not.toBeEditable();
   }
   await expect(staff.getByLabel('Location name')).toHaveValue('Demo Barber Main Street');
+  await staff.getByRole('tab', { name: 'Display' }).click();
   await expect(staff.getByLabel(/Show customers' names/)).toBeDisabled();
   await expect(staff.getByRole('button', { name: 'Save settings' })).toHaveCount(0);
   await expectNoSeriousA11yViolations(staff);
@@ -28,6 +29,7 @@ test.describe('as an owner', () => {
     const { email } = await ownerOfNewBusiness();
     await signInTo(staff, email, '/admin/location');
 
+    await staff.getByRole('tab', { name: 'Display' }).click();
     const toggle = staff.getByLabel(/Show customers' names/);
     await expect(toggle).not.toBeChecked();
     await expect(staff.getByTestId('display-names-warning')).toHaveCount(0);
@@ -57,6 +59,7 @@ test.describe('as an owner', () => {
     const { email } = await ownerOfNewBusiness();
     await signInTo(staff, email, '/admin/location');
 
+    await staff.getByRole('tab', { name: 'Advanced' }).click();
     const toggle = staff.getByLabel(/Require the code on the waiting-room screen/);
     await expect(toggle).not.toBeChecked();
     await expect(staff.getByLabel(/Change the code every/)).toHaveCount(0);
@@ -133,6 +136,7 @@ test.describe('premises position (2B-Q11)', () => {
     const { email } = await ownerOfNewBusiness();
     await signInTo(staff, email, '/admin/location');
 
+    await staff.getByRole('tab', { name: 'Advanced' }).click();
     await staff.getByLabel('Latitude').fill('51.5');
     await expect(staff.getByRole('alert')).toContainText('Enter both a latitude');
     await staff.getByLabel('Longitude').fill('-0.1');
