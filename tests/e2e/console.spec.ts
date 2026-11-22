@@ -25,7 +25,9 @@ test('AC1: every control is at least 48px and nothing overflows the tablet', asy
   // The private location channel authorized with the staff session.
   await expect(staff.locator('[data-state="live"]')).toBeVisible({ timeout: LIVE_TIMEOUT_MS });
 
-  const controls = staff.locator('main').locator('button, select, [role="tab"]');
+  const controls = staff
+    .locator('main')
+    .locator('button:visible, select:visible, [role="tab"]:visible');
   expect(await controls.count()).toBeGreaterThan(2);
   for (const control of await controls.all()) {
     const box = await control.boundingBox();

@@ -154,7 +154,9 @@ test('a day in the shop on two tablets, the TV and the guests’ phones @core', 
   await test.step('a mistaken no-show for Ben is undone from the toast', async () => {
     await pickRowAction(chair2, 'No-show', ben.display_ticket);
     await chair2.getByRole('button', { name: 'Mark no-show' }).click();
-    await expect(section(chair1, 'called')).not.toContainText('Ben', { timeout: LIVE_MS });
+    await expect(section(chair1, 'called').filter({ hasText: 'Ben' })).toHaveCount(0, {
+      timeout: LIVE_MS,
+    });
     // The newest toast is the no-show's; the call's may still be up. Wait until it is there, or
     // a slow answer would leave only the call's Undo to click.
     const toasts = chair2.getByRole('region', { name: 'Notifications' });
