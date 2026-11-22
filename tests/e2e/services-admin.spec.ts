@@ -65,7 +65,7 @@ test.describe('as an owner', () => {
 
     await guest.goto(`/q/${slug}`);
     const options = guest.getByLabel('What do you need?').locator('option');
-    await expect(options).toHaveText(['Colour', 'Cut']);
+    await expect(options).toHaveText(['Choose one', 'Colour', 'Cut']);
 
     // Offering it again brings it back; nothing was deleted.
     await shave.getByRole('button', { name: 'Offer again' }).click();

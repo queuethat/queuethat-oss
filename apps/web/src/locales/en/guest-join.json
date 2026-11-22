@@ -21,6 +21,8 @@
     "queueOption_one": "{{name}} ({{count}} waiting)",
     "queueOption_other": "{{name}} ({{count}} waiting)",
     "service": "What do you need?",
+    "servicePlaceholder": "Choose one",
+    "serviceMissing": "Choose what you need so we can estimate your wait.",
     "name": "First name",
     "nameMissing": "Enter your first name so staff can call you.",
     "addPerson": "Add another person",

@@ -1,7 +1,7 @@
 -- V6 (#35): api.get_visit_status, api.guest_act and api.get_location_public.
 begin;
 \ir ../helpers/_setup.psql
-select plan(41);
+select plan(42);
 select tests.create_world();
 
 -- Fixtures: loc_a open all day. Three guests join queue_a behind the world's visit_a (Ann with a
@@ -53,6 +53,8 @@ select results_eq($$ select (s).status::text, (s).position, (s).people_ahead, (s
   'a waiting guest sees status, position 2 behind visit_a, people ahead, queue and location');
 select is((tests.status('ann')).guest_actions, array['leave', 'need_more_time']::api.guest_action[],
   'a waiting guest may leave or ask for more time');
+select is((tests.status('cara')).guest_actions, array['leave']::api.guest_action[],
+  'a waiting guest at position 4 is not offered need_more_time (G-4); ann at 2 above is');
 select ok((tests.status('ann')).eta_state is not null and (tests.status('ann')).eta_low is not null,
   'a waiting guest gets an ETA');
 select is((tests.status('ann')).as_of, now(), 'as_of is the server time');

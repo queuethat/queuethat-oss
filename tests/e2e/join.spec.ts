@@ -8,6 +8,20 @@ import { uniqueEmail } from './support/mail.ts';
 import { freshQueue } from './support/queues.ts';
 import { testUsers } from './support/users.ts';
 
+// G-1 and G-3 (#67): no service is pre-picked, and the country code fits a phone.
+test('the join form pre-selects no service and shows a short country code', async ({ devices }) => {
+  const { guest } = devices;
+  await guest.goto(`/q/${demo.locationSlug}`);
+  await guest.getByLabel('Queue').selectOption(demo.queues.walkIns);
+  const service = guest.getByLabel('What do you need?');
+  await expect(service).toHaveValue('');
+  await expect(guest.getByTestId('phone-country-code')).toHaveText(/^[A-Z]{2} \+\d+$/);
+  await guest.getByLabel('First name').fill('Sam');
+  await guest.getByRole('button', { name: 'Join the queue' }).click();
+  await expect(guest.getByText('Choose what you need so we can estimate your wait.')).toBeVisible();
+  await expect(guest).toHaveURL(/\/q\//);
+});
+
 // G2 (#52): a guest joins from the poster link on a phone and lands on their status page.
 test('a double tap on Join creates exactly one visit @core', async ({ devices }) => {
   const { guest } = devices;

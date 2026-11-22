@@ -74,6 +74,14 @@ interface JoinRun {
 }
 
 /**
+ * The service the guest picked. A lone service is implied; with a choice none is pre-selected, so
+ * the first one alphabetically doesn't get booked by accident (G-1).
+ */
+function pickedService<S extends { id?: string | null }>(services: S[], id: string | null) {
+  return services.find((s) => s.id === id) ?? (services.length === 1 ? services[0] : undefined);
+}
+
+/**
  * `/q/:slug` (J-1): pick a queue and service when there is a choice, give a first name and
  * optionally a phone, join, land on the status page. The database decides whether a queue
  * accepts; this page only renders that answer. In `widget` mode (`/w/:slug`, J7) the page sits
@@ -107,8 +115,7 @@ export function JoinPage({ slug, widget = false }: { slug: string; widget?: bool
     location.data?.routing === true
       ? undefined
       : ((location.data?.queues ?? []).find((q) => q.id === queueId) ?? location.data?.queues?.[0]);
-  const formService =
-    (formQueue?.services ?? []).find((s) => s.id === serviceId) ?? formQueue?.services?.[0];
+  const formService = pickedService(formQueue?.services ?? [], serviceId);
   const form = useJoinForm(formQueue?.id ?? null, formService?.id ?? null, 'walk_in');
   // The time a guest who joins for later enters the line (J-13), from the lazy JoinLater picker.
   const [arriveAfter, setArriveAfter] = useState<string | null>(null);
@@ -126,6 +133,7 @@ export function JoinPage({ slug, widget = false }: { slug: string; widget?: bool
   const [textConsent, setTextConsent] = useState(false);
   const [email, setEmail] = useState('');
   const [nameMissing, setNameMissing] = useState(false);
+  const [serviceMissing, setServiceMissing] = useState(false);
   // People joining together with this phone and email (2A-J15B), and the join in progress.
   const [others, setOthers] = useState<string[]>([]);
   const [othersMissing, setOthersMissing] = useState(false);
@@ -306,7 +314,7 @@ export function JoinPage({ slug, widget = false }: { slug: string; widget?: bool
   const routed = location.data.routing === true;
   const locationId = location.data.id;
   const services = routed ? queues.flatMap((q) => q.services ?? []) : (queue?.services ?? []);
-  const service = services.find((s) => s.id === serviceId) ?? services[0];
+  const service = pickedService(services, serviceId);
   const accepting = routed ? queues.some((q) => q.accepting === true) : queue?.accepting === true;
   const bounds = routed ? undefined : wait.data?.find((w) => w.queue_id === queue?.id);
   const fields = form.data ?? [];
@@ -321,11 +329,14 @@ export function JoinPage({ slug, widget = false }: { slug: string; widget?: bool
     event.preventDefault();
     if (!(routed ? locationId : queue?.id) || submitted.current) return;
     const missing = name.trim() === '';
+    // With a choice of services none is pre-picked (G-1), so the guest must pick one.
+    const noService = services.length > 1 && !service;
     const badPhone = phoneState === 'invalid';
     const needPhone = textConsent && !phone && location.data?.sms_enabled === true;
     const blankOther = others.some((n) => n.trim() === '');
-    if (missing || badPhone || needPhone || blankOther) {
+    if (missing || noService || badPhone || needPhone || blankOther) {
       setNameMissing(missing);
+      setServiceMissing(noService);
       setPhoneInvalid(badPhone);
       setPhoneNeeded(needPhone && !badPhone);
       setOthersMissing(blankOther);
@@ -446,8 +457,16 @@ export function JoinPage({ slug, widget = false }: { slug: string; widget?: bool
           <Select
             label={t('join.service')}
             value={service?.id ?? ''}
-            onChange={(e) => setServiceId(e.target.value)}
+            required
+            error={serviceMissing ? t('join.serviceMissing') : undefined}
+            onChange={(e) => {
+              setServiceId(e.target.value);
+              setServiceMissing(false);
+            }}
           >
+            <option value="" disabled>
+              {t('join.servicePlaceholder')}
+            </option>
             {services.map((s) => (
               <option key={s.id} value={s.id ?? ''}>
                 {s.name}

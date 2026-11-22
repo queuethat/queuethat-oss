@@ -110,6 +110,13 @@ describe('PhoneInput', () => {
     expect(input.value).toBe('020 7946 0958');
   });
 
+  it('shows the closed country picker as a short "US +1", not the country name (G-3)', async () => {
+    const { user, input } = setup();
+    expect(screen.getByTestId('phone-country-code').textContent).toBe('US +1');
+    await user.type(input, '+44 20 7946 0958');
+    expect(screen.getByTestId('phone-country-code').textContent).toBe('GB +44');
+  });
+
   it('uses autocomplete=tel and a phone keypad', () => {
     const { input } = setup();
     expect(input.getAttribute('autocomplete')).toBe('tel');
