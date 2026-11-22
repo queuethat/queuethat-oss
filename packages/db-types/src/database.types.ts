@@ -3388,6 +3388,32 @@ isOneToOne: false
       referencedColumns: ["org_id","id"]
     }
                   ]
+                },"queue_services": {
+                  Row: {
+                    "created_at": string,"location_id": string,"org_id": string,"queue_id": string,"service_id": string,"sort_order": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"location_id": string,"org_id": string,"queue_id": string,"service_id": string,"sort_order"?: number
+                  }
+                  Update: {
+                    "created_at"?: string,"location_id"?: string,"org_id"?: string,"queue_id"?: string,"service_id"?: string,"sort_order"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "queue_services_org_id_location_id_queue_id_fkey"
+      columns: ["org_id","location_id","queue_id"]
+isOneToOne: false
+      referencedRelation: "queues"
+      referencedColumns: ["org_id","location_id","id"]
+    },{
+      foreignKeyName: "queue_services_org_id_location_id_service_id_fkey"
+      columns: ["org_id","location_id","service_id"]
+isOneToOne: false
+      referencedRelation: "services"
+      referencedColumns: ["org_id","location_id","id"]
+    }
+                  ]
                 },"queues": {
                   Row: {
                     "almost_up_threshold": number,"archived_at": string | null,"assignment_strategy": Database["app"]['Enums']["assignment_strategy"],"auto_no_show_enabled": boolean,"brand_accent": string | null,"capacity": number | null,"channel_order": (string)[],"chat_enabled": boolean,"created_at": string,"early_checkin_minutes": number,"eta_reserves_appointments": boolean,"grace_minutes": number,"id": string,"join_later_enabled": boolean,"join_later_max_hours": number,"join_rate_per_min": number,"join_restriction": Database["app"]['Enums']["join_restriction"],"kind": string,"late_tolerance_minutes": number,"location_id": string,"manual_state": Database["api"]['Enums']["queue_state"],"max_active_per_contact": number,"max_snoozes": number,"max_walkin_delay_minutes": number,"name": string,"no_show_after_minutes": number,"no_show_warning_seconds": number,"notify_triggers": (string)[],"online_joins_per_hour": number,"org_id": string,"origin_template": string | null,"origin_version": number | null,"party_size_enabled": boolean,"party_size_max": number,"party_size_min": number,"provider_user_id": string | null,"pulls_from": string | null,"pulse_id": string,"renotify_eta_delta_minutes": number,"renotify_min_interval_seconds": number,"renotify_position_delta": number,"rr_cursor": string | null,"servers_on_duty": number,"serving_reminder_minutes": number | null,"show_eta": boolean,"sms_keyword": string | null,"snooze_places": number,"sort_order": number,"ticket_prefix": string,"updated_at": string,"use_shift_schedule": boolean,"version": number,"wait_override_minutes": number | null,"wait_override_until": string | null,"welcome_text": string | null,"online_joins_paused_until": string | null
