@@ -27,7 +27,10 @@ test('AC1: a 10-minute service started 21 minutes ago shows the reminder; Comple
   await reminder.getByRole('button', { name: /^Complete / }).click();
   await expect(staff.getByRole('button', { name: 'Undo' })).toBeVisible();
   await expect(staff.getByTestId('serving-reminder')).toHaveCount(0);
-  await expect(staff.getByTestId('section-serving')).not.toContainText('Long Lena');
+  // An empty serving section is not drawn at all.
+  await expect(staff.getByTestId('section-serving').filter({ hasText: 'Long Lena' })).toHaveCount(
+    0,
+  );
 });
 
 test('AC2: "Still serving" hides the reminder for 15 minutes on this tablet only', async ({

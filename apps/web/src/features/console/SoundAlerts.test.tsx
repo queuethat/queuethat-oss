@@ -72,13 +72,15 @@ describe('SoundAlerts', () => {
     expect(screen.getByRole('region', { name: 'Sound alerts' }).textContent).toContain(
       'Sound is off',
     );
-    expect(screen.getByText(/side mute switch/)).toBeTruthy();
+    expect(screen.queryByText(/side mute switch/)).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Turn on sound' }));
     expect(beeps).toBe(1); // the speaker test
     expect(screen.queryByRole('region')).toBeNull();
     expect(screen.getByRole('status').textContent).toContain('Sound on');
     fireEvent.click(screen.getByRole('button', { name: 'Test sound' }));
     expect(beeps).toBe(3);
+    // The iPad side-switch tip appears once someone has tried the test chime.
+    expect(screen.getByText(/side mute switch/)).toBeTruthy();
   });
 
   it('chimes for a new waiting visit, not for the first list or for status changes', () => {

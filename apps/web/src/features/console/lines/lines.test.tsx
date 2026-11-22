@@ -1,10 +1,11 @@
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { loadNamespaces } from '../../../lib/i18n.ts';
 import type { ConsoleQueue, ConsoleVisit } from '../api.ts';
 import { callableCount, hasLines, myLineIds } from './lines.ts';
-import { LinesBoard } from './LinesBoard.tsx';
+import { LinesToggle, useLineView } from './LinesBoard.tsx';
+import type { MyLines } from './api.ts';
 
 beforeAll(() => loadNamespaces('staff'));
 afterEach(cleanup);
@@ -42,60 +43,46 @@ describe('lines', () => {
   });
 });
 
-describe('LinesBoard', () => {
-  const props = {
-    queues,
-    visits: [visit('Anyone', 'P001'), visit('Ben', 'B001')],
-    currentId: 'Ana',
-    mayCall: true,
-    disabled: false,
-    calling: null,
-    onOpen: vi.fn(),
-  };
+function Harness({ qs = queues, mine }: { qs?: ConsoleQueue[]; mine: MyLines | undefined }) {
+  const { shown, view, setChoice, canSwitch } = useLineView(qs, mine);
+  return (
+    <>
+      <LinesToggle view={view} canSwitch={canSwitch} onChoose={setChoice} />
+      <ul>
+        {shown.map((q) => (
+          <li key={q.id}>{q.name}</li>
+        ))}
+      </ul>
+    </>
+  );
+}
+const names = () => screen.queryAllByRole('listitem').map((li) => li.textContent);
 
-  it('shows a provider their line and the pool, and calls from the pool when theirs is empty', async () => {
-    const onCallNext = vi.fn();
-    render(
-      <LinesBoard
-        {...props}
-        mine={{ queueIds: ['Ana'], restricted: false }}
-        onCallNext={onCallNext}
-      />,
-    );
-    expect(screen.getByRole('heading', { name: 'Ana' })).toBeTruthy();
-    expect(screen.getByRole('heading', { name: 'Anyone' })).toBeTruthy();
-    expect(screen.queryByRole('heading', { name: 'Ben' })).toBeNull();
-    expect(
-      within(screen.getByTestId('line-Ana')).getByText('Next comes from Anyone.'),
-    ).toBeTruthy();
-    await userEvent.click(screen.getByRole('button', { name: 'Call next for Ana' }));
-    expect(onCallNext).toHaveBeenCalledWith('Ana');
-
+describe('line tabs', () => {
+  it('shows a provider their line and the pool, and every line on request', async () => {
+    render(<Harness mine={{ queueIds: ['Ana'], restricted: false }} />);
+    expect(names()).toEqual(['Ana', 'Anyone']);
     await userEvent.click(screen.getByRole('button', { name: 'All lines' }));
-    expect(screen.getByRole('heading', { name: 'Ben' })).toBeTruthy();
-    expect(within(screen.getByTestId('line-Ben')).getByText('B001')).toBeTruthy();
+    expect(names()).toEqual(['Ana', 'Ben', 'Anyone']);
+    await userEvent.click(screen.getByRole('button', { name: 'My lines' }));
+    expect(names()).toEqual(['Ana', 'Anyone']);
   });
 
   it('shows the front desk every line, with no view switch', () => {
-    render(
-      <LinesBoard {...props} mine={{ queueIds: null, restricted: false }} onCallNext={vi.fn()} />,
-    );
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(3);
+    render(<Harness mine={{ queueIds: null, restricted: false }} />);
+    expect(names()).toHaveLength(3);
     expect(screen.queryByRole('button', { name: 'All lines' })).toBeNull();
   });
 
   it('keeps a scoped provider on their own lines', () => {
-    render(
-      <LinesBoard {...props} mine={{ queueIds: ['Ana'], restricted: true }} onCallNext={vi.fn()} />,
-    );
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(2);
+    render(<Harness mine={{ queueIds: ['Ana'], restricted: true }} />);
+    expect(names()).toEqual(['Ana', 'Anyone']);
     expect(screen.queryByRole('button', { name: 'All lines' })).toBeNull();
   });
 
-  it('renders nothing where no line is per person', () => {
-    const { container } = render(
-      <LinesBoard {...props} queues={[desk]} mine={undefined} onCallNext={vi.fn()} />,
-    );
-    expect(container.innerHTML).toBe('');
+  it('leaves a location without per-person lines alone', () => {
+    render(<Harness qs={[desk]} mine={undefined} />);
+    expect(names()).toEqual(['Desk']);
+    expect(screen.queryByRole('group')).toBeNull();
   });
 });

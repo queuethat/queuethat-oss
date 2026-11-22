@@ -22,38 +22,30 @@ describe('ConsoleHints', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
-  it('dismisses one hint at a time and remembers it on this browser', async () => {
-    const { unmount } = render(<ConsoleHints />);
-    await userEvent.click(screen.getByRole('button', { name: 'Got it', description: /^Undo\./ }));
-    expect(screen.queryByText('Undo.')).toBeNull();
-    expect(screen.getByText('Call next.')).toBeTruthy();
-    expect(JSON.parse(localStorage.getItem('qm.console.hints') ?? '[]')).toEqual(['undo']);
-    unmount();
-    render(<ConsoleHints />);
-    expect(screen.queryByText('Undo.')).toBeNull();
-    expect(screen.getByText('Shortcuts.')).toBeTruthy();
-  });
-
-  it('dismisses everything at once and then renders nothing', async () => {
-    const { container } = render(<ConsoleHints />);
-    await userEvent.click(screen.getByRole('button', { name: 'Dismiss all hints' }));
+  it('dismisses every hint with one tap and remembers it on this browser', async () => {
+    const { container, unmount } = render(<ConsoleHints />);
+    await userEvent.click(screen.getByRole('button', { name: 'Got it' }));
     expect(container.innerHTML).toBe('');
+    expect(JSON.parse(localStorage.getItem('qm.console.hints') ?? '[]')).toEqual([
+      'callNext',
+      'undo',
+      'shortcuts',
+    ]);
+    unmount();
     resetHintsForTest();
     const again = render(<ConsoleHints />);
     expect(again.container.innerHTML).toBe('');
   });
 
-  it('still hides a dismissed hint when storage is unavailable', async () => {
+  it('still hides the hints when storage is unavailable', async () => {
     const original = Storage.prototype.setItem;
     Storage.prototype.setItem = () => {
       throw new Error('blocked');
     };
     try {
-      render(<ConsoleHints />);
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Got it', description: /^Shortcuts\./ }),
-      );
-      expect(screen.queryByText('Shortcuts.')).toBeNull();
+      const { container } = render(<ConsoleHints />);
+      await userEvent.click(screen.getByRole('button', { name: 'Got it' }));
+      expect(container.innerHTML).toBe('');
     } finally {
       Storage.prototype.setItem = original;
     }

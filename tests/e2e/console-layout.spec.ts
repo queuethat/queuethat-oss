@@ -99,3 +99,46 @@ test('a row shows Call and a menu; Remove is not adjacent to Call and sits behin
   await dialog.getByRole('button', { name: 'Keep' }).click();
   await expect(row).toBeVisible();
 });
+
+// UX audit D-1, D-3, D-4 (#64): the first screen shows the work, whatever the device.
+for (const size of [
+  { name: 'laptop', width: 1280, height: 800 },
+  { name: 'phone', width: 390, height: 844 },
+]) {
+  test(`${size.name}: the first waiting guest and Call next show without scrolling, and so does the guest just called`, async ({
+    devices,
+  }) => {
+    const { staff } = devices;
+    await staff.setViewportSize({ width: size.width, height: size.height });
+    // A returning operator: the first-visit hints are already dismissed.
+    await staff.addInitScript(() =>
+      localStorage.setItem('qm.console.hints', JSON.stringify(['callNext', 'undo', 'shortcuts'])),
+    );
+    const queue = await freshQueue();
+    for (const name of ['First Fay', 'Second Sam', 'Third Tia']) await guestJoins(name, queue.id);
+    await openQueue(staff, queue.id);
+    // A tablet remembers its counter; once chosen, a phone folds the settings away.
+    await staff.getByLabel('My counter').selectOption({ index: 1 });
+    await expect(staff.getByLabel('My counter')).toHaveValue(/.+/);
+
+    const onScreen = async (target: ReturnType<typeof staff.getByTestId>) => {
+      const box = (await target.boundingBox())!;
+      expect(box.y).toBeGreaterThanOrEqual(0);
+      expect(box.y + box.height).toBeLessThanOrEqual(size.height);
+    };
+    // One Call next for the page, not one per line.
+    const callNext = staff.getByRole('button', { name: 'Call next', exact: true });
+    await expect(callNext).toHaveCount(1);
+    await onScreen(callNext);
+    await onScreen(staff.getByTestId('section-waiting').getByTestId('visit').first());
+
+    await callNext.click();
+    const called = staff.getByTestId('section-called').getByTestId('visit').first();
+    await expect(called).toContainText('First Fay');
+    await onScreen(called);
+    // The called guest sits above the line, which now starts with the next guest.
+    await expect(staff.getByTestId('section-waiting').getByTestId('visit').first()).toContainText(
+      'Second Sam',
+    );
+  });
+}

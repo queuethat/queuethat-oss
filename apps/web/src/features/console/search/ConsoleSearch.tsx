@@ -50,18 +50,18 @@ export function ConsoleSearch({
   );
   const hits = query.length >= 2 ? (search.data ?? []) : [];
   return (
-    <section aria-label={t('console.search.section')} className="mb-4 flex flex-col gap-3">
+    <section aria-label={t('console.search.section')} className="mb-3 flex flex-col gap-2">
       <Input
         type="search"
         data-shortcut="search"
         label={t('console.search.label')}
-        hint={t('console.search.hint')}
+        placeholder={t('console.search.hint')}
         value={text}
         maxLength={80}
         onChange={(event) => setText(event.target.value)}
       />
       <div
-        className="flex flex-wrap items-center gap-2"
+        className="flex items-center gap-2 overflow-x-auto pb-1 [&>*]:shrink-0"
         role="group"
         aria-label={t('console.search.filters')}
       >

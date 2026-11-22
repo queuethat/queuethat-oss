@@ -92,19 +92,20 @@ for (const scoped of [false, true]) {
     await signInAs(staff, shop.staff);
     await staff.goto('/staff');
     await expect(staff.locator('[data-state="live"]')).toBeVisible({ timeout: LIVE_TIMEOUT_MS });
-    const board = staff.getByRole('region', { name: 'Lines' });
-    await expect(board.getByRole('heading', { level: 3 })).toHaveText(['Ana', 'Anyone']);
+    // Lines are tabs only: a provider sees their line and the pool.
+    const tabs = staff.getByRole('tab');
+    await expect(tabs).toHaveText([/Ana/, /Anyone/]);
     // Unscoped, the provider may look at every line; scoped, only their own.
-    await expect(board.getByRole('button', { name: 'All lines' })).toHaveCount(scoped ? 0 : 1);
-    // The main panel opens on Ana's line, whose Call next reaches the pool.
+    await expect(staff.getByRole('button', { name: 'All lines' })).toHaveCount(scoped ? 0 : 1);
+    // The main panel opens on Ana's line, whose one Call next reaches the pool.
     await expect(staff.getByRole('tab', { name: /Ana/, selected: true })).toBeVisible();
-    await expect(board.getByTestId(`line-${shop.ana}`)).toContainText('Next comes from Anyone.');
+    await expect(staff.getByText('Next comes from Anyone.')).toBeVisible();
+    await expect(staff.getByRole('button', { name: 'Call next' })).toHaveCount(1);
     await expectNoSeriousA11yViolations(staff);
 
-    await board.getByRole('button', { name: 'Call next for Ana' }).click();
+    await staff.getByRole('button', { name: 'Call next' }).click();
     await expect(staff.getByText(/Called P\d{3}/)).toBeVisible();
-    await expect(board.getByTestId(`line-${shop.pool}`)).toContainText('0 waiting');
-    await expect(board.getByRole('button', { name: 'Call next for Ana' })).toBeDisabled();
+    await expect(staff.getByRole('button', { name: 'Call next' })).toBeDisabled();
   });
 }
 
@@ -115,15 +116,10 @@ test('the front desk sees every line on one screen', async ({ devices }) => {
   await signInAs(staff, shop.owner);
   await staff.goto('/staff');
   await expect(staff.locator('[data-state="live"]')).toBeVisible({ timeout: LIVE_TIMEOUT_MS });
-  const board = staff.getByRole('region', { name: 'Lines' });
-  await expect(board.getByRole('heading', { level: 3 })).toHaveText([
-    'Appointments',
-    'Ana',
-    'Ben',
-    'Anyone',
-  ]);
-  await expect(board.getByTestId(`line-${shop.ben}`)).toContainText('B001');
-  await board.getByRole('button', { name: 'Open Ben' }).click();
+  await expect(staff.getByRole('tab')).toHaveText([/Appointments/, /Ana/, /Ben/, /Anyone/]);
+  await expect(staff.getByRole('tab', { name: /Ben/ })).toContainText('1');
+  await staff.getByRole('tab', { name: /Ben/ }).click();
   await expect(staff.getByRole('tab', { name: /Ben/, selected: true })).toBeVisible();
   await expect(staff).toHaveURL(new RegExp(`queue=${shop.ben}`));
+  await expect(staff.getByTestId('section-waiting')).toContainText('B001');
 });

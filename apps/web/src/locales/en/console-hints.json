@@ -1,17 +1,16 @@
 {
   "label": "Getting started with the console",
   "dismiss": "Got it",
-  "dismissAll": "Dismiss all hints",
   "callNext": {
     "title": "Call next.",
-    "body": "Brings the next guest forward and tells them it is their turn."
+    "body": "Brings the next guest forward."
   },
   "undo": {
     "title": "Undo.",
-    "body": "Every action shows a message at the bottom for 10 seconds with Undo, so a wrong tap is easy to fix."
+    "body": "Every action offers Undo for 10 seconds."
   },
   "shortcuts": {
     "title": "Shortcuts.",
-    "body": "Press ? to see the keyboard shortcuts."
+    "body": "Press ? for shortcuts."
   }
 }

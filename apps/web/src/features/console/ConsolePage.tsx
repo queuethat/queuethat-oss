@@ -81,7 +81,7 @@ import { useLiveScreenActivity } from '../auth/SessionLimits.tsx';
 import { useWakeLock } from '../display/useWakeLock.ts';
 import { myLinesQuery } from './lines/api.ts';
 import { callableCount } from './lines/lines.ts';
-import { LinesBoard } from './lines/LinesBoard.tsx';
+import { LinesToggle, useLineView } from './lines/LinesBoard.tsx';
 
 /** Roles that may block a guest (the database enforces the same ladder). */
 const MANAGER_ROLES: string[] = ['manager', 'admin', 'owner'];
@@ -152,6 +152,8 @@ export function ConsolePage({
   const [view, setView] = useState<'queue' | 'timeline'>('queue');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
+  // Phones fold the counter, status and sound controls away until asked for.
+  const [barOpen, setBarOpen] = useState(false);
   const [confirmRequest, setConfirmRequest] = useState<ConfirmRequest | null>(null);
   const clearConfirmRequest = useCallback(() => setConfirmRequest(null), []);
   const [shortcutsOn, setShortcutsOn] = useShortcutsEnabled();
@@ -185,6 +187,7 @@ export function ConsolePage({
     queues.data?.find((q) => q.id === queueId) ??
     queues.data?.find((q) => q.kind === 'provider' && myLines.data?.queueIds?.includes(q.id)) ??
     queues.data?.[0];
+  const lines = useLineView(queues.data ?? [], myLines.data);
   // A provider line also reaches its pool (M4), so either having someone enables Call next.
   const nobodyToCall = (q: ConsoleQueue) => callableCount(q, visits.data ?? []) === 0;
   const callNextOn = (id: string) =>
@@ -372,8 +375,8 @@ export function ConsolePage({
       filters,
       { userId, counterId: myCounter },
     );
-    // On-screen order: waiting, then called, then serving.
-    const ordered = ['waiting', 'called', 'serving'].flatMap((s) =>
+    // On-screen order: called, then serving, then waiting.
+    const ordered = ['called', 'serving', 'waiting'].flatMap((s) =>
       inView.filter((v) => v.status === s),
     );
     const selected = ordered.find((v) => v.id === selectedId);
@@ -437,25 +440,45 @@ export function ConsolePage({
   if (!location || !queues.data || !counters.data) {
     return <Spinner label={t('console.loading')} className="mx-auto my-16" />;
   }
+  // Until a counter is chosen the phone shows the settings, so the first visit can pick one.
+  const barShown = barOpen || !myCounter;
   const queue = currentQueue();
   const inQueue = visits.data?.filter((v) => v.queueId === queue?.id) ?? [];
   const waitingIn = waitingCount;
 
+  // Lines are tabs only; the open line stays listed even when the "My lines" view hides it.
+  const tabQueues = lines.shown.some((q) => q.id === queue?.id)
+    ? lines.shown
+    : queues.data.filter((q) => q.id === queue?.id || lines.shown.includes(q));
+  const pool = queue?.pullsFrom ? queues.data.find((q) => q.id === queue.pullsFrom) : undefined;
+
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold">{t('console.title')}</h1>
+    <div className="flex flex-col gap-3">
+      <div
+        className="grid grid-cols-2 items-end gap-x-3 gap-y-2 sm:flex sm:flex-wrap sm:gap-x-4"
+        data-testid="console-bar"
+      >
+        <div className="col-span-2 flex items-center gap-3 sm:col-auto">
+          <h1 className="text-xl font-bold">{t('console.title')}</h1>
           <ConnectionIndicator state={connection} label={t(`console.connection.${connection}`)} />
         </div>
-        <div className="flex flex-wrap items-end gap-3">
-          <Button variant="secondary" onClick={() => setScanning(true)}>
-            {t('console.scan.open')}
-          </Button>
-          <div className="w-64">
+        <Button variant="secondary" onClick={() => setScanning(true)}>
+          {t('console.scan.open')}
+        </Button>
+        <Button
+          variant="secondary"
+          className="sm:hidden"
+          aria-expanded={barShown}
+          aria-controls="console-bar-more"
+          onClick={() => setBarOpen(!barShown)}
+        >
+          {t('console.bar.more')}
+        </Button>
+        {/* On a phone these settings fold away: they rarely change, and the line must stay on screen. */}
+        <div id="console-bar-more" className={`${barShown ? 'contents' : 'hidden'} sm:contents`}>
+          <div className="w-full sm:w-48">
             <Select
               label={t('console.counter.label')}
-              hint={myCounter ? undefined : t('console.counter.hint')}
               value={myCounter ?? ''}
               onChange={(event) => chooseCounter(location.id, event.target.value)}
             >
@@ -471,15 +494,31 @@ export function ConsolePage({
               ))}
             </Select>
           </div>
+          <PresenceBar
+            locationId={location.id}
+            counterId={myCounter ?? null}
+            counterLabels={new Map((counters.data ?? []).map((c) => [c.id, c.label]))}
+          />
+          <SoundAlerts visits={visits.data} reminderIds={reminders.overdue.map((o) => o.id)} />
+        </div>
+        <div
+          role="group"
+          aria-label={t('console.timeline.view')}
+          className="col-span-2 flex gap-2 sm:col-auto sm:ml-auto"
+        >
+          {VIEWS.map((id) => (
+            <Button
+              key={id}
+              variant={view === id ? 'primary' : 'secondary'}
+              aria-pressed={view === id}
+              onClick={() => setView(id)}
+            >
+              {t(id === 'queue' ? 'console.timeline.queueTab' : 'console.timeline.tab')}
+            </Button>
+          ))}
         </div>
       </div>
       <ConsoleHints />
-
-      <PresenceBar
-        locationId={location.id}
-        counterId={myCounter ?? null}
-        counterLabels={new Map((counters.data ?? []).map((c) => [c.id, c.label]))}
-      />
 
       <ShortcutHelp
         open={helpOpen}
@@ -487,8 +526,6 @@ export function ConsolePage({
         enabled={shortcutsOn}
         onEnabled={setShortcutsOn}
       />
-      <SoundAlerts visits={visits.data} reminderIds={reminders.overdue.map((o) => o.id)} />
-
       <ScanDialog
         open={scanning}
         onClose={() => setScanning(false)}
@@ -502,18 +539,6 @@ export function ConsolePage({
         }
       />
 
-      <div role="group" aria-label={t('console.timeline.view')} className="flex gap-2">
-        {VIEWS.map((id) => (
-          <Button
-            key={id}
-            variant={view === id ? 'primary' : 'secondary'}
-            aria-pressed={view === id}
-            onClick={() => setView(id)}
-          >
-            {t(id === 'queue' ? 'console.timeline.queueTab' : 'console.timeline.tab')}
-          </Button>
-        ))}
-      </div>
       <div className="contents">
         {view === 'timeline' ? (
           <Timeline
@@ -529,23 +554,13 @@ export function ConsolePage({
           />
         ) : queue ? (
           <>
-            <LinesBoard
-              queues={queues.data}
-              visits={visits.data ?? []}
-              mine={myLines.data}
-              currentId={queue.id}
-              mayCall={mayCall}
-              disabled={!online || onBreak}
-              calling={callNext.isPending ? callNext.variables.queueId : null}
-              onCallNext={callNextOn}
-              onOpen={onQueueChange}
-            />
+            <LinesToggle view={lines.view} canSwitch={lines.canSwitch} onChoose={lines.setChoice} />
             <Tabs
               label={t('console.queues')}
               panelId={PANEL_ID}
               value={queue.id}
               onChange={onQueueChange}
-              items={queues.data.map((q) => ({
+              items={tabQueues.map((q) => ({
                 id: q.id,
                 label: q.name,
                 extra: (
@@ -584,7 +599,7 @@ export function ConsolePage({
                 queue={queue}
                 timeZone={location.tz}
               />
-              <div className="mb-4 grid grid-cols-[2fr_1fr] gap-4">
+              <div className="mb-3 grid grid-cols-[2fr_1fr] gap-3">
                 {mayCall ? (
                   <BigButton
                     disabled={nobodyToCall(queue) || !online || onBreak}
@@ -602,6 +617,9 @@ export function ConsolePage({
                   priorityClasses={priorityClasses.data}
                 />
               </div>
+              {pool && waitingIn(queue.id) === 0 && !nobodyToCall(queue) ? (
+                <p className="mb-3 text-sm">{t('console.lines.fromPool', { pool: pool.name })}</p>
+              ) : null}
               <ServingReminders
                 overdue={reminders.overdue}
                 visits={inQueue}
@@ -612,17 +630,6 @@ export function ConsolePage({
                     .mutateAsync({ visit, action: 'complete', counterId: myCounter })
                     .then((row) => announce('complete', row), failed)
                 }
-              />
-              <ConsoleSearch
-                locationId={location.id}
-                timeZone={location.tz}
-                services={[
-                  ...new Set([...inQueue.map((v) => v.service), ...filters.services]),
-                ].filter((x): x is string => !!x)}
-                tags={[...new Set([...inQueue.flatMap((v) => v.tags), ...filters.tags])]}
-                filters={filters}
-                onFilters={setFilters}
-                onSaveNotes={saveNotes}
               />
               {visits.data ? (
                 <VisitList
@@ -689,6 +696,17 @@ export function ConsolePage({
               ) : (
                 <Spinner label={t('console.loadingList')} className="mx-auto my-8" />
               )}
+              <ConsoleSearch
+                locationId={location.id}
+                timeZone={location.tz}
+                services={[
+                  ...new Set([...inQueue.map((v) => v.service), ...filters.services]),
+                ].filter((x): x is string => !!x)}
+                tags={[...new Set([...inQueue.flatMap((v) => v.tags), ...filters.tags])]}
+                filters={filters}
+                onFilters={setFilters}
+                onSaveNotes={saveNotes}
+              />
               <DoneToday visits={done.data ?? []} timeZone={location.tz} />
               <section aria-labelledby="queue-tools" className="mt-8">
                 <h2 id="queue-tools" className="mb-3 text-lg font-semibold">

@@ -26,6 +26,9 @@ async function threeGuestsOnTwoTablets({
     await openQueue(page, queue.id);
     await expect(waitingRows(page)).toHaveText(order('Alpha', 'Bravo', 'Charlie'));
   }
+  // The drag handle and move buttons stay hidden until the operator asks to reorder.
+  await expect(first.getByRole('button', { name: /^Drag .* to reorder$/ })).toHaveCount(0);
+  await first.getByRole('button', { name: 'Reorder' }).click();
   return { first, second, context };
 }
 
