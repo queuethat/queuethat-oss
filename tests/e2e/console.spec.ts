@@ -50,13 +50,10 @@ test('my counter is remembered by this tablet', async ({ devices }) => {
   const { staff } = devices;
   await staff.goto('/staff');
   const counter = staff.getByLabel('My counter');
-  await expect(
-    staff.getByText('Pick where you serve from. This tablet remembers it.'),
-  ).toBeVisible();
+  await expect(counter).toHaveValue('');
   await counter.selectOption(demo.counters.chair2);
   await staff.reload();
   await expect(staff.getByLabel('My counter')).toHaveValue(demo.counters.chair2);
-  await expect(staff.getByText('Pick where you serve from.')).toHaveCount(0);
 });
 
 test('the chosen queue tab survives a reload', async ({ devices }) => {
@@ -127,7 +124,7 @@ test('C8 AC1: the sound banner stays until tapped, then sound shows as on', asyn
   const { staff } = devices;
   await staff.goto('/staff');
   const banner = staff.getByRole('region', { name: 'Sound alerts' });
-  await expect(banner).toContainText('Sound is off');
+  await expect(banner.getByRole('button', { name: 'Turn on sound' })).toBeVisible();
   await staff.getByRole('tab', { name: 'Kids' }).click();
   await expect(banner).toBeVisible();
   await banner.getByRole('button', { name: 'Turn on sound' }).click();

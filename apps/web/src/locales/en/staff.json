@@ -246,10 +246,10 @@
       "still": "Still serving {{ticket}}"
     },
     "sound": {
-      "gate": "Sound is off. Tap below to hear a chime when someone joins.",
+      "gate": "Sound is off.",
       "enable": "Turn on sound",
       "off": "Sound alerts",
-      "on": "Sound on: a chime plays when someone joins.",
+      "on": "Sound on",
       "muted": "Sound muted.",
       "test": "Test sound",
       "mute": "Mute",
@@ -289,7 +289,12 @@
       "historyEmpty": "Nothing sent in the last 24 hours.",
       "historyItem": "Reached {{recipients}}, skipped {{suppressed}}"
     },
+    "bar": {
+      "more": "Counter, status and sound"
+    },
     "reorder": {
+      "toggle": "Reorder",
+      "done": "Done",
       "grip": "Drag {{ticket}} to reorder",
       "top": "Move {{ticket}} to the top",
       "up": "Move {{ticket}} up",

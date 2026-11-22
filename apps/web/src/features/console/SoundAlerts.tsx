@@ -1,4 +1,4 @@
-import { BigButton, Button, Card } from '@qm/ui';
+import { Button } from '@qm/ui';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from '../../lib/translation.tsx';
 import { useAlertSound } from '../../lib/sound.ts';
@@ -21,6 +21,8 @@ export function SoundAlerts({
   const { t } = useTranslation('staff');
   const sound = useAlertSound();
   const [muted, setMuted] = useState(false);
+  // The iPad side-switch tip only matters once someone has tried the test chime.
+  const [tested, setTested] = useState(false);
   const seen = useRef<Set<string> | null>(null);
   const ring = sound.enabled && !muted;
   const { play } = sound;
@@ -49,33 +51,36 @@ export function SoundAlerts({
   if (!sound.supported) return null;
   if (!sound.enabled) {
     return (
-      <Card
-        role="region"
-        aria-label={t('console.sound.off')}
-        className="flex flex-col gap-3 bg-warning-soft text-warning-strong"
-      >
-        <p className="font-semibold">{t('console.sound.gate')}</p>
-        <p className="text-sm">{t('console.sound.muteSwitch')}</p>
-        <BigButton variant="secondary" onClick={sound.enable}>
+      <div role="region" aria-label={t('console.sound.off')} className="w-full sm:w-auto">
+        <p className="sr-only">{t('console.sound.gate')}</p>
+        <Button variant="secondary" className="w-full" onClick={sound.enable}>
           {t('console.sound.enable')}
-        </BigButton>
-      </Card>
+        </Button>
+      </div>
     );
   }
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-wrap items-center gap-2 text-sm">
       <p role="status" className="font-semibold">
         {muted ? t('console.sound.muted') : t('console.sound.on')}
       </p>
       {muted ? null : (
-        <Button variant="secondary" onClick={() => play(2)}>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            play(2);
+            setTested(true);
+          }}
+        >
           {t('console.sound.test')}
         </Button>
       )}
       <Button variant="secondary" onClick={() => setMuted(!muted)}>
         {muted ? t('console.sound.unmute') : t('console.sound.mute')}
       </Button>
-      {muted ? null : <p className="text-sm text-muted">{t('console.sound.muteSwitch')}</p>}
+      {tested && !muted ? (
+        <p className="basis-full text-muted">{t('console.sound.muteSwitch')}</p>
+      ) : null}
     </div>
   );
 }

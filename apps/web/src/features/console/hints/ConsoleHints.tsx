@@ -3,9 +3,9 @@ import { useTranslation } from '../../../lib/translation.tsx';
 import { HINTS, useDismissedHints } from './store.ts';
 
 /**
- * Three short hints the first time a console opens on this browser: Call next, the undo message
- * and the shortcut sheet. Each can be dismissed on its own, or all at once. They sit above the
- * lists, never cover anything and never take focus, so a busy desk can ignore them.
+ * One slim line of tips the first time a console opens on this browser: Call next, the undo
+ * message and the shortcut sheet. One tap on "Got it" hides them for good on this browser. They
+ * sit above the lists, never cover anything and never take focus, so a busy desk can ignore them.
  */
 export function ConsoleHints() {
   const { t } = useTranslation('console-hints');
@@ -16,31 +16,22 @@ export function ConsoleHints() {
     <section
       aria-label={t('label')}
       data-testid="console-hints"
-      className="flex flex-col gap-2 rounded-card border border-border bg-secondary p-3"
+      className="flex items-center gap-3 rounded-card border border-border bg-secondary px-3 py-2 text-sm"
     >
-      <ul className="flex flex-col gap-2">
+      <p id="console-hints-text" className="min-w-0 flex-1">
         {shown.map((hint) => (
-          <li key={hint} className="flex flex-wrap items-center gap-3">
-            <p id={`console-hint-${hint}`} className="min-w-0 flex-1">
-              <strong>{t(`${hint}.title`)}</strong> {t(`${hint}.body`)}
-            </p>
-            <Button
-              variant="secondary"
-              aria-describedby={`console-hint-${hint}`}
-              onClick={() => dismiss([hint])}
-            >
-              {t('dismiss')}
-            </Button>
-          </li>
+          <span key={hint}>
+            <strong>{t(`${hint}.title`)}</strong> {t(`${hint}.body`)}{' '}
+          </span>
         ))}
-      </ul>
-      {shown.length > 1 ? (
-        <div className="flex justify-end">
-          <Button variant="secondary" onClick={() => dismiss(HINTS)}>
-            {t('dismissAll')}
-          </Button>
-        </div>
-      ) : null}
+      </p>
+      <Button
+        variant="secondary"
+        aria-describedby="console-hints-text"
+        onClick={() => dismiss(HINTS)}
+      >
+        {t('dismiss')}
+      </Button>
     </section>
   );
 }

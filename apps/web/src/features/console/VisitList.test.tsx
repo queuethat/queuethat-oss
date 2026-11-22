@@ -67,10 +67,10 @@ describe('VisitList', () => {
       />,
     );
     const badges = screen.getAllByTestId('group-badge');
-    expect(badges.map((b) => b.textContent)).toEqual(['Group with A003', 'Group with A001']);
+    expect(badges.map((b) => b.textContent)).toEqual(['Group with A001', 'Group with A003']);
   });
 
-  it('shows waiting, called and serving in the order given, with counts and times', () => {
+  it('shows waiting and serving guests with counts and times', () => {
     vi.useFakeTimers({ now: NOW, toFake: ['Date'] });
     render(
       <VisitList
@@ -93,10 +93,43 @@ describe('VisitList', () => {
       'A004No name given · party of 3HaircutWaited 12 min',
       'A002DanaHaircutJust joined',
     ]);
-    expect(screen.getByTestId('section-called').textContent).toContain('No one has been called.');
+    // Nobody is called, so that section stays out of the way.
+    expect(screen.queryByTestId('section-called')).toBeNull();
     expect(screen.getByTestId('section-serving').textContent).toContain(
       'A003DanaHaircut · Chair 1Serving for 5 min',
     );
+  });
+
+  it('pins called and serving guests above the waiting line', () => {
+    render(
+      <VisitList
+        visits={[
+          visit({ ticket: 'A001' }),
+          visit({ ticket: 'A002', status: 'serving' }),
+          visit({ ticket: 'A003', status: 'called' }),
+        ]}
+      />,
+    );
+    const sections = screen.getAllByTestId(/^section-/).map((el) => el.dataset.testid);
+    expect(sections.slice(0, 3)).toEqual(['section-called', 'section-serving', 'section-waiting']);
+  });
+
+  it('keeps reorder controls behind a Reorder toggle', async () => {
+    const onMove = vi.fn();
+    render(
+      <VisitList
+        visits={[visit({ ticket: 'A001' }), visit({ ticket: 'A002', name: 'Bo' })]}
+        onMove={onMove}
+      />,
+    );
+    expect(screen.queryByRole('button', { name: /to reorder$/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /^Move A001/ })).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: 'Reorder' }));
+    expect(screen.getAllByRole('button', { name: /to reorder$/ })).toHaveLength(2);
+    await userEvent.click(screen.getByRole('button', { name: 'Move A002 up' }));
+    expect(onMove).toHaveBeenCalledOnce();
+    await userEvent.click(screen.getByRole('button', { name: 'Done' }));
+    expect(screen.queryByRole('button', { name: /to reorder$/ })).toBeNull();
   });
 
   it('never shows a negative time when the tablet clock is behind', () => {

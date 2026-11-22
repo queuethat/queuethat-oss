@@ -39,7 +39,6 @@ import { GuestLine, RemoveAndBlock } from './RemoveAndBlock.tsx';
 import { afterIdForMove } from './reorder/position.ts';
 import { SortableRow, SortableWaiting } from './reorder/SortableWaiting.tsx';
 import {
-  ACTIVE_STATES,
   type ActiveState,
   type BlockDuration,
   type ConsoleQueue,
@@ -116,7 +115,18 @@ interface Section {
 }
 
 /** The list's sections: expected guests split into appointments and those who joined for later. */
-const SECTIONS = ACTIVE_STATES.flatMap((state): Section[] =>
+/**
+ * On screen, guests already called or being served sit above the waiting line, so a guest who was
+ * just called never drops out of sight below a long queue (D-3).
+ */
+const SECTION_ORDER: readonly ActiveState[] = [
+  'called',
+  'serving',
+  'waiting',
+  'expected',
+  'no_show',
+];
+const SECTIONS = SECTION_ORDER.flatMap((state): Section[] =>
   state === 'expected'
     ? [
         { key: 'expected', state, later: false },
@@ -194,6 +204,8 @@ export function VisitList({
 }) {
   const { t } = useTranslation('staff');
   const now = useNow(30_000);
+  // Reordering is occasional, so its drag handle and move buttons stay hidden until asked for.
+  const [reordering, setReordering] = useState(false);
   const groups = groupTickets(visits);
   const suggestions = tagSuggestions(visits);
   const groupWith = (v: ConsoleVisit) =>
@@ -206,11 +218,24 @@ export function VisitList({
         );
         // Guests who joined for later get a section of their own, shown only while there are some.
         if (later && rows.length === 0) return null;
+        // Called and serving guests are pinned above the line only while there are some.
+        if ((state === 'called' || state === 'serving') && rows.length === 0) return null;
         return (
           <section key={key} aria-labelledby={`section-${key}`} data-testid={`section-${key}`}>
-            <h2 id={`section-${key}`} className="mb-2 text-lg font-semibold">
-              {t(`console.section.${key}`, { count: rows.length })}
-            </h2>
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <h2 id={`section-${key}`} className="text-lg font-semibold">
+                {t(`console.section.${key}`, { count: rows.length })}
+              </h2>
+              {state === 'waiting' && onMove && rows.length > 1 ? (
+                <Button
+                  variant="secondary"
+                  aria-pressed={reordering}
+                  onClick={() => setReordering(!reordering)}
+                >
+                  {t(reordering ? 'console.reorder.done' : 'console.reorder.toggle')}
+                </Button>
+              ) : null}
+            </div>
             {rows.length === 0 ? (
               state === 'waiting' && visits.length === 0 ? (
                 <ScreenEmpty kind="console" action={<ShareLine />} />
@@ -219,7 +244,7 @@ export function VisitList({
               )
             ) : (
               <>
-                {state === 'waiting' && onMove ? (
+                {state === 'waiting' && onMove && reordering ? (
                   <SortableWaiting
                     ids={rows.map((v) => v.id)}
                     labelOf={(id) => rows.find((v) => v.id === id)?.ticket ?? ''}
@@ -533,7 +558,7 @@ function Row({
       {visit.status === 'called' ? (
         <StatusPill status="called">{t('console.status.called')}</StatusPill>
       ) : null}
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-32 flex-1 flex-col">
         <span className="truncate text-lg font-medium">
           {visit.name ?? t('console.noName')}
           {visit.partySize > 1 ? ` · ${t('console.party', { count: visit.partySize })}` : ''}

@@ -52,8 +52,8 @@ export function PresenceBar({
     members.data?.find((m) => m.userId === id)?.displayName || t('presence.someone');
 
   return (
-    <div className="flex flex-wrap items-end gap-4" data-testid="presence-bar">
-      <div className="w-56">
+    <div className="flex flex-wrap items-end gap-x-4 gap-y-2" data-testid="presence-bar">
+      <div className="w-full sm:w-44">
         <Select
           label={t('presence.label')}
           value={mine?.status ?? ''}
