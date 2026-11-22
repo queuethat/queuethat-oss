@@ -71,6 +71,12 @@
   "location": {
     "title": "Location settings",
     "loading": "Loading location settings",
+    "sections": "Settings sections",
+    "section": {
+      "basics": "Basics",
+      "display": "Display",
+      "advanced": "Advanced"
+    },
     "readOnly": "Only admins and owners can change these settings.",
     "name": "Location name",
     "slug": "Join page address",
