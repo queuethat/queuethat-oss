@@ -32,6 +32,7 @@ export const TABLES: { name: string; columns?: string }[] = [
   { name: 'locations' },
   { name: 'queues' },
   { name: 'services' },
+  { name: 'queue_services' },
   { name: 'counters' },
   {
     name: 'visits',

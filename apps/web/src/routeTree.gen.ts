@@ -55,6 +55,7 @@ import { Route as AdminPosterRouteImport } from './routes/admin/poster'
 import { Route as AdminResourcesRouteImport } from './routes/admin/resources'
 import { Route as AdminRolesRouteImport } from './routes/admin/roles'
 import { Route as AdminRoutingRouteImport } from './routes/admin/routing'
+import { Route as AdminServicesRouteImport } from './routes/admin/services'
 import { Route as AdminShiftsRouteImport } from './routes/admin/shifts'
 import { Route as AdminSignageRouteImport } from './routes/admin/signage'
 import { Route as AdminTeamRouteImport } from './routes/admin/team'
@@ -337,6 +338,11 @@ const AdminRolesRoute = AdminRolesRouteImport.update({
 const AdminRoutingRoute = AdminRoutingRouteImport.update({
   id: '/routing',
   path: '/routing',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminServicesRoute = AdminServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminShiftsRoute = AdminShiftsRouteImport.update({
@@ -655,6 +661,7 @@ export interface FileRoutesByFullPath {
   '/admin/resources': typeof AdminResourcesRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/routing': typeof AdminRoutingRoute
+  '/admin/services': typeof AdminServicesRoute
   '/admin/shifts': typeof AdminShiftsRoute
   '/admin/signage': typeof AdminSignageRoute
   '/admin/team': typeof AdminTeamRoute
@@ -752,6 +759,7 @@ export interface FileRoutesByTo {
   '/admin/resources': typeof AdminResourcesRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/routing': typeof AdminRoutingRoute
+  '/admin/services': typeof AdminServicesRoute
   '/admin/shifts': typeof AdminShiftsRoute
   '/admin/signage': typeof AdminSignageRoute
   '/admin/team': typeof AdminTeamRoute
@@ -854,6 +862,7 @@ export interface FileRoutesById {
   '/admin/resources': typeof AdminResourcesRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/routing': typeof AdminRoutingRoute
+  '/admin/services': typeof AdminServicesRoute
   '/admin/shifts': typeof AdminShiftsRoute
   '/admin/signage': typeof AdminSignageRoute
   '/admin/team': typeof AdminTeamRoute
@@ -957,6 +966,7 @@ export interface FileRouteTypes {
     | '/admin/resources'
     | '/admin/roles'
     | '/admin/routing'
+    | '/admin/services'
     | '/admin/shifts'
     | '/admin/signage'
     | '/admin/team'
@@ -1054,6 +1064,7 @@ export interface FileRouteTypes {
     | '/admin/resources'
     | '/admin/roles'
     | '/admin/routing'
+    | '/admin/services'
     | '/admin/shifts'
     | '/admin/signage'
     | '/admin/team'
@@ -1155,6 +1166,7 @@ export interface FileRouteTypes {
     | '/admin/resources'
     | '/admin/roles'
     | '/admin/routing'
+    | '/admin/services'
     | '/admin/shifts'
     | '/admin/signage'
     | '/admin/team'
@@ -1556,6 +1568,13 @@ declare module '@tanstack/react-router' {
       path: '/routing'
       fullPath: '/admin/routing'
       preLoaderRoute: typeof AdminRoutingRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/services': {
+      id: '/admin/services'
+      path: '/services'
+      fullPath: '/admin/services'
+      preLoaderRoute: typeof AdminServicesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/shifts': {
@@ -1971,6 +1990,7 @@ interface AdminRouteRouteChildren {
   AdminResourcesRoute: typeof AdminResourcesRoute
   AdminRolesRoute: typeof AdminRolesRoute
   AdminRoutingRoute: typeof AdminRoutingRoute
+  AdminServicesRoute: typeof AdminServicesRoute
   AdminShiftsRoute: typeof AdminShiftsRoute
   AdminSignageRoute: typeof AdminSignageRoute
   AdminTeamRoute: typeof AdminTeamRoute
@@ -2033,6 +2053,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminResourcesRoute: AdminResourcesRoute,
   AdminRolesRoute: AdminRolesRoute,
   AdminRoutingRoute: AdminRoutingRoute,
+  AdminServicesRoute: AdminServicesRoute,
   AdminShiftsRoute: AdminShiftsRoute,
   AdminSignageRoute: AdminSignageRoute,
   AdminTeamRoute: AdminTeamRoute,

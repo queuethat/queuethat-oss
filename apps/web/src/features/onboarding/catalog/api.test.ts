@@ -86,3 +86,43 @@ describe('rankCatalog', () => {
     expect(rankCatalog(catalog, 'zoo')).toEqual([]);
   });
 });
+
+describe('toEntry with services listed once', () => {
+  const shared = (queues: unknown[]) =>
+    toEntry(
+      {
+        key: 'shop',
+        version: 3,
+        tier: 1,
+        health_tagged: false,
+        payload: {
+          name: 'Shop',
+          description: 'Shop',
+          services: [
+            { name: { en: 'Cut', es: 'Corte' }, minutes: 20 },
+            { name: { en: 'Beard', es: 'Barba' }, minutes: 10 },
+          ],
+          queues,
+        },
+      },
+      'es',
+    );
+
+  it('fills each queue with the listed services it names', () => {
+    const e = shared([
+      { name: 'Chair 1', show_eta: true, services: ['Cut', 'Beard'] },
+      { name: 'Chair 2', show_eta: true, services: ['Cut'] },
+    ]);
+    expect(e.queues.map((q) => q.services.map((s) => s.name))).toEqual([
+      ['Corte', 'Barba'],
+      ['Corte'],
+    ]);
+    expect(e.queues[0]!.services[0]!.minutes).toBe(20);
+  });
+
+  it('still reads full definitions on each queue', () => {
+    expect(v1('old', 'Old', 'Old', 'Cut').queues[0]!.services).toEqual([
+      { name: 'Cut', minutes: 10 },
+    ]);
+  });
+});

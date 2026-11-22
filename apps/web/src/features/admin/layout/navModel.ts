@@ -102,6 +102,7 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
   {
     id: 'advanced',
     entries: [
+      { to: '/admin/services', key: 'services', icon: iconList },
       { to: '/admin/routing', key: 'routing', icon: iconSliders },
       { to: '/admin/queues/priority', key: 'priority', icon: iconSliders },
       { to: '/admin/resources', key: 'counters', icon: iconSliders },

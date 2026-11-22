@@ -65,17 +65,17 @@ test('AC2: Colour mapped to Chair 2 only gives one service_resources row and sho
   const [[loc]] = (await readAs(email, ['locations?select=id,org_id'])) as [
     { id: string; org_id: string }[],
   ];
-  const queue = await restAs(email, 'queues', {
+  await restAs(email, 'queues', {
     method: 'POST',
     headers: { prefer: 'return=representation' },
     body: JSON.stringify({ org_id: loc!.org_id, location_id: loc!.id, name: 'Salon' }),
-  }).then(async (r) => ((await r.json()) as { id: string }[])[0]!);
+  });
 
   await signInTo(staff, email, '/admin/resources');
   await addResource(staff, 'Chair 1', 'chair');
   await addResource(staff, 'Chair 2', 'chair');
 
-  await staff.goto(`/admin/queues/${queue.id}`);
+  await staff.goto('/admin/services');
   await staff.getByRole('button', { name: 'Add a service' }).click();
   await staff.getByLabel('Service name').fill('Colour');
   await staff.getByRole('group', { name: 'Chair' }).getByLabel('Chair 2').check();

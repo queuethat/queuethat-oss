@@ -90,14 +90,25 @@ export function useSetUpBusiness() {
           if (error) throw error;
           created = { ...created, queueId: data.id };
         }
-        const { error } = await supabase.schema('app').from('services').insert({
+        const app = supabase.schema('app');
+        const { data: service, error } = await app
+          .from('services')
+          .insert({
+            org_id: created.orgId,
+            location_id: created.locationId,
+            name: setup.serviceName,
+            expected_minutes: setup.expectedMinutes,
+          })
+          .select('id')
+          .single();
+        if (error) throw error;
+        const link = await app.from('queue_services').insert({
           org_id: created.orgId,
           location_id: created.locationId,
           queue_id: created.queueId!,
-          name: setup.serviceName,
-          expected_minutes: setup.expectedMinutes,
+          service_id: service.id,
         });
-        if (error) throw error;
+        if (link.error) throw link.error;
         return created;
       } catch (error) {
         throw new SetupError(errorCode(error), created);
