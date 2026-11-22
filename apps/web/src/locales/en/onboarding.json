@@ -76,7 +76,6 @@
     "copied": "Link copied.",
     "poster": "Print poster",
     "openPage": "Open join page",
-    "tryIt": "Scan this with your phone, join, then call yourself from the console.",
     "summaryProviders_one": "{{count}} {{noun}}, {{services}} services",
     "summaryProviders_other": "{{count}} {{noun}}s, {{services}} services",
     "summaryQueues_one": "{{count}} queue, {{services}} services",

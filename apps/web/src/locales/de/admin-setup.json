@@ -30,5 +30,29 @@
       "action": "Plakat öffnen",
       "markDone": "Ist gedruckt"
     }
+  },
+  "firstTest": {
+    "title": "Probiere es selbst in einer Minute aus",
+    "intro": "Tritt auf dem Handy deiner eigenen Warteschlange bei und rufe dich dann selbst auf. So siehst du, was deine Gäste sehen.",
+    "doneTitle": "Deine Warteschlange funktioniert",
+    "doneIntro": "Ein Gast ist beigetreten und wurde aufgerufen. So erleben es deine Gäste.",
+    "skip": "Test überspringen",
+    "close": "Schließen",
+    "steps": {
+      "open": {
+        "title": "Öffne deinen Beitrittslink auf dem Handy",
+        "hint": "Scanne den QR-Code oder öffne den Link.",
+        "action": "Beitrittsseite öffnen"
+      },
+      "join": {
+        "title": "Der Warteschlange beitreten",
+        "hint": "Gib einen beliebigen Namen ein und tippe auf Beitreten."
+      },
+      "call": {
+        "title": "Rufe dich in der Konsole selbst auf",
+        "hint": "Öffne die Konsole und rufe den nächsten Gast auf.",
+        "action": "Konsole öffnen"
+      }
+    }
   }
 }

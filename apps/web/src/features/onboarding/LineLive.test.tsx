@@ -18,6 +18,7 @@ vi.mock('../auth/current.ts', () => ({
   useCurrentLocation: () => ({ location: { id: 'loc-a', name: 'Main St', slug: 'main-st' } }),
   useCurrentOrg: () => ({ id: 'org-a', role: 'owner' }),
 }));
+vi.mock('../admin/dashboard/setup/FirstTest.tsx', () => ({ FirstTest: () => null }));
 vi.mock('../admin/poster/JoinQr.tsx', () => ({ JoinQr: () => <div role="img" aria-label="QR" /> }));
 vi.mock('../../lib/supabase.ts', () => ({ supabase: { rpc: m.rpc } }));
 
