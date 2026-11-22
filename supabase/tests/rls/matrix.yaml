@@ -157,6 +157,17 @@ tables:
       insert: [owner, admin, manager]
       update: [owner, admin, manager]
 
+  app.queue_services: # #75: which queue offers which service. Managers write; staff and devices read
+    where: queue_id = tests.id('queue_a') and service_id = tests.id('service_a')
+    update: sort_order = sort_order
+    # The fixture queue already offers both fixture services, so insert upserts the existing link.
+    insert: (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), tests.id('service_a')) on conflict (queue_id, service_id) do update set sort_order = excluded.sort_order
+    allow:
+      select: [owner, admin, manager, staff, display, kiosk]
+      insert: [owner, admin, manager]
+      update: [owner, admin, manager]
+      delete: [owner, admin, manager]
+
   app.signage_slides: # 4-SIG1 (#389): admins write, staff and devices read; the TV reads through api.display_signage
     where: id = tests.id('slide_a')
     update: sort = sort
