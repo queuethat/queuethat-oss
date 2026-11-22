@@ -103,14 +103,15 @@ export const placementsQuery = (locationId: string) =>
       const { data, error } = await supabase
         .schema('app')
         .from('queues')
-        .select('id, name, services(id, name, active)')
+        .select('id, name, queue_services(services(id, name, active))')
         .eq('location_id', locationId)
         .is('archived_at', null)
         .order('name');
       if (error) throw error;
       return data.flatMap((q) => [
         { id: q.id, name: q.name, kind: 'queue' as const },
-        ...q.services
+        ...q.queue_services
+          .flatMap((link) => (link.services ? [link.services] : []))
           .filter((s) => s.active)
           .map((s) => ({ id: s.id, name: `${q.name} / ${s.name}`, kind: 'service' as const })),
       ]);

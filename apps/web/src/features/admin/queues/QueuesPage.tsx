@@ -75,6 +75,9 @@ export function QueuesPage() {
             <LinkButton variant="secondary" render={(p) => <Link to="/admin/routing" {...p} />}>
               {t('queues.routingLink')}
             </LinkButton>
+            <LinkButton variant="secondary" render={(p) => <Link to="/admin/services" {...p} />}>
+              {t('queues.servicesLink')}
+            </LinkButton>
             {canManage && editing !== 'new' ? (
               <Button onClick={() => open('new')}>{t('queues.add')}</Button>
             ) : null}

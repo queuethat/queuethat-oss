@@ -27,7 +27,7 @@ select is((select name from api.list_template_catalog() where key = 'clinic'), '
 select is((api.apply_industry_template(tests.id('loc_new'), 'test_salon', gen_random_uuid())),
   row('test_salon', 1, 1, 1)::api.template_result, 'apply copies a localized template');
 select is((select q.name || ' ' || q.ticket_prefix || ' / ' || s.name || ' ' || s.expected_minutes || ' / ' || c.label
-           from app.queues q join app.services s on s.queue_id = q.id join app.counters c on c.location_id = q.location_id
+           from app.queues q join app.queue_services qs on qs.queue_id = q.id join app.services s on s.id = qs.service_id join app.counters c on c.location_id = q.location_id
            where q.location_id = tests.id('loc_new')),
   'Walk-ins S / Cut 40 / Chair 1', 'with English names');
 

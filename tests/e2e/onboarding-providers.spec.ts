@@ -81,9 +81,10 @@ test('three doctors named by the owner get their own lines, a pool, and the form
   await staff.getByRole('button', { name: 'Create my business' }).click();
 
   await expect(staff.getByText('Your line is live')).toBeVisible();
-  const [queues, services, forms] = await readAs(email, [
+  const [queues, services, links, forms] = await readAs(email, [
     'queues?select=name,kind&order=name',
     'services?select=name',
+    'queue_services?select=queue_id',
     'forms?select=name,status&is_queue_default=eq.false',
   ]);
   expect(queues).toEqual([
@@ -92,6 +93,8 @@ test('three doctors named by the owner get their own lines, a pool, and the form
     { name: 'Dr. Ng', kind: 'provider' },
     { name: 'Dr. Patel', kind: 'provider' },
   ]);
-  expect(services).toHaveLength(4);
+  // One Checkup for the location, offered by all four lines.
+  expect(services).toHaveLength(1);
+  expect(links).toHaveLength(4);
   expect(forms).toEqual([{ name: 'Visit details', status: 'published' }]);
 });

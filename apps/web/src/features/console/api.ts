@@ -48,7 +48,7 @@ export function useConsoleQueues(locationId: string | undefined) {
         .schema('app')
         .from('queues')
         .select(
-          'id, name, manual_state, version, online_joins_paused_until, wait_override_minutes, wait_override_until, serving_reminder_minutes, kind, pulls_from, services(id, name, active, sort_order)',
+          'id, name, manual_state, version, online_joins_paused_until, wait_override_minutes, wait_override_until, serving_reminder_minutes, kind, pulls_from, queue_services(sort_order, services(id, name, active, sort_order))',
         )
         .eq('location_id', locationId!)
         .is('archived_at', null)
@@ -64,9 +64,13 @@ export function useConsoleQueues(locationId: string | undefined) {
         waitOverrideMinutes: q.wait_override_minutes,
         waitOverrideUntil: q.wait_override_until,
         servingReminderMinutes: q.serving_reminder_minutes,
-        services: q.services
+        services: q.queue_services
+          .flatMap((link) => (link.services ? [{ ...link.services, rank: link.sort_order }] : []))
           .filter((s) => s.active)
-          .sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name))
+          .sort(
+            (a, b) =>
+              a.rank - b.rank || a.sort_order - b.sort_order || a.name.localeCompare(b.name),
+          )
           .map(({ id, name }) => ({ id, name })),
         kind: q.kind as ConsoleQueue['kind'],
         pullsFrom: q.pulls_from,

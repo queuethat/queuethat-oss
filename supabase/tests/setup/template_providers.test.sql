@@ -32,7 +32,7 @@ select tests.new_id('key_1');
 select tests.act_as('admin');
 select is(api.apply_industry_template(tests.id('loc_new'), 'test_practice', tests.id('key_1'),
             array['Dr. Lee', 'Dr. Patel', 'Dr. Ng'], true),
-  row('test_practice', 4, 8, 1)::api.template_result, 'AC: 3 personal lines and a pool, 2 services each, 1 room');
+  row('test_practice', 4, 2, 1)::api.template_result, 'AC: 3 personal lines and a pool offering 2 services, created once, 1 room');
 
 -- The lines: named by the owner, provider kind, each pulling from the one pool, distinct prefixes.
 select is((select array_agg(q.name || ':' || q.kind order by q.name) from app.queues q where q.location_id = tests.id('loc_new')),
@@ -48,14 +48,14 @@ select is((select array_agg(distinct s.name || ' ' || s.expected_minutes order b
            from app.services s where s.location_id = tests.id('loc_new')),
   array['Checkup 15', 'Follow-up 10'], 'AC: services copied in English, the first Checkup wins');
 select is((select count(*) from app.queues q where q.location_id = tests.id('loc_new')
-           and (select count(*) from app.services s where s.queue_id = q.id) = 2), 4::bigint, 'AC: all four lines have both services');
+           and (select count(*) from app.queue_services qs where qs.queue_id = q.id) = 2), 4::bigint, 'AC: all four lines have both services');
 select is((select label from app.counters c where c.location_id = tests.id('loc_new')), 'Room 1', 'localized resource labels are copied');
 
 -- Booking settings: a bookable policy on every bookable service it created.
 select is((select count(*) from app.booking_policies b join app.services s on s.id = b.service_id
            where b.location_id = tests.id('loc_new') and b.bookable and s.name = 'Checkup'
              and (b.slot_minutes, b.buffer_after_minutes, b.min_notice_minutes, b.max_days_ahead) = (15, 5, 0, 60)),
-  4::bigint, 'each line''s Checkup is bookable with the template''s settings');
+  1::bigint, 'the one Checkup (offered by all four lines) is bookable with the template''s settings');
 select is((select count(*) from app.booking_policies b join app.services s on s.id = b.service_id
            where b.location_id = tests.id('loc_new') and s.name = 'Follow-up'), 0::bigint,
   'a service marked bookable false stays walk-in only');
@@ -74,7 +74,7 @@ select is((select count(distinct t.queue_id) from app.form_targets t join app.fo
 -- Idempotent: the same key replays; a new key re-applies without duplicating anything.
 select is(api.apply_industry_template(tests.id('loc_new'), 'test_practice', tests.id('key_1'),
             array['Dr. Lee', 'Dr. Patel', 'Dr. Ng'], true),
-  row('test_practice', 4, 8, 1)::api.template_result, 'AC: the same key replays the first result');
+  row('test_practice', 4, 2, 1)::api.template_result, 'AC: the same key replays the first result');
 select is(api.apply_industry_template(tests.id('loc_new'), 'test_practice', gen_random_uuid(),
             array['Dr. Lee', 'Dr. Patel', 'Dr. Ng'], true),
   row('test_practice', 0, 0, 0)::api.template_result, 'AC: re-applying creates nothing new');

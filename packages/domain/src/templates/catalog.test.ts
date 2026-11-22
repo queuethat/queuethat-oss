@@ -174,3 +174,32 @@ describe('lintWaiver', () => {
     ]);
   });
 });
+
+describe('services listed once for the location', () => {
+  function shared(): Record<string, unknown> {
+    const t = barber();
+    t.services = [
+      { name: L('Haircut'), minutes: 30 },
+      { name: L('Beard'), minutes: 15 },
+    ];
+    t.queues = [
+      { name: L('Chair 1'), prefix: 'A', show_eta: true, services: ['Haircut', 'Beard'] },
+      { name: L('Chair 2'), prefix: 'B', show_eta: true, services: ['Haircut'] },
+    ];
+    return t;
+  }
+
+  it('accepts queues that name the listed services', () => {
+    expect(lintTemplate(shared())).toEqual([]);
+  });
+
+  it('still accepts the per-queue shape', () => {
+    expect(lintTemplate(barber())).toEqual([]);
+  });
+
+  it('rejects a name the top-level list does not have', () => {
+    const t = shared();
+    (t.queues as { services: string[] }[])[1]!.services = ['Shave'];
+    expect(lintTemplate(t).join(' ')).toMatch(/queues\[1\]\.services\[0\].*top-level/);
+  });
+});

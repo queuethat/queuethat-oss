@@ -61,7 +61,7 @@ const PREVIOUS = [
   '/admin/settings/danger',
 ];
 
-const SURFACED = ['/staff', '/admin/routing', '/admin/queues/priority'];
+const SURFACED = ['/staff', '/admin/routing', '/admin/queues/priority', '/admin/services'];
 
 describe('admin nav model', () => {
   it('keeps every previous destination and surfaces the live queue, routing and priority', () => {

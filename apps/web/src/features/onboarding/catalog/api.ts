@@ -62,6 +62,12 @@ export function toEntry(row: Json, lang: string): CatalogEntry {
   const keywords = payload.keywords as { en?: string[]; es?: string[] } | undefined;
   const fields = list((payload.form as Json | undefined)?.fields);
   const providers = payload.providers as Json | undefined;
+  // A template may list its services once and let each queue name the ones it offers.
+  const shared = list(payload.services);
+  const definition = (s: unknown): Json =>
+    typeof s === 'string'
+      ? (shared.find((d) => catalogText(d.name as CatalogText, 'en') === s) ?? { name: s })
+      : (s as Json);
   return {
     key: row.key as string,
     version: row.version as number,
@@ -73,7 +79,7 @@ export function toEntry(row: Json, lang: string): CatalogEntry {
     queues: list(payload.queues).map((q) => ({
       name: text(q.name),
       showEta: q.show_eta !== false,
-      services: list(q.services).map((s) => ({
+      services: ((q.services as unknown[] | undefined) ?? []).map(definition).map((s) => ({
         name: text(s.name),
         minutes: typeof s.minutes === 'number' ? s.minutes : null,
       })),

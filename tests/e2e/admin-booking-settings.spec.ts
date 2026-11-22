@@ -13,9 +13,8 @@ function dateIn(offsetDays: number) {
 
 async function openBooking(page: import('@playwright/test').Page, as: 'owner' | 'staff') {
   const loc = await bookableLocation(tz);
-  const { queueId } = loc;
   await signInAs(page, loc[as]);
-  await page.goto(`/admin/queues/${queueId}`);
+  await page.goto('/admin/services');
   await page.getByRole('button', { name: 'Booking' }).click();
   await expect(page.getByTestId('booking-settings')).toBeVisible();
 }

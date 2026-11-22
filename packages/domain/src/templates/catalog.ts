@@ -26,7 +26,12 @@ export interface CatalogQueue {
   show_eta: boolean;
   party_min?: number;
   party_max?: number;
-  services: CatalogService[];
+  /**
+   * What the queue offers: full definitions, or (when the template lists its `services` once at the
+   * top level) the English names of those services. Both shapes apply; the setup creates each
+   * service once per location and links it to every queue that offers it.
+   */
+  services: (CatalogService | string)[];
 }
 
 export interface CatalogResource {
@@ -75,6 +80,8 @@ export interface CatalogTemplate {
   description: Localized;
   /** Search words for the "What kind of business?" picker, per language: "haircut", "fade". */
   keywords?: { en: string[]; es: string[] };
+  /** The location's services, listed once; queues then name the ones they offer. Optional. */
+  services?: CatalogService[];
   queues: CatalogQueue[];
   resources: CatalogResource[];
   providers?: CatalogProviders;
@@ -170,6 +177,26 @@ export function lintTemplate(tpl: Json, fileKey?: string): string[] {
     }
   }
 
+  // Services may be listed once for the location; queues then name the ones they offer.
+  const listed = new Set<string>();
+  const service = (s: Json, sp: string) => {
+    if (!isObject(s)) return err(sp, 'must be an object');
+    text(s.name, `${sp}.name`);
+    if (!isInt(s.minutes, 1, 480))
+      err(`${sp}.minutes`, 'service needs a duration of 1-480 minutes');
+    if (s.prefix !== undefined && (typeof s.prefix !== 'string' || !PREFIX.test(s.prefix)))
+      err(`${sp}.prefix`, '1-3 capitals');
+  };
+  if (t.services !== undefined) {
+    if (!Array.isArray(t.services) || t.services.length === 0) err('services', 'a non-empty list');
+    else
+      t.services.forEach((s: Json, j) => {
+        service(s, `services[${j}]`);
+        const en = isObject(s) && isObject(s.name) ? s.name.en : undefined;
+        if (typeof en === 'string') listed.add(en);
+      });
+  }
+
   if (!Array.isArray(t.queues) || t.queues.length === 0) err('queues', 'at least one queue');
   else
     t.queues.forEach((q: Json, i) => {
@@ -183,12 +210,11 @@ export function lintTemplate(tpl: Json, fileKey?: string): string[] {
         return err(`${p}.services`, 'at least one service');
       q.services.forEach((s: Json, j) => {
         const sp = `${p}.services[${j}]`;
-        if (!isObject(s)) return err(sp, 'must be an object');
-        text(s.name, `${sp}.name`);
-        if (!isInt(s.minutes, 1, 480))
-          err(`${sp}.minutes`, 'service needs a duration of 1-480 minutes');
-        if (s.prefix !== undefined && (typeof s.prefix !== 'string' || !PREFIX.test(s.prefix)))
-          err(`${sp}.prefix`, '1-3 capitals');
+        if (typeof s === 'string') {
+          if (!listed.has(s)) err(sp, 'a name must match a service in the top-level services list');
+          return;
+        }
+        service(s, sp);
       });
     });
 
