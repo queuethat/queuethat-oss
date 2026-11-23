@@ -19,6 +19,8 @@ test('AC1: the wizard creates the org, location, owner membership and a default 
   await expectNoSeriousA11yViolations(staff);
 
   await staff.getByLabel('Business name').fill(business);
+  // #88: the owner's name, for the team lists instead of their email.
+  await staff.getByLabel('Your name (optional)').fill('Riya Owner');
   await staff.getByRole('button', { name: 'Next' }).click();
   await staff.getByLabel('Location name').fill('Main Street');
   await staff.getByLabel('Street address').fill('1 Main Street');
@@ -49,14 +51,15 @@ test('AC1: the wizard creates the org, location, owner membership and a default 
   await expect(staff.getByTestId('current-location')).toHaveText(`Main Street · ${business}`);
 
   const rows = await readAs(email, [
-    'memberships?select=role,organizations(name)',
-    'locations?select=name,address,tz',
+    'memberships?select=role,display_name,organizations(name)',
+    'locations?select=name,address,tz,country_code',
     'queues?select=name',
     'services?select=name,expected_minutes',
   ]);
   expect(rows).toEqual([
-    [{ role: 'owner', organizations: { name: business } }],
-    [{ name: 'Main Street', address: '1 Main Street', tz: 'Europe/Berlin' }],
+    [{ role: 'owner', display_name: 'Riya Owner', organizations: { name: business } }],
+    // The country follows the zone (#88), so guests' phones start on +49.
+    [{ name: 'Main Street', address: '1 Main Street', tz: 'Europe/Berlin', country_code: 'DE' }],
     [{ name: 'Walk-ins' }],
     [{ name: 'General', expected_minutes: 10 }],
   ]);

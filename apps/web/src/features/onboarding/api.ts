@@ -2,10 +2,13 @@ import { errorCode, type ErrorCode } from '@qm/domain';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase.ts';
 import { selectLocation } from '../auth/current.ts';
+import { countryOfZone } from './countryOfZone.ts';
 import { applyTemplate, type ProviderSetup, type TemplateResult } from './templates.tsx';
 
 export interface BusinessSetup {
   businessName: string;
+  /** The owner's own name for the team lists (#88); blank keeps their email there. */
+  ownerName?: string;
   locationName: string;
   address: string;
   timeZone: string;
@@ -56,13 +59,31 @@ export function useSetUpBusiness() {
           });
           if (error) throw error;
           created = { orgId: data.org_id!, locationId: data.location_id! };
-          if (setup.address.trim()) {
-            const { error: addressError } = await supabase
+          // The country follows the time zone (#88), so guests' phone fields start on the right
+          // calling code; the owner can change it in the location settings.
+          const country = countryOfZone(setup.timeZone);
+          const details = {
+            ...(setup.address.trim() ? { address: setup.address.trim() } : {}),
+            ...(country ? { country_code: country } : {}),
+          };
+          if (Object.keys(details).length > 0) {
+            const { error: detailsError } = await supabase
               .schema('app')
               .from('locations')
-              .update({ address: setup.address.trim() })
+              .update(details)
               .eq('id', created.locationId);
-            if (addressError) throw addressError;
+            if (detailsError) throw detailsError;
+          }
+          const ownerName = setup.ownerName?.trim();
+          if (ownerName) {
+            const { data: me } = await supabase.auth.getUser();
+            const { error: nameError } = await supabase
+              .schema('app')
+              .from('memberships')
+              .update({ display_name: ownerName })
+              .eq('org_id', created.orgId)
+              .eq('user_id', me.user!.id);
+            if (nameError) throw nameError;
           }
         }
         if (setup.templateKey) {

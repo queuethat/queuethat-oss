@@ -4,7 +4,7 @@
   "readOnly": "Only admins and owners can change opening hours.",
   "intro": "Guests can join only while you are open. Times are in your location's time zone, {{tz}}.",
   "noHours": "No hours are set, so the queue is open whenever it is not paused or closed.",
-  "closed": "Closed",
+  "open": "Open",
   "opens": "{{day}}: opens (interval {{n}})",
   "closes": "{{day}}: closes (interval {{n}})",
   "nextDay": "+1 day",

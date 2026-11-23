@@ -180,11 +180,12 @@ function DayRow({
       data-testid={`day-${weekday}`}
     >
       <legend className="px-1 text-lg font-semibold">{day}</legend>
+      {/* "Open", not an inverted "Closed" box (#88): ticked means the day has hours. */}
       <Checkbox
-        label={t('closed')}
-        checked={intervals.length === 0}
+        label={t('open')}
+        checked={intervals.length > 0}
         disabled={readOnly}
-        onChange={(event) => onChange(event.target.checked ? [] : [DEFAULT_INTERVAL])}
+        onChange={(event) => onChange(event.target.checked ? [DEFAULT_INTERVAL] : [])}
       />
       {intervals.map((interval, index) => (
         <div key={index} className="flex flex-wrap items-end gap-3">

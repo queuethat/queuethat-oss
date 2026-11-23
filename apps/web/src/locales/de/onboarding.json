@@ -13,7 +13,9 @@
   "business": {
     "heading": "Dein Unternehmen",
     "name": "Name des Unternehmens",
-    "nameHint": "Der Name, unter dem dich Kundschaft kennt."
+    "nameHint": "Der Name, unter dem dich Kundschaft kennt.",
+    "ownerName": "Ihr Name (optional)",
+    "ownerNameHint": "Ihr Team sieht ihn statt Ihrer E-Mail-Adresse."
   },
   "location": {
     "heading": "Dein Standort",

@@ -93,8 +93,8 @@ test('without opening hours the panel explains, and setting hours makes times bo
 
   await notice.getByRole('link', { name: 'Set opening hours' }).click();
   await expect(staff).toHaveURL(/\/admin\/location\/hours$/);
-  const closed = staff.getByRole('checkbox', { name: 'Closed' });
-  for (let day = 0; day < 7; day += 1) await closed.nth(day).click();
+  const open = staff.getByRole('checkbox', { name: 'Open', exact: true });
+  for (let day = 0; day < 7; day += 1) await open.nth(day).check();
   await staff.getByRole('button', { name: 'Save hours' }).click();
   await expect(staff.getByText('Opening hours saved.')).toBeVisible();
 

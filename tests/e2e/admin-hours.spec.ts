@@ -10,7 +10,7 @@ test('staff see the hours without controls to change them', async ({ devices }) 
   await expect(staff.getByRole('heading', { name: 'Opening hours' })).toBeVisible();
   await expect(staff.getByText('Only admins and owners can change opening hours.')).toBeVisible();
   await expect(staff.getByRole('button', { name: 'Save hours' })).toHaveCount(0);
-  await expect(staff.getByLabel('Closed').first()).toBeDisabled();
+  await expect(staff.getByLabel('Open', { exact: true }).first()).toBeDisabled();
   await expectNoSeriousA11yViolations(staff);
 });
 
@@ -24,7 +24,7 @@ test.describe('as an owner', () => {
     const { email } = await ownerOfNewBusiness();
     await signInTo(staff, email, '/admin/location/hours');
     const friday = staff.getByTestId('day-5');
-    await friday.getByLabel('Closed').uncheck();
+    await friday.getByLabel('Open', { exact: true }).check();
     await friday.getByLabel('Friday: opens (interval 1)').fill('18:00');
     await friday.getByLabel('Friday: closes (interval 1)').fill('02:00');
     await expect(friday.getByText('+1 day')).toBeVisible();
@@ -41,11 +41,11 @@ test.describe('as an owner', () => {
     const { email } = await ownerOfNewBusiness();
     await signInTo(staff, email, '/admin/location/hours');
     const friday = staff.getByTestId('day-5');
-    await friday.getByLabel('Closed').uncheck();
+    await friday.getByLabel('Open', { exact: true }).check();
     await friday.getByLabel('Friday: opens (interval 1)').fill('18:00');
     await friday.getByLabel('Friday: closes (interval 1)').fill('02:00');
     const saturday = staff.getByTestId('day-6');
-    await saturday.getByLabel('Closed').uncheck();
+    await saturday.getByLabel('Open', { exact: true }).check();
     await saturday.getByLabel('Saturday: opens (interval 1)').fill('01:00');
     await saturday.getByLabel('Saturday: closes (interval 1)').fill('05:00');
     await staff.getByRole('button', { name: 'Save hours' }).click();
@@ -58,7 +58,7 @@ test.describe('as an owner', () => {
     const { staff } = devices;
     const { email } = await ownerOfNewBusiness();
     await signInTo(staff, email, '/admin/location/hours');
-    await staff.getByTestId('day-1').getByLabel('Closed').uncheck();
+    await staff.getByTestId('day-1').getByLabel('Open', { exact: true }).check();
     await staff.getByRole('button', { name: 'Copy Monday to Friday' }).click();
     await staff.getByRole('button', { name: 'Save hours' }).click();
     await expect(staff.getByRole('status')).toHaveText('Opening hours saved.');

@@ -218,7 +218,7 @@
     "etaOn": "Wait shown",
     "etaOff": "Wait hidden",
     "services": "Offered here",
-    "servicesLink": "Services & prices",
+    "servicesLink": "Services",
     "alerts": {
       "title": "Guest alerts",
       "intro": "Pick the messages guests of this queue can get. Guests can switch off any of these but cannot add others. Wording is edited under Templates.",
