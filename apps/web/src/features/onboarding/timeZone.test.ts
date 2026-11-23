@@ -3,6 +3,7 @@ vi.mock('../../lib/supabase.ts', () => ({ supabase: {} }));
 vi.mock('../auth/current.ts', () => ({ selectLocation: vi.fn() }));
 vi.mock('./templates.tsx', () => ({ applyTemplate: vi.fn() }));
 import { browserTimeZone, timeZones } from './api.ts';
+import { countryOfZone } from './countryOfZone.ts';
 
 describe('time zone helpers', () => {
   afterEach(() => vi.restoreAllMocks());
@@ -18,5 +19,14 @@ describe('time zone helpers', () => {
     } as Intl.DateTimeFormat);
     vi.spyOn(Intl, 'supportedValuesOf').mockReturnValue(['Europe/Paris']);
     expect(timeZones()).toContain(browserTimeZone());
+  });
+});
+
+describe('countryOfZone (#88)', () => {
+  it('names the country a zone belongs to, or none', () => {
+    expect(countryOfZone('America/Winnipeg')).toBe('CA');
+    expect(countryOfZone('America/Chicago')).toBe('US');
+    expect(countryOfZone('Europe/Berlin')).toBe('DE');
+    expect(countryOfZone('UTC')).toBeNull();
   });
 });

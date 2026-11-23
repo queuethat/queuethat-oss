@@ -15,7 +15,6 @@ import { Link } from '@tanstack/react-router';
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { useTranslation } from '../../../lib/translation.tsx';
 import { ScreenEmpty } from '../../../components/ScreenEmpty.tsx';
-import { TemplateOrigin } from '../../onboarding/catalog/TemplateOrigin.tsx';
 import { useCurrentLocation, useCurrentOrg } from '../../auth/current.ts';
 import {
   ASSIGNMENT_STRATEGIES,
@@ -185,9 +184,6 @@ function QueueSummary({
     <Card className="flex flex-wrap items-center justify-between gap-3" data-testid="queue">
       <div>
         <h2 className="text-lg font-semibold">{queue.name}</h2>
-        {queue.origin ? (
-          <TemplateOrigin templateKey={queue.origin.template} version={queue.origin.version} />
-        ) : null}
         <p className="text-sm text-muted">{details}</p>
         <p className="text-sm text-muted" data-testid="queue-alerts">
           {t('queues.alerts.summary', { alerts: alerts || t('queues.alerts.none') })}

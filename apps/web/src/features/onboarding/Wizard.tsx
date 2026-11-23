@@ -45,6 +45,7 @@ export function Wizard() {
     () =>
       draft?.setup ?? {
         businessName: '',
+        ownerName: '',
         locationName: '',
         address: '',
         timeZone: browserTimeZone(),
@@ -71,8 +72,8 @@ export function Wizard() {
     if (step > 1) heading.current?.focus();
   }, [step]);
 
-  const field = (key: Exclude<keyof BusinessSetup, 'templateKey'>) => ({
-    value: String(setup[key]),
+  const field = (key: Exclude<keyof BusinessSetup, 'templateKey' | 'providers'>) => ({
+    value: String(setup[key] ?? ''),
     onChange: (event: { target: { value: string } }) =>
       setSetup((s) => ({
         ...s,
@@ -82,6 +83,7 @@ export function Wizard() {
 
   const fields = {
     businessName: field('businessName'),
+    ownerName: field('ownerName'),
     locationName: field('locationName'),
     address: field('address'),
     timeZone: field('timeZone'),
@@ -156,6 +158,13 @@ export function Wizard() {
               maxLength={120}
               autoComplete="organization"
               {...fields.businessName}
+            />
+            <Input
+              label={t('business.ownerName')}
+              hint={t('business.ownerNameHint')}
+              maxLength={80}
+              autoComplete="name"
+              {...fields.ownerName}
             />
           </fieldset>
         ) : null}

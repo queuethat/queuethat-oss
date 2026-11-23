@@ -7,7 +7,9 @@
   "business": {
     "heading": "Your business",
     "name": "Business name",
-    "nameHint": "What customers know you as."
+    "nameHint": "What customers know you as.",
+    "ownerName": "Your name (optional)",
+    "ownerNameHint": "Your team sees this instead of your email address."
   },
   "location": {
     "heading": "Your location",
