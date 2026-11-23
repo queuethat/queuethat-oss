@@ -196,8 +196,19 @@ export function StatusPage({ token }: { token: string }) {
         ) : null}
       </CalledTakeover>
 
-      {/* Still offered while called, so a recall can ring. */}
-      {waiting || status === 'called' ? <SoundGate sound={sound} /> : null}
+      {/* One alerts card (#86): the sound tap, still offered while called so a recall can ring,
+          and the message choices. */}
+      {ended ? null : (
+        <Card className="flex flex-col gap-3" data-testid="alerts-card">
+          <h2 className="text-lg font-semibold">{t('status.alerts.title')}</h2>
+          {waiting || status === 'called' ? <SoundGate sound={sound} bare /> : null}
+          <QuietBoundary>
+            <Suspense fallback={null}>
+              <AlertPrefs token={token} />
+            </Suspense>
+          </QuietBoundary>
+        </Card>
+      )}
       {waiting || !ended ? (
         <QuietBoundary>
           <Suspense fallback={null}>
@@ -216,7 +227,6 @@ export function StatusPage({ token }: { token: string }) {
             ) : null}
             {waiting ? <PushOptIn token={token} /> : null}
             {waiting && appConfig().telegramBot ? <TelegramOptIn token={token} /> : null}
-            {ended ? null : <AlertPrefs token={token} />}
           </Suspense>
         </QuietBoundary>
       ) : null}

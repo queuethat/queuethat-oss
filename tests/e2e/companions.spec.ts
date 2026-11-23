@@ -11,6 +11,9 @@ test('AC1: a companion added by the guest shows on the staff console', async ({ 
   await openQueue(staff, queue.id);
   await guest.goto(`/v/${token}`);
 
+  // Folded until the guest asks for it (#86).
+  await expect(guest.getByLabel('First name')).toHaveCount(0);
+  await guest.getByRole('button', { name: 'Add people with you' }).click();
   await guest.getByLabel('First name').fill('Maya');
   await expectNoSeriousA11yViolations(guest);
   await guest.getByRole('button', { name: 'Add someone' }).click();

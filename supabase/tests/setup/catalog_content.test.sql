@@ -2,7 +2,7 @@
 -- checks shape and copy rules; this checks the database's own rules on the newest version of every template.
 begin;
 \ir ../helpers/_setup.psql
-select plan(18);
+select plan(19);
 
 -- The template's form in one language, as the forms engine stores it.
 create function pg_temp.localized_fields(p_fields jsonb, p_lang text) returns jsonb
@@ -56,7 +56,7 @@ select is(
 select is((select array_agg(key || ' v' || version || ' t' || tier || ' ' || mode order by key)
            from app.template_catalog where key in ('barber', 'hair_salon', 'nail_salon', 'spa') and version = (
              select max(version) from app.template_catalog c where c.key = template_catalog.key)),
-  array['barber v2 t1 both', 'hair_salon v1 t1 both', 'nail_salon v1 t1 both', 'spa v1 t1 both'],
+  array['barber v3 t1 both', 'hair_salon v1 t1 both', 'nail_salon v1 t1 both', 'spa v1 t1 both'],
   'T5 templates are tier 1, both modes');
 select is((select payload -> 'form' -> 'fields' -> 1 ->> 'sensitivity' from app.template_catalog where key = 'spa'),
   'sensitive', 'the spa injury note is marked sensitive');
@@ -99,7 +99,10 @@ select is((select array_agg(key order by key) from (select distinct on (key) key
   'the Tier-1 catalog is the 14 reviewed templates');
 
 -- The barber copy made before v2 is untouched: version 1 is still there for existing copies' provenance.
-select is((select count(*) from app.template_catalog where key = 'barber'), 2::bigint, 'barber keeps v1 beside v2');
+select is((select count(*) from app.template_catalog where key = 'barber'), 3::bigint, 'barber keeps v1 and v2 beside v3');
+-- #86: v3 no longer asks "What are you getting today?" after the required service picker.
+select is((select payload #>> '{form,fields,0,label,en}' from app.template_catalog where key = 'barber' and version = 3),
+  'Anything your barber should know?', 'barber v3 asks what the service picker cannot say');
 
 -- Tenants read but never write the new rows.
 select tests.create_world();
