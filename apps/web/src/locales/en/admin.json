@@ -760,7 +760,10 @@
       "title": "Next 7 days",
       "hint": "What guests would be offered now.",
       "none": "No slots",
-      "loading": "Loading preview…"
+      "loading": "Loading preview…",
+      "noHours": "Guests can't book yet: this location has no opening hours.",
+      "noHoursHint": "Online booking offers times only while you are open. Walk-ins can still join at any time.",
+      "setHours": "Set opening hours"
     },
     "errors": {
       "permission_denied": "You don't have permission to change booking settings.",

@@ -1,4 +1,14 @@
-import { Button, Card, Checkbox, ConfirmDestructive, Input, Select, Spinner } from '@qm/ui';
+import {
+  Button,
+  Card,
+  Checkbox,
+  ConfirmDestructive,
+  Input,
+  LinkButton,
+  Select,
+  Spinner,
+} from '@qm/ui';
+import { Link } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from '../../../lib/translation.tsx';
@@ -12,6 +22,7 @@ import {
   type CapacityRule,
   type PolicySettings,
 } from './api.ts';
+import { hoursQuery } from '../hours/api.ts';
 import { validatePolicy } from './validate.ts';
 
 interface Props {
@@ -39,7 +50,13 @@ export function BookingSettings({ service, org, canManage, onClose }: Props) {
       {canManage ? null : <p className="text-muted">{t('booking.readOnly')}</p>}
       <PolicyForm initial={policy.data} target={target} canManage={canManage} />
       <CapacityEditor rules={rules.data} target={target} canManage={canManage} />
-      <Preview serviceId={service.id} slug={org.slug} tz={org.tz} />
+      <Preview
+        serviceId={service.id}
+        slug={org.slug}
+        tz={org.tz}
+        locationId={org.locationId}
+        bookable={policy.data.bookable}
+      />
     </Card>
   );
 }
@@ -283,12 +300,30 @@ function CapacityEditor({
 }
 
 /** The next 7 local days as guests would be offered them right now, from the public slot listing. */
-function Preview({ serviceId, slug, tz }: { serviceId: string; slug: string; tz: string }) {
+function Preview({
+  serviceId,
+  slug,
+  tz,
+  locationId,
+  bookable,
+}: {
+  serviceId: string;
+  slug: string;
+  tz: string;
+  locationId: string;
+  bookable: boolean;
+}) {
   const { t, i18n } = useTranslation('admin');
   const availability = useServiceSlots(slug, [serviceId], tz);
+  const hours = useQuery(hoursQuery(locationId));
   if (availability.isPending) return <Spinner label={t('booking.preview.loading')} />;
   const today = localDate(new Date(), tz);
-  const byDay = groupByDay(availability.slots[serviceId] ?? [], tz);
+  const slots = availability.slots[serviceId] ?? [];
+  const byDay = groupByDay(slots, tz);
+  // #83: slots only exist inside opening hours (the database decides). With none set and nothing
+  // on offer, say why instead of a week of "No slots".
+  const noHours =
+    bookable && slots.length === 0 && !!hours.data && hours.data.every((day) => day.length === 0);
   return (
     <section
       aria-labelledby="preview-title"
@@ -299,6 +334,23 @@ function Preview({ serviceId, slug, tz }: { serviceId: string; slug: string; tz:
         {t('booking.preview.title')}
       </h3>
       <p className="text-sm text-muted">{t('booking.preview.hint')}</p>
+      {noHours ? (
+        <Card
+          role="status"
+          className="flex flex-col gap-2 bg-warning-soft"
+          data-testid="booking-no-hours"
+        >
+          <p className="font-medium">{t('booking.preview.noHours')}</p>
+          <p className="text-sm">{t('booking.preview.noHoursHint')}</p>
+          <LinkButton
+            variant="secondary"
+            className="self-start"
+            render={(p) => <Link to="/admin/location/hours" {...p} />}
+          >
+            {t('booking.preview.setHours')}
+          </LinkButton>
+        </Card>
+      ) : null}
       <ul className="flex flex-col gap-1">
         {Array.from({ length: 7 }, (_, i) => addDays(today, i)).map((day) => (
           <li key={day} data-day={day}>

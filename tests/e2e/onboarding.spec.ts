@@ -42,7 +42,7 @@ test('AC1: the wizard creates the org, location, owner membership and a default 
   await expect(staff.getByRole('img', { name: /^QR code for / })).toBeVisible();
   // The guided first test replaces the old one-line hint.
   await expect(staff.getByTestId('first-test')).toBeVisible();
-  await expect(staff.getByText('accepts guests at any time of day')).toBeVisible();
+  await expect(staff.getByText('walk-ins can join at any time of day')).toBeVisible();
   await expectNoSeriousA11yViolations(staff);
   await staff.getByRole('link', { name: 'Go to the dashboard' }).click();
   await expect(staff).toHaveURL(/\/admin$/);
