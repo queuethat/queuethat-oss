@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addDays, formatTime, groupByDay, localDate, zoneName } from './slots.ts';
+import { addDays, formatTime, groupByDay, localDate, weekStrips, zoneName } from './slots.ts';
 
 const slot = (iso: string) => ({ slot_start: iso, slot_end: iso, remaining: 1 });
 
@@ -32,5 +32,36 @@ describe('booking slot helpers', () => {
 
   it('adds calendar days across a month end', () => {
     expect(addDays('2026-10-30', 3)).toBe('2026-11-02');
+  });
+});
+
+describe('weekStrips (#84)', () => {
+  it('pages from the first free day to the last, seven days a page, gaps included', () => {
+    const days = new Map([
+      ['2026-11-25', 1],
+      ['2026-11-27', 1],
+      ['2026-12-03', 1],
+    ]);
+    expect(weekStrips(days)).toEqual([
+      [
+        '2026-11-25',
+        '2026-11-26',
+        '2026-11-27',
+        '2026-11-28',
+        '2026-11-29',
+        '2026-11-30',
+        '2026-12-01',
+      ],
+      [
+        '2026-12-02',
+        '2026-12-03',
+        '2026-12-04',
+        '2026-12-05',
+        '2026-12-06',
+        '2026-12-07',
+        '2026-12-08',
+      ],
+    ]);
+    expect(weekStrips(new Map())).toEqual([]);
   });
 });

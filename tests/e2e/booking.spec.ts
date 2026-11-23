@@ -69,8 +69,28 @@ test('a slot taken by someone else shows a friendly message and fresh times @cor
   await expect(guest.getByRole('heading', { name: /Pick a day/ })).toBeVisible();
 });
 
-test('a location with nothing bookable says so', async ({ devices }) => {
+test('a location with nothing bookable says so, under the place’s name', async ({ devices }) => {
   const { guest } = devices;
   await guest.goto('/b/demo-barber');
   await expect(guest.getByText('No times available')).toBeVisible();
+  // #84: the empty page still says whose page it is.
+  await expect(guest.getByTestId('booking-place')).not.toBeEmpty();
+});
+
+// #84: on a phone the guest sees a week at a time and can jump to the next free time.
+test('phone: a week of days, and Next free goes straight to the details', async ({ devices }) => {
+  const { guest } = devices;
+  const { slug } = await bookableLocation('Europe/Berlin');
+  await guest.setViewportSize({ width: 390, height: 844 });
+  await guest.goto(`/b/${slug}`);
+  await expect(guest.getByTestId('booking-place')).toContainText('Book ');
+  const days = guest.getByRole('list').first().getByRole('button');
+  await expect(days.first()).toBeEnabled();
+  expect(await days.count()).toBeLessThanOrEqual(7);
+  const box = await guest.getByRole('list').first().boundingBox();
+  expect(box!.height).toBeLessThan(260);
+  await expectNoSeriousA11yViolations(guest);
+
+  await guest.getByTestId('next-free').click();
+  await expect(guest.getByLabel('First name')).toBeVisible();
 });
