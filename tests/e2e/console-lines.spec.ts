@@ -123,3 +123,35 @@ test('the front desk sees every line on one screen', async ({ devices }) => {
   await expect(staff).toHaveURL(new RegExp(`queue=${shop.ben}`));
   await expect(staff.getByTestId('section-waiting')).toContainText('B001');
 });
+
+// #80: with the barber template the console opened on an empty provider line and said "No one is
+// waiting" while guests waited in the pool, and the guest Call next took from the pool vanished.
+test('a provider line lists the pool it calls from, and keeps the called guest in view', async ({
+  devices,
+}) => {
+  const { staff } = devices;
+  const shop = await linedShop({ scoped: false });
+  const other = await linedShop({ scoped: false });
+  await guestJoins('Pat', shop.pool);
+  await guestJoins('Sky', shop.pool);
+  await guestJoins('Elsewhere', other.pool);
+
+  await signInAs(staff, shop.staff);
+  await staff.goto('/staff');
+  await expect(staff.locator('[data-state="live"]')).toBeVisible({ timeout: LIVE_TIMEOUT_MS });
+  await expect(staff.getByRole('tab', { name: /Ana/, selected: true })).toBeVisible();
+  const waiting = staff.getByTestId('section-waiting');
+  await expect(waiting).toContainText('Pat');
+  await expect(waiting).toContainText('Sky');
+  await expect(waiting.getByTestId('line-badge').first()).toHaveText('In Anyone');
+  await expect(staff.getByText('No one is waiting')).toHaveCount(0);
+  // Another business's pool never shows (cross-tenant).
+  await expect(staff.getByText('Elsewhere')).toHaveCount(0);
+  await expectNoSeriousA11yViolations(staff);
+
+  await staff.getByRole('button', { name: 'Call next' }).click();
+  await expect(staff.getByText(/Called P\d{3}/)).toBeVisible();
+  // The called guest stays on Ana's tab, pinned above the line.
+  await expect(staff.getByTestId('section-called')).toContainText('Pat');
+  await expect(waiting).toContainText('Sky');
+});
