@@ -1,4 +1,4 @@
-import { expect, test } from './fixtures.ts';
+import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
 import { guestJoins, openQueue, pickRowAction } from './support/console.ts';
 import { freshQueue } from './support/queues.ts';
 
@@ -142,3 +142,31 @@ for (const size of [
     );
   });
 }
+
+// #81: on a phone the console header is one account menu, and the Undo toast never covers Call next.
+test('phone: account menu instead of tablet buttons, and the Undo toast clears Call next', async ({
+  devices,
+}) => {
+  const { staff } = devices;
+  await staff.setViewportSize({ width: 390, height: 844 });
+  await staff.addInitScript(() =>
+    localStorage.setItem('qm.console.hints', JSON.stringify(['callNext', 'undo', 'shortcuts'])),
+  );
+  const queue = await freshQueue();
+  for (const name of ['Toast Tom', 'Toast Tia']) await guestJoins(name, queue.id);
+  await openQueue(staff, queue.id);
+  await expect(staff.getByRole('button', { name: 'Switch operator' })).toHaveCount(0);
+  await expect(staff.getByRole('button', { name: 'Set my PIN' })).toHaveCount(0);
+  await expect(staff.getByTestId('account-menu')).toBeVisible();
+
+  const callNext = staff.getByRole('button', { name: 'Call next', exact: true });
+  await callNext.click();
+  const toast = staff.locator('[data-placement]').getByText(/^Called /);
+  await expect(toast).toBeVisible();
+  const a = (await toast.boundingBox())!;
+  const b = (await callNext.boundingBox())!;
+  const overlaps = a.y < b.y + b.height && b.y < a.y + a.height;
+  expect(overlaps).toBe(false);
+  await expect(callNext).toBeEnabled();
+  await expectNoSeriousA11yViolations(staff);
+});

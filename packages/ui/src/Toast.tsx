@@ -32,6 +32,11 @@ interface ToastProviderProps {
   regionLabel: string;
   dismissLabel: string;
   undoLabel: string;
+  /**
+   * Where the stack sits. `bottom` (default) everywhere; `top-on-phone` moves it to the top below
+   * the `sm` breakpoint, for screens whose main button sits at the bottom of a phone (#81).
+   */
+  placement?: 'bottom' | 'top-on-phone';
 }
 
 const ToastContext = createContext<ToastApi | null>(null);
@@ -48,6 +53,7 @@ export function ToastProvider({
   regionLabel,
   dismissLabel,
   undoLabel,
+  placement = 'bottom',
 }: ToastProviderProps) {
   const [toasts, setToasts] = useState<Array<ToastOptions & { id: number }>>([]);
   const nextId = useRef(0);
@@ -73,7 +79,11 @@ export function ToastProvider({
       <div
         role="region"
         aria-label={regionLabel}
-        className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex flex-col items-center gap-2 p-4"
+        className={cx(
+          'pointer-events-none fixed inset-x-0 z-50 flex flex-col items-center gap-2 p-4',
+          placement === 'top-on-phone' ? 'top-0 sm:top-auto sm:bottom-0' : 'bottom-0',
+        )}
+        data-placement={placement}
       >
         {/* Errors interrupt (role="alert"); everything else waits its turn. Both containers
             stay mounted, because screen readers ignore live regions added with their content. */}
