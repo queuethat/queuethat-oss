@@ -88,7 +88,7 @@ test('after 2 minutes offline the estimate greys out with "as of" (AC2)', async 
   await guest.context().setOffline(true);
   await guest.clock.fastForward('02:30');
 
-  await expect(guest.getByText(/Last updated \d{2}:\d{2}/)).toBeVisible();
+  await expect(guest.getByText(/Last updated \d{1,2}:\d{2}/)).toBeVisible();
   await expect(guest.getByTestId('eta')).toHaveClass(/opacity-60/);
   await expect(guest.locator('[data-state="offline"]')).toBeVisible();
   await guest.context().setOffline(false);

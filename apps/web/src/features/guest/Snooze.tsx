@@ -1,6 +1,7 @@
 import { errorCode } from '@qm/domain';
 import { BigButton } from '@qm/ui';
 import { useTranslation } from '../../lib/translation.tsx';
+import { formatNamedClock } from '../../lib/live.ts';
 import { useNow } from '../../lib/now.ts';
 import { useGuestAct, type useVisitStatus } from './api.ts';
 
@@ -22,10 +23,7 @@ export function ArriveBy({ visit }: { visit: Visit }) {
     <div className="flex flex-col gap-1 text-center">
       <p data-testid="arrive-by" className="text-lg font-semibold">
         {t('arriveBy', {
-          time: new Date(deadline).toLocaleTimeString(i18n.language, {
-            hour: '2-digit',
-            minute: '2-digit',
-          }),
+          time: formatNamedClock(deadline, i18n.language),
         })}
       </p>
       {/* Always present so a screen reader tracks it; empty until it is time to warn. */}

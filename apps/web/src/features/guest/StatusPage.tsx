@@ -15,7 +15,7 @@ import {
 import { Link } from '@tanstack/react-router';
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useTranslation } from '../../lib/translation.tsx';
-import { formatAsOf, isStale, useConnectionState } from '../../lib/live.ts';
+import { formatNamedClock, isStale, useConnectionState } from '../../lib/live.ts';
 import { QuietBoundary } from '../../components/QuietBoundary.tsx';
 import { useNow } from '../../lib/now.ts';
 import { useAlertSound } from '../../lib/sound.ts';
@@ -170,7 +170,7 @@ export function StatusPage({ token }: { token: string }) {
       ) : null}
       {stale ? (
         <p role="status" className="rounded-card bg-warning-soft p-3 text-warning-strong">
-          {t('status.asOf', { time: v.as_of ? formatAsOf(v.as_of, i18n.language) : '' })}
+          {t('status.asOf', { time: v.as_of ? formatNamedClock(v.as_of, i18n.language) : '' })}
         </p>
       ) : null}
 
@@ -318,15 +318,6 @@ function JoinAgain() {
   );
 }
 
-/** The arrival time in the guest's own clock, with its zone name so it can't be misread. */
-function formatArrival(at: string, language: string): string {
-  return new Intl.DateTimeFormat(language, {
-    hour: 'numeric',
-    minute: '2-digit',
-    timeZoneName: 'short',
-  }).format(new Date(at));
-}
-
 type Visit = NonNullable<ReturnType<typeof useVisitStatus>['data']>;
 
 function statusMessage(
@@ -353,7 +344,7 @@ function statusMessage(
     case 'expected':
       // A guest who joined for later (J-13) has a time, not an appointment.
       return v.arrive_after
-        ? t('status.message.later', { time: formatArrival(v.arrive_after, language) })
+        ? t('status.message.later', { time: formatNamedClock(v.arrive_after, language) })
         : t('status.message.expected');
     default:
       return null;

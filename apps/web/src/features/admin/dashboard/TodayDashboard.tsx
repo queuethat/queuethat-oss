@@ -74,7 +74,9 @@ export function TodayDashboard() {
           </dl>
           {isManager ? <EndOfDayCard stats={data} timeZone={location?.tz ?? 'UTC'} /> : null}
           <p className="text-sm text-muted">
-            {t('today.asOf', { time: data.as_of ? formatAsOf(data.as_of, i18n.language) : '' })}
+            {t('today.asOf', {
+              time: data.as_of ? formatAsOf(data.as_of, i18n.language, location?.tz) : '',
+            })}
           </p>
         </>
       )}
