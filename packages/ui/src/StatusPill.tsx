@@ -2,7 +2,7 @@ import type { Database } from '@qm/db-types';
 import type { ReactNode } from 'react';
 import { cx } from './cx.ts';
 import { Icon } from './Icon.tsx';
-import { iconAlertTriangle, iconClock, iconUser, iconX, type IconDef } from './icons.ts';
+import { iconBell, iconClock, iconUser, iconX, type IconDef } from './icons.ts';
 
 /** Visit states, owned by the database (technical-design.md 4.1). */
 export type VisitStatus = Database['api']['Enums']['visit_state'];
@@ -13,8 +13,8 @@ const iconMinus: IconDef = 'M6 12h12';
 
 /**
  * The only place a visit state gets its colours and icon. Colours come from the `state-*` tokens
- * in theme.css. Called is the state a guest must not miss: a thicker edge and a triangle icon, so
- * it reads without colour as well as with it.
+ * in theme.css. Called is the state a guest must not miss: a thicker edge and a bell icon, so it
+ * reads without colour as well as with it. Not a warning triangle: being called is good news (#86).
  */
 const look: Record<QueueState, { box: string; icon: IconDef }> = {
   waiting: {
@@ -23,7 +23,7 @@ const look: Record<QueueState, { box: string; icon: IconDef }> = {
   },
   called: {
     box: 'border-2 bg-state-called-soft text-state-called-strong border-state-called-edge',
-    icon: iconAlertTriangle,
+    icon: iconBell,
   },
   serving: {
     box: 'border bg-state-serving-soft text-state-serving-strong border-state-serving-edge',

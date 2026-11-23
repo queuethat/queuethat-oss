@@ -97,7 +97,7 @@ test('picking Barber creates its queue, services and chairs, then links to edit 
   await staff.getByRole('link', { name: 'Edit queues and services' }).click();
   await expect(staff).toHaveURL(/\/admin\/queues$/);
   // The copy remembers where it came from.
-  await expect(staff.getByTestId('template-origin').first()).toHaveText('Based on Barber v2');
+  await expect(staff.getByTestId('template-origin').first()).toHaveText('Based on Barber v3');
 });
 
 test('the clinic card explains that names are never shown, and the guardrail holds', async ({

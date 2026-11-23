@@ -7,22 +7,29 @@ import type { AlertSound } from '../../lib/sound.ts';
 // Browsers (iOS Safari above all) play audio only after a tap on the page, so the page asks
 // for one while the guest waits and keeps that unlocked sound for the call.
 
-/** The "tap to turn on sound" card shown while the guest waits, until they tap it. */
-export function SoundGate({ sound }: { sound: AlertSound }) {
+/**
+ * "Tap to turn on sound" while the guest waits, until they tap it. `bare` drops its own card so
+ * it can share the status page's one alerts card (#86).
+ */
+export function SoundGate({ sound, bare = false }: { sound: AlertSound; bare?: boolean }) {
   const { t } = useTranslation('guest');
   if (!sound.supported) return null;
-  return sound.enabled ? (
-    <p role="status" className="text-center text-muted">
-      {t('status.alert.soundOn')}
-    </p>
-  ) : (
-    <Card className="flex flex-col gap-3">
+  if (sound.enabled) {
+    return (
+      <p role="status" className="text-center text-muted">
+        {t('status.alert.soundOn')}
+      </p>
+    );
+  }
+  const ask = (
+    <>
       <p>{t('status.alert.soundHint')}</p>
       <BigButton variant="secondary" onClick={sound.enable}>
         {t('status.alert.enableSound')}
       </BigButton>
-    </Card>
+    </>
   );
+  return bare ? ask : <Card className="flex flex-col gap-3">{ask}</Card>;
 }
 
 /**

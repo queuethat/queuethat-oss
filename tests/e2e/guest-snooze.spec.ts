@@ -71,6 +71,9 @@ test('AC1: a called guest taps "I\'m on my way" and staff see "On the way" withi
   );
   const takeover = guest.getByRole('alertdialog', { name: "It's your turn" });
   await expect(takeover).toBeVisible({ timeout: 3_000 });
+  // Good news first (#86): no "given away" warning until the database's warn_at, near the end.
+  await expect(takeover.getByTestId('arrive-by')).toContainText('Please arrive by');
+  await expect(takeover.getByTestId('arrive-warning')).toBeEmpty();
   await expectNoSeriousA11yViolations(guest);
 
   await takeover.getByRole('button', { name: "I'm on my way" }).click();

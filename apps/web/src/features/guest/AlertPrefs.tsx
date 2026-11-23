@@ -26,10 +26,8 @@ export function AlertPrefs({ token }: { token: string }) {
   };
 
   return (
-    <section className="flex flex-col gap-2" aria-labelledby="alert-prefs-title">
-      <h2 id="alert-prefs-title" className="sr-only">
-        {t('status.alerts.title')}
-      </h2>
+    // Sits in the status page's alerts card, under its "Alerts" heading.
+    <div className="flex flex-col gap-2">
       <Button
         variant="secondary"
         className="min-h-target-big w-full"
@@ -65,6 +63,6 @@ export function AlertPrefs({ token }: { token: string }) {
           ) : null}
         </div>
       ) : null}
-    </section>
+    </div>
   );
 }
