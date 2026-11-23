@@ -725,6 +725,7 @@ export function ConsolePage({
                   key={queue.id}
                   queue={queue}
                   locationId={location.id}
+                  lines={queues.data}
                   disabled={!online}
                 />
                 <WaitOverride

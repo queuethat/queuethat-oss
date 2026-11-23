@@ -96,7 +96,9 @@ for (const scoped of [false, true]) {
     const tabs = staff.getByRole('tab');
     await expect(tabs).toHaveText([/Ana/, /Anyone/]);
     // Unscoped, the provider may look at every line; scoped, only their own.
-    await expect(staff.getByRole('button', { name: 'All lines' })).toHaveCount(scoped ? 0 : 1);
+    await expect(staff.getByRole('button', { name: 'All lines', exact: true })).toHaveCount(
+      scoped ? 0 : 1,
+    );
     // The main panel opens on Ana's line, whose one Call next reaches the pool.
     await expect(staff.getByRole('tab', { name: /Ana/, selected: true })).toBeVisible();
     await expect(staff.getByText('Next comes from Anyone.')).toBeVisible();
@@ -154,4 +156,46 @@ test('a provider line lists the pool it calls from, and keeps the called guest i
   // The called guest stays on Ana's tab, pinned above the line.
   await expect(staff.getByTestId('section-called')).toContainText('Pat');
   await expect(waiting).toContainText('Sky');
+});
+
+// #87: one confirmed step closes every line at the location, through the per-line RPC. Staff may
+// close a line (api.set_queue_state needs staff), so they may close them all too.
+test('Close all lines for today closes every line here and no other business’s', async ({
+  devices,
+}) => {
+  const { staff } = devices;
+  const shop = await linedShop({ scoped: false });
+  const other = await linedShop({ scoped: false });
+  const bo = await guestJoins('Bo', shop.ben);
+
+  await signInAs(staff, shop.staff);
+  await staff.goto('/staff');
+  await expect(staff.locator('[data-state="live"]')).toBeVisible({ timeout: LIVE_TIMEOUT_MS });
+  const controls = staff.getByTestId('queue-controls');
+  // Per-line close stays beside it.
+  await expect(controls.getByRole('button', { name: 'Close queue' })).toBeVisible();
+  await controls.getByRole('button', { name: 'Close all lines for today' }).click();
+  const dialog = staff.getByRole('dialog', { name: /^Close all \d+ lines\?$/ });
+  for (const name of ['Ana', 'Ben', 'Anyone']) await expect(dialog).toContainText(name);
+  await expectNoSeriousA11yViolations(staff);
+  await dialog.getByRole('button', { name: 'Yes, close them all' }).click();
+  await expect(dialog).toBeHidden();
+  await expect(controls).toContainText('Closed: no new guests');
+  await expect(controls.getByRole('button', { name: 'Close all lines for today' })).toHaveCount(0);
+
+  const states = async (locationId: string) => {
+    const { data, error } = await service
+      .from('queues')
+      .select('manual_state')
+      .eq('location_id', locationId)
+      .is('archived_at', null);
+    if (error) throw error;
+    return data.map((q) => q.manual_state as string);
+  };
+  await expect.poll(() => states(shop.locationId)).not.toContain('open');
+  expect(await states(other.locationId)).toContain('open');
+  // Bo keeps his place.
+  const status = await service.schema('api').rpc('get_visit_status', { p_token: bo.token });
+  if (status.error) throw status.error;
+  expect((status.data as { status: string }).status).toBe('waiting');
 });
