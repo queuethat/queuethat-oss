@@ -9,6 +9,7 @@ import { useLocationEvents } from './events/api.ts';
 import type { Details } from './DetailsForm.tsx';
 import type { Answers } from '../guest/api.ts';
 import { requestPayment, type PaymentIntentInfo } from './payment/api.ts';
+import { useBranding } from '../branding/api.ts';
 import { SlotPicker } from './SlotPicker.tsx';
 import { formatWhen } from './slots.ts';
 
@@ -89,6 +90,8 @@ function SlotBooking({ slug, initialService }: { slug: string; initialService?: 
   const { t, i18n } = useTranslation('booking');
   const navigate = useNavigate();
   const location = useBookingLocation(slug);
+  // The business's name; the page shell already loads it, so this is a cache hit.
+  const branding = useBranding(slug);
   // Provider and "Anyone available" lines (M5): rows only when the location has them.
   const lines = useLocationLines(slug, null, false);
   const serviceIds = location.data?.services.map((s) => s.id) ?? [];
@@ -161,14 +164,26 @@ function SlotBooking({ slug, initialService }: { slug: string; initialService?: 
     );
 
   const { tz, captchaSiteKey: siteKey } = location.data;
-  // With provider lines, "Checkup" exists once per person: name the line so the guest picks whose.
-  const lineName = new Map((lines.data ?? []).map((l) => [l.queue_id, l.name]));
-  const serviceLabel = (s: { name: string; queueId: string | null }) => {
-    const line = s.queueId ? lineName.get(s.queueId) : undefined;
-    return line ? t('book.serviceOnLine', { service: s.name, line }) : s.name;
-  };
   const bookable = location.data.services.filter(
     (s) => (availability.slots[s.id]?.length ?? 0) > 0,
+  );
+  // A booking goes to the service's first line for now, so naming that line ("Haircut · Alex")
+  // read as "only Alex" (#84). The line is named only to tell apart two services that share a name.
+  const lineName = new Map((lines.data ?? []).map((l) => [l.queue_id, l.name]));
+  const shared = (name: string) => bookable.filter((s) => s.name === name).length > 1;
+  const serviceLabel = (s: { name: string; queueId: string | null }) => {
+    const line = s.queueId && shared(s.name) ? lineName.get(s.queueId) : undefined;
+    return line ? t('book.serviceOnLine', { service: s.name, line }) : s.name;
+  };
+  const header = (
+    <header>
+      <h1 className="text-3xl font-bold">{t('book.title')}</h1>
+      <p className="text-lg text-muted" data-testid="booking-place">
+        {[branding.data?.orgName, location.data.name]
+          .filter((part, i, all) => part && all.indexOf(part) === i)
+          .join(' · ')}
+      </p>
+    </header>
   );
   const service =
     bookable.find((s) => s.id === serviceId) ?? (bookable.length === 1 ? bookable[0] : undefined);
@@ -191,7 +206,8 @@ function SlotBooking({ slug, initialService }: { slug: string; initialService?: 
   if (waitlisting) return waitlist;
   if (bookable.length === 0 && !book.isPending)
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 py-4">
+        {header}
         <EmptyState title={t('book.none.title')} description={t('book.none.body')} />
         <Button variant="secondary" onClick={() => setWaitlisting(true)}>
           {t('waitlist.join')}
@@ -260,10 +276,7 @@ function SlotBooking({ slug, initialService }: { slug: string; initialService?: 
 
   return (
     <div className="flex flex-col gap-6 py-4">
-      <header>
-        <h1 className="text-3xl font-bold">{t('book.title')}</h1>
-        <p className="text-lg text-muted">{location.data.name}</p>
-      </header>
+      {header}
 
       {problem && !chosen ? (
         <p role="alert" className="font-medium text-danger-strong">
