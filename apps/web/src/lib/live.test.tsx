@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   formatAsOf,
+  formatNamedClock,
   isStale,
   liveDrops,
   POLL_MS,
@@ -303,5 +304,16 @@ describe('staleness helpers', () => {
   it('formats as_of in the given time zone, not the device one', () => {
     expect(formatAsOf('2026-10-25T14:05:00Z', 'en-GB', 'Asia/Kolkata')).toBe('19:35');
     expect(formatAsOf('2026-10-25T14:05:00Z', 'en-GB', 'America/New_York')).toBe('10:05');
+  });
+
+  it('names the zone so a device in another zone is not misread (#82)', () => {
+    // The test runner's own zone differs from both; the zone given wins and is named.
+    expect(formatNamedClock('2026-12-01T11:26:00Z', 'en-US', 'America/Chicago')).toBe(
+      '5:26 AM CST',
+    );
+    expect(formatNamedClock('2026-12-01T11:26:00Z', 'en-GB', 'UTC')).toBe('11:26 UTC');
+    expect(formatNamedClock(Date.parse('2026-12-01T11:26:00Z'), 'en-US')).toMatch(
+      /^\d{1,2}:\d{2}\s?[AP]M \S+$/,
+    );
   });
 });
