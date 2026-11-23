@@ -465,3 +465,6 @@ api.get_visit_answers
 # T4 (#1239) recent texts for shops
 api.list_recent_texts
 
+
+# #85 join address in the wizard
+api.suggest_location_slug

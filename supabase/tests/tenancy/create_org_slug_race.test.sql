@@ -1,7 +1,7 @@
 -- #497: api.create_organization retries when a concurrent signup takes its location slug first.
 -- A real race needs two connections (tests/concurrency/create_organization.test.ts); here
--- private.unique_location_slug is swapped, inside this rolled-back transaction, for one that
--- hands out an already-taken slug the way a lost race would.
+-- private.suggest_slug (#85; it was unique_location_slug) is swapped, inside this rolled-back
+-- transaction, for one that hands out an already-taken slug the way a lost race would.
 begin;
 \ir ../helpers/_setup.psql
 select plan(6);
@@ -12,13 +12,14 @@ create sequence pg_temp.slug_calls;
 create table pg_temp.taken_slugs (n int primary key, slug text);
 
 -- Hands out the slugs in pg_temp.taken_slugs first (as a stale read would), then real ones.
-create or replace function private.unique_location_slug(p_name text) returns text
+create or replace function private.suggest_slug(p_location_name text, p_business_name text, p_wanted text)
+returns text
 language plpgsql volatile set search_path = '' as $$
 declare
   call_no int := nextval('pg_temp.slug_calls');
   stale text := (select t.slug from pg_temp.taken_slugs t where t.n = call_no);
 begin
-  return coalesce(stale, private.slugify(p_name) || '-' || substr(md5(gen_random_uuid()::text), 1, 4));
+  return coalesce(stale, private.slugify(p_location_name) || '-' || substr(md5(gen_random_uuid()::text), 1, 4));
 end $$;
 
 insert into pg_temp.taken_slugs values (1, 'test-location-a');

@@ -83,3 +83,48 @@ test('a time zone that is not on the list is refused before anything is created'
   await expect(staff.getByText('Pick a time zone from the list.')).toBeVisible();
   await expect(staff.getByLabel('Queue name')).toHaveCount(0);
 });
+
+test('#85: the owner sees the join address before it is printed, and a taken one is refused', async ({
+  devices,
+}) => {
+  const { staff } = devices;
+  const email = await confirmedAccount();
+  const stamp = Date.now();
+  await staff.goto('/auth/sign-in?next=%2Fonboarding');
+  await staff.getByLabel('Email').fill(email);
+  await staff.getByLabel('Password').fill(NEW_ACCOUNT_PASSWORD);
+  await staff.getByRole('button', { name: 'Sign in', exact: true }).click();
+
+  await staff.getByLabel('Business name').fill(`Shop ${stamp}`);
+  await staff.getByRole('button', { name: 'Next' }).click();
+  // demo-barber is the seeded demo's address, so the suggestion adds the business name, not a
+  // random suffix.
+  await staff.getByLabel('Location name').fill('Demo Barber');
+  await staff.getByLabel('Time zone').fill('Europe/Berlin');
+  const address = staff.getByLabel('Join page address');
+  await expect(address).toHaveValue(`shop-${stamp}-demo-barber`);
+  await expect(staff.getByText(`/q/shop-${stamp}-demo-barber`)).toBeVisible();
+
+  // A taken address is refused on this step, with the free one offered.
+  await address.fill('Demo Barber');
+  await expect(address).toHaveValue('demo-barber');
+  await expect(
+    staff.getByText(`That address is already used. shop-${stamp}-demo-barber is free.`),
+  ).toBeVisible();
+  await expectNoSeriousA11yViolations(staff);
+  await staff.getByRole('button', { name: 'Next' }).click();
+  await expect(address).toBeVisible();
+  await staff.getByRole('button', { name: `Use shop-${stamp}-demo-barber` }).click();
+  await expect(address).toHaveValue(`shop-${stamp}-demo-barber`);
+  await expect(staff.getByText('That address is already used.', { exact: false })).toHaveCount(0);
+
+  // The owner's own free address is what the business gets.
+  await address.fill(`my shop ${stamp}`);
+  await expect(staff.getByText(`/q/my-shop-${stamp}`)).toBeVisible();
+  await staff.getByRole('button', { name: 'Next' }).click();
+  await staff.getByRole('button', { name: 'Start blank instead' }).click();
+  await staff.getByRole('button', { name: 'Create my business' }).click();
+  await expect(staff.getByTestId('join-url')).toContainText(`/q/my-shop-${stamp}`);
+  const [locations] = await readAs(email, ['locations?select=slug']);
+  expect(locations).toEqual([{ slug: `my-shop-${stamp}` }]);
+});

@@ -24,8 +24,8 @@ select tests.as_user(tests.id('founder'));
 select isnt((select location_id from api.create_organization('Other', 'Main Street', 'UTC')),
             null::uuid, 'a second location with the same name still gets created');
 select tests.as_postgres();
-select ok((select slug from app.locations where name = 'Main Street' and slug <> 'main-street') ~ '^main-street-[0-9a-f]{4}$',
-  'and its slug gets a unique suffix');
+select is((select slug from app.locations where name = 'Main Street' and slug <> 'main-street'),
+  'other-main-street', 'and its slug adds the business name before any random suffix (#85)');
 
 select tests.as_user(tests.id('founder'));
 select throws_ok($$ select api.create_organization('X', 'Y', 'Mars/Olympus') $$,
