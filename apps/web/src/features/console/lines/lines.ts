@@ -32,3 +32,19 @@ export function callableCount(
     (v) => v.status === 'waiting' && (v.queueId === queue.id || v.queueId === queue.pullsFrom),
   ).length;
 }
+
+/**
+ * The visits a line's tab lists: its own, plus, for a provider line, its pool's (#80). Call next
+ * on a provider line reaches the pool once the line is empty, and the guest it calls stays in the
+ * pool, so without them the tab would read "No one is waiting" while guests wait and hide who was
+ * just called. Order is the location's `sort_key` order; the database still picks who is called.
+ */
+export function lineVisits<V extends Pick<ConsoleVisit, 'queueId'>>(
+  queue: Pick<Line, 'id' | 'pullsFrom'> | undefined,
+  visits: readonly V[],
+): V[] {
+  if (!queue) return [];
+  return visits.filter(
+    (v) => v.queueId === queue.id || (!!queue.pullsFrom && v.queueId === queue.pullsFrom),
+  );
+}

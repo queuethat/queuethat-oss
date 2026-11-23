@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { loadNamespaces } from '../../../lib/i18n.ts';
 import type { ConsoleQueue, ConsoleVisit } from '../api.ts';
-import { callableCount, hasLines, myLineIds } from './lines.ts';
+import { callableCount, hasLines, lineVisits, myLineIds } from './lines.ts';
 import { LinesToggle, useLineView } from './LinesBoard.tsx';
 import type { MyLines } from './api.ts';
 
@@ -40,6 +40,19 @@ describe('lines', () => {
     expect(callableCount(ben, visits)).toBe(2);
     expect(callableCount(pool, visits)).toBe(1);
     expect(callableCount(desk, visits)).toBe(0);
+  });
+
+  it("a provider's tab lists its own guests and its pool's, including the pool's called ones (#80)", () => {
+    const visits = [
+      visit('Anyone', 'P001', 'called'),
+      visit('Ana', 'A001'),
+      visit('Anyone', 'P002'),
+      visit('Ben', 'B001'),
+    ];
+    expect(lineVisits(ana, visits).map((v) => v.ticket)).toEqual(['P001', 'A001', 'P002']);
+    expect(lineVisits(pool, visits).map((v) => v.ticket)).toEqual(['P001', 'P002']);
+    expect(lineVisits(desk, visits)).toEqual([]);
+    expect(lineVisits(undefined, visits)).toEqual([]);
   });
 });
 

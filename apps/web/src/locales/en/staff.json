@@ -692,6 +692,7 @@
       "yours": "Yours",
       "next": "Next in {{line}}",
       "fromPool": "Next comes from {{pool}}.",
+      "inLine": "In {{line}}",
       "callNext": "Call next for {{line}}",
       "open": "Open {{line}}",
       "openShort": "Open"

@@ -80,7 +80,7 @@ import { TodayPanel } from '../appointments/TodayPanel.tsx';
 import { useLiveScreenActivity } from '../auth/SessionLimits.tsx';
 import { useWakeLock } from '../display/useWakeLock.ts';
 import { myLinesQuery } from './lines/api.ts';
-import { callableCount } from './lines/lines.ts';
+import { callableCount, lineVisits } from './lines/lines.ts';
 import { LinesToggle, useLineView } from './lines/LinesBoard.tsx';
 
 /** Roles that may block a guest (the database enforces the same ladder). */
@@ -443,7 +443,7 @@ export function ConsolePage({
   // Until a counter is chosen the phone shows the settings, so the first visit can pick one.
   const barShown = barOpen || !myCounter;
   const queue = currentQueue();
-  const inQueue = visits.data?.filter((v) => v.queueId === queue?.id) ?? [];
+  const inQueue = lineVisits(queue, visits.data ?? []);
   const waitingIn = waitingCount;
 
   // Lines are tabs only; the open line stays listed even when the "My lines" view hides it.
@@ -451,6 +451,9 @@ export function ConsolePage({
     ? lines.shown
     : queues.data.filter((q) => q.id === queue?.id || lines.shown.includes(q));
   const pool = queue?.pullsFrom ? queues.data.find((q) => q.id === queue.pullsFrom) : undefined;
+  // Pool guests listed on a provider line say where they wait (#80); reordering stays per line.
+  const lineOf = pool ? (v: ConsoleVisit) => (v.queueId === pool.id ? pool.name : null) : undefined;
+  const mixed = !!pool && inQueue.some((v) => v.queueId === pool.id && v.status === 'waiting');
 
   return (
     <div className="flex flex-col gap-3">
@@ -669,13 +672,19 @@ export function ConsolePage({
                             )
                       : undefined
                   }
+                  lineOf={lineOf}
                   // Resolves either way, so a confirm dialog closes; failures show as a toast.
                   // Optimistic order is not worth the risk: the list is live and the move is fast.
-                  onMove={(visit, afterId) =>
-                    moveVisit.mutateAsync({ visit, afterId }).then((row) => {
-                      // A no-op (already there) has no event to undo.
-                      if (row?.last_event_id != null) announceMove(visit.ticket, row.last_event_id);
-                    }, failed)
+                  // Off while pool guests are listed: a move only reorders within one line.
+                  onMove={
+                    mixed
+                      ? undefined
+                      : (visit, afterId) =>
+                          moveVisit.mutateAsync({ visit, afterId }).then((row) => {
+                            // A no-op (already there) has no event to undo.
+                            if (row?.last_event_id != null)
+                              announceMove(visit.ticket, row.last_event_id);
+                          }, failed)
                   }
                   onSaveNotes={saveNotes}
                   onTransfer={transfer}
