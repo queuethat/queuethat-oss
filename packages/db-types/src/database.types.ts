@@ -266,7 +266,7 @@ export type Database = {
         isSetofReturn: false
       } },
 "create_organization":
-{ Args: { "p_location_name": string,"p_name": string,"p_tz": string }; Returns: Database["api"]['CompositeTypes']["org_bootstrap"]
+{ Args: { "p_location_name": string,"p_name": string,"p_slug"?: string,"p_tz": string }; Returns: Database["api"]['CompositeTypes']["org_bootstrap"]
                           SetofOptions: {
         from: "*"
         to: "org_bootstrap"
@@ -1293,6 +1293,9 @@ export type Database = {
       } },
 "start_member_phone":
 { Args: { "p_org_id": string,"p_phone": string }; Returns: undefined
+                           },
+"suggest_location_slug":
+{ Args: { "p_business_name"?: string,"p_location_name": string,"p_wanted"?: string }; Returns: string
                            },
 "suppress_by_message":
 { Args: { "p_org_id": string,"p_provider": string,"p_provider_message_id": string,"p_reason": string }; Returns: boolean
@@ -3595,17 +3598,17 @@ isOneToOne: false
       referencedRelation: "journeys"
       referencedColumns: ["id"]
     },{
-      foreignKeyName: "services_merged_into_id_fkey"
-      columns: ["merged_into_id"]
-isOneToOne: false
-      referencedRelation: "services"
-      referencedColumns: ["id"]
-    },{
       foreignKeyName: "services_org_id_location_id_queue_id_fkey"
       columns: ["org_id","location_id","queue_id"]
 isOneToOne: false
       referencedRelation: "queues"
       referencedColumns: ["org_id","location_id","id"]
+    },{
+      foreignKeyName: "services_org_id_merged_into_id_fkey"
+      columns: ["org_id","merged_into_id"]
+isOneToOne: false
+      referencedRelation: "services"
+      referencedColumns: ["org_id","id"]
     }
                   ]
                 },"signage_slides": {
