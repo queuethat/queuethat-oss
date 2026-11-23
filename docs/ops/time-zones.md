@@ -40,5 +40,15 @@ If the local times differ, the copies disagree. Check the release of each: Node 
 [IANA release notes](https://www.iana.org/time-zones).
 
 Known case: tz release 2026e records Manitoba's move to year-round UTC-5 from March 2026. A
-Postgres build with older data still uses UTC-6 for `America/Winnipeg` from November 2026, so
-opening hours and slots there run an hour off until the database's tz data is updated.
+Postgres build with older data still uses UTC-6 for `America/Winnipeg` from November 2026. The
+database corrects for this itself: every conversion goes through `private.zone(tz)`, which returns
+a fixed UTC-5 zone for `America/Winnipeg` only while the database's own tz data is stale, and the
+name unchanged otherwise. Times from before March 2026 would read an hour late in winter; no
+install has Manitoba data that old.
+
+## Writing SQL that converts times
+
+Always `x at time zone private.zone(l.tz)`, never a bare `l.tz` (or `p_tz`, `v_tz`). A pgTAP guard
+(`supabase/tests/hours/zone_fix.test.sql`) fails on a bare one, which also catches a function
+redefined from a body copied out of a migration older than `*_manitoba_zone_fix.sql`. When another
+zone's rules change before the database's data does, add it to `private.zone` in a new migration.
