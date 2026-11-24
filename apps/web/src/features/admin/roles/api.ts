@@ -2,27 +2,14 @@ import { errorCode } from '@qm/domain';
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../../lib/supabase.ts';
 
-/**
- * The permissions an owner can hand to a custom role, grouped for the editor. The database owns
- * the catalogue and rejects anything else (`invalid_input`); this list only decides what to draw.
- */
-export const PERMISSION_GROUPS = [
-  { group: 'queue', permissions: ['visits.call', 'visits.remove'] },
-  { group: 'payments', permissions: ['payments.charge', 'payments.refund'] },
-] as const;
-
-export type GrantablePermission = (typeof PERMISSION_GROUPS)[number]['permissions'][number];
-
 export interface CustomRole {
   id: string;
   name: string;
   permissions: string[];
 }
 
-const rolesKey = (orgId: string) => ['admin', 'roles', orgId] as const;
-
-/** Whether the role may create, edit and delete custom roles (RLS: owners only). */
-export const canEditRoles = (role: string | undefined) => role === 'owner';
+/** The query key every roles query hangs under, for invalidation. */
+export const rolesKey = (orgId: string) => ['admin', 'roles', orgId] as const;
 
 /** The org's custom roles, readable by every member. */
 export const customRolesQuery = (orgId: string) =>
@@ -54,37 +41,6 @@ export const memberRolesQuery = (orgId: string) =>
       return Object.fromEntries(data.map((m) => [m.id, m.custom_role_id]));
     },
   });
-
-/** Creates a role, or renames and re-permissions one. Errors: `invalid_input` (name taken, bad permission). */
-export function useSaveRole(orgId: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (input: { id?: string; name: string; permissions: string[] }) => {
-      const row = { name: input.name.trim(), permissions: input.permissions };
-      const table = supabase.schema('app').from('custom_roles');
-      const { error } = input.id
-        ? await table.update(row).eq('id', input.id)
-        : await table.insert({ org_id: orgId, ...row });
-      if (error) {
-        // The unique index on the name and the validation trigger both mean "not acceptable".
-        throw new Error(error.code === '23505' ? 'invalid_input' : errorCode(error));
-      }
-    },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: rolesKey(orgId) }),
-  });
-}
-
-/** Deletes a role nobody holds. A role in use fails with `role_in_use` (the database refuses it). */
-export function useDeleteRole(orgId: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.schema('app').from('custom_roles').delete().eq('id', id);
-      if (error) throw new Error(error.code === '23503' ? 'role_in_use' : errorCode(error));
-    },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: rolesKey(orgId) }),
-  });
-}
 
 /** `api.set_member_custom_role`: null removes the role. Owners only; the member must be staff. */
 export function useAssignRole(orgId: string) {

@@ -111,4 +111,53 @@ test.describe('as an owner', () => {
       await db.from('webhook_endpoints').delete().eq('url', url);
     }
   });
+
+  test('edits an endpoint, explains why one was switched off, and deletes it', async ({
+    devices,
+  }) => {
+    const { staff } = devices;
+    const url = `https://hooks.example.test/${crypto.randomUUID()}`;
+    const edited = `${url}/v2`;
+    const db = serviceClient();
+    try {
+      await staff.goto('/admin/developers/webhooks');
+      await staff.getByRole('button', { name: 'Add endpoint' }).click();
+      await staff
+        .getByRole('dialog', { name: 'Add a webhook endpoint' })
+        .getByRole('textbox', { name: 'URL' })
+        .fill(url);
+      await staff
+        .getByRole('dialog', { name: 'Add a webhook endpoint' })
+        .getByRole('button', { name: 'Add endpoint' })
+        .click();
+      await staff.getByLabel('I have stored this secret').check();
+      await staff.getByRole('button', { name: 'Done' }).click();
+
+      const row = staff.getByTestId('webhook').filter({ hasText: url });
+      await row.getByRole('button', { name: 'Edit' }).click();
+      const form = staff.getByRole('dialog', { name: 'Edit endpoint' });
+      await form.getByRole('textbox', { name: 'URL' }).fill(edited);
+      await form.getByRole('button', { name: 'Save' }).click();
+      const changed = staff.getByTestId('webhook').filter({ hasText: edited });
+      await expect(changed).toContainText('Active');
+
+      await db
+        .from('webhook_endpoints')
+        .update({ active: false, consecutive_failures: 20, disabled_reason: 'too_many_failures' })
+        .eq('url', edited);
+      await staff.reload();
+      await expect(staff.getByTestId('webhook').filter({ hasText: edited })).toContainText(
+        'Switched off after repeated failures',
+      );
+
+      await staff.getByRole('button', { name: `Delete endpoint ${edited}` }).click();
+      await staff
+        .getByRole('dialog', { name: 'Delete this endpoint?' })
+        .getByRole('button', { name: 'Delete endpoint' })
+        .click();
+      await expect(staff.getByTestId('webhook').filter({ hasText: edited })).toHaveCount(0);
+    } finally {
+      await db.from('webhook_endpoints').delete().in('url', [url, edited]);
+    }
+  });
 });

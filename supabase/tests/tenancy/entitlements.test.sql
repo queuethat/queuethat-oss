@@ -26,7 +26,7 @@ select ok(not private.entitled(tests.id('org_a'), 'fixture.limit'), 'entitled is
 -- AC3: members see their own orgs' resolved values, never another org's.
 select tests.act_as('staff');
 select is(api.org_entitlements() -> tests.id('org_a')::text,
-  '{"fixture.flag": true, "fixture.limit": 5, "limit.locations": -1, "limit.members": -1, "messaging.daily_cap": 200, "messaging.monthly_budget_micros": 20000000, "messaging.new_org_days": 14, "messaging.new_org_daily_cap": 25, "paid_channels": true}'::jsonb,
+  '{"feature.api": true, "feature.custom_roles": true, "feature.integrations": true, "feature.reports_pro": true, "feature.rollup": true, "fixture.flag": true, "fixture.limit": 5, "limit.locations": -1, "limit.members": -1, "limit.queues": -1, "messaging.daily_cap": 200, "messaging.monthly_budget_micros": 20000000, "messaging.new_org_days": 14, "messaging.new_org_daily_cap": 25, "paid_channels": true}'::jsonb,
   'org A staff get every key for org A, resolved');
 select tests.act_as('other_owner');
 select is(api.org_entitlements() ? tests.id('org_a')::text, false,

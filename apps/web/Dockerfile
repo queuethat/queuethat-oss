@@ -11,14 +11,21 @@ COPY packages/domain/package.json packages/domain/
 COPY packages/ui/package.json packages/ui/
 COPY packages/providers/package.json packages/providers/
 COPY packages/db-types/package.json packages/db-types/
-RUN pnpm install --frozen-lockfile --filter @qm/web...
+COPY ee/web/package.json ee/web/
+RUN pnpm install --frozen-lockfile --filter @qm/web... --filter @qm/ee-web...
 COPY apps/web apps/web
+COPY ee/web ee/web
 COPY packages packages
 # The starter waivers that forms/waivers/starters.ts bundles.
 COPY supabase/catalog/waivers supabase/catalog/waivers
 # No VITE_* values: the build must be the same for everyone. `build` also fails on a leaked secret.
 ENV APP_VERSION=
-RUN pnpm --filter @qm/web build
+# The enterprise pages (ee/, QueueThat Commercial License) are compiled in only when this names their
+# module, as `ee/web/extensions.ts` (docker compose passes it from .env, set by `setup.sh --ee`).
+# Empty, the bundle holds no ee code. The path is made absolute because the build runs in apps/web.
+ARG QT_WEB_EXTENSIONS=
+# Relative paths (one module, or several separated by commas) resolve from the repository root.
+RUN QT_WEB_EXTENSIONS="${QT_WEB_EXTENSIONS}" pnpm --filter @qm/web build
 
 FROM caddy:2.10.2-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d
 RUN apk add --no-cache openssl

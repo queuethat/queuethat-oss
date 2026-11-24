@@ -188,3 +188,16 @@ DEMO_SECRET='super-secret-jwt-token-with-at-least-32-characters-long'
   [ "$(value DEMO_MODE "$WORK/.env")" = true ]
   [ "$pw" = "$(value DEMO_PASSWORD "$WORK/.env")" ]
 }
+
+@test "ee: off by default, --ee turns it on, and a rotate keeps the choice" {
+  "$DIR/setup.sh" --non-interactive --env-file "$WORK/.env"
+  [ "$(value QT_EE "$WORK/.env")" = 0 ]
+  [ -z "$(value QT_WEB_EXTENSIONS "$WORK/.env")" ]
+  rm -f "$WORK/.env"
+  "$DIR/setup.sh" --non-interactive --ee --env-file "$WORK/.env"
+  [ "$(value QT_EE "$WORK/.env")" = 1 ]
+  [ "$(value QT_WEB_EXTENSIONS "$WORK/.env")" = ee/web/extensions.ts ]
+  [ "$(value QT_WEB_TAG "$WORK/.env")" = -ee ]
+  "$DIR/setup.sh" --non-interactive --rotate --env-file "$WORK/.env"
+  [ "$(value QT_EE "$WORK/.env")" = 1 ]
+}

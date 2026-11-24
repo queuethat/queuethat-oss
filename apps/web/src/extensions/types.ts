@@ -75,12 +75,13 @@ export interface ExtensionBanner {
 export interface ExtensionSlotProps {
   /**
    * In place of the plain message when the database refuses with `plan_limit_reached`: adding a
-   * team member (`members`) or a location (`locations`). `limit` is
-   * the number allowed when the database said so. For example, a deployment that sells plans can
+   * team member (`members`) or a location (`locations`), or taking another appointment this month
+   * (`appointments`: shown to a guest booking, with `role` undefined, and to staff booking at the
+   * desk). `limit` is the number allowed when the database said so. For example, a deployment that sells plans can
    * explain the plan and link to its upgrade page.
    */
   'limits.reached': {
-    kind: 'members' | 'locations';
+    kind: 'members' | 'locations' | 'appointments';
     limit: number | undefined;
     role: string | undefined;
   };
@@ -90,12 +91,32 @@ export interface ExtensionSlotProps {
    * nothing when none is installed; `limits.reached` still answers a refusal.
    */
   'limits.notice': { kind: 'members' | 'locations'; role: string | undefined };
+  /**
+   * In place of the error text when the database refuses to create something because the plan does
+   * not include that feature (`feature_not_in_plan`) or the location has all the queues it may have
+   * (`plan_limit_reached`, `feature: 'queues'`). `limit` is the number allowed, when the database
+   * said so. A deployment that sells plans can explain the plan and link to its upgrade page.
+   */
+  'feature.gated': {
+    feature: 'api' | 'integrations' | 'customRoles' | 'reports' | 'rollup' | 'queues';
+    limit: number | undefined;
+  };
   /** At the top of the Integrations page, above the channel cards. */
   'integrations.top': { orgId: string; role: string };
   /** One more item in the "how guests hear from you" list on the go-live screen. */
   'onboarding.alerts': { orgId: string; role: string };
   /** The go-live screen, below that list and above the next steps. */
   'onboarding.live': { orgId: string; role: string };
+  /**
+   * In a visit's payments panel while the guest is called, being served or served: a form to ask
+   * the guest to pay at the counter. Without it the panel offers no request.
+   */
+  'console.payments.request': { visitId: string };
+  /**
+   * Beside an unpaid counter (`pos`) payment: shows a QR the guest scans to pay it on their phone.
+   * Without it the row shows only its status.
+   */
+  'console.payments.payCode': { visitId: string; amountMinor: number; currency: string };
   /**
    * Under one entry of the incident log (Privacy). An entry with `source` other than `manual` or
    * `reported` came from the deployment; for example it can offer a "read and confirmed" button.
@@ -107,6 +128,23 @@ export interface ExtensionSlotProps {
    * `private.ext_report_incident`; a deployment that acts on it can let the business choose here.
    */
   'incidents.report': { notify: boolean; setNotify: (notify: boolean) => void };
+  /**
+   * In the header of the Guests page, beside the page's own buttons: a deployment that manages the
+   * guest list (import, merging duplicates) links its pages here. `role` is the member's role.
+   */
+  'guests.actions': { role: string };
+  /** On a guest's profile, between the contacts and the visit history: tags, notes. */
+  'guest.profile': { guestId: string };
+  /**
+   * On a queue's Messages and look page, under the look: the queue's own wording for the messages
+   * guests are sent. The page itself keeps the look (accent, welcome text).
+   */
+  'queue.templates': { queueId: string; readOnly: boolean };
+  /**
+   * Renders nothing. Hands `onTags` the tag names by guest id for the guests on the staff console, so
+   * its rows can show them as chips. Called again whenever the guests on screen change.
+   */
+  'console.guestTags': { guestIds: string[]; onTags: (tags: Map<string, string[]>) => void };
 }
 
 /** An incident log row as the slot gets it. */

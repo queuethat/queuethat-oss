@@ -2,6 +2,8 @@
 *
 !supabase/migrations
 !supabase/functions
+!ee/supabase/functions
+!ee/integrations
 !supabase/seeds/10_demo_org.sql
 !packages/domain/src
 !packages/providers/src

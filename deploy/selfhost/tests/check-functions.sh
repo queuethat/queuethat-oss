@@ -13,8 +13,10 @@ work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
 # Mirror the Dockerfile COPY lines: if a package is not copied there, it is not here.
-mkdir -p "$work/app/supabase" "$work/app/packages" "$work/app/deploy/selfhost"
+mkdir -p "$work/app/supabase" "$work/app/packages" "$work/app/deploy/selfhost" "$work/app/ee/supabase"
 cp -R supabase/functions "$work/app/supabase/functions"
+cp -R ee/supabase/functions "$work/app/ee/supabase/functions"
+cp -R ee/integrations "$work/app/ee/integrations"
 for pkg in $(sed -n 's#^COPY packages/\([a-z-]*\)/src .*#\1#p' deploy/selfhost/migrate/Dockerfile); do
   mkdir -p "$work/app/packages/$pkg"
   cp -R "packages/$pkg/src" "$work/app/packages/$pkg/src"
@@ -22,7 +24,15 @@ done
 cp -R deploy/selfhost/functions-main "$work/app/deploy/selfhost/functions-main"
 find "$work/app" -name '*.test.ts' -delete
 
-sh deploy/selfhost/migrate/publish-functions.sh "$work/app" "$work/functions"
+# QT_EE=1 is the enterprise stack (setup.sh --ee); every function must resolve in it. Without it the
+# volume must hold no ee function, so an AGPL-only install runs none.
+QT_EE=${QT_EE:-1} sh deploy/selfhost/migrate/publish-functions.sh "$work/app" "$work/functions"
+off="$work/functions-off"
+QT_EE=0 sh deploy/selfhost/migrate/publish-functions.sh "$work/app" "$off"
+for ee_fn in $(ls ee/supabase/functions | grep -v '^_'); do
+  [[ -d "$work/functions/$ee_fn" ]] || { echo "FAIL: $ee_fn missing with QT_EE=1" >&2; exit 1; }
+  [[ ! -e "$off/$ee_fn" ]] || { echo "FAIL: $ee_fn published with QT_EE=0" >&2; exit 1; }
+done
 
 fail=0
 count=0

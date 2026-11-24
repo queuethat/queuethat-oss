@@ -62,5 +62,16 @@
       "not_authenticated": "You're signed out. Sign in again and retry. Your message is still here.",
       "generic": "The message wasn't sent. Try again, or email {{email}}."
     }
+  },
+  "plan": {
+    "api": "API keys and webhooks aren't part of this plan.",
+    "integrations": "Integrations aren't part of this plan.",
+    "customRoles": "Custom roles and shifts aren't part of this plan.",
+    "reports": "Scheduled reports and Ask your data aren't part of this plan.",
+    "rollup": "Comparing your locations side by side isn't part of this plan.",
+    "queues_one": "This location has all the queues its plan allows: {{count}}.",
+    "queues_other": "This location has all the queues its plan allows: {{count}}.",
+    "queuesNoCount": "This location has all the queues its plan allows.",
+    "existing": "What you already set up keeps working."
   }
 }

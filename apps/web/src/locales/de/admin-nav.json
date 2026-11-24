@@ -19,9 +19,6 @@
     "plan": "Nutzung"
   },
   "insights": {
-    "reportsLabel": "Berichte",
-    "reports": "Berichte",
-    "scheduled": "Geplante Berichte",
     "compare": "Standorte vergleichen"
   },
   "goTo": {
@@ -50,11 +47,6 @@
     "devices": "Bildschirme",
     "apiKeys": "API-Schlüssel",
     "team": "Team",
-    "roles": "Rollen",
-    "domains": "Eigene Domains",
-    "reports": "Berichte",
-    "customReports": "Eigene Berichte",
-    "askAnalytics": "Fragen zur Auswertung",
     "integrations": "Integrationen",
     "whatsapp": "WhatsApp",
     "webhooks": "Webhooks",
@@ -74,9 +66,7 @@
     "performance": "Leistung",
     "etaAccuracy": "Genauigkeit der Wartezeit",
     "usage": "Nutzung und Limits",
-    "planning": "Planung",
     "overview": "Alle Standorte",
-    "shifts": "Schichten",
     "heatmap": "Stoßzeiten",
     "feedback": "Feedback",
     "comparison": "Standorte vergleichen",
@@ -86,8 +76,7 @@
     "requests": "Datenanfragen",
     "privacy": "Datenschutz",
     "events": "Veranstaltungen",
-    "widget": "Website-Widget",
-    "google": "Google-Eintrag"
+    "widget": "Website-Widget"
   },
   "help": "Hilfe"
 }

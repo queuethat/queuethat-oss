@@ -19,9 +19,6 @@
     "plan": "Usage"
   },
   "insights": {
-    "reportsLabel": "Reports",
-    "reports": "Reports",
-    "scheduled": "Scheduled reports",
     "compare": "Compare locations"
   },
   "goTo": {
@@ -50,11 +47,6 @@
     "devices": "Screens",
     "apiKeys": "API keys",
     "team": "Team",
-    "roles": "Roles",
-    "domains": "Custom domains",
-    "reports": "Reports",
-    "customReports": "Custom reports",
-    "askAnalytics": "Ask analytics",
     "integrations": "Integrations",
     "whatsapp": "WhatsApp",
     "webhooks": "Webhooks",
@@ -74,9 +66,7 @@
     "performance": "Performance",
     "etaAccuracy": "ETA accuracy",
     "usage": "Usage and limits",
-    "planning": "Planning",
     "overview": "All locations",
-    "shifts": "Shifts",
     "heatmap": "Busy hours",
     "feedback": "Feedback",
     "comparison": "Compare locations",
@@ -86,8 +76,7 @@
     "requests": "Data requests",
     "privacy": "Privacy",
     "events": "Events",
-    "widget": "Website widget",
-    "google": "Google listing"
+    "widget": "Website widget"
   },
   "help": "Help"
 }

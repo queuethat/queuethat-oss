@@ -29,7 +29,7 @@ first; these are the conventions specific to the web app.
   `redirects` from old `/admin` addresses), banners for the staff, admin and onboarding areas, help
   articles, and its own strings (typed namespaces through `ExtensionLocaleResources`, wording over
   this app's through `localeOverrides`) without editing this app. It builds with
-  `QT_WEB_EXTENSIONS=<path to its module>`, a module exporting `extensions` of the `WebExtensions`
+  `QT_WEB_EXTENSIONS=<path to its module>` (several modules may be named, separated by commas; `src/extensions/merge.ts` joins them and the later one wins a clash), a module exporting `extensions` of the `WebExtensions`
   type in `src/extensions/types.ts`; `scripts/extensions.ts` swaps it in for the empty
   `src/extensions/installed.ts`. This repository installs none (run a deployment's module locally
   with `QT_WEB_EXTENSIONS=<path relative to apps/web> pnpm dev`). Extension pages and banners load

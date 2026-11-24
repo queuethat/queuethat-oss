@@ -13,6 +13,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from '../../../../lib/translation.tsx';
+import { isFeatureGated, PlanGateNotice } from '../../PlanGateNotice.tsx';
 import { ScreenEmpty } from '../../../../components/ScreenEmpty.tsx';
 import { useCurrentOrg } from '../../../auth/current.ts';
 import {
@@ -23,6 +24,8 @@ import {
   endpointStatus,
   endpointsQuery,
   useCreateEndpoint,
+  useDeleteEndpoint,
+  useUpdateEndpoint,
   useRedeliver,
   useRotateSecret,
   useSendTest,
@@ -62,6 +65,8 @@ function EndpointList({ orgId }: { orgId: string }) {
   const [open, setOpen] = useState<string | null>(null);
   const rotate = useRotateSecret();
   const setActive = useSetActive(orgId);
+  const remove = useDeleteEndpoint(orgId);
+  const [editing, setEditing] = useState<string | null>(null);
 
   if (query.isError) return <p role="alert">{t('errors.unknown')}</p>;
   if (!query.data) return <Skeleton label={t('loading')} rows={2} />;
@@ -96,7 +101,13 @@ function EndpointList({ orgId }: { orgId: string }) {
                       <p className="text-muted">{t('list.guestName')}</p>
                     ) : null}
                     {endpoint.disabled_reason ? (
-                      <p className="text-danger-strong">{endpoint.disabled_reason}</p>
+                      <p className="text-danger-strong">
+                        {t(
+                          endpoint.disabled_reason === 'too_many_failures'
+                            ? 'reason.too_many_failures'
+                            : 'reason.manual',
+                        )}
+                      </p>
                     ) : null}
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -126,6 +137,19 @@ function EndpointList({ orgId }: { orgId: string }) {
                       triggerVariant="secondary"
                       onConfirm={() => rotate.mutateAsync(endpoint.id)}
                     />
+                    <Button variant="secondary" onClick={() => setEditing(endpoint.id)}>
+                      {t('edit.trigger')}
+                    </Button>
+                    <ConfirmDestructive
+                      triggerLabel={t('remove.trigger')}
+                      triggerAriaLabel={t('remove.triggerFor', { url: endpoint.url })}
+                      title={t('remove.title')}
+                      description={t('remove.description')}
+                      confirmLabel={t('remove.confirm')}
+                      cancelLabel={t('remove.cancel')}
+                      triggerVariant="secondary"
+                      onConfirm={() => remove.mutateAsync(endpoint.id)}
+                    />
                   </div>
                 </div>
                 {open === endpoint.id ? <DeliveryLog endpointId={endpoint.id} /> : null}
@@ -135,6 +159,16 @@ function EndpointList({ orgId }: { orgId: string }) {
         </ul>
       )}
       <CreateDialog orgId={orgId} open={creating} onClose={() => setCreating(false)} />
+      {query.data.map((endpoint) =>
+        editing === endpoint.id ? (
+          <EditDialog
+            key={endpoint.id}
+            orgId={orgId}
+            endpoint={endpoint}
+            onClose={() => setEditing(null)}
+          />
+        ) : null,
+      )}
       <Dialog
         open={!!rotate.data}
         onClose={() => undefined}
@@ -329,9 +363,13 @@ function CreateDialog({
           checked={guestName}
           onChange={(event) => setGuestName(event.target.checked)}
         />
-        <p role="alert" className="font-medium text-danger-strong empty:hidden">
-          {failure ? t(failure) : null}
-        </p>
+        {isFeatureGated(create.error) ? (
+          <PlanGateNotice feature="api" />
+        ) : (
+          <p role="alert" className="font-medium text-danger-strong empty:hidden">
+            {failure ? t(failure) : null}
+          </p>
+        )}
         <div className="flex flex-wrap justify-end gap-3">
           <Button variant="secondary" onClick={close}>
             {t('create.cancel')}
@@ -343,6 +381,89 @@ function CreateDialog({
             loadingLabel={t('create.creating')}
           >
             {t('create.submit')}
+          </Button>
+        </div>
+      </form>
+    </Dialog>
+  );
+}
+
+function EditDialog({
+  orgId,
+  endpoint,
+  onClose,
+}: {
+  orgId: string;
+  endpoint: { id: string; url: string; event_types: string[]; include_guest_name: boolean };
+  onClose: () => void;
+}) {
+  const { t } = useTranslation('admin-webhooks');
+  const update = useUpdateEndpoint(orgId);
+  const [url, setUrl] = useState(endpoint.url);
+  const [events, setEvents] = useState<WebhookEvent[]>(endpoint.event_types as WebhookEvent[]);
+  const [guestName, setGuestName] = useState(endpoint.include_guest_name);
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    update.mutate(
+      {
+        endpointId: endpoint.id,
+        url,
+        kind: 'generic',
+        eventTypes: WEBHOOK_EVENTS.filter((e) => events.includes(e)),
+        includeGuestName: guestName,
+      },
+      { onSuccess: onClose },
+    );
+  };
+  const failure = update.error
+    ? (`errors.${KNOWN_ERRORS.includes(update.error.message) ? update.error.message : 'unknown'}` as 'errors.unknown')
+    : null;
+  return (
+    <Dialog open onClose={onClose} title={t('edit.title')}>
+      <form className="flex flex-col gap-4" onSubmit={submit}>
+        <Input
+          label={t('create.url')}
+          hint={t('create.urlHint')}
+          type="url"
+          required
+          value={url}
+          onChange={(event) => setUrl(event.target.value)}
+        />
+        <fieldset className="flex flex-col gap-2">
+          <legend className="font-medium">{t('create.events')}</legend>
+          {WEBHOOK_EVENTS.map((e) => (
+            <Checkbox
+              key={e}
+              label={t(eventKey(e))}
+              checked={events.includes(e)}
+              onChange={(event) =>
+                setEvents((now) =>
+                  event.target.checked ? [...now, e] : now.filter((x) => x !== e),
+                )
+              }
+            />
+          ))}
+        </fieldset>
+        <Checkbox
+          label={t('create.guestName')}
+          hint={t('create.guestNameWarning')}
+          checked={guestName}
+          onChange={(event) => setGuestName(event.target.checked)}
+        />
+        <p role="alert" className="font-medium text-danger-strong empty:hidden">
+          {failure ? t(failure) : null}
+        </p>
+        <div className="flex flex-wrap justify-end gap-3">
+          <Button variant="secondary" onClick={onClose}>
+            {t('create.cancel')}
+          </Button>
+          <Button
+            type="submit"
+            disabled={events.length === 0}
+            loading={update.isPending}
+            loadingLabel={t('edit.saving')}
+          >
+            {t('edit.save')}
           </Button>
         </div>
       </form>
