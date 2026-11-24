@@ -211,7 +211,11 @@ test.describe('staff', () => {
     await staff.setViewportSize({ width: 1280, height: 900 });
     await staff.goto('/admin');
     const nav = staff.getByRole('navigation', { name: 'Admin' });
-    await nav.getByRole('button', { name: 'Team' }).click();
+    // Staff see the Team group only when a build adds a staff page to it (shifts, in ee); the AGPL
+    // build has none, so open it if it is there.
+    await expect(nav.getByRole('button', { name: 'Set up' })).toBeVisible();
+    const team = nav.getByRole('button', { name: 'Team' });
+    if ((await team.count()) > 0) await team.click();
     await nav.getByRole('button', { name: 'Set up' }).click();
     await nav.getByRole('button', { name: 'Advanced' }).click();
     await nav.getByRole('button', { name: 'Account' }).click();
