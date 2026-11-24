@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Licensed under the QueueThat Commercial License (ee/LICENSE).
+
 /**
  * The name a custom domain's CNAME should point at. `configured` is `VITE_DOMAIN_CNAME`, for a
  * deployment whose TLS layer wants its own target; otherwise the host of the public URL (or of the

@@ -57,7 +57,11 @@ describe('account sections', () => {
       'calendar',
     ]);
     expect(ids(tabsAt('/admin/account/calendar'))).toContain('calendar');
-    expect(ids(tabsAt('/admin/domains'))).toEqual(['apiKeys', 'webhooks', 'chatAlerts', 'domains']);
+    expect(ids(tabsAt('/admin/developers/webhooks'))).toEqual([
+      'apiKeys',
+      'webhooks',
+      'chatAlerts',
+    ]);
     expect(ids(tabsAt('/admin/export'))).toEqual(['privacy', 'requests', 'export']);
     expect(ids(tabsAt('/admin/usage'))).toEqual(['usage']);
   });

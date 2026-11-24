@@ -37,7 +37,6 @@ import { Route as AdminBrandingRouteImport } from './routes/admin/branding'
 import { Route as AdminComparisonRouteImport } from './routes/admin/comparison'
 import { Route as AdminCountersRouteImport } from './routes/admin/counters'
 import { Route as AdminDevicesRouteImport } from './routes/admin/devices'
-import { Route as AdminDomainsRouteImport } from './routes/admin/domains'
 import { Route as AdminEtaAccuracyRouteImport } from './routes/admin/eta-accuracy'
 import { Route as AdminEventsRouteImport } from './routes/admin/events'
 import { Route as AdminExportRouteImport } from './routes/admin/export'
@@ -245,11 +244,6 @@ const AdminCountersRoute = AdminCountersRouteImport.update({
 const AdminDevicesRoute = AdminDevicesRouteImport.update({
   id: '/devices',
   path: '/devices',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminDomainsRoute = AdminDomainsRouteImport.update({
-  id: '/domains',
-  path: '/domains',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminEtaAccuracyRoute = AdminEtaAccuracyRouteImport.update({
@@ -625,7 +619,6 @@ export interface FileRoutesByFullPath {
   '/admin/comparison': typeof AdminComparisonRoute
   '/admin/counters': typeof AdminCountersRoute
   '/admin/devices': typeof AdminDevicesRoute
-  '/admin/domains': typeof AdminDomainsRoute
   '/admin/eta-accuracy': typeof AdminEtaAccuracyRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/export': typeof AdminExportRoute
@@ -720,7 +713,6 @@ export interface FileRoutesByTo {
   '/admin/comparison': typeof AdminComparisonRoute
   '/admin/counters': typeof AdminCountersRoute
   '/admin/devices': typeof AdminDevicesRoute
-  '/admin/domains': typeof AdminDomainsRoute
   '/admin/eta-accuracy': typeof AdminEtaAccuracyRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/export': typeof AdminExportRoute
@@ -820,7 +812,6 @@ export interface FileRoutesById {
   '/admin/comparison': typeof AdminComparisonRoute
   '/admin/counters': typeof AdminCountersRoute
   '/admin/devices': typeof AdminDevicesRoute
-  '/admin/domains': typeof AdminDomainsRoute
   '/admin/eta-accuracy': typeof AdminEtaAccuracyRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/export': typeof AdminExportRoute
@@ -921,7 +912,6 @@ export interface FileRouteTypes {
     | '/admin/comparison'
     | '/admin/counters'
     | '/admin/devices'
-    | '/admin/domains'
     | '/admin/eta-accuracy'
     | '/admin/events'
     | '/admin/export'
@@ -1016,7 +1006,6 @@ export interface FileRouteTypes {
     | '/admin/comparison'
     | '/admin/counters'
     | '/admin/devices'
-    | '/admin/domains'
     | '/admin/eta-accuracy'
     | '/admin/events'
     | '/admin/export'
@@ -1115,7 +1104,6 @@ export interface FileRouteTypes {
     | '/admin/comparison'
     | '/admin/counters'
     | '/admin/devices'
-    | '/admin/domains'
     | '/admin/eta-accuracy'
     | '/admin/events'
     | '/admin/export'
@@ -1406,13 +1394,6 @@ declare module '@tanstack/react-router' {
       path: '/devices'
       fullPath: '/admin/devices'
       preLoaderRoute: typeof AdminDevicesRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/domains': {
-      id: '/admin/domains'
-      path: '/domains'
-      fullPath: '/admin/domains'
-      preLoaderRoute: typeof AdminDomainsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/eta-accuracy': {
@@ -1915,7 +1896,6 @@ interface AdminRouteRouteChildren {
   AdminComparisonRoute: typeof AdminComparisonRoute
   AdminCountersRoute: typeof AdminCountersRoute
   AdminDevicesRoute: typeof AdminDevicesRoute
-  AdminDomainsRoute: typeof AdminDomainsRoute
   AdminEtaAccuracyRoute: typeof AdminEtaAccuracyRoute
   AdminEventsRoute: typeof AdminEventsRoute
   AdminExportRoute: typeof AdminExportRoute
@@ -1975,7 +1955,6 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminComparisonRoute: AdminComparisonRoute,
   AdminCountersRoute: AdminCountersRoute,
   AdminDevicesRoute: AdminDevicesRoute,
-  AdminDomainsRoute: AdminDomainsRoute,
   AdminEtaAccuracyRoute: AdminEtaAccuracyRoute,
   AdminEventsRoute: AdminEventsRoute,
   AdminExportRoute: AdminExportRoute,

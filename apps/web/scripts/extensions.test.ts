@@ -31,4 +31,10 @@ describe('webExtensions', () => {
     ).toBeNull();
     expect(await resolveWith('/deploy/ext.ts', './index.ts', OTHER)).toBeNull();
   });
+
+  it('finds a module named from the repository root, and fails on one that is nowhere', async () => {
+    const root = fileURLToPath(new URL('../../../package.json', import.meta.url));
+    expect(await resolveWith('package.json', './installed.ts', INSTALLED)).toBe(root);
+    expect(() => webExtensions('ee/nowhere.ts')).toThrow(/no module/);
+  });
 });

@@ -44,7 +44,6 @@ const PREVIOUS = [
   '/admin/notifications/failed',
   '/admin/usage',
   '/admin/export',
-  '/admin/domains',
   '/admin/reports/schedules',
   '/admin/reports/custom',
   '/admin/reports/ask',
@@ -121,14 +120,7 @@ describe('admin nav model', () => {
     const groups = build('owner');
     const account = groups.find((g) => g.id === 'account')!;
     expect(account.items.map((i) => i.id)).toEqual(
-      expect.arrayContaining([
-        'integrations',
-        'whatsapp',
-        'google',
-        'apiKeys',
-        'domains',
-        'export',
-      ]),
+      expect.arrayContaining(['integrations', 'whatsapp', 'google', 'apiKeys', 'export']),
     );
     expect(account.defaultOpen).toBeUndefined();
     // #88: Danger zone is the last entry of Account, not a group of its own.
@@ -143,7 +135,6 @@ describe('admin nav model', () => {
       'apiKeys',
       'webhooks',
       'chatAlerts',
-      'domains',
       'export',
       'reports',
       'requests',
@@ -227,7 +218,6 @@ describe('admin nav model', () => {
     expect(at('/admin/whatsapp')).toBe('integrations');
     expect(at('/admin/account/calendar')).toBe('integrations');
     expect(at('/admin/developers/webhooks')).toBe('apiKeys');
-    expect(at('/admin/domains')).toBe('apiKeys');
     expect(at('/admin/privacy/requests')).toBe('privacy');
     expect(at('/admin/export')).toBe('privacy');
     expect(at('/admin/help')).toBe('help');
