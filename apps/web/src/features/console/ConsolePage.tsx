@@ -1,6 +1,6 @@
 import { useDeliveryWarnings, useTextStates } from './messages/api.ts';
 import { errorCode, formatLocalTime } from '@qm/domain';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import type { CountryCode } from '@qm/ui/phone';
 import {
   Badge,
@@ -21,7 +21,7 @@ import { useNow } from '../../lib/now.ts';
 import { membersQuery } from '../admin/team/api.ts';
 import { useSession } from '../auth/api.ts';
 import { useCurrentLocation, useCurrentOrg } from '../auth/current.ts';
-import { ExtensionSlot } from '../../extensions/ExtensionSlot.tsx';
+import { useGuestTagMap } from '../crm/tags/api.ts';
 import {
   countersQuery,
   useCallNext,
@@ -139,11 +139,8 @@ export function ConsolePage({
   const deliveryWarnings = useDeliveryWarnings(location?.id);
   const textStates = useTextStates(location?.id);
   const badges = useGuestBadges((visits.data ?? []).map((v) => v.id));
-  // Tags come from the installed extension, if any; without one the rows show none.
-  const [guestTags, setGuestTags] = useState<Map<string, string[]>>();
-  const guestIds = useMemo(
-    () => [...new Set((visits.data ?? []).flatMap((v) => (v.guestId ? [v.guestId] : [])))].sort(),
-    [visits.data],
+  const guestTags = useGuestTagMap(
+    (visits.data ?? []).flatMap((v) => (v.guestId ? [v.guestId] : [])),
   );
   const counters = useQuery({ ...countersQuery(location?.id ?? ''), enabled: !!location });
   const myCounter = useMyCounter(location?.id, counters.data ?? []);
@@ -460,7 +457,6 @@ export function ConsolePage({
 
   return (
     <div className="flex flex-col gap-3">
-      <ExtensionSlot name="console.guestTags" props={{ guestIds, onTags: setGuestTags }} />
       <div
         className="grid grid-cols-2 items-end gap-x-3 gap-y-2 sm:flex sm:flex-wrap sm:gap-x-4"
         data-testid="console-bar"
@@ -650,7 +646,7 @@ export function ConsolePage({
                   badges={badges.data}
                   deliveryWarnings={deliveryWarnings}
                   textStates={textStates}
-                  guestTags={guestTags}
+                  guestTags={guestTags.data}
                   onBlock={
                     org && MANAGER_ROLES.includes(org.role)
                       ? (visit, reason, days) =>

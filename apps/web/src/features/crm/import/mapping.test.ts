@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { describe, expect, it } from 'vitest';
 import { batches, guessMapping, previewProblem, toImportRow } from './mapping.ts';
 

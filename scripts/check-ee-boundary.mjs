@@ -12,10 +12,10 @@ export const HEADER = 'SPDX-License-Identifier: LicenseRef-QueueThat-EE';
 const CODE = /\.(?:[cm]?[jt]sx?|sql|sh)$/;
 const IMPORT = /(?:from|import|require\(|import\()\s*['"]([^'"]+)['"]/g;
 const SKIP_HEADER = ['ee/LICENSE', 'ee/README.md'];
+// Its test spells out import lines as fixtures.
+const SELF_TEST = 'scripts/check-ee-boundary.test.mjs';
 
 const inEe = (path) => path.startsWith('ee/');
-// Its test holds import lines as fixture strings.
-const SELF_TEST = 'scripts/check-ee-boundary.test.mjs';
 
 /** Code files under ee/ whose first 5 lines do not carry the SPDX header. */
 export function missingHeader(files) {

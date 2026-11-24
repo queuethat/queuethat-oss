@@ -4,8 +4,6 @@ import { Link } from '@tanstack/react-router';
 import { useDeferredValue, useState } from 'react';
 import { useTranslation } from '../../../lib/translation.tsx';
 import { useCurrentLocation, useCurrentOrg } from '../../auth/current.ts';
-import { ExtensionSlot } from '../../../extensions/ExtensionSlot.tsx';
-import { ExportGuests } from './export/ExportGuests.tsx';
 import { ScreenEmpty } from '../../../components/ScreenEmpty.tsx';
 import { publicJoinUrl } from '../poster/url.ts';
 import { useNoVisitsYet } from '../dashboard/setup/api.ts';
@@ -18,6 +16,7 @@ export function GuestsPage() {
   const noVisits = useNoVisitsYet();
   const { location } = useCurrentLocation();
   const role = useCurrentOrg()?.role;
+  const isManager = role === 'owner' || role === 'admin' || role === 'manager';
   const [text, setText] = useState('');
   const query = useDeferredValue(text.trim());
   const ready = !!location && query.length >= MIN_SEARCH_LENGTH;
@@ -27,7 +26,26 @@ export function GuestsPage() {
     <div className="mx-auto flex max-w-3xl flex-col gap-6 pb-8">
       <PageHeader
         title={t('title')}
-        actions={<>{role ? <ExtensionSlot name="guests.actions" props={{ role }} /> : null}</>}
+        actions={
+          <>
+            {isManager ? (
+              <LinkButton
+                variant="secondary"
+                render={(p) => <Link to="/admin/guests/duplicates" {...p} />}
+              >
+                {t('duplicates')}
+              </LinkButton>
+            ) : null}
+            {role === 'owner' || role === 'admin' ? (
+              <LinkButton
+                variant="secondary"
+                render={(p) => <Link to="/admin/guests/import" {...p} />}
+              >
+                {t('importExport')}
+              </LinkButton>
+            ) : null}
+          </>
+        }
       />
       <Input
         label={t('search.label')}
@@ -107,7 +125,6 @@ export function GuestsPage() {
           </tbody>
         </table>
       )}
-      {role === 'owner' || role === 'admin' ? <ExportGuests /> : null}
     </div>
   );
 }

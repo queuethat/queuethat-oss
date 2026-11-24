@@ -1,7 +1,7 @@
 import { errorCode } from '@qm/domain';
 import { useMutation } from '@tanstack/react-query';
-import { supabase } from '../../../../lib/supabase.ts';
-import { useCurrentOrg } from '../../../auth/current.ts';
+import { supabase } from '../../../lib/supabase.ts';
+import { useCurrentOrg } from '../../auth/current.ts';
 import { toCsv } from '../csv.ts';
 
 /**

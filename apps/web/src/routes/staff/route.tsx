@@ -14,6 +14,7 @@ export const Route = createFileRoute('/staff')({
         'auth',
         'appointments',
         'account',
+        'crm',
         'payments',
       ),
     ]);

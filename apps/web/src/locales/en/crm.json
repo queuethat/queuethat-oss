@@ -56,6 +56,14 @@
     "back": "All guests",
     "noAccess": "Only owners and admins can import or export guests."
   },
+  "export": {
+    "title": "Export",
+    "warning": "The file contains personal data: names, phone numbers, email addresses and notes. Store it securely and delete it when you no longer need it. Each export is logged; you can export up to five times a day.",
+    "button": "Export guests (CSV)",
+    "running": "Preparing",
+    "rateLimited": "You have reached today's export limit. Try again tomorrow.",
+    "failed": "The export failed. Try again."
+  },
   "import": {
     "title": "Import",
     "intro": "Upload a CSV with a header row. Imported contacts get no marketing consent. A transactional consent is recorded only for rows marked yes, with the consent text version you give.",
@@ -95,9 +103,5 @@
     "skipped_one": "{{count}} skipped",
     "skipped_other": "{{count}} skipped",
     "download": "Download results (CSV)"
-  },
-  "actions": {
-    "duplicates": "Review duplicate guests",
-    "importExport": "Import or export guests"
   }
 }
