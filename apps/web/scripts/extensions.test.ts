@@ -37,4 +37,20 @@ describe('webExtensions', () => {
     expect(await resolveWith('package.json', './installed.ts', INSTALLED)).toBe(root);
     expect(() => webExtensions('ee/nowhere.ts')).toThrow(/no module/);
   });
+
+  it('merges several comma-separated modules through a generated module', async () => {
+    const root = fileURLToPath(new URL('../../../package.json', import.meta.url));
+    const plugin = webExtensions('/deploy/a.ts,package.json'.replace('/deploy/a.ts', root));
+    const resolved = await resolveWith(
+      '/deploy/a.ts,package.json'.replace('/deploy/a.ts', root),
+      './installed.ts',
+      INSTALLED,
+    );
+    expect(resolved).toBe('\0qt-web-extensions');
+    const load = plugin.load as unknown as (id: string) => string | null;
+    const code = load('\0qt-web-extensions') ?? '';
+    expect(code).toContain('mergeExtensions([e0, e1])');
+    expect(code).toContain('merge.ts');
+    expect(load('/other')).toBeNull();
+  });
 });

@@ -24,7 +24,8 @@ ENV APP_VERSION=
 # module, as `ee/web/extensions.ts` (docker compose passes it from .env, set by `setup.sh --ee`).
 # Empty, the bundle holds no ee code. The path is made absolute because the build runs in apps/web.
 ARG QT_WEB_EXTENSIONS=
-RUN QT_WEB_EXTENSIONS="${QT_WEB_EXTENSIONS:+/repo/$QT_WEB_EXTENSIONS}" pnpm --filter @qm/web build
+# Relative paths (one module, or several separated by commas) resolve from the repository root.
+RUN QT_WEB_EXTENSIONS="${QT_WEB_EXTENSIONS}" pnpm --filter @qm/web build
 
 FROM caddy:2.10.2-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d
 RUN apk add --no-cache openssl
