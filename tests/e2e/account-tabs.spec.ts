@@ -5,14 +5,14 @@ import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
 test.describe('owner', () => {
   test.use({ staffUser: 'owner' });
 
-  test('connections: integrations, WhatsApp, Google and the calendar feed are tabs', async ({
+  test('connections: integrations, WhatsApp and the calendar feed are tabs', async ({
     devices,
   }) => {
     const { staff } = devices;
     await staff.setViewportSize({ width: 1280, height: 900 });
     await staff.goto('/admin/integrations');
     const tabs = staff.getByRole('navigation', { name: 'Connections' });
-    for (const name of ['Integrations', 'WhatsApp', 'Google listing', 'Calendar feed']) {
+    for (const name of ['Integrations', 'WhatsApp', 'Calendar feed']) {
       await expect(tabs.getByRole('link', { name })).toBeVisible();
     }
     await expect(tabs.getByRole('link', { name: 'Integrations' })).toHaveAttribute(
