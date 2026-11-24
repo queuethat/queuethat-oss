@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Licensed under the QueueThat Commercial License (ee/LICENSE).
+
 import { describe, expect, it } from 'vitest';
 import { dnsTargetFor } from './dnsTarget.ts';
 

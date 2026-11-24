@@ -195,14 +195,6 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
         under: 'apiKeys',
       },
       {
-        to: '/admin/domains',
-        key: 'domains',
-        icon: iconLink,
-        adminOnly: true,
-        hidden: true,
-        under: 'apiKeys',
-      },
-      {
         to: '/admin/export',
         key: 'export',
         icon: iconList,

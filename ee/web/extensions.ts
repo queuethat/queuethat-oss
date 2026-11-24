@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import type { WebExtensions } from '@app/extensions/types.ts';
+import { domainsAdminPages, domainsRedirects } from './src/domains/extensions.ts';
 import { reportPages, reportRedirects } from './src/reports/extension.ts';
 import { integrationAdminPages, integrationRedirects } from './src/integrations/extensions.ts';
 import { crmAdminPages, crmRedirects, crmSlots } from './src/crm/extensions.ts';
@@ -16,22 +17,36 @@ import {
  * light: the router imports it into every route's chunk, so pages, slots and strings load lazily.
  */
 export const extensions: WebExtensions = {
-  adminPages: [...crmAdminPages, ...templatesAdminPages, ...integrationAdminPages, ...reportPages],
+  adminPages: [
+    ...crmAdminPages,
+    ...templatesAdminPages,
+    ...integrationAdminPages,
+    ...reportPages,
+    ...domainsAdminPages,
+  ],
   banners: [],
   slots: { ...crmSlots, ...templatesSlots },
-  redirects: [...crmRedirects, ...templatesRedirects, ...integrationRedirects, ...reportRedirects],
+  redirects: [
+    ...crmRedirects,
+    ...templatesRedirects,
+    ...integrationRedirects,
+    ...reportRedirects,
+    ...domainsRedirects,
+  ],
   localeOverrides: async (lng, ns) => {
-    if (ns === 'admin-nav' && lng === 'de') return { items: { google: 'Google-Eintrag' } };
+    if (ns === 'admin-nav' && lng === 'de')
+      return { items: { google: 'Google-Eintrag', domains: 'Eigene Domains' } };
     if (lng !== 'en') return undefined;
     if (ns === 'gbp') return (await import('./src/locales/en/gbp.json')).default;
-    if (ns === 'admin-nav') return { items: { google: 'Google listing' } };
+    if (ns === 'admin-nav')
+      return { items: { google: 'Google listing', domains: 'Custom domains' } };
     if (ns === 'crm') return (await import('./src/locales/en/crm.json')).default;
     if (ns === 'admin-reports')
       return (await import('./src/locales/en/admin-reports.json')).default;
     if (ns === 'admin-templates')
       return (await import('./src/locales/en/admin-templates.json')).default;
-    if (ns === 'admin-reports')
-      return (await import('./src/locales/en/admin-reports.json')).default;
+    if (ns === 'admin-domains')
+      return (await import('./src/locales/en/admin-domains.json')).default;
     return undefined;
   },
 };

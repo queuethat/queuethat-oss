@@ -82,14 +82,13 @@ const SECTIONS: Section[] = [
   {
     id: 'developers',
     width: 'max-w-3xl',
-    prefixes: ['/admin/developers', '/admin/domains'],
+    prefixes: ['/admin/developers'],
     tabs: ({ admin }) =>
       admin
         ? [
             tab('apiKeys', '/admin/developers/api-keys', 'items.apiKeys'),
             tab('webhooks', '/admin/developers/webhooks', 'items.webhooks'),
             tab('chatAlerts', '/admin/developers/chat-alerts', 'items.chatAlerts'),
-            tab('domains', '/admin/domains', 'items.domains'),
           ]
         : [],
   },
