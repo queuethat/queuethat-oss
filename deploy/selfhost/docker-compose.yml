@@ -315,10 +315,13 @@ services:
   # SITE_ADDRESS=:80 in .env.
   web:
     <<: *restart
-    image: queue-web:${QM_VERSION:-local}
+    image: queue-web:${QM_VERSION:-local}${QT_WEB_TAG:-}
     build:
       context: ../..
       dockerfile: apps/web/Dockerfile
+      args:
+        # `ee/web/extensions.ts` builds the enterprise pages in (setup.sh --ee); empty builds AGPL only.
+        QT_WEB_EXTENSIONS: ${QT_WEB_EXTENSIONS:-}
     depends_on:
       kong: { condition: service_healthy }
       migrate: { condition: service_completed_successfully }

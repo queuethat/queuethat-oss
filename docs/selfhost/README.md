@@ -173,14 +173,16 @@ for logs nobody reads on a one-shop box. Use `docker compose logs` or ship conta
 
 The folder `ee/` holds enterprise features under the [QueueThat Commercial License](../../ee/LICENSE):
 guest list and import, integrations, reports and the other features marked there. A stack made
-with the defaults runs none of its server code: `QT_EE=0` in `.env`, and the migrate service
-publishes only the AGPL functions.
+with the defaults runs none of its code: `QT_EE=0` in `.env`, the migrate service publishes only
+the AGPL functions, and the web image is built without the enterprise pages.
 
-To run the enterprise functions (HubSpot and Square connections, integration sync), set
-`QT_EE=1` or run `./setup.sh --ee`, then `docker compose up -d`. You may do this freely to
-develop and test. Running it in production needs an agreement with QueueThat or a plan that
-includes the features; write to support@queuethat.com. Turning it back off removes the functions on
-the next start.
+To run them (the enterprise pages, plus the HubSpot and Square connections and integration sync),
+run `./setup.sh --ee` on a new install, or `./setup.sh --rotate --ee` on an existing one. It sets
+`QT_EE=1` and the web build setting in `.env`. Then run `docker compose up -d --build`: the web image
+is rebuilt with the enterprise pages, which takes a few minutes. You may do this freely to develop
+and test. Running it in production needs an agreement with QueueThat or a plan that includes the
+features; write to support@queuethat.com. To turn it off, set `QT_EE=0`, empty `QT_WEB_EXTENSIONS`
+and `QT_WEB_TAG`, and run `docker compose up -d --build` again.
 
 ## Demo mode
 

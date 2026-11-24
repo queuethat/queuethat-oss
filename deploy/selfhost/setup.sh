@@ -188,6 +188,15 @@ trap 'rm -f "$tmp"' EXIT
   echo "TUNNEL_TOKEN=$keep_tunnel"
   echo "BACKUP_AGE_RECIPIENT=$backup_recipient"
   echo "QT_EE=$ee"
+  if [ "$ee" = 1 ]; then
+    # The web bundle holds the enterprise pages only when built with them; the tag keeps that image
+    # apart from an AGPL-only one, so switching either way rebuilds instead of reusing a stale image.
+    echo "QT_WEB_EXTENSIONS=ee/web/extensions.ts"
+    echo "QT_WEB_TAG=-ee"
+  else
+    echo "QT_WEB_EXTENSIONS="
+    echo "QT_WEB_TAG="
+  fi
   if [ "$demo" = 1 ]; then
     # The seeded users keep the first password, so a rotation keeps it too.
     echo "DEMO_MODE=true"
