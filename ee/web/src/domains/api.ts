@@ -1,8 +1,11 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Licensed under the QueueThat Commercial License (ee/LICENSE).
+
 import { errorCode } from '@qm/domain';
-import { queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { dnsTargetFor } from './dnsTarget.ts';
-import { appConfig } from '../../../lib/config.ts';
-import { supabase } from '../../../lib/supabase.ts';
+import { appConfig } from '@app/lib/config.ts';
+import { supabase } from '@app/lib/supabase.ts';
 
 /** Only owners and admins manage domains; RLS shows the list to nobody else. */
 export const canManageDomains = (role: string | undefined) => role === 'admin' || role === 'owner';
@@ -26,18 +29,6 @@ export const domainsQuery = (orgId: string) =>
       return data;
     },
   });
-
-/**
- * The verified custom domain of a location, for posters. Null while it is pending, failed or
- * disabled (the poster keeps the main domain), and for staff who cannot read the table.
- */
-export function useVerifiedDomain(orgId: string | undefined, locationId: string | undefined) {
-  const query = useQuery({ ...domainsQuery(orgId ?? ''), enabled: !!orgId });
-  return (
-    query.data?.find((d) => d.status === 'verified' && d.default_location_id === locationId)
-      ?.hostname ?? null
-  );
-}
 
 /**
  * `api.add_custom_domain`. The browser converts an IDN to punycode first, as the database only

@@ -35,18 +35,18 @@ test.describe('owner', () => {
     );
   });
 
-  test('developers: keys, webhooks, chat alerts and domains are tabs', async ({ devices }) => {
+  test('developers: keys, webhooks and chat alerts are tabs', async ({ devices }) => {
     const { staff } = devices;
     await staff.setViewportSize({ width: 1280, height: 900 });
     await staff.goto('/admin/developers/api-keys');
     const tabs = staff.getByRole('navigation', { name: 'Developers' });
-    for (const name of ['API keys', 'Webhooks', 'Chat alerts', 'Custom domains']) {
+    for (const name of ['API keys', 'Webhooks', 'Chat alerts']) {
       await expect(tabs.getByRole('link', { name })).toBeVisible();
     }
     await expectNoSeriousA11yViolations(staff);
-    await tabs.getByRole('link', { name: 'Custom domains' }).click();
-    await expect(staff).toHaveURL(/\/admin\/domains$/);
-    await expect(tabs.getByRole('link', { name: 'Custom domains' })).toHaveAttribute(
+    await tabs.getByRole('link', { name: 'Webhooks' }).click();
+    await expect(staff).toHaveURL(/\/admin\/developers\/webhooks$/);
+    await expect(tabs.getByRole('link', { name: 'Webhooks' })).toHaveAttribute(
       'aria-current',
       'page',
     );
