@@ -169,6 +169,19 @@ Add with `docker compose --profile <name> up -d`.
 The `analytics` profile (Logflare, Vector) is not shipped: it adds three containers and about 1 GB
 for logs nobody reads on a one-shop box. Use `docker compose logs` or ship container logs yourself.
 
+## Enterprise features (`ee/`)
+
+The folder `ee/` holds enterprise features under the [QueueThat Commercial License](../../ee/LICENSE):
+guest list and import, integrations, reports and the other features marked there. A stack made
+with the defaults runs none of its server code: `QT_EE=0` in `.env`, and the migrate service
+publishes only the AGPL functions.
+
+To run the enterprise functions (HubSpot and Square connections, integration sync), set
+`QT_EE=1` or run `./setup.sh --ee`, then `docker compose up -d`. You may do this freely to
+develop and test. Running it in production needs an agreement with QueueThat or a plan that
+includes the features; write to support@queuethat.com. Turning it back off removes the functions on
+the next start.
+
 ## Demo mode
 
 A clean install has zero organizations: the first sign-in leads to onboarding. To try the product

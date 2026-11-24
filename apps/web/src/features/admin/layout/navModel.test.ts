@@ -43,14 +43,10 @@ const PREVIOUS = [
   '/admin/usage',
   '/admin/export',
   '/admin/domains',
-  '/admin/reports/schedules',
-  '/admin/reports/custom',
-  '/admin/reports/ask',
   '/admin/integrations',
   '/admin/whatsapp',
   '/admin/poster',
   '/admin/widget',
-  '/admin/google',
   '/admin/branding',
   '/admin/signage',
   '/admin/account/calendar',
@@ -119,14 +115,7 @@ describe('admin nav model', () => {
     const groups = build('owner');
     const account = groups.find((g) => g.id === 'account')!;
     expect(account.items.map((i) => i.id)).toEqual(
-      expect.arrayContaining([
-        'integrations',
-        'whatsapp',
-        'google',
-        'apiKeys',
-        'domains',
-        'export',
-      ]),
+      expect.arrayContaining(['integrations', 'whatsapp', 'apiKeys', 'domains', 'export']),
     );
     expect(account.defaultOpen).toBeUndefined();
     // #88: Danger zone is the last entry of Account, not a group of its own.
@@ -142,7 +131,6 @@ describe('admin nav model', () => {
       'chatAlerts',
       'domains',
       'export',
-      'reports',
       'requests',
       'comparison',
     ]) {
@@ -172,12 +160,12 @@ describe('admin nav model', () => {
     expect(currentItemId(groups, '/admin/nope')).toBeUndefined();
   });
 
-  it('shows two Insights entries in the sidebar and leaves the tab pages to the palette', () => {
+  it('shows one Insights entry in the sidebar and leaves the tab pages to the palette', () => {
     const insights = (role: string) =>
       sidebarGroups(build(role))
         .find((g) => g.id === 'insights')!
         .items.map((i) => i.id);
-    expect(insights('owner')).toEqual(['analytics', 'reports']);
+    expect(insights('owner')).toEqual(['analytics']);
     expect(insights('staff')).toEqual(['analytics']);
     const palette = filterPalette(build('owner'), 'heatmap').map((r) => r.item.id);
     expect(palette).toEqual(['heatmap']);
@@ -234,9 +222,6 @@ describe('admin nav model', () => {
     expect(currentItemId(owner, '/admin/heatmap')).toBe('analytics');
     expect(currentItemId(owner, '/admin/feedback')).toBe('analytics');
     expect(currentItemId(owner, '/admin/comparison')).toBe('analytics');
-    expect(currentItemId(owner, '/admin/reports/custom')).toBe('reports');
-    expect(currentItemId(owner, '/admin/reports/ask')).toBe('reports');
-    expect(currentItemId(build('staff'), '/admin/reports/custom')).toBe('analytics');
   });
 
   it('palette search matches names and group names, advanced pages included', () => {
