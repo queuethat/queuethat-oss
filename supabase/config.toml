@@ -502,6 +502,9 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.ask-analytics]
+# Lives in ee/ (QueueThat Commercial License); the self-host image does not publish it.
+entrypoint = "../ee/functions/ask-analytics/index.ts"
+import_map = "../ee/functions/ask-analytics/deno.json"
 # Managers call it with their own JWT; api.ask_analytics_reserve checks role, opt-in and cap, and api.run_report applies RLS-equivalent checks.
 verify_jwt = true
 

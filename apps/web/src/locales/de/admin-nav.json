@@ -19,9 +19,6 @@
     "plan": "Nutzung"
   },
   "insights": {
-    "reportsLabel": "Berichte",
-    "reports": "Berichte",
-    "scheduled": "Geplante Berichte",
     "compare": "Standorte vergleichen"
   },
   "goTo": {
@@ -52,9 +49,6 @@
     "team": "Team",
     "roles": "Rollen",
     "domains": "Eigene Domains",
-    "reports": "Berichte",
-    "customReports": "Eigene Berichte",
-    "askAnalytics": "Fragen zur Auswertung",
     "integrations": "Integrationen",
     "whatsapp": "WhatsApp",
     "webhooks": "Webhooks",

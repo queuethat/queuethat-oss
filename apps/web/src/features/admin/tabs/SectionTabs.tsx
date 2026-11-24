@@ -2,31 +2,23 @@ import { Link, useRouterState } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 import { useTranslation } from '../../../lib/translation.tsx';
 import { useNavFilter } from '../layout/navModel.ts';
-import { currentTabId, reportTabs, sectionAt, type SectionTab } from './sectionTabs.ts';
+import { currentTabId, sectionAt, type SectionTab } from './sectionTabs.ts';
 
 const BASE =
   'inline-flex min-h-target items-center rounded-control px-4 font-semibold transition-colors';
 const LOOK = {
-  tab: {
-    on: 'bg-primary text-on-primary',
-    off: 'bg-secondary text-on-secondary hover:bg-secondary-hover',
-  },
-  sub: {
-    on: 'bg-secondary text-on-secondary underline underline-offset-4',
-    off: 'text-muted hover:bg-secondary',
-  },
+  on: 'bg-primary text-on-primary',
+  off: 'bg-secondary text-on-secondary hover:bg-secondary-hover',
 };
 
 function TabLinks({
   label,
   tabs,
   current,
-  quiet,
 }: {
   label: string;
   tabs: SectionTab[];
   current: string | undefined;
-  quiet?: boolean;
 }) {
   const { t, i18n } = useTranslation('admin-nav');
   // An extension tab's label is in the extension's own namespace (`ns:key`).
@@ -43,7 +35,7 @@ function TabLinks({
                 to={tab.to}
                 activeOptions={{ exact: true }}
                 aria-current={selected ? 'page' : 'false'}
-                className={`${BASE} ${LOOK[quiet ? 'sub' : 'tab'][selected ? 'on' : 'off']}`}
+                className={`${BASE} ${LOOK[selected ? 'on' : 'off']}`}
               >
                 {tabLabel(tab)}
               </Link>
@@ -57,8 +49,7 @@ function TabLinks({
 
 /**
  * Gives the pages of one section (insights, connections, developers, privacy, plan) a shared
- * column and tab bar, so related pages read as one place. A report page also gets a second row
- * for scheduled, custom and asked reports. Other pages render unchanged.
+ * column and tab bar, so related pages read as one place. Other pages render unchanged.
  */
 export function SectionFrame({ children }: { children: ReactNode }) {
   const { t } = useTranslation('admin-nav');
@@ -78,14 +69,6 @@ export function SectionFrame({ children }: { children: ReactNode }) {
       {tabs.length > 1 ? (
         <div className="flex flex-col gap-2 print:hidden">
           <TabLinks label={t(`sections.${section.id}`)} tabs={tabs} current={current} />
-          {current === 'reports' ? (
-            <TabLinks
-              label={t('insights.reportsLabel')}
-              tabs={reportTabs(admin)}
-              current={currentTabId(reportTabs(admin), pathname)}
-              quiet
-            />
-          ) : null}
         </div>
       ) : null}
       {children}

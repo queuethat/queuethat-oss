@@ -4,7 +4,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 deno="$(pwd)/node_modules/.bin/deno"
-for dir in supabase/functions/*/; do
+for dir in supabase/functions/*/ ee/functions/*/; do
   [ -f "$dir/deno.json" ] || continue
   echo "--- ${dir}"
   (cd "$dir" && "$deno" check index.ts && "$deno" test --allow-net=127.0.0.1 --permit-no-files)

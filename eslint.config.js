@@ -15,6 +15,7 @@ export default tseslint.config(
       'packages/db-types/src/database.types.ts',
       'apps/web/src/routeTree.gen.ts',
       'supabase/functions/**',
+      'ee/functions/**',
       '**/playwright-report/**',
       '**/playwright-report-visual/**',
       '**/test-results/**',
@@ -36,7 +37,12 @@ export default tseslint.config(
     },
   },
   {
-    files: ['apps/web/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}', 'hosted/apps/**/*.{ts,tsx}'],
+    files: [
+      'apps/web/**/*.{ts,tsx}',
+      'packages/ui/**/*.{ts,tsx}',
+      'hosted/apps/**/*.{ts,tsx}',
+      'ee/web/**/*.{ts,tsx}',
+    ],
     plugins: { 'react-hooks': reactHooks, 'jsx-a11y': jsxA11y },
     rules: {
       ...reactHooks.configs.recommended.rules,
@@ -45,7 +51,7 @@ export default tseslint.config(
   },
   {
     // F8 (#18): features use @qm/ui so hit targets and destructive-action safety can't be skipped.
-    files: ['apps/web/src/features/**/*.{ts,tsx}'],
+    files: ['apps/web/src/features/**/*.{ts,tsx}', 'ee/web/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-syntax': [
         'error',
@@ -68,7 +74,12 @@ export default tseslint.config(
   {
     // User-facing text goes through t() (F9 #19). Flags JSX text, string literals inside
     // JSX expressions, and literals passed to the text props listed here.
-    files: ['apps/web/src/**/*.tsx', 'packages/ui/src/**/*.tsx', 'hosted/apps/*/src/**/*.tsx'],
+    files: [
+      'apps/web/src/**/*.tsx',
+      'packages/ui/src/**/*.tsx',
+      'hosted/apps/*/src/**/*.tsx',
+      'ee/web/**/*.tsx',
+    ],
     ignores: ['**/*.test.tsx', 'apps/web/src/routes/dev/**'],
     plugins: { i18next },
     rules: {
