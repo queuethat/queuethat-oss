@@ -8,6 +8,7 @@ export default defineConfig({
           name: 'packages',
           include: [
             'packages/*/src/**/*.test.ts',
+            'ee/integrations/**/*.test.ts',
             'tests/docs/**/*.test.ts',
             'tests/compliance/**/*.test.ts',
           ],

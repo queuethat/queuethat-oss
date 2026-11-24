@@ -75,6 +75,3 @@ export {
   type AnthropicOptions,
 } from './llm/anthropic.ts';
 export { FakeLlmProvider } from './llm/fake.ts';
-export * from './integration.ts';
-export * from './pos/square.ts';
-export * from './crm/hubspot.ts';

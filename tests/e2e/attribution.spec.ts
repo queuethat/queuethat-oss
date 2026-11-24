@@ -41,11 +41,3 @@ test('AC1: ?src=gbp is stored as gbp', async ({ devices }) => {
 test('AC2: a hostile src is dropped and nothing of it is stored', async ({ devices }) => {
   expect(await joinWith(devices.guest, '?src=%3Cscript%3E', 'Hal')).toBeNull();
 });
-
-test('AC3: the admin page shows the link with src=gbp', async ({ devices }) => {
-  const { staff } = devices;
-  await staff.goto('/admin/google');
-  await expect(staff.getByTestId('gbp-link')).toHaveText(
-    new RegExp(`/q/${demo.locationSlug}\\?src=gbp$`),
-  );
-});

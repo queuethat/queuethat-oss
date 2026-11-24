@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import type { WebExtensions } from '@app/extensions/types.ts';
+import { integrationAdminPages, integrationRedirects } from './src/integrations/extensions.ts';
 import { crmAdminPages, crmRedirects, crmSlots } from './src/crm/extensions.ts';
 import {
   templatesAdminPages,
@@ -14,12 +15,14 @@ import {
  * light: the router imports it into every route's chunk, so pages, slots and strings load lazily.
  */
 export const extensions: WebExtensions = {
-  adminPages: [...crmAdminPages, ...templatesAdminPages],
+  adminPages: [...crmAdminPages, ...templatesAdminPages, ...integrationAdminPages],
   banners: [],
   slots: { ...crmSlots, ...templatesSlots },
-  redirects: [...crmRedirects, ...templatesRedirects],
+  redirects: [...crmRedirects, ...templatesRedirects, ...integrationRedirects],
   localeOverrides: async (lng, ns) => {
     if (lng !== 'en') return undefined;
+    if (ns === 'gbp') return (await import('./src/locales/en/gbp.json')).default;
+    if (ns === 'admin-nav') return { items: { google: 'Google listing' } };
     if (ns === 'crm') return (await import('./src/locales/en/crm.json')).default;
     if (ns === 'admin-templates')
       return (await import('./src/locales/en/admin-templates.json')).default;
