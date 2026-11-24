@@ -1,6 +1,8 @@
 import { Badge, ConfirmDestructive, Input } from '@qm/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { ExtensionSlot } from '../../../extensions/ExtensionSlot.tsx';
+import { slotLoader } from '../../../extensions/index.ts';
 import { useTranslation } from '../../../lib/translation.tsx';
 import { canManageQueues } from '../../admin/queues/api.ts';
 import { formatMoney, fromMinor, toMinor } from '../../admin/payments/money.ts';
@@ -13,8 +15,6 @@ import {
   type PaymentBadge,
   type VisitPayment,
 } from './api.ts';
-import { PayCodeQr } from './PayCodeQr.tsx';
-import { RequestPayment } from './RequestPayment.tsx';
 
 const TONE: Record<PaymentBadge, 'neutral' | 'info' | 'success' | 'warning' | 'danger'> = {
   requires_action: 'neutral',
@@ -41,7 +41,10 @@ export function PaymentsSection({
   const payments = useQuery(visitPaymentsQuery(visitId));
   const canAct = canManageQueues(useCurrentOrg()?.role);
   // Anyone with a role at the location may ask for a payment while the guest is with them.
-  const canRequest = ['called', 'serving', 'served'].includes(visitStatus);
+  // Only a deployment with desk payments installed offers it (the `console.payments.request` slot).
+  const canRequest =
+    ['called', 'serving', 'served'].includes(visitStatus) &&
+    slotLoader('console.payments.request') !== undefined;
   if (!payments.data || (!payments.data.length && !canRequest)) return null;
   return (
     <section
@@ -63,7 +66,7 @@ export function PaymentsSection({
           />
         ))}
       </ul>
-      {canRequest ? <RequestPayment visitId={visitId} /> : null}
+      {canRequest ? <ExtensionSlot name="console.payments.request" props={{ visitId }} /> : null}
     </section>
   );
 }
@@ -113,7 +116,10 @@ function PaymentRow({
           />
         ) : null}
         {p.kind === 'pos' && p.status === 'requires_action' ? (
-          <PayCodeQr visitId={visitId} amountMinor={p.amountMinor} currency={p.currency} />
+          <ExtensionSlot
+            name="console.payments.payCode"
+            props={{ visitId, amountMinor: p.amountMinor, currency: p.currency }}
+          />
         ) : null}
         {refundable ? (
           <RefundButton

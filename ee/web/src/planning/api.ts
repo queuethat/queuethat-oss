@@ -1,9 +1,10 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useLiveQuery } from '../../lib/live.ts';
-import { supabase } from '../../lib/supabase.ts';
-import { addDays } from '../booking/slots.ts';
-import type { AppointmentRow } from '../appointments/api.ts';
-import { uuid } from '../guest/api.ts';
+import { useLiveQuery } from '@app/lib/live.ts';
+import { supabase } from '@app/lib/supabase.ts';
+import { addDays } from '@app/features/booking/slots.ts';
+import type { AppointmentRow } from '@app/features/appointments/api.ts';
+import { uuid } from '@app/features/guest/api.ts';
 import { parseRange } from './grid.ts';
 
 // Staff access to the planning grid: one read of everything a day or week shows.

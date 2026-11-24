@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { COLUMNS } from './grid.ts';
 

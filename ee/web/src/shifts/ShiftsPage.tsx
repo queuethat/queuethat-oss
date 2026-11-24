@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { formatLocalTime, localTimeValue } from '@qm/domain';
 import {
   Button,
@@ -13,11 +14,11 @@ import {
 } from '@qm/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
-import { useTranslation } from '../../../lib/translation.tsx';
-import { countersQuery } from '../../console/api.ts';
-import { useSession } from '../../auth/api.ts';
-import { useCurrentLocation, useCurrentOrg } from '../../auth/current.ts';
-import { membersQuery } from '../team/api.ts';
+import { useTranslation } from '@app/lib/translation.tsx';
+import { countersQuery } from '@app/features/console/api.ts';
+import { useSession } from '@app/features/auth/api.ts';
+import { useCurrentLocation, useCurrentOrg } from '@app/features/auth/current.ts';
+import { membersQuery } from '@app/features/admin/team/api.ts';
 import {
   addDays,
   shiftsQuery,

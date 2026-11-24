@@ -15,8 +15,6 @@ import adminHours from './admin-hours.json';
 import adminPrivacy from './admin-privacy.json';
 import adminUsage from './admin-usage.json';
 import appointments from './appointments.json';
-import shifts from './shifts.json';
-import adminRoles from './admin-roles.json';
 import adminSetup from './admin-setup.json';
 import adminTeam from './admin-team.json';
 import adminTemplates from './admin-templates.json';
@@ -79,10 +77,8 @@ export const en = {
   'admin-privacy': adminPrivacy,
   'admin-usage': adminUsage,
   appointments,
-  'admin-roles': adminRoles,
   'admin-setup': adminSetup,
   'admin-team': adminTeam,
-  shifts,
   'admin-templates': adminTemplates,
   'admin-form-builder': adminFormBuilder,
   'admin-journeys': adminJourneys,

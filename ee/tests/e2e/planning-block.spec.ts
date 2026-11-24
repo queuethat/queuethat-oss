@@ -1,11 +1,16 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { createClient } from '@supabase/supabase-js';
-import { expect, expectNoSeriousA11yViolations, signInAs, test } from './fixtures.ts';
-import { bookableLocation, slotsOn } from './support/booking.ts';
-import { supabaseEnv } from './support/env.ts';
+import {
+  expect,
+  expectNoSeriousA11yViolations,
+  signInAs,
+  test,
+} from '../../../tests/e2e/fixtures.ts';
+import { bookableLocation, slotsOn } from '../../../tests/e2e/support/booking.ts';
+import { supabaseEnv } from '../../../tests/e2e/support/env.ts';
 
 // 2B-A11 (#286): managers block many cells in one gesture, by pointer or keyboard.
 test.use({ staffUser: null });
-test.skip(process.env.E2E_PILOT === '1', 'needs the service role to set up a bookable location');
 
 const env = supabaseEnv();
 const service = createClient(env.url, env.serviceRoleKey, { auth: { persistSession: false } });
@@ -61,7 +66,7 @@ test('AC1: dragging over 3 chairs x 2 hours blocks them and the booking page hid
   );
 
   await signInAs(staff, shop.owner);
-  await staff.goto('/staff/planning');
+  await staff.goto('/admin/x/planning');
   await staff.getByLabel('Date').fill(day);
   const cell = (row: number, col: number) => staff.locator(`[data-cell="${row}-${col}"]`);
   const from = (await cell(0, COL_10_00).boundingBox())!;
@@ -93,7 +98,7 @@ test('AC2: the same blocks can be made with the keyboard alone', async ({ device
   const { staff } = devices;
   const { shop, day } = await shopWithChairs();
   await signInAs(staff, shop.owner);
-  await staff.goto('/staff/planning');
+  await staff.goto('/admin/x/planning');
   await staff.getByLabel('Date').fill(day);
 
   await staff.getByRole('region', { name: /Planning grid/ }).focus();

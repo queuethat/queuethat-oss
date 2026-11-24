@@ -1,5 +1,6 @@
-import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
-import { signIn } from './support/auth.ts';
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+import { expect, expectNoSeriousA11yViolations, test } from '../../../tests/e2e/fixtures.ts';
+import { signIn } from '../../../tests/e2e/support/auth.ts';
 
 // 2B-ORG6 (#270): a manager plans a shift across midnight; it is one block, on the day it starts,
 // in the week grid (tablet) and in the list (phone).
@@ -10,7 +11,7 @@ test('AC1: a 22:00-02:00 shift is one block; AC2: the list view has no serious a
   devices,
 }) => {
   const { staff, guest } = devices;
-  await staff.goto('/admin/shifts');
+  await staff.goto('/admin/x/shifts');
   await expect(staff.getByRole('heading', { name: 'Shifts' })).toBeVisible();
 
   await staff.getByRole('button', { name: 'Add shift' }).click();
@@ -27,7 +28,7 @@ test('AC1: a 22:00-02:00 shift is one block; AC2: the list view has no serious a
 
   // Phone: the list view.
   await signIn(guest, 'owner');
-  await guest.goto('/admin/shifts');
+  await guest.goto('/admin/x/shifts');
   const list = guest.getByTestId('shift-list');
   await expect(list.getByRole('button', { name: /10:00 PM to 2:00 AM \+1/ })).toHaveCount(1);
   await expectNoSeriousA11yViolations(guest);

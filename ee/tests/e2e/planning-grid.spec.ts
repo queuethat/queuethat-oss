@@ -1,12 +1,17 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { createClient } from '@supabase/supabase-js';
 import { randomUUID } from 'node:crypto';
-import { expect, expectNoSeriousA11yViolations, signInAs, test } from './fixtures.ts';
-import { bookAsGuest, bookableLocation, firstSlot } from './support/booking.ts';
-import { supabaseEnv } from './support/env.ts';
+import {
+  expect,
+  expectNoSeriousA11yViolations,
+  signInAs,
+  test,
+} from '../../../tests/e2e/fixtures.ts';
+import { bookAsGuest, bookableLocation, firstSlot } from '../../../tests/e2e/support/booking.ts';
+import { supabaseEnv } from '../../../tests/e2e/support/env.ts';
 
 // 2B-A10 (#285): managers see who is booked, blocked or on shift across the day.
 test.use({ staffUser: null });
-test.skip(process.env.E2E_PILOT === '1', 'needs the service role to set up a bookable location');
 
 const env = supabaseEnv();
 const service = createClient(env.url, env.serviceRoleKey, { auth: { persistSession: false } });
@@ -104,7 +109,7 @@ test('AC1, AC2, AC3: rows, times in the location tz, table fallback, location sc
     .eq('role', 'staff');
 
   await signInAs(staff, shop.staff);
-  await staff.goto('/staff/planning');
+  await staff.goto('/admin/x/planning');
   await staff.getByLabel('Date').fill(day);
   await expect(staff.getByRole('heading', { name: 'Planning' })).toBeVisible();
   await expect(staff.getByText('Chair A')).toBeVisible();

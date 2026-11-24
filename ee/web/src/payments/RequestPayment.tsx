@@ -1,7 +1,8 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { Button, Input, Select } from '@qm/ui';
 import { useState, type FormEvent } from 'react';
-import { useTranslation } from '../../../lib/translation.tsx';
-import { CURRENCIES, toMinor } from '../../admin/payments/money.ts';
+import { useTranslation } from '@app/lib/translation.tsx';
+import { CURRENCIES, toMinor } from '@app/features/admin/payments/money.ts';
 import { useRequestPayment } from './api.ts';
 
 /**
@@ -9,7 +10,7 @@ import { useRequestPayment } from './api.ts';
  * request on their status page; asking again corrects the amount until they have opened it.
  */
 export function RequestPayment({ visitId }: { visitId: string }) {
-  const { t } = useTranslation('payments');
+  const { t } = useTranslation('payments-desk');
   const request = useRequestPayment(visitId);
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState<string>(CURRENCIES[0]);
@@ -26,14 +27,14 @@ export function RequestPayment({ visitId }: { visitId: string }) {
     <form className="flex flex-col gap-2" onSubmit={submit} noValidate>
       <div className="flex flex-wrap items-end gap-2">
         <Input
-          label={t('console.request.amount')}
+          label={t('request.amount')}
           inputMode="decimal"
           value={amount}
-          error={invalid ? t('console.request.invalid') : undefined}
+          error={invalid ? t('request.invalid') : undefined}
           onChange={(e) => setAmount(e.target.value)}
         />
         <Select
-          label={t('console.request.currency')}
+          label={t('request.currency')}
           value={currency}
           onChange={(e) => setCurrency(e.target.value)}
         >
@@ -44,14 +45,14 @@ export function RequestPayment({ visitId }: { visitId: string }) {
           ))}
         </Select>
         <Button type="submit" disabled={request.isPending}>
-          {t('console.request.submit')}
+          {t('request.submit')}
         </Button>
       </div>
       <p role="alert" className="text-sm font-medium text-danger-strong empty:hidden">
-        {request.isError ? t('console.request.error') : null}
+        {request.isError ? t('request.error') : null}
       </p>
       <p role="status" className="text-sm text-muted empty:hidden">
-        {request.isSuccess ? t('console.request.sent') : null}
+        {request.isSuccess ? t('request.sent') : null}
       </p>
     </form>
   );

@@ -1,4 +1,5 @@
-import { addDays, localDate } from '../booking/slots.ts';
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+import { addDays, localDate } from '@app/features/booking/slots.ts';
 
 // Pure placement for the planning grid: where an instant falls on a day's 15-minute columns. The
 // database owns which appointments, blocks and shifts exist; this only positions them.
