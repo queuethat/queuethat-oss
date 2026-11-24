@@ -68,6 +68,7 @@
     "integrations": "Integrations aren't part of this plan.",
     "customRoles": "Custom roles and shifts aren't part of this plan.",
     "reports": "Scheduled reports and Ask your data aren't part of this plan.",
+    "rollup": "Comparing your locations side by side isn't part of this plan.",
     "queues_one": "This location has all the queues its plan allows: {{count}}.",
     "queues_other": "This location has all the queues its plan allows: {{count}}.",
     "queuesNoCount": "This location has all the queues its plan allows.",

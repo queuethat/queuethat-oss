@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from '../../../lib/translation.tsx';
 import { useCurrentOrg } from '../../auth/current.ts';
 import { field, isoDay } from '../analytics/csv.ts';
+import { isFeatureGated, PlanGateNotice } from '../PlanGateNotice.tsx';
 import { comparisonQuery, type ComparisonRow } from './api.ts';
 
 const COLS = [
@@ -104,6 +105,8 @@ export function ComparisonPage() {
         <p role="alert" className="font-medium text-danger-strong">
           {t('analytics.badRange')}
         </p>
+      ) : isFeatureGated(stats.error) ? (
+        <PlanGateNotice feature="rollup" />
       ) : stats.isError ? (
         <p role="alert" className="font-medium text-danger-strong">
           {t('comparison.error')}

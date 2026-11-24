@@ -20,6 +20,13 @@ describe('PlanGateNotice', () => {
     );
   });
 
+  it('says the plan has no location comparison', async () => {
+    render(<PlanGateNotice feature="rollup" />);
+    expect((await screen.findByRole('alert')).textContent).toBe(
+      "Comparing your locations side by side isn't part of this plan. What you already set up keeps working.",
+    );
+  });
+
   it('says how many queues the plan allows when the database reports it', async () => {
     render(<PlanGateNotice feature="queues" limit={2} />);
     expect((await screen.findByRole('alert')).textContent).toBe(
