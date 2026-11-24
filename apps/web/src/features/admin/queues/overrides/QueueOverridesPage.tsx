@@ -1,18 +1,11 @@
-import { Badge, Button, Card, Input, PageHeader, Skeleton, Textarea } from '@qm/ui';
+import { Button, Card, Input, PageHeader, Skeleton, Textarea } from '@qm/ui';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from '../../../../lib/translation.tsx';
 import { useCurrentOrg } from '../../../auth/current.ts';
 import { accessibleTextColor, isHexColor, whiteTextPasses } from '@qm/domain';
-import {
-  EDITABLE_CHANNELS,
-  EDITABLE_TRIGGERS,
-  templatesQuery,
-  type EditableChannel,
-  type EditableTrigger,
-} from '../../templates/api.ts';
-import { TemplateEditor } from '../../templates/TemplatesPage.tsx';
+import { ExtensionSlot } from '../../../../extensions/ExtensionSlot.tsx';
 import { canManageQueues } from '../api.ts';
 import { queueLookQuery, useSaveQueueLook, WELCOME_MAX, type QueueLook } from './api.ts';
 
@@ -21,9 +14,7 @@ export function QueueOverridesPage({ queueId }: { queueId: string }) {
   const { t } = useTranslation('admin-templates');
   const org = useCurrentOrg();
   const look = useQuery(queueLookQuery(queueId));
-  const templates = useQuery({ ...templatesQuery(org?.id ?? '', queueId), enabled: !!org });
-  const [editing, setEditing] = useState<{ trigger: EditableTrigger; medium: EditableChannel }>();
-  if (!org || !look.data || !templates.data) return <Skeleton label={t('loading')} rows={2} />;
+  if (!org || !look.data) return <Skeleton label={t('loading')} rows={2} />;
   const readOnly = !canManageQueues(org.role);
 
   return (
@@ -38,63 +29,7 @@ export function QueueOverridesPage({ queueId }: { queueId: string }) {
       />
       {readOnly ? <p className="text-muted">{t('readOnly')}</p> : null}
       <LookForm look={look.data} readOnly={readOnly} />
-      <Card className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">{t('queue.messages')}</h2>
-        <p className="text-muted">{t('queue.messagesIntro')}</p>
-        <ul className="flex flex-col gap-2">
-          {EDITABLE_TRIGGERS.flatMap((trigger) =>
-            EDITABLE_CHANNELS.map((channel) => {
-              const rows = templates.data.filter(
-                (r) => r.trigger === trigger && r.medium === channel,
-              );
-              const own = rows.find((r) => r.queueId === queueId);
-              const base =
-                rows.find((r) => r.orgId !== null && r.queueId === null) ??
-                rows.find((r) => r.orgId === null);
-              const isEditing = editing?.trigger === trigger && editing.medium === channel;
-              const name = `${t(`trigger.${trigger}`)} · ${t(`channel.${channel}`)}`;
-              return (
-                <li key={`${trigger}-${channel}`} className="rounded-card border border-border p-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="font-medium">{name}</span>
-                    <span className="flex items-center gap-2">
-                      <Badge tone={own ? 'info' : 'neutral'}>
-                        {t(own ? 'queue.overridden' : 'queue.usesDefault')}
-                      </Badge>
-                      <Button
-                        variant="secondary"
-                        aria-label={t(readOnly ? 'viewLabel' : 'editLabel', {
-                          trigger: t(`trigger.${trigger}`),
-                          channel: t(`channel.${channel}`),
-                        })}
-                        aria-expanded={isEditing}
-                        onClick={() =>
-                          setEditing(isEditing ? undefined : { trigger, medium: channel })
-                        }
-                      >
-                        {t(readOnly ? 'view' : 'edit')}
-                      </Button>
-                    </span>
-                  </div>
-                  {isEditing ? (
-                    <TemplateEditor
-                      key={`${trigger}-${channel}-${own?.version ?? 0}`}
-                      orgId={org.id}
-                      queueId={queueId}
-                      trigger={trigger}
-                      medium={channel}
-                      custom={own}
-                      system={base}
-                      readOnly={readOnly}
-                      onDone={() => setEditing(undefined)}
-                    />
-                  ) : null}
-                </li>
-              );
-            }),
-          )}
-        </ul>
-      </Card>
+      <ExtensionSlot name="queue.templates" props={{ queueId, readOnly }} />
     </div>
   );
 }

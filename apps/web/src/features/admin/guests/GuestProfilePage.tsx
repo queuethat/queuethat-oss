@@ -10,8 +10,7 @@ import {
   Skeleton,
 } from '@qm/ui';
 import { useQuery } from '@tanstack/react-query';
-import { GuestNotes } from '../../crm/notes/GuestNotes.tsx';
-import { GuestTags } from '../../crm/tags/GuestTags.tsx';
+import { ExtensionSlot } from '../../../extensions/ExtensionSlot.tsx';
 import { Link } from '@tanstack/react-router';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from '../../../lib/translation.tsx';
@@ -80,8 +79,7 @@ export function GuestProfilePage({ guestId }: { guestId: string }) {
         <AddContact guestId={g.id} />
       </section>
 
-      <GuestTags guestId={g.id} />
-      <GuestNotes guestId={g.id} />
+      <ExtensionSlot name="guest.profile" props={{ guestId: g.id }} />
 
       <section aria-labelledby="visits-h" className="flex flex-col gap-3">
         <h2 id="visits-h" className="text-xl font-semibold">

@@ -59,7 +59,6 @@ import { Route as AdminServicesRouteImport } from './routes/admin/services'
 import { Route as AdminShiftsRouteImport } from './routes/admin/shifts'
 import { Route as AdminSignageRouteImport } from './routes/admin/signage'
 import { Route as AdminTeamRouteImport } from './routes/admin/team'
-import { Route as AdminTemplatesRouteImport } from './routes/admin/templates'
 import { Route as AdminUsageRouteImport } from './routes/admin/usage'
 import { Route as AdminWhatsappRouteImport } from './routes/admin/whatsapp'
 import { Route as AdminWidgetRouteImport } from './routes/admin/widget'
@@ -92,8 +91,6 @@ import { Route as AdminDevelopersChatAlertsRouteImport } from './routes/admin/de
 import { Route as AdminDevelopersWebhooksRouteImport } from './routes/admin/developers/webhooks'
 import { Route as AdminGuestsIndexRouteImport } from './routes/admin/guests/index'
 import { Route as AdminGuestsGuestIdRouteImport } from './routes/admin/guests/$guestId'
-import { Route as AdminGuestsDuplicatesRouteImport } from './routes/admin/guests/duplicates'
-import { Route as AdminGuestsImportRouteImport } from './routes/admin/guests/import'
 import { Route as AdminLocationHoursRouteImport } from './routes/admin/location_.hours'
 import { Route as AdminLocationNewRouteImport } from './routes/admin/location_.new'
 import { Route as AdminNotificationsFailedRouteImport } from './routes/admin/notifications/failed'
@@ -360,11 +357,6 @@ const AdminTeamRoute = AdminTeamRouteImport.update({
   path: '/team',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminTemplatesRoute = AdminTemplatesRouteImport.update({
-  id: '/templates',
-  path: '/templates',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminUsageRoute = AdminUsageRouteImport.update({
   id: '/usage',
   path: '/usage',
@@ -526,16 +518,6 @@ const AdminGuestsGuestIdRoute = AdminGuestsGuestIdRouteImport.update({
   path: '/guests/$guestId',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminGuestsDuplicatesRoute = AdminGuestsDuplicatesRouteImport.update({
-  id: '/guests/duplicates',
-  path: '/guests/duplicates',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminGuestsImportRoute = AdminGuestsImportRouteImport.update({
-  id: '/guests/import',
-  path: '/guests/import',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminLocationHoursRoute = AdminLocationHoursRouteImport.update({
   id: '/location_/hours',
   path: '/location/hours',
@@ -665,7 +647,6 @@ export interface FileRoutesByFullPath {
   '/admin/shifts': typeof AdminShiftsRoute
   '/admin/signage': typeof AdminSignageRoute
   '/admin/team': typeof AdminTeamRoute
-  '/admin/templates': typeof AdminTemplatesRoute
   '/admin/usage': typeof AdminUsageRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
   '/admin/widget': typeof AdminWidgetRoute
@@ -698,8 +679,6 @@ export interface FileRoutesByFullPath {
   '/admin/developers/chat-alerts': typeof AdminDevelopersChatAlertsRoute
   '/admin/developers/webhooks': typeof AdminDevelopersWebhooksRoute
   '/admin/guests/$guestId': typeof AdminGuestsGuestIdRoute
-  '/admin/guests/duplicates': typeof AdminGuestsDuplicatesRoute
-  '/admin/guests/import': typeof AdminGuestsImportRoute
   '/admin/location/hours': typeof AdminLocationHoursRoute
   '/admin/location/new': typeof AdminLocationNewRoute
   '/admin/notifications/failed': typeof AdminNotificationsFailedRoute
@@ -763,7 +742,6 @@ export interface FileRoutesByTo {
   '/admin/shifts': typeof AdminShiftsRoute
   '/admin/signage': typeof AdminSignageRoute
   '/admin/team': typeof AdminTeamRoute
-  '/admin/templates': typeof AdminTemplatesRoute
   '/admin/usage': typeof AdminUsageRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
   '/admin/widget': typeof AdminWidgetRoute
@@ -796,8 +774,6 @@ export interface FileRoutesByTo {
   '/admin/developers/chat-alerts': typeof AdminDevelopersChatAlertsRoute
   '/admin/developers/webhooks': typeof AdminDevelopersWebhooksRoute
   '/admin/guests/$guestId': typeof AdminGuestsGuestIdRoute
-  '/admin/guests/duplicates': typeof AdminGuestsDuplicatesRoute
-  '/admin/guests/import': typeof AdminGuestsImportRoute
   '/admin/location/hours': typeof AdminLocationHoursRoute
   '/admin/location/new': typeof AdminLocationNewRoute
   '/admin/notifications/failed': typeof AdminNotificationsFailedRoute
@@ -866,7 +842,6 @@ export interface FileRoutesById {
   '/admin/shifts': typeof AdminShiftsRoute
   '/admin/signage': typeof AdminSignageRoute
   '/admin/team': typeof AdminTeamRoute
-  '/admin/templates': typeof AdminTemplatesRoute
   '/admin/usage': typeof AdminUsageRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
   '/admin/widget': typeof AdminWidgetRoute
@@ -899,8 +874,6 @@ export interface FileRoutesById {
   '/admin/developers/chat-alerts': typeof AdminDevelopersChatAlertsRoute
   '/admin/developers/webhooks': typeof AdminDevelopersWebhooksRoute
   '/admin/guests/$guestId': typeof AdminGuestsGuestIdRoute
-  '/admin/guests/duplicates': typeof AdminGuestsDuplicatesRoute
-  '/admin/guests/import': typeof AdminGuestsImportRoute
   '/admin/location_/hours': typeof AdminLocationHoursRoute
   '/admin/location_/new': typeof AdminLocationNewRoute
   '/admin/notifications/failed': typeof AdminNotificationsFailedRoute
@@ -970,7 +943,6 @@ export interface FileRouteTypes {
     | '/admin/shifts'
     | '/admin/signage'
     | '/admin/team'
-    | '/admin/templates'
     | '/admin/usage'
     | '/admin/whatsapp'
     | '/admin/widget'
@@ -1003,8 +975,6 @@ export interface FileRouteTypes {
     | '/admin/developers/chat-alerts'
     | '/admin/developers/webhooks'
     | '/admin/guests/$guestId'
-    | '/admin/guests/duplicates'
-    | '/admin/guests/import'
     | '/admin/location/hours'
     | '/admin/location/new'
     | '/admin/notifications/failed'
@@ -1068,7 +1038,6 @@ export interface FileRouteTypes {
     | '/admin/shifts'
     | '/admin/signage'
     | '/admin/team'
-    | '/admin/templates'
     | '/admin/usage'
     | '/admin/whatsapp'
     | '/admin/widget'
@@ -1101,8 +1070,6 @@ export interface FileRouteTypes {
     | '/admin/developers/chat-alerts'
     | '/admin/developers/webhooks'
     | '/admin/guests/$guestId'
-    | '/admin/guests/duplicates'
-    | '/admin/guests/import'
     | '/admin/location/hours'
     | '/admin/location/new'
     | '/admin/notifications/failed'
@@ -1170,7 +1137,6 @@ export interface FileRouteTypes {
     | '/admin/shifts'
     | '/admin/signage'
     | '/admin/team'
-    | '/admin/templates'
     | '/admin/usage'
     | '/admin/whatsapp'
     | '/admin/widget'
@@ -1203,8 +1169,6 @@ export interface FileRouteTypes {
     | '/admin/developers/chat-alerts'
     | '/admin/developers/webhooks'
     | '/admin/guests/$guestId'
-    | '/admin/guests/duplicates'
-    | '/admin/guests/import'
     | '/admin/location_/hours'
     | '/admin/location_/new'
     | '/admin/notifications/failed'
@@ -1598,13 +1562,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTeamRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/templates': {
-      id: '/admin/templates'
-      path: '/templates'
-      fullPath: '/admin/templates'
-      preLoaderRoute: typeof AdminTemplatesRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/usage': {
       id: '/admin/usage'
       path: '/usage'
@@ -1829,20 +1786,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminGuestsGuestIdRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/guests/duplicates': {
-      id: '/admin/guests/duplicates'
-      path: '/guests/duplicates'
-      fullPath: '/admin/guests/duplicates'
-      preLoaderRoute: typeof AdminGuestsDuplicatesRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/guests/import': {
-      id: '/admin/guests/import'
-      path: '/guests/import'
-      fullPath: '/admin/guests/import'
-      preLoaderRoute: typeof AdminGuestsImportRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/location_/hours': {
       id: '/admin/location_/hours'
       path: '/location/hours'
@@ -1994,7 +1937,6 @@ interface AdminRouteRouteChildren {
   AdminShiftsRoute: typeof AdminShiftsRoute
   AdminSignageRoute: typeof AdminSignageRoute
   AdminTeamRoute: typeof AdminTeamRoute
-  AdminTemplatesRoute: typeof AdminTemplatesRoute
   AdminUsageRoute: typeof AdminUsageRoute
   AdminWhatsappRoute: typeof AdminWhatsappRoute
   AdminWidgetRoute: typeof AdminWidgetRoute
@@ -2005,8 +1947,6 @@ interface AdminRouteRouteChildren {
   AdminDevelopersChatAlertsRoute: typeof AdminDevelopersChatAlertsRoute
   AdminDevelopersWebhooksRoute: typeof AdminDevelopersWebhooksRoute
   AdminGuestsGuestIdRoute: typeof AdminGuestsGuestIdRoute
-  AdminGuestsDuplicatesRoute: typeof AdminGuestsDuplicatesRoute
-  AdminGuestsImportRoute: typeof AdminGuestsImportRoute
   AdminLocationHoursRoute: typeof AdminLocationHoursRoute
   AdminLocationNewRoute: typeof AdminLocationNewRoute
   AdminNotificationsFailedRoute: typeof AdminNotificationsFailedRoute
@@ -2057,7 +1997,6 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminShiftsRoute: AdminShiftsRoute,
   AdminSignageRoute: AdminSignageRoute,
   AdminTeamRoute: AdminTeamRoute,
-  AdminTemplatesRoute: AdminTemplatesRoute,
   AdminUsageRoute: AdminUsageRoute,
   AdminWhatsappRoute: AdminWhatsappRoute,
   AdminWidgetRoute: AdminWidgetRoute,
@@ -2068,8 +2007,6 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminDevelopersChatAlertsRoute: AdminDevelopersChatAlertsRoute,
   AdminDevelopersWebhooksRoute: AdminDevelopersWebhooksRoute,
   AdminGuestsGuestIdRoute: AdminGuestsGuestIdRoute,
-  AdminGuestsDuplicatesRoute: AdminGuestsDuplicatesRoute,
-  AdminGuestsImportRoute: AdminGuestsImportRoute,
   AdminLocationHoursRoute: AdminLocationHoursRoute,
   AdminLocationNewRoute: AdminLocationNewRoute,
   AdminNotificationsFailedRoute: AdminNotificationsFailedRoute,
