@@ -21,20 +21,28 @@ export async function postPinned(
   const payload = new TextEncoder().encode(body);
   const lines = [`POST ${u.pathname || '/'}${u.search} HTTP/1.1`, `Host: ${u.host}`];
   for (const [k, v] of Object.entries({ ...headers, 'Content-Length': String(payload.length), Connection: 'close' })) {
-    if (/[\r\n]/.test(k + v)) throw new Error('bad_header');
+    if (/[\r\n]/.test(k + v) || (k in headers && /^(host|content-length|connection|transfer-encoding)$/i.test(k))) {
+      throw new Error('bad_header');
+    }
     lines.push(`${k}: ${v}`);
   }
   const head = new TextEncoder().encode(lines.join('\r\n') + '\r\n\r\n');
 
+  // One deadline covers connect, TLS and I/O: Deno.connect has no abort signal, so a blackholed address
+  // would otherwise be bounded only by the OS connect timeout. Whatever connection exists is closed.
   let conn: Deno.Conn | undefined;
-  let timedOut = false;
-  const timer = setTimeout(() => {
-    timedOut = true;
-    try { conn?.close(); } catch { /* already closed */ }
-  }, timeoutMs);
-  try {
+  let abandoned = false;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => {
+      abandoned = true;
+      try { conn?.close(); } catch { /* already closed */ }
+      reject(new Error('timeout'));
+    }, timeoutMs);
+  });
+  const run = async (): Promise<{ status: number }> => {
     conn = await Deno.connect({ hostname: address, port });
-    if (timedOut) conn.close();
+    if (abandoned) conn.close();
     // startTls checks the certificate against the host name (and sends it as SNI), not the IP.
     if (tls) conn = await Deno.startTls(conn as Deno.TcpConn, { hostname: host });
     await writeAll(conn, head);
@@ -46,11 +54,17 @@ export async function postPinned(
       const n = await conn.read(buf.subarray(len));
       if (n === null) break;
       len += n;
-      end = new TextDecoder().decode(buf.subarray(0, len)).indexOf('\r\n');
+      end = new TextDecoder().decode(buf.subarray(0, len)).indexOf('\r\n\r\n');
     }
     const status = /^HTTP\/1\.[01] (\d{3})/.exec(new TextDecoder().decode(buf.subarray(0, len)));
-    if (!status) throw new Error(timedOut ? 'timeout' : 'bad_response');
+    // 1xx is an interim answer (this client never sends Expect), not an outcome.
+    if (!status || Number(status[1]) < 200) throw new Error('bad_response');
     return { status: Number(status[1]) };
+  };
+  try {
+    const attempt = run();
+    attempt.catch(() => undefined); // a late failure after the deadline is not an unhandled rejection
+    return await Promise.race([attempt, deadline]);
   } finally {
     clearTimeout(timer);
     try { conn?.close(); } catch { /* already closed */ }

@@ -31,3 +31,22 @@ Deno.test('postPinned refuses header injection and times out on a silent server'
     (await accepted)?.close();
   }
 });
+
+Deno.test('postPinned rejects framing headers and ignores a 1xx interim answer', async () => {
+  await assert.rejects(() => postPinned('http://x.invalid/', { 'content-length': '1' }, '{}', 1000, '127.0.0.1'), /bad_header/);
+  const server = Deno.listen({ hostname: '127.0.0.1', port: 0 });
+  const port = (server.addr as Deno.NetAddr).port;
+  const served = (async () => {
+    const c = await server.accept();
+    await c.read(new Uint8Array(4096));
+    await c.write(new TextEncoder().encode('HTTP/1.1 100 Continue\r\n\r\nHTTP/1.1 204 No Content\r\n\r\n'));
+    c.close();
+  })();
+  try {
+    // The interim head is not an outcome: a 1xx first line is refused rather than reported as the status.
+    await assert.rejects(() => postPinned(`http://x.invalid:${port}/`, {}, '{}', 2000, '127.0.0.1'), /bad_response/);
+  } finally {
+    server.close();
+    await served;
+  }
+});
