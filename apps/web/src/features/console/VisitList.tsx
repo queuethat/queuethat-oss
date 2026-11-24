@@ -34,6 +34,7 @@ import { DeliveryWarning, TextBadge } from './messages/Messages.tsx';
 import type { TextState } from './messages/api.ts';
 import { ChatBadge } from './chat/Unread.tsx';
 import { RowTags, VisitDetail, type OnSaveNotes } from './detail/VisitDetail.tsx';
+import { TagChips } from '../crm/tags/GuestTags.tsx';
 import { GuestLine, RemoveAndBlock } from './RemoveAndBlock.tsx';
 import { afterIdForMove } from './reorder/position.ts';
 import { SortableRow, SortableWaiting } from './reorder/SortableWaiting.tsx';
@@ -603,11 +604,7 @@ function Row({
         {deliveryWarning ? <DeliveryWarning /> : null}
         <TextBadge state={textState} />
         {badge ? <ReturningBadge visit={visit} badge={badge} /> : null}
-        {tags?.map((n) => (
-          <Badge key={n} tone="info" data-testid="guest-tag-chip">
-            {n}
-          </Badge>
-        ))}
+        <TagChips names={tags} />
         <RowTags visit={visit} />
         <ChatBadge visitId={visit.id} />
         {assignee ? (

@@ -1,8 +1,7 @@
-// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { Badge, Button, Input } from '@qm/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useId, useState, type FormEvent } from 'react';
-import { useTranslation } from '@app/lib/translation.tsx';
+import { useTranslation } from '../../../lib/translation.tsx';
 import { guestTagsQuery, orgTagsQuery, useAddGuestTag, useRemoveGuestTag } from './api.ts';
 
 /** The tags on a guest with a create-on-type picker. Chips carry the tag name as text. */

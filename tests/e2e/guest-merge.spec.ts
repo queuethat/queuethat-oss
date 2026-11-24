@@ -1,7 +1,6 @@
-// SPDX-License-Identifier: LicenseRef-QueueThat-EE
-import { expect, expectNoSeriousA11yViolations, test } from '../../../tests/e2e/fixtures.ts';
-import { seedGuest } from '../../../tests/e2e/support/guests.ts';
-import { freshQueue } from '../../../tests/e2e/support/queues.ts';
+import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
+import { seedGuest } from './support/guests.ts';
+import { freshQueue } from './support/queues.ts';
 
 // 2B-C4 (#303): admins review suggested duplicate guests and merge them.
 

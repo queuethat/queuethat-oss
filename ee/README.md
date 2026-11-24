@@ -17,3 +17,12 @@ the split.
 - `scripts/check-ee-boundary.mjs` (part of `pnpm ci:local`) fails a pull request that breaks either rule.
 - Outside contributors cannot send changes to `ee/` without a separate agreement (see
   [CONTRIBUTING.md](../CONTRIBUTING.md)).
+
+## Web code: `ee/web`
+
+`ee/web` is the workspace package `@qm/ee-web`. One folder per feature under `ee/web/src/<feature>/`
+exports its admin pages, redirects, slots and strings; `ee/web/extensions.ts` spreads them into the
+`WebExtensions` the app installs. Code here reaches the app's modules as `@app/<path under
+apps/web/src>`. A feature's strings are a namespace file in `ee/web/src/locales/en/`, returned from
+`localeOverrides` and typed by a `ExtensionLocaleResources` declaration. Browser specs live in
+`ee/tests/e2e` and run with `pnpm test:e2e:ee` (a build with `QT_WEB_EXTENSIONS` set).

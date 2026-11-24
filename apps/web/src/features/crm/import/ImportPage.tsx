@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { Badge, Button, Card, Input, Select, Spinner } from '@qm/ui';
 import { Link } from '@tanstack/react-router';
 import { useState, type ChangeEvent } from 'react';
-import { useTranslation } from '@app/lib/translation.tsx';
-import { useCurrentOrg } from '@app/features/auth/current.ts';
-import { downloadCsv, parseCsv, toCsv } from '@app/features/admin/guests/csv.ts';
+import { useTranslation } from '../../../lib/translation.tsx';
+import { useCurrentOrg } from '../../auth/current.ts';
+import { downloadCsv, parseCsv, toCsv } from '../csv.ts';
+import { ExportGuests } from '../export/ExportGuests.tsx';
 import { useImportGuests, type ImportResult } from './api.ts';
 import {
   batches,
@@ -84,6 +84,7 @@ export function ImportPage() {
         {t('transfer.back')}
       </Link>
       <h1 className="text-2xl font-semibold">{t('transfer.title')}</h1>
+      <ExportGuests />
 
       <section aria-labelledby="import-h" className="flex flex-col gap-3">
         <h2 id="import-h" className="text-xl font-semibold">

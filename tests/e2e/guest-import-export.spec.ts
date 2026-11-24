@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { readFileSync } from 'node:fs';
-import { expect, expectNoSeriousA11yViolations, test } from '../../../tests/e2e/fixtures.ts';
+import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
 
-// 2B-C6 (#305): admins import a CSV with column mapping and a preview. Export stays in core
-// (tests/e2e/guest-export.spec.ts). Runs against a build with ee/ installed: playwright.ee.config.ts.
+// 2B-C6 (#305): admins export guests and import a CSV with column mapping and a preview.
 
 test.describe('as owner', () => {
   test.use({ staffUser: 'owner' });
@@ -19,6 +17,7 @@ test.describe('as owner', () => {
 
     await staff.goto('/admin/guests/import');
     await expect(staff.getByRole('heading', { name: 'Import and export guests' })).toBeVisible();
+    await expect(staff.getByText('The file contains personal data')).toBeVisible();
     await staff.getByLabel('CSV file').setInputFiles({
       name: 'guests.csv',
       mimeType: 'text/csv',
@@ -48,17 +47,26 @@ test.describe('as owner', () => {
     expect(csv.split('\r\n').length).toBe(2501 + 2); // header, 2501 rows, trailing newline
     expect(csv).toContain('2502,invalid,no_contact');
   });
+
+  test('export downloads a CSV', async ({ devices }) => {
+    const { staff } = devices;
+    await staff.goto('/admin/guests/import');
+    const download = staff.waitForEvent('download');
+    await staff.getByRole('button', { name: 'Export guests (CSV)' }).click();
+    expect((await download).suggestedFilename()).toBe('guests.csv');
+  });
 });
 
 test.describe('as staff', () => {
   test.use({ staffUser: 'staff' });
 
-  test('AC2: staff see no import', async ({ devices }) => {
+  test('AC2: staff see no import or export', async ({ devices }) => {
     const { staff } = devices;
     await staff.goto('/admin/guests');
     await expect(staff.getByRole('heading', { name: 'Guests' })).toBeVisible();
     await expect(staff.getByRole('link', { name: 'Import or export guests' })).toHaveCount(0);
     await staff.goto('/admin/guests/import');
     await expect(staff.getByRole('alert')).toContainText('Only owners and admins');
+    await expect(staff.getByRole('button', { name: 'Export guests (CSV)' })).toHaveCount(0);
   });
 });
