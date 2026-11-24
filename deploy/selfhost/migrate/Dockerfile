@@ -14,6 +14,8 @@ RUN apt-get update \
 WORKDIR /app
 COPY supabase/migrations ./supabase/migrations
 COPY supabase/functions ./supabase/functions
+COPY ee/supabase/functions ./ee/supabase/functions
+COPY ee/integrations ./ee/integrations
 COPY supabase/seeds/10_demo_org.sql ./demo-seed.sql
 COPY packages/domain/src ./packages/domain/src
 COPY packages/providers/src ./packages/providers/src

@@ -73,6 +73,8 @@ services:
       DISPATCH_SECRET: ${DISPATCH_SECRET}
       REALTIME_DB_ENC_KEY: ${REALTIME_DB_ENC_KEY}
       DEMO_MODE: ${DEMO_MODE:-false}
+      # 1 publishes the enterprise functions under ee/ (setup.sh --ee). Needs a QueueThat agreement.
+      QT_EE: ${QT_EE:-0}
       DEMO_PASSWORD: ${DEMO_PASSWORD:-}
       # Where the staff "Contact support" form sends its email (app.platform_flags.support_inbox).
       SUPPORT_EMAIL: ${SUPPORT_EMAIL:-}
