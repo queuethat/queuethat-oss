@@ -116,6 +116,40 @@ export function useRotateSecret() {
   });
 }
 
+/**
+ * `api.update_webhook_endpoint`: changes the URL, events and guest-name opt-in. The signing secret and
+ * format stay. Errors: `invalid_url`, `invalid_input`, `permission_denied`, `not_found`.
+ */
+export function useUpdateEndpoint(orgId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: CreateEndpointInput & { endpointId: string }) => {
+      const { error } = await supabase.rpc('update_webhook_endpoint', {
+        p_endpoint_id: input.endpointId,
+        p_url: input.url.trim(),
+        p_event_types: input.eventTypes,
+        p_include_guest_name: input.includeGuestName,
+      });
+      if (error) throw new Error(errorCode(error));
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: endpointsKey(orgId) }),
+  });
+}
+
+/** `api.delete_webhook_endpoint`: removes the endpoint, its delivery log and its signing secrets. */
+export function useDeleteEndpoint(orgId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (endpointId: string) => {
+      const { error } = await supabase.rpc('delete_webhook_endpoint', {
+        p_endpoint_id: endpointId,
+      });
+      if (error) throw new Error(errorCode(error));
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: endpointsKey(orgId) }),
+  });
+}
+
 /** `api.redeliver_webhook`: queues a finished delivery again from the start. */
 export function useRedeliver(endpointId: string) {
   const queryClient = useQueryClient();

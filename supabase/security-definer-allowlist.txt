@@ -245,6 +245,8 @@ private.webhook_queue_state
 private.new_webhook_secret
 ops.purge_webhook_deliveries
 api.rotate_webhook_secret
+api.update_webhook_endpoint
+api.delete_webhook_endpoint
 api.redeliver_webhook
 ops.kick_webhooks_if_due
 private.is_org_admin_unrestricted

@@ -100,5 +100,23 @@
   "enable": {
     "trigger": "Re-enable",
     "enabling": "Enabling"
+  },
+  "reason": {
+    "too_many_failures": "Switched off after repeated failures. Fix the receiver, then re-enable.",
+    "manual": "Switched off by an admin."
+  },
+  "edit": {
+    "trigger": "Edit",
+    "title": "Edit endpoint",
+    "save": "Save",
+    "saving": "Saving"
+  },
+  "remove": {
+    "trigger": "Delete",
+    "triggerFor": "Delete endpoint {{url}}",
+    "title": "Delete this endpoint?",
+    "description": "The endpoint, its delivery log and its signing secret are removed. This cannot be undone.",
+    "confirm": "Delete endpoint",
+    "cancel": "Keep it"
   }
 }
