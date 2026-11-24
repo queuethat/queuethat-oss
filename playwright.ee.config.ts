@@ -1,9 +1,10 @@
-import { fileURLToPath } from 'node:url';
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { defineConfig, devices } from '@playwright/test';
+import { fileURLToPath } from 'node:url';
 import { operatorEnv, supabaseEnv } from './tests/e2e/support/env.ts';
 
-// Browser specs for ee/ pages. The web app is built with the ee extensions installed
-// (QT_WEB_EXTENSIONS), which the core suite in playwright.config.ts never is. Needs the local stack.
+// Browser tests for the features in ee/, against a web app built with them installed
+// (QT_WEB_EXTENSIONS). Same local stack and global setup as playwright.config.ts: `pnpm test:e2e:ee`.
 const supabase = supabaseEnv();
 const port = 5174;
 

@@ -4,7 +4,8 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
     "types": ["vite/client"],
-    "resolveJsonModule": true
+    "paths": { "@app/*": ["../../apps/web/src/*"] }
   },
-  "include": ["./**/*.ts", "./**/*.tsx", "./**/*.json", "../../apps/web/src/i18next.d.ts"]
+  "include": [".", "../../apps/web/src/i18next.d.ts", "../../apps/web/src/routeTree.gen.ts"],
+  "exclude": ["node_modules"]
 }

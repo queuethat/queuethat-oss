@@ -26,9 +26,11 @@ e2e_args=()
 for project in ${E2E_PROJECTS:-desktop-chrome iphone}; do e2e_args+=("--project=$project"); done
 pnpm test:e2e "${e2e_args[@]}"
 
-# ee/ pages, built with QT_WEB_EXTENSIONS=ee/web/extensions.ts (the core suite above runs without them).
-echo "=== e2e (ee)"
-pnpm test:e2e:ee --project=desktop-chrome
+# Features in ee/, against a build with them installed.
+echo "=== ee e2e"
+ee_args=()
+for project in ${E2E_PROJECTS:-desktop-chrome iphone}; do ee_args+=("--project=$project"); done
+pnpm test:e2e:ee "${ee_args[@]}"
 
 # A deployment's own database tests and browser specs (with the local stack up), in a file this
 # repository never ships.

@@ -92,8 +92,6 @@ import { Route as AdminDevelopersChatAlertsRouteImport } from './routes/admin/de
 import { Route as AdminDevelopersWebhooksRouteImport } from './routes/admin/developers/webhooks'
 import { Route as AdminGuestsIndexRouteImport } from './routes/admin/guests/index'
 import { Route as AdminGuestsGuestIdRouteImport } from './routes/admin/guests/$guestId'
-import { Route as AdminGuestsDuplicatesRouteImport } from './routes/admin/guests/duplicates'
-import { Route as AdminGuestsImportRouteImport } from './routes/admin/guests/import'
 import { Route as AdminLocationHoursRouteImport } from './routes/admin/location_.hours'
 import { Route as AdminLocationNewRouteImport } from './routes/admin/location_.new'
 import { Route as AdminNotificationsFailedRouteImport } from './routes/admin/notifications/failed'
@@ -523,16 +521,6 @@ const AdminGuestsGuestIdRoute = AdminGuestsGuestIdRouteImport.update({
   path: '/guests/$guestId',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminGuestsDuplicatesRoute = AdminGuestsDuplicatesRouteImport.update({
-  id: '/guests/duplicates',
-  path: '/guests/duplicates',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminGuestsImportRoute = AdminGuestsImportRouteImport.update({
-  id: '/guests/import',
-  path: '/guests/import',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminLocationHoursRoute = AdminLocationHoursRouteImport.update({
   id: '/location_/hours',
   path: '/location/hours',
@@ -680,8 +668,6 @@ export interface FileRoutesByFullPath {
   '/admin/developers/chat-alerts': typeof AdminDevelopersChatAlertsRoute
   '/admin/developers/webhooks': typeof AdminDevelopersWebhooksRoute
   '/admin/guests/$guestId': typeof AdminGuestsGuestIdRoute
-  '/admin/guests/duplicates': typeof AdminGuestsDuplicatesRoute
-  '/admin/guests/import': typeof AdminGuestsImportRoute
   '/admin/location/hours': typeof AdminLocationHoursRoute
   '/admin/location/new': typeof AdminLocationNewRoute
   '/admin/notifications/failed': typeof AdminNotificationsFailedRoute
@@ -775,8 +761,6 @@ export interface FileRoutesByTo {
   '/admin/developers/chat-alerts': typeof AdminDevelopersChatAlertsRoute
   '/admin/developers/webhooks': typeof AdminDevelopersWebhooksRoute
   '/admin/guests/$guestId': typeof AdminGuestsGuestIdRoute
-  '/admin/guests/duplicates': typeof AdminGuestsDuplicatesRoute
-  '/admin/guests/import': typeof AdminGuestsImportRoute
   '/admin/location/hours': typeof AdminLocationHoursRoute
   '/admin/location/new': typeof AdminLocationNewRoute
   '/admin/notifications/failed': typeof AdminNotificationsFailedRoute
@@ -875,8 +859,6 @@ export interface FileRoutesById {
   '/admin/developers/chat-alerts': typeof AdminDevelopersChatAlertsRoute
   '/admin/developers/webhooks': typeof AdminDevelopersWebhooksRoute
   '/admin/guests/$guestId': typeof AdminGuestsGuestIdRoute
-  '/admin/guests/duplicates': typeof AdminGuestsDuplicatesRoute
-  '/admin/guests/import': typeof AdminGuestsImportRoute
   '/admin/location_/hours': typeof AdminLocationHoursRoute
   '/admin/location_/new': typeof AdminLocationNewRoute
   '/admin/notifications/failed': typeof AdminNotificationsFailedRoute
@@ -976,8 +958,6 @@ export interface FileRouteTypes {
     | '/admin/developers/chat-alerts'
     | '/admin/developers/webhooks'
     | '/admin/guests/$guestId'
-    | '/admin/guests/duplicates'
-    | '/admin/guests/import'
     | '/admin/location/hours'
     | '/admin/location/new'
     | '/admin/notifications/failed'
@@ -1071,8 +1051,6 @@ export interface FileRouteTypes {
     | '/admin/developers/chat-alerts'
     | '/admin/developers/webhooks'
     | '/admin/guests/$guestId'
-    | '/admin/guests/duplicates'
-    | '/admin/guests/import'
     | '/admin/location/hours'
     | '/admin/location/new'
     | '/admin/notifications/failed'
@@ -1170,8 +1148,6 @@ export interface FileRouteTypes {
     | '/admin/developers/chat-alerts'
     | '/admin/developers/webhooks'
     | '/admin/guests/$guestId'
-    | '/admin/guests/duplicates'
-    | '/admin/guests/import'
     | '/admin/location_/hours'
     | '/admin/location_/new'
     | '/admin/notifications/failed'
@@ -1793,20 +1769,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminGuestsGuestIdRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/guests/duplicates': {
-      id: '/admin/guests/duplicates'
-      path: '/guests/duplicates'
-      fullPath: '/admin/guests/duplicates'
-      preLoaderRoute: typeof AdminGuestsDuplicatesRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/guests/import': {
-      id: '/admin/guests/import'
-      path: '/guests/import'
-      fullPath: '/admin/guests/import'
-      preLoaderRoute: typeof AdminGuestsImportRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/location_/hours': {
       id: '/admin/location_/hours'
       path: '/location/hours'
@@ -1948,8 +1910,6 @@ interface AdminRouteRouteChildren {
   AdminDevelopersChatAlertsRoute: typeof AdminDevelopersChatAlertsRoute
   AdminDevelopersWebhooksRoute: typeof AdminDevelopersWebhooksRoute
   AdminGuestsGuestIdRoute: typeof AdminGuestsGuestIdRoute
-  AdminGuestsDuplicatesRoute: typeof AdminGuestsDuplicatesRoute
-  AdminGuestsImportRoute: typeof AdminGuestsImportRoute
   AdminLocationHoursRoute: typeof AdminLocationHoursRoute
   AdminLocationNewRoute: typeof AdminLocationNewRoute
   AdminNotificationsFailedRoute: typeof AdminNotificationsFailedRoute
@@ -2008,8 +1968,6 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminDevelopersChatAlertsRoute: AdminDevelopersChatAlertsRoute,
   AdminDevelopersWebhooksRoute: AdminDevelopersWebhooksRoute,
   AdminGuestsGuestIdRoute: AdminGuestsGuestIdRoute,
-  AdminGuestsDuplicatesRoute: AdminGuestsDuplicatesRoute,
-  AdminGuestsImportRoute: AdminGuestsImportRoute,
   AdminLocationHoursRoute: AdminLocationHoursRoute,
   AdminLocationNewRoute: AdminLocationNewRoute,
   AdminNotificationsFailedRoute: AdminNotificationsFailedRoute,

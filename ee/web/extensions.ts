@@ -1,16 +1,24 @@
 // SPDX-License-Identifier: LicenseRef-QueueThat-EE
-// Copyright (c) QueueThat. Source-available under ee/LICENSE.
-import type { WebExtensions } from '../../apps/web/src/extensions/types.ts';
-import { reportLocale, reportPages, reportRedirects } from './reports/extension.ts';
-import './types.ts';
+import type { WebExtensions } from '@app/extensions/types.ts';
+import { reportPages, reportRedirects } from './src/reports/extension.ts';
+import { crmAdminPages, crmRedirects, crmSlots } from './src/crm/extensions.ts';
 
 /**
- * Everything `ee/` adds to the web app. Build with `QT_WEB_EXTENSIONS=ee/web/extensions.ts`. Each
- * feature folder exports its own pages, redirects and strings; list them here and nowhere else.
+ * What the QueueThat Commercial License adds to the web app. A build opts in with
+ * `QT_WEB_EXTENSIONS=ee/web/extensions.ts`; without it the app holds none of this code. Each
+ * feature lives in its own folder under src/ and contributes one list here. Keep this module
+ * light: the router imports it into every route's chunk, so pages, slots and strings load lazily.
  */
 export const extensions: WebExtensions = {
-  adminPages: [...reportPages],
+  adminPages: [...crmAdminPages, ...reportPages],
   banners: [],
-  redirects: [...reportRedirects],
-  localeOverrides: async (lng, ns) => reportLocale(lng, ns),
+  slots: { ...crmSlots },
+  redirects: [...crmRedirects, ...reportRedirects],
+  localeOverrides: async (lng, ns) => {
+    if (lng !== 'en') return undefined;
+    if (ns === 'crm') return (await import('./src/locales/en/crm.json')).default;
+    if (ns === 'admin-reports')
+      return (await import('./src/locales/en/admin-reports.json')).default;
+    return undefined;
+  },
 };
