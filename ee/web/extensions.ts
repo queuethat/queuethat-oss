@@ -2,6 +2,7 @@
 import type { WebExtensions } from '@app/extensions/types.ts';
 import { rolesAdminPages, rolesNavStrings, rolesRedirects } from './src/roles/extensions.ts';
 import { shiftsAdminPages, shiftsNavStrings, shiftsRedirects } from './src/shifts/extensions.ts';
+import { paymentsSlots } from './src/payments/extensions.ts';
 import { crmAdminPages, crmRedirects, crmSlots } from './src/crm/extensions.ts';
 
 /**
@@ -13,7 +14,7 @@ import { crmAdminPages, crmRedirects, crmSlots } from './src/crm/extensions.ts';
 export const extensions: WebExtensions = {
   adminPages: [...crmAdminPages, ...rolesAdminPages, ...shiftsAdminPages],
   banners: [],
-  slots: { ...crmSlots },
+  slots: { ...crmSlots, ...paymentsSlots },
   redirects: [...crmRedirects, ...rolesRedirects, ...shiftsRedirects],
   localeOverrides: async (lng, ns) => {
     // Sidebar labels are English only, like the staff screens.
@@ -21,6 +22,8 @@ export const extensions: WebExtensions = {
     if (lng !== 'en') return undefined;
     if (ns === 'crm') return (await import('./src/locales/en/crm.json')).default;
     if (ns === 'admin-roles') return (await import('./src/locales/en/admin-roles.json')).default;
+    if (ns === 'payments-desk')
+      return (await import('./src/locales/en/payments-desk.json')).default;
     if (ns === 'shifts') return (await import('./src/locales/en/shifts.json')).default;
     if (ns === 'planning') return (await import('./src/locales/en/planning.json')).default;
     return undefined;
