@@ -9,20 +9,18 @@ const build = (role: string, extra: Partial<{ multiLocation: boolean }> = {}) =>
   buildGroups({ role, multiLocation: false, ...extra }, label, group, group);
 const ids = (groups: ReturnType<typeof build>) => groups.flatMap((g) => g.items.map((i) => i.id));
 
-// The routes of the flat menu this replaced: nothing may disappear or move URL.
+// The routes of the flat menu this replaced: nothing may disappear or move URL. (/admin/roles is
+// gone from this list: it is an ee/ page now and redirects to /admin/x/roles.)
 const PREVIOUS = [
   '/admin',
   '/admin/overview',
-  '/admin/shifts',
   '/admin/queues',
   '/admin/resources',
   '/admin/appointments',
   '/admin/events',
-  '/staff/planning',
   '/admin/availability',
   '/admin/guests',
   '/admin/blocks',
-  '/admin/roles',
   '/admin/privacy',
   '/admin/privacy/requests',
   '/admin/devices',
@@ -141,7 +139,6 @@ describe('admin nav model', () => {
   it('applies the role filters unchanged', () => {
     const staff = ids(build('staff'));
     for (const hidden of [
-      'roles',
       'apiKeys',
       'webhooks',
       'chatAlerts',
@@ -174,7 +171,6 @@ describe('admin nav model', () => {
     expect(currentItemId(groups, '/admin/queues/priority')).toBe('priority');
     expect(currentItemId(groups, '/admin/routing')).toBe('routing');
     expect(currentItemId(groups, '/staff')).toBe('liveQueue');
-    expect(currentItemId(groups, '/staff/planning')).toBe('planning');
     expect(currentItemId(groups, '/admin/nope')).toBeUndefined();
   });
 

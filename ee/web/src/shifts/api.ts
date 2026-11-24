@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { atLocalTime, localTimeValue } from '@qm/domain';
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../../../lib/supabase.ts';
+import { supabase } from '@app/lib/supabase.ts';
 
 export interface Shift {
   id: string;

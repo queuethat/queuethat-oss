@@ -81,12 +81,7 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
   },
   {
     id: 'team',
-    entries: [
-      { to: '/admin/team', key: 'team', icon: iconUsers, adminOnly: true },
-      { to: '/admin/roles', key: 'roles', icon: iconUsers, adminOnly: true },
-      { to: '/admin/shifts', key: 'shifts', icon: iconClock },
-      { to: '/staff/planning', key: 'planning', icon: iconClock },
-    ],
+    entries: [{ to: '/admin/team', key: 'team', icon: iconUsers, adminOnly: true }],
   },
   {
     id: 'setup',

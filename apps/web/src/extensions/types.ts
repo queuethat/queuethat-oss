@@ -97,6 +97,16 @@ export interface ExtensionSlotProps {
   /** The go-live screen, below that list and above the next steps. */
   'onboarding.live': { orgId: string; role: string };
   /**
+   * In a visit's payments panel while the guest is called, being served or served: a form to ask
+   * the guest to pay at the counter. Without it the panel offers no request.
+   */
+  'console.payments.request': { visitId: string };
+  /**
+   * Beside an unpaid counter (`pos`) payment: shows a QR the guest scans to pay it on their phone.
+   * Without it the row shows only its status.
+   */
+  'console.payments.payCode': { visitId: string; amountMinor: number; currency: string };
+  /**
    * Under one entry of the incident log (Privacy). An entry with `source` other than `manual` or
    * `reported` came from the deployment; for example it can offer a "read and confirmed" button.
    */

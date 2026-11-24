@@ -1,0 +1,19 @@
+{
+  "request": {
+    "amount": "Amount to request",
+    "currency": "Currency",
+    "submit": "Request payment",
+    "invalid": "Enter an amount above zero, such as 15 or 15.50.",
+    "error": "That did not go through. Check the visit and try again. If the guest already opened the request, refund it instead.",
+    "sent": "Requested. The guest sees it on their phone."
+  },
+  "payCode": {
+    "show": "Show pay QR",
+    "title": "Scan to pay {{amount}}",
+    "description": "The guest scans this with their own phone. It opens the card form for this payment only.",
+    "close": "Done",
+    "label": "QR code to pay {{amount}}",
+    "expires": "Valid for 10 minutes. Showing it again replaces this code.",
+    "error": "Could not make a code. Check that the payment is still unpaid and try again."
+  }
+}
