@@ -3,6 +3,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { logInfo } from '../_shared/log.ts';
 import { createDeliverHandler, type WebhookJob } from './handler.ts';
+import { postPinned } from './pinned-post.ts';
 
 function env(name: string): string {
   const value = Deno.env.get(name);
@@ -41,7 +42,9 @@ Deno.serve(createDeliverHandler({
       ...(aaaa.status === 'fulfilled' ? aaaa.value : []),
     ];
   },
-  async post(url, headers, body, timeoutMs) {
+  async post(url, headers, body, timeoutMs, address) {
+    // A vetted address means: connect to that IP, never to a second DNS answer (DNS rebinding).
+    if (address) return postPinned(url, headers, body, timeoutMs, address);
     const res = await fetch(url, {
       method: 'POST',
       headers,
