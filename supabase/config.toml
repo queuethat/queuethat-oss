@@ -553,15 +553,21 @@ verify_jwt = false
 verify_jwt = true
 
 [functions.integration-sync]
+# Source-available (ee/, QueueThat Commercial License). Remove this block in a build without ee/.
+entrypoint = "../ee/supabase/functions/integration-sync/index.ts"
 # Called by pg_net and pg_cron with DISPATCH_SECRET; the handler checks it (vendor tokens never leave the function).
 verify_jwt = false
 
 [functions.square-oauth]
+# Source-available (ee/, QueueThat Commercial License). Remove this block in a build without ee/.
+entrypoint = "../ee/supabase/functions/square-oauth/index.ts"
 # Signed-in owners and admins call it with their own JWT; api.begin_integration_connect decides who may connect, and the
 # one-time state is bound to that user.
 verify_jwt = true
 
 [functions.hubspot-oauth]
+# Source-available (ee/, QueueThat Commercial License). Remove this block in a build without ee/.
+entrypoint = "../ee/supabase/functions/hubspot-oauth/index.ts"
 # Signed-in owners and admins call it with their own JWT; api.begin_integration_connect decides who may connect, and the
 # one-time state is bound to that user.
 verify_jwt = true

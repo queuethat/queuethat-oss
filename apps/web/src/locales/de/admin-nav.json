@@ -86,8 +86,7 @@
     "requests": "Datenanfragen",
     "privacy": "Datenschutz",
     "events": "Veranstaltungen",
-    "widget": "Website-Widget",
-    "google": "Google-Eintrag"
+    "widget": "Website-Widget"
   },
   "help": "Hilfe"
 }

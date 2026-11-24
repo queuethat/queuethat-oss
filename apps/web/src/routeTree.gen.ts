@@ -43,7 +43,6 @@ import { Route as AdminEventsRouteImport } from './routes/admin/events'
 import { Route as AdminExportRouteImport } from './routes/admin/export'
 import { Route as AdminFeedbackRouteImport } from './routes/admin/feedback'
 import { Route as AdminFormsRouteImport } from './routes/admin/forms'
-import { Route as AdminGoogleRouteImport } from './routes/admin/google'
 import { Route as AdminHeatmapRouteImport } from './routes/admin/heatmap'
 import { Route as AdminHelpRouteImport } from './routes/admin/help'
 import { Route as AdminIntegrationsRouteImport } from './routes/admin/integrations'
@@ -275,11 +274,6 @@ const AdminFeedbackRoute = AdminFeedbackRouteImport.update({
 const AdminFormsRoute = AdminFormsRouteImport.update({
   id: '/forms',
   path: '/forms',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminGoogleRoute = AdminGoogleRouteImport.update({
-  id: '/google',
-  path: '/google',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminHeatmapRoute = AdminHeatmapRouteImport.update({
@@ -631,7 +625,6 @@ export interface FileRoutesByFullPath {
   '/admin/export': typeof AdminExportRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/forms': typeof AdminFormsRoute
-  '/admin/google': typeof AdminGoogleRoute
   '/admin/heatmap': typeof AdminHeatmapRoute
   '/admin/help': typeof AdminHelpRoute
   '/admin/integrations': typeof AdminIntegrationsRoute
@@ -726,7 +719,6 @@ export interface FileRoutesByTo {
   '/admin/export': typeof AdminExportRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/forms': typeof AdminFormsRoute
-  '/admin/google': typeof AdminGoogleRoute
   '/admin/heatmap': typeof AdminHeatmapRoute
   '/admin/help': typeof AdminHelpRoute
   '/admin/integrations': typeof AdminIntegrationsRoute
@@ -826,7 +818,6 @@ export interface FileRoutesById {
   '/admin/export': typeof AdminExportRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/forms': typeof AdminFormsRoute
-  '/admin/google': typeof AdminGoogleRoute
   '/admin/heatmap': typeof AdminHeatmapRoute
   '/admin/help': typeof AdminHelpRoute
   '/admin/integrations': typeof AdminIntegrationsRoute
@@ -927,7 +918,6 @@ export interface FileRouteTypes {
     | '/admin/export'
     | '/admin/feedback'
     | '/admin/forms'
-    | '/admin/google'
     | '/admin/heatmap'
     | '/admin/help'
     | '/admin/integrations'
@@ -1022,7 +1012,6 @@ export interface FileRouteTypes {
     | '/admin/export'
     | '/admin/feedback'
     | '/admin/forms'
-    | '/admin/google'
     | '/admin/heatmap'
     | '/admin/help'
     | '/admin/integrations'
@@ -1121,7 +1110,6 @@ export interface FileRouteTypes {
     | '/admin/export'
     | '/admin/feedback'
     | '/admin/forms'
-    | '/admin/google'
     | '/admin/heatmap'
     | '/admin/help'
     | '/admin/integrations'
@@ -1448,13 +1436,6 @@ declare module '@tanstack/react-router' {
       path: '/forms'
       fullPath: '/admin/forms'
       preLoaderRoute: typeof AdminFormsRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/google': {
-      id: '/admin/google'
-      path: '/google'
-      fullPath: '/admin/google'
-      preLoaderRoute: typeof AdminGoogleRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/heatmap': {
@@ -1921,7 +1902,6 @@ interface AdminRouteRouteChildren {
   AdminExportRoute: typeof AdminExportRoute
   AdminFeedbackRoute: typeof AdminFeedbackRoute
   AdminFormsRoute: typeof AdminFormsRoute
-  AdminGoogleRoute: typeof AdminGoogleRoute
   AdminHeatmapRoute: typeof AdminHeatmapRoute
   AdminHelpRoute: typeof AdminHelpRoute
   AdminIntegrationsRoute: typeof AdminIntegrationsRoute
@@ -1981,7 +1961,6 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminExportRoute: AdminExportRoute,
   AdminFeedbackRoute: AdminFeedbackRoute,
   AdminFormsRoute: AdminFormsRoute,
-  AdminGoogleRoute: AdminGoogleRoute,
   AdminHeatmapRoute: AdminHeatmapRoute,
   AdminHelpRoute: AdminHelpRoute,
   AdminIntegrationsRoute: AdminIntegrationsRoute,
