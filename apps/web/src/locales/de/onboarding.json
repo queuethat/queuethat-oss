@@ -13,12 +13,19 @@
   "business": {
     "heading": "Dein Unternehmen",
     "name": "Name des Unternehmens",
-    "nameHint": "Der Name, unter dem dich Kundschaft kennt."
+    "nameHint": "Der Name, unter dem dich Kundschaft kennt.",
+    "ownerName": "Ihr Name (optional)",
+    "ownerNameHint": "Ihr Team sieht ihn statt Ihrer E-Mail-Adresse."
   },
   "location": {
     "heading": "Dein Standort",
     "name": "Name des Standorts",
     "nameHint": "Zum Beispiel die Straße oder das Viertel. Er wird zur Adresse deiner Beitrittsseite.",
+    "slug": "Adresse der Beitrittsseite",
+    "slugHint": "Gäste öffnen {{url}}. Sie steht auf Ihren Aushängen, wählen Sie sie also jetzt.",
+    "slugHintEmpty": "Geben Sie den Namen des Standorts ein, um die Adresse Ihrer Beitrittsseite zu sehen.",
+    "slugTaken": "Diese Adresse ist bereits vergeben. {{suggestion}} ist frei.",
+    "slugUse": "{{suggestion}} verwenden",
     "address": "Straße und Hausnummer",
     "addressHint": "Optional. Wird Kundschaft auf der Beitrittsseite angezeigt.",
     "timeZone": "Zeitzone",
@@ -36,6 +43,7 @@
   "errors": {
     "invalid_timezone": "Wähle eine Zeitzone aus der Liste.",
     "invalid_input": "Fülle die Namen aus.",
+    "slug_taken": "Jemand hat diese Adresse gerade vergeben. Wählen Sie eine andere.",
     "permission_denied": "Mit diesem Konto kann kein Unternehmen angelegt werden. Gekoppelte Bildschirme zum Beispiel können es nicht.",
     "unknown": "Etwas ist schiefgelaufen. Dein Fortschritt ist gespeichert; versuche es erneut.",
     "hasVisits": "An diesem Standort warten heute schon Gäste, daher kann keine Vorlage angewendet werden.",

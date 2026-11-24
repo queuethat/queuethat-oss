@@ -1,6 +1,6 @@
 {
   "key": "barber",
-  "version": 2,
+  "version": 3,
   "tier": 1,
   "mode": "both",
   "health_tagged": false,
@@ -125,8 +125,8 @@
         "key": "style_notes",
         "type": "short_text",
         "label": {
-          "en": "What are you getting today?",
-          "es": "¿Qué te vas a hacer hoy?"
+          "en": "Anything your barber should know?",
+          "es": "¿Algo que tu barbero deba saber?"
         },
         "help": {
           "en": "For example \"number 2 on the sides, scissors on top\".",

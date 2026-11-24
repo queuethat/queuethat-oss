@@ -11,7 +11,7 @@
     },
     "hours": {
       "title": "Set your opening hours",
-      "hint": "Until you do, your line accepts guests at any time of day.",
+      "hint": "Until you do, walk-ins can join at any time of day and nobody can book online.",
       "action": "Set hours"
     },
     "team": {

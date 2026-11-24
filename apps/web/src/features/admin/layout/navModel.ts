@@ -59,22 +59,22 @@ interface Entry {
   sidebarLabel?: SectionId;
 }
 
-type GroupId = 'run' | 'team' | 'setup' | 'advanced' | 'insights' | 'account' | 'danger';
+type GroupId = 'run' | 'team' | 'setup' | 'advanced' | 'insights' | 'account';
 
 /**
  * Every admin destination, grouped by the owner's job. `run` opens by default; the other labelled
- * groups start collapsed (the one holding the current page opens). `danger` renders last,
- * unlabelled, behind a divider.
+ * groups start collapsed (the one holding the current page opens). Danger zone is the last
+ * built-in entry of Account (extension pages still append after it).
  */
 const GROUPS: { id: GroupId; entries: Entry[] }[] = [
   {
     id: 'run',
     entries: [
       { to: '/admin', key: 'today', icon: iconHome },
-      { to: '/admin/overview', key: 'overview', icon: iconHome },
+      { to: '/admin/overview', key: 'overview', icon: iconChart },
       { to: '/staff', key: 'liveQueue', icon: iconList, exact: true },
       { to: '/admin/appointments', key: 'appointments', icon: iconCalendar },
-      { to: '/admin/events', key: 'events', icon: iconCalendar },
+      { to: '/admin/events', key: 'events', icon: iconUsers },
       { to: '/admin/guests', key: 'guests', icon: iconUsers },
       { to: '/admin/notifications/failed', key: 'failedMessages', icon: iconBell },
     ],
@@ -93,7 +93,10 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
     entries: [
       { to: '/admin/location', key: 'location', icon: iconSliders, exact: true },
       { to: '/admin/queues', key: 'queues', icon: iconSliders },
+      // #88: services and availability are everyday setup, not advanced.
+      { to: '/admin/services', key: 'services', icon: iconList },
       { to: '/admin/location/hours', key: 'hours', icon: iconClock },
+      { to: '/admin/availability', key: 'availability', icon: iconCalendar },
       { to: '/admin/forms', key: 'forms', icon: iconList },
       { to: '/admin/templates', key: 'templates', icon: iconBell },
       { to: '/admin/poster', key: 'poster', icon: iconQr },
@@ -102,11 +105,9 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
   {
     id: 'advanced',
     entries: [
-      { to: '/admin/services', key: 'services', icon: iconList },
       { to: '/admin/routing', key: 'routing', icon: iconSliders },
       { to: '/admin/queues/priority', key: 'priority', icon: iconSliders },
       { to: '/admin/resources', key: 'counters', icon: iconSliders },
-      { to: '/admin/availability', key: 'availability', icon: iconCalendar },
       { to: '/admin/journeys', key: 'journeys', icon: iconList },
       { to: '/admin/branding', key: 'branding', icon: iconPencil },
       { to: '/admin/widget', key: 'widget', icon: iconQr },
@@ -242,11 +243,9 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
         under: 'privacy',
       },
       { to: '/admin/help', key: 'help', icon: iconHelp },
+      // Last in Account (#88), not a top-level entry of its own.
+      { to: '/admin/settings/danger', key: 'danger', icon: iconAlertTriangle },
     ],
-  },
-  {
-    id: 'danger',
-    entries: [{ to: '/admin/settings/danger', key: 'danger', icon: iconAlertTriangle }],
   },
 ];
 
@@ -291,7 +290,7 @@ export function buildGroups(
     );
   return GROUPS.map(({ id, entries }) => ({
     id,
-    label: id === 'danger' ? undefined : groupLabel(id),
+    label: groupLabel(id),
     defaultOpen: id === 'run' ? true : undefined,
     items: entries
       .filter((e) => (!e.adminOnly || admin) && (!e.multiLocation || filter.multiLocation))
@@ -353,7 +352,7 @@ export function useAdminNavGroups(): NavGroup<AdminNavItem>[] {
   return buildGroups(
     useNavFilter(),
     (key) => t(`items.${key}`),
-    (id) => t(`groups.${id as Exclude<GroupId, 'danger'>}`),
+    (id) => t(`groups.${id}`),
     (id) => t(`sections.${id}`),
     installedExtensions().adminPages,
     // An extension's own namespace (`ns:key`), which it registers itself.

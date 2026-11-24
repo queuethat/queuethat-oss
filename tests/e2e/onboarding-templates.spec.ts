@@ -96,8 +96,13 @@ test('picking Barber creates its queue, services and chairs, then links to edit 
   ]);
   await staff.getByRole('link', { name: 'Edit queues and services' }).click();
   await expect(staff).toHaveURL(/\/admin\/queues$/);
-  // The copy remembers where it came from.
-  await expect(staff.getByTestId('template-origin').first()).toHaveText('Based on Barber v2');
+  // The copy remembers where it came from, without saying so on every card (#88).
+  await expect(staff.getByTestId('queue').first()).toBeVisible();
+  await expect(staff.getByTestId('template-origin')).toHaveCount(0);
+  const [origins] = (await readAs(email, ['queues?select=origin_template,origin_version'])) as [
+    { origin_template: string; origin_version: number }[],
+  ];
+  expect(origins).toContainEqual({ origin_template: 'barber', origin_version: 3 });
 });
 
 test('the clinic card explains that names are never shown, and the guardrail holds', async ({

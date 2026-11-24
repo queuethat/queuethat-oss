@@ -1,5 +1,7 @@
 import { expect, expectNoSeriousA11yViolations, signInAs, test } from './fixtures.ts';
-import { bookableLocation } from './support/booking.ts';
+import { createClient } from '@supabase/supabase-js';
+import { bookableLocation, slotsOn } from './support/booking.ts';
+import { supabaseEnv } from './support/env.ts';
 
 // A-2, A-3, A-5 (#161): booking settings per service, with a preview of what guests get.
 test.use({ staffUser: null });
@@ -67,4 +69,38 @@ test.describe('as staff', () => {
     await expect(staff.getByRole('button', { name: 'Save booking settings' })).toHaveCount(0);
     await expectNoSeriousA11yViolations(staff);
   });
+});
+
+// #83: with no opening hours nothing can be booked; the panel says why and leads to the hours page.
+test('without opening hours the panel explains, and setting hours makes times bookable', async ({
+  devices,
+}) => {
+  const { staff } = devices;
+  const loc = await bookableLocation(tz);
+  const env = supabaseEnv();
+  const service = createClient(env.url, env.serviceRoleKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  }).schema('app');
+  const cleared = await service.from('business_hours').delete().eq('location_id', loc.locationId);
+  if (cleared.error) throw cleared.error;
+
+  await signInAs(staff, loc.owner);
+  await staff.goto('/admin/services');
+  await staff.getByRole('button', { name: 'Booking' }).click();
+  const notice = staff.getByTestId('booking-no-hours');
+  await expect(notice).toContainText("Guests can't book yet: this location has no opening hours.");
+  await expectNoSeriousA11yViolations(staff);
+
+  await notice.getByRole('link', { name: 'Set opening hours' }).click();
+  await expect(staff).toHaveURL(/\/admin\/location\/hours$/);
+  const open = staff.getByRole('checkbox', { name: 'Open', exact: true });
+  for (let day = 0; day < 7; day += 1) await open.nth(day).check();
+  await staff.getByRole('button', { name: 'Save hours' }).click();
+  await expect(staff.getByText('Opening hours saved.')).toBeVisible();
+
+  await staff.goto('/admin/services');
+  await staff.getByRole('button', { name: 'Booking' }).click();
+  await expect(staff.getByTestId('booking-settings')).toBeVisible();
+  await expect(staff.getByTestId('booking-no-hours')).toHaveCount(0);
+  expect((await slotsOn(loc.slug, loc.serviceId, dateIn(3))).length).toBeGreaterThan(0);
 });

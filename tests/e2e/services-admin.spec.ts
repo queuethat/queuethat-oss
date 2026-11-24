@@ -38,7 +38,7 @@ test.describe('as an owner', () => {
     const { email, slug } = await ownerOfNewBusiness();
     const queueId = await addQueue(email, 'Salon');
     await signInTo(staff, email, '/admin/queues');
-    await staff.getByRole('link', { name: 'Services & prices' }).click();
+    await staff.getByRole('main').getByRole('link', { name: 'Services', exact: true }).click();
     await expect(staff.getByText('No services yet')).toBeVisible();
 
     for (const [name, minutes] of [

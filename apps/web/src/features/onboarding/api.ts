@@ -1,12 +1,20 @@
 import { errorCode, type ErrorCode } from '@qm/domain';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase.ts';
 import { selectLocation } from '../auth/current.ts';
+import { countryOfZone } from './countryOfZone.ts';
 import { applyTemplate, type ProviderSetup, type TemplateResult } from './templates.tsx';
 
 export interface BusinessSetup {
   businessName: string;
+  /** The owner's own name for the team lists (#88); blank keeps their email there. */
+  ownerName?: string;
   locationName: string;
+  /**
+   * The join page address the owner typed (#85); blank or absent takes the suggestion. Becomes
+   * `/q/{slug}` on posters, so it is chosen here rather than derived silently.
+   */
+  slug?: string;
   address: string;
   timeZone: string;
   queueName: string;
@@ -53,16 +61,35 @@ export function useSetUpBusiness() {
             p_name: setup.businessName,
             p_location_name: setup.locationName,
             p_tz: setup.timeZone,
+            ...(setup.slug ? { p_slug: setup.slug } : {}),
           });
           if (error) throw error;
           created = { orgId: data.org_id!, locationId: data.location_id! };
-          if (setup.address.trim()) {
-            const { error: addressError } = await supabase
+          // The country follows the time zone (#88), so guests' phone fields start on the right
+          // calling code; the owner can change it in the location settings.
+          const country = countryOfZone(setup.timeZone);
+          const details = {
+            ...(setup.address.trim() ? { address: setup.address.trim() } : {}),
+            ...(country ? { country_code: country } : {}),
+          };
+          if (Object.keys(details).length > 0) {
+            const { error: detailsError } = await supabase
               .schema('app')
               .from('locations')
-              .update({ address: setup.address.trim() })
+              .update(details)
               .eq('id', created.locationId);
-            if (addressError) throw addressError;
+            if (detailsError) throw detailsError;
+          }
+          const ownerName = setup.ownerName?.trim();
+          if (ownerName) {
+            const { data: me } = await supabase.auth.getUser();
+            const { error: nameError } = await supabase
+              .schema('app')
+              .from('memberships')
+              .update({ display_name: ownerName })
+              .eq('org_id', created.orgId)
+              .eq('user_id', me.user!.id);
+            if (nameError) throw nameError;
           }
         }
         if (setup.templateKey) {
@@ -133,3 +160,24 @@ export function browserTimeZone(): string {
   const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   return zone === 'Etc/UTC' ? 'UTC' : zone;
 }
+
+/**
+ * The join address (slug) a new location would get (#85): `wanted` when it is free, else the
+ * location name, else business plus location name, else the name with a random suffix. Read-only;
+ * the address is reserved only when the business is created.
+ */
+export const suggestSlugQuery = (locationName: string, businessName: string, wanted: string) =>
+  queryOptions({
+    queryKey: ['onboarding', 'suggest-slug', locationName, businessName, wanted],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('suggest_location_slug', {
+        p_location_name: locationName,
+        p_business_name: businessName,
+        ...(wanted ? { p_wanted: wanted } : {}),
+      });
+      if (error) throw error;
+      return data;
+    },
+    enabled: locationName.trim().length > 0,
+    staleTime: 0,
+  });

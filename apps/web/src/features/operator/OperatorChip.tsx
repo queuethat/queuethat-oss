@@ -52,36 +52,6 @@ export function useOperatorControls() {
   };
 }
 
-/** Who is working on this shared tablet, with Switch, Lock and Set my PIN (2A-TM5, #99). */
-export function OperatorChip() {
-  const { t } = useTranslation('auth');
-  const c = useOperatorControls();
-  if (!c.ready) return null;
-  return (
-    <div className="flex flex-wrap items-center gap-2" data-testid="operator-chip">
-      <span className="font-medium">
-        {c.operator
-          ? t('operator.chip', { name: c.operator.displayName ?? t('operator.unnamed') })
-          : t('operator.ownAccount')}
-      </span>
-      <Button variant="secondary" onClick={c.openSwitch}>
-        {t('operator.switch')}
-      </Button>
-      {c.operator ? (
-        <Button variant="secondary" onClick={c.lock}>
-          {t('operator.lock')}
-        </Button>
-      ) : (
-        // set_my_pin refuses an operator token: a PIN changes only from the person's own login.
-        <Button variant="secondary" onClick={c.openPin}>
-          {t('operator.setPin')}
-        </Button>
-      )}
-      {c.dialogs}
-    </div>
-  );
-}
-
 /** Four-to-eight digit entry on big buttons; the typed digits are shown as dots. */
 function Keypad({ value, onChange }: { value: string; onChange: (next: string) => void }) {
   const { t } = useTranslation('auth');

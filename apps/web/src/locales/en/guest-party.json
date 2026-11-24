@@ -1,5 +1,6 @@
 {
   "title": "Your party",
+  "open": "Add people with you",
   "intro": "Add the people with you so staff can greet everyone. Optional.",
   "none": "No one added yet.",
   "add": "First name",

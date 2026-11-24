@@ -94,6 +94,11 @@
       "closeDescription": "No one new can join until you open it again. Guests already waiting stay in line. Pause instead if this is a short break.",
       "closeConfirm": "Yes, close",
       "closeCancel": "Keep open",
+      "closeAll": "Close all lines for today",
+      "closeAllTitle_one": "Close {{count}} line?",
+      "closeAllTitle_other": "Close all {{count}} lines?",
+      "closeAllDescription": "This closes {{lines}}. No one new can join any of them until you open it again. Guests already waiting stay in line.",
+      "closeAllConfirm": "Yes, close them all",
       "error": {
         "org_suspended": "This business is suspended, so the queue can’t change. Contact support.",
         "unknown": "Couldn’t change the queue. Check the connection and try again."
@@ -692,6 +697,7 @@
       "yours": "Yours",
       "next": "Next in {{line}}",
       "fromPool": "Next comes from {{pool}}.",
+      "inLine": "In {{line}}",
       "callNext": "Call next for {{line}}",
       "open": "Open {{line}}",
       "openShort": "Open"

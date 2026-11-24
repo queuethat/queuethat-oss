@@ -218,7 +218,7 @@
     "etaOn": "Wait shown",
     "etaOff": "Wait hidden",
     "services": "Offered here",
-    "servicesLink": "Services & prices",
+    "servicesLink": "Services",
     "alerts": {
       "title": "Guest alerts",
       "intro": "Pick the messages guests of this queue can get. Guests can switch off any of these but cannot add others. Wording is edited under Templates.",
@@ -760,7 +760,10 @@
       "title": "Next 7 days",
       "hint": "What guests would be offered now.",
       "none": "No slots",
-      "loading": "Loading preview…"
+      "loading": "Loading preview…",
+      "noHours": "Guests can't book yet: this location has no opening hours.",
+      "noHoursHint": "Online booking offers times only while you are open. Walk-ins can still join at any time.",
+      "setHours": "Set opening hours"
     },
     "errors": {
       "permission_denied": "You don't have permission to change booking settings.",

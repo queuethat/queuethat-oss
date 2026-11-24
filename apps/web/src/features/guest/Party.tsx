@@ -10,12 +10,21 @@ type Companion = { id: string; first_name: string };
 /**
  * "Your party" (J-14): the companions the database lists in the status, with add and remove. Never
  * required; the party size and the 9-person cap are the database's call, shown here as its errors.
+ * Folded behind "Add people with you" until someone is added (#86): most guests come alone.
  */
 export function Party({ token, visit }: { token: string; visit: Visit }) {
   const { t } = useTranslation('guest-party');
   const { add, remove } = useCompanions(token);
   const [draft, setDraft] = useState('');
+  const [opened, setOpened] = useState(false);
   const companions = ((visit.companions ?? []) as Companion[]).filter(Boolean);
+  if (!opened && companions.length === 0) {
+    return (
+      <BigButton variant="secondary" onClick={() => setOpened(true)}>
+        {t('open')}
+      </BigButton>
+    );
+  }
   const error = add.error ?? remove.error;
   const code = error ? errorCode(error) : null;
   return (

@@ -86,7 +86,8 @@ Code comments, tests and reviews cite these by number.
   `supabase/security-definer-allowlist.txt`. Changing that list needs a security review.
 - **I-5** Realtime payloads carry no personal data. Public topics are `qpulse:{pulse_id}` with
   `{version, now_serving}` only.
-- **I-6** `timestamptz` only. Local dates (service day, hours) are computed in SQL from the location's time zone.
+- **I-6** `timestamptz` only. Local dates (service day, hours) are computed in SQL from the location's time zone,
+  always through `private.zone(l.tz)` ([time zones](../ops/time-zones.md)).
 - **I-7** Guests never sign in. They hold a link token stored only as sha256. `join_queue` re-derives it
   (HMAC with the Vault secret `guest_token_secret`) only for the device that joined; it is never stored.
 - **I-8** The accepting predicate (is this queue taking guests right now) is enforced inside the

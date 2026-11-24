@@ -4,7 +4,6 @@ import { useTranslation } from '../lib/translation.tsx';
 import { BrandLink } from './BrandLink.tsx';
 import { LocationSwitcher } from '../features/auth/LocationSwitcher.tsx';
 import { AccountMenu } from '../features/auth/AccountMenu.tsx';
-import { OperatorChip } from '../features/operator/OperatorChip.tsx';
 import { SessionLimits } from '../features/auth/SessionLimits.tsx';
 import { ChangePasswordLink } from '../features/auth/ChangePasswordLink.tsx';
 import { SignOutButton } from '../features/auth/SignOutButton.tsx';
@@ -24,6 +23,8 @@ export function StaffLayout({ area }: { area: 'staff' | 'admin' | 'onboarding' |
       regionLabel={t('toast.region')}
       dismissLabel={t('toast.dismiss')}
       undoLabel={t('toast.undo')}
+      // The console's Call next sits low on a phone; an Undo toast there would cover it (#81).
+      placement={area === 'staff' ? 'top-on-phone' : 'bottom'}
     >
       <div className="layout-staff" data-layout={area}>
         {area === 'auth' ? null : <SessionLimits />}
@@ -53,9 +54,12 @@ export function StaffLayout({ area }: { area: 'staff' | 'admin' | 'onboarding' |
                     <HelpLink />
                     <AccountMenu />
                   </>
+                ) : area === 'staff' ? (
+                  // #81: the console shares the admin's one account menu (switch operator, PIN,
+                  // password, support), so a phone opens on the line, not on tablet buttons.
+                  <AccountMenu />
                 ) : (
                   <>
-                    {area === 'staff' ? <OperatorChip /> : null}
                     <ContactSupportButton />
                     <ChangePasswordLink />
                     <SignOutButton />

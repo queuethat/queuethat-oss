@@ -1,4 +1,5 @@
 import { Button, Card, Disclosure, Input, Stepper } from '@qm/ui';
+import { useQueryClient } from '@tanstack/react-query';
 import type { TFunction } from 'i18next';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from '../../lib/translation.tsx';
@@ -11,6 +12,7 @@ import {
   type Created,
 } from './api.ts';
 import type { ProviderSetup } from './templates.tsx';
+import { JoinAddressField, useJoinAddress } from './JoinAddress.tsx';
 import { LineLive } from './LineLive.tsx';
 import { CatalogPicker } from './catalog/CatalogPicker.tsx';
 import type { CatalogEntry } from './catalog/api.ts';
@@ -37,6 +39,7 @@ function summarise(t: T, entry: CatalogEntry, providers: ProviderSetup | null): 
 export function Wizard() {
   const { t } = useTranslation('onboarding');
   const setUp = useSetUpBusiness();
+  const queryClient = useQueryClient();
   // A reload mid-wizard resumes from what was typed (O-5, #65).
   const [draft] = useState(loadDraft);
   const [step, setStep] = useState(draft?.step ?? 1);
@@ -45,6 +48,7 @@ export function Wizard() {
     () =>
       draft?.setup ?? {
         businessName: '',
+        ownerName: '',
         locationName: '',
         address: '',
         timeZone: browserTimeZone(),
@@ -71,8 +75,10 @@ export function Wizard() {
     if (step > 1) heading.current?.focus();
   }, [step]);
 
-  const field = (key: Exclude<keyof BusinessSetup, 'templateKey'>) => ({
-    value: String(setup[key]),
+  const join = useJoinAddress(setup.locationName, setup.businessName, setup.slug);
+
+  const field = (key: Exclude<keyof BusinessSetup, 'templateKey' | 'providers' | 'slug'>) => ({
+    value: String(setup[key] ?? ''),
     onChange: (event: { target: { value: string } }) =>
       setSetup((s) => ({
         ...s,
@@ -82,6 +88,7 @@ export function Wizard() {
 
   const fields = {
     businessName: field('businessName'),
+    ownerName: field('ownerName'),
     locationName: field('locationName'),
     address: field('address'),
     timeZone: field('timeZone'),
@@ -92,12 +99,12 @@ export function Wizard() {
 
   const failure =
     setUp.error instanceof SetupError ? setUp.error.code : setUp.error ? 'unknown' : null;
-  const known = ['invalid_timezone', 'invalid_input', 'permission_denied'];
+  const known = ['invalid_timezone', 'invalid_input', 'slug_taken', 'permission_denied'];
   const zoneInvalid = step === 2 && !zones.includes(setup.timeZone);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    if (zoneInvalid) return;
+    if (zoneInvalid || (step === 2 && join.taken)) return;
     if (step < STEPS) return setStep(step + 1);
     const useTemplate = !blank && template !== null;
     const providers = useTemplate ? (setup.providers ?? null) : null;
@@ -106,6 +113,8 @@ export function Wizard() {
     setUnnamed(false);
     const final: BusinessSetup = {
       ...setup,
+      // What the owner saw is what gets printed: their address, else the shown suggestion.
+      slug: join.address ?? undefined,
       templateKey: useTemplate ? template.key : null,
       providers: providers && { ...providers, names: providers.names.map((n) => n.trim()) },
     };
@@ -121,6 +130,11 @@ export function Wizard() {
         },
         onError: (error) => {
           if (error instanceof SetupError) setCreated(error.created);
+          // Someone took the address since it was shown: back to the step that chooses it.
+          if (error instanceof SetupError && error.code === 'slug_taken') {
+            setStep(2);
+            void queryClient.invalidateQueries({ queryKey: ['onboarding', 'suggest-slug'] });
+          }
         },
       },
     );
@@ -157,6 +171,13 @@ export function Wizard() {
               autoComplete="organization"
               {...fields.businessName}
             />
+            <Input
+              label={t('business.ownerName')}
+              hint={t('business.ownerNameHint')}
+              maxLength={80}
+              autoComplete="name"
+              {...fields.ownerName}
+            />
           </fieldset>
         ) : null}
         {step === 2 ? (
@@ -170,6 +191,11 @@ export function Wizard() {
               required
               maxLength={120}
               {...fields.locationName}
+            />
+            <JoinAddressField
+              join={join}
+              wanted={setup.slug}
+              onWanted={(slug) => setSetup((s) => ({ ...s, slug }))}
             />
             <Input
               label={t('location.address')}

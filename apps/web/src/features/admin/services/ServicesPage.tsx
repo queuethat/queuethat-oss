@@ -262,11 +262,14 @@ function ServiceSummary({
   const { t } = useTranslation('admin');
   const servedBy = resources.filter((r) => service.resourceIds.includes(r.id)).map((r) => r.label);
   const offeredBy = queues.filter((q) => service.queueIds.includes(q.id)).map((q) => q.name);
-  const swatch = { backgroundColor: service.color ?? 'transparent' };
+  // Only a service with a colour gets a dot (#88): an empty ring on every row read as a control.
+  const swatch = service.color ? { backgroundColor: service.color } : null;
   return (
     <Card className="flex flex-wrap items-center justify-between gap-3" data-testid="service">
       <div className="flex items-center gap-3">
-        <span aria-hidden className="size-4 rounded-full border border-border" style={swatch} />
+        {swatch ? (
+          <span aria-hidden className="size-4 rounded-full border border-border" style={swatch} />
+        ) : null}
         <div>
           <h2 className="text-lg font-semibold">{service.name}</h2>
           <p className="text-sm text-muted">

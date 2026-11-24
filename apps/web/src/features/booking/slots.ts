@@ -34,6 +34,21 @@ export function groupByDay(slots: readonly Slot[], tz: string): Map<string, Slot
   return new Map([...days].sort(([a], [b]) => a.localeCompare(b)));
 }
 
+/**
+ * The dates from the first day with slots to the last, seven at a time, so a picker shows a week
+ * per page and the days in between (closed, or fully booked) as well (#84).
+ */
+export function weekStrips(days: ReadonlyMap<string, unknown>): string[][] {
+  const dates = [...days.keys()];
+  if (dates.length === 0) return [];
+  const last = dates[dates.length - 1]!;
+  const weeks: string[][] = [];
+  for (let date = dates[0]!; date <= last; date = addDays(date, 7)) {
+    weeks.push(Array.from({ length: 7 }, (_, i) => addDays(date, i)));
+  }
+  return weeks;
+}
+
 /** "Fri, 31 Oct" for a local date. */
 export function formatDay(date: string, lang: string): string {
   return new Intl.DateTimeFormat(lang, {

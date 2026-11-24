@@ -15,7 +15,7 @@ import {
 import { Link } from '@tanstack/react-router';
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useTranslation } from '../../lib/translation.tsx';
-import { formatAsOf, isStale, useConnectionState } from '../../lib/live.ts';
+import { formatNamedClock, isStale, useConnectionState } from '../../lib/live.ts';
 import { QuietBoundary } from '../../components/QuietBoundary.tsx';
 import { useNow } from '../../lib/now.ts';
 import { useAlertSound } from '../../lib/sound.ts';
@@ -170,7 +170,7 @@ export function StatusPage({ token }: { token: string }) {
       ) : null}
       {stale ? (
         <p role="status" className="rounded-card bg-warning-soft p-3 text-warning-strong">
-          {t('status.asOf', { time: v.as_of ? formatAsOf(v.as_of, i18n.language) : '' })}
+          {t('status.asOf', { time: v.as_of ? formatNamedClock(v.as_of, i18n.language) : '' })}
         </p>
       ) : null}
 
@@ -196,8 +196,19 @@ export function StatusPage({ token }: { token: string }) {
         ) : null}
       </CalledTakeover>
 
-      {/* Still offered while called, so a recall can ring. */}
-      {waiting || status === 'called' ? <SoundGate sound={sound} /> : null}
+      {/* One alerts card (#86): the sound tap, still offered while called so a recall can ring,
+          and the message choices. */}
+      {ended ? null : (
+        <Card className="flex flex-col gap-3" data-testid="alerts-card">
+          <h2 className="text-lg font-semibold">{t('status.alerts.title')}</h2>
+          {waiting || status === 'called' ? <SoundGate sound={sound} bare /> : null}
+          <QuietBoundary>
+            <Suspense fallback={null}>
+              <AlertPrefs token={token} />
+            </Suspense>
+          </QuietBoundary>
+        </Card>
+      )}
       {waiting || !ended ? (
         <QuietBoundary>
           <Suspense fallback={null}>
@@ -216,7 +227,6 @@ export function StatusPage({ token }: { token: string }) {
             ) : null}
             {waiting ? <PushOptIn token={token} /> : null}
             {waiting && appConfig().telegramBot ? <TelegramOptIn token={token} /> : null}
-            {ended ? null : <AlertPrefs token={token} />}
           </Suspense>
         </QuietBoundary>
       ) : null}
@@ -318,15 +328,6 @@ function JoinAgain() {
   );
 }
 
-/** The arrival time in the guest's own clock, with its zone name so it can't be misread. */
-function formatArrival(at: string, language: string): string {
-  return new Intl.DateTimeFormat(language, {
-    hour: 'numeric',
-    minute: '2-digit',
-    timeZoneName: 'short',
-  }).format(new Date(at));
-}
-
 type Visit = NonNullable<ReturnType<typeof useVisitStatus>['data']>;
 
 function statusMessage(
@@ -353,7 +354,7 @@ function statusMessage(
     case 'expected':
       // A guest who joined for later (J-13) has a time, not an appointment.
       return v.arrive_after
-        ? t('status.message.later', { time: formatArrival(v.arrive_after, language) })
+        ? t('status.message.later', { time: formatNamedClock(v.arrive_after, language) })
         : t('status.message.expected');
     default:
       return null;

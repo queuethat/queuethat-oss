@@ -5,6 +5,12 @@ import { createMember } from './support/members.ts';
 
 const SESSION_KEY = 'qm-operator-session';
 
+/** #81: the console's tablet controls live in the one account menu, as in admin. */
+async function openFromAccountMenu(page: import('@playwright/test').Page, item: string) {
+  await page.getByRole('button', { name: 'Account' }).click();
+  await page.getByRole('menuitem', { name: item }).click();
+}
+
 async function enterPin(page: import('@playwright/test').Page, pin: string) {
   for (const digit of pin) {
     await page.getByRole('button', { name: `Digit ${digit}`, exact: true }).click();
@@ -18,8 +24,10 @@ test('AC1: a colleague switches in with their PIN, then locks the tablet', async
 
   await staff.goto('/staff');
   const chip = staff.getByTestId('operator-chip');
-  await expect(chip).toContainText("This tablet's account");
-  await chip.getByRole('button', { name: 'Switch operator' }).click();
+  // The tablet's own account shows no "Working as" chip.
+  await expect(staff.getByTestId('account-menu')).toBeVisible();
+  await expect(chip).toHaveCount(0);
+  await openFromAccountMenu(staff, 'Switch operator');
   const dialog = staff.getByRole('dialog', { name: 'Who is working?' });
   await dialog.getByLabel('Name').selectOption({ label: name });
 
@@ -37,8 +45,8 @@ test('AC1: a colleague switches in with their PIN, then locks the tablet', async
   );
   expect(await staff.evaluate((k) => window.localStorage.getItem(k), SESSION_KEY)).toBeNull();
 
-  await chip.getByRole('button', { name: 'Lock' }).click();
-  await expect(chip).toContainText("This tablet's account");
+  await staff.getByTestId('account-menu').getByRole('button', { name: 'Lock' }).click();
+  await expect(chip).toHaveCount(0);
   expect(await staff.evaluate((k) => window.sessionStorage.getItem(k), SESSION_KEY)).toBeNull();
 });
 
@@ -59,7 +67,9 @@ test('AC2: a dead token is dropped and the tablet falls back to its own account'
     );
   }, SESSION_KEY);
   await staff.goto('/staff');
-  await expect(staff.getByTestId('operator-chip')).toContainText("This tablet's account");
+  await expect(staff.getByTestId('account-menu')).toBeVisible();
+  await expect(staff.getByTestId('operator-chip')).toHaveCount(0);
+  await expect(staff.getByText('Working as Ghost')).toHaveCount(0);
 });
 
 test('AC3: the tablet locks after 10 idle minutes, with a warning first', async ({ devices }) => {
@@ -69,7 +79,7 @@ test('AC3: the tablet locks after 10 idle minutes, with a warning first', async 
   await staff.clock.install();
   await staff.goto('/staff');
   const chip = staff.getByTestId('operator-chip');
-  await chip.getByRole('button', { name: 'Switch operator' }).click();
+  await openFromAccountMenu(staff, 'Switch operator');
   const dialog = staff.getByRole('dialog', { name: 'Who is working?' });
   await dialog.getByLabel('Name').selectOption({ label: name });
   await enterPin(staff, '2468');
@@ -83,13 +93,13 @@ test('AC3: the tablet locks after 10 idle minutes, with a warning first', async 
   await expect(warning).toBeHidden();
 
   await staff.clock.fastForward(10 * 60_000 + 1_000);
-  await expect(chip).toContainText("This tablet's account");
+  await expect(chip).toHaveCount(0);
 });
 
 test('AC4: Set my PIN rejects a weak PIN and saves a good one', async ({ devices }) => {
   const { staff } = devices;
   await staff.goto('/staff');
-  await staff.getByRole('button', { name: 'Set my PIN' }).click();
+  await openFromAccountMenu(staff, 'Set my PIN');
   const dialog = staff.getByRole('dialog', { name: 'Set my PIN' });
   await enterPin(staff, '1234');
   await dialog.getByRole('button', { name: 'Save PIN' }).click();

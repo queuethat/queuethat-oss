@@ -240,6 +240,20 @@ export function formatAsOf(asOf: string, locale?: string, timeZone?: string): st
   );
 }
 
+/**
+ * A moment as "HH:MM" plus its zone's short name ("5:26 AM CST"), for a page that has no
+ * location zone to hand (the guest's status page): the time is the device's, and naming the
+ * zone means a phone set to another zone can't be misread (#82).
+ */
+export function formatNamedClock(at: string | number, locale?: string, timeZone?: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZoneName: 'short',
+    timeZone,
+  }).format(new Date(at));
+}
+
 let liveToken: string | null = null;
 let applyToken: ((token: string | null) => void) | null = null;
 

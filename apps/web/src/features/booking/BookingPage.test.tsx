@@ -62,7 +62,7 @@ afterEach(() => {
 });
 
 describe('BookingPage with provider lines', () => {
-  it('names the provider line beside each service', () => {
+  it('names the line only to tell apart services that share a name (#84)', () => {
     m.lines = [
       { queue_id: 'q-ada', name: 'Dr Ada' },
       { queue_id: 'q-ben', name: 'Dr Ben' },
@@ -72,7 +72,9 @@ describe('BookingPage with provider lines', () => {
     const options = screen.getAllByRole('option').map((o) => o.textContent);
     expect(options).toContain('Checkup · Dr Ada');
     expect(options).toContain('Checkup · Dr Ben');
-    expect(options).toContain('Flu shot · Walk-ins');
+    // Bookings go to the first line for now: "Flu shot · Walk-ins" would read as "only there".
+    expect(options).toContain('Flu shot');
+    expect(options).not.toContain('Flu shot · Walk-ins');
   });
 
   it('reads the lines once, without the join page poll', () => {

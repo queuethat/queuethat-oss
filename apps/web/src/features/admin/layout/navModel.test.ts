@@ -97,25 +97,29 @@ describe('admin nav model', () => {
     ]);
   });
 
-  it('keeps Set up to the six first-day pages and files the rest under Advanced', () => {
+  it('keeps Set up to the first-day pages and files the rest under Advanced', () => {
     const groups = build('owner');
     const setup = groups.find((g) => g.id === 'setup')!;
+    // #88: services and availability are everyday setup.
     expect(setup.items.map((i) => i.id)).toEqual([
       'location',
       'queues',
+      'services',
       'hours',
+      'availability',
       'forms',
       'templates',
       'poster',
     ]);
     const advanced = groups.find((g) => g.id === 'advanced')!;
     expect(advanced.items.map((i) => i.id)).toEqual(
-      expect.arrayContaining(['routing', 'priority', 'counters', 'availability', 'branding']),
+      expect.arrayContaining(['routing', 'priority', 'counters', 'branding']),
     );
+    expect(advanced.items.map((i) => i.id)).not.toContain('services');
     expect(advanced.defaultOpen).toBeUndefined();
   });
 
-  it('puts integrations and developer tools under Account and Danger zone last, unlabelled', () => {
+  it('puts integrations, developer tools and Danger zone under Account', () => {
     const groups = build('owner');
     const account = groups.find((g) => g.id === 'account')!;
     expect(account.items.map((i) => i.id)).toEqual(
@@ -129,9 +133,9 @@ describe('admin nav model', () => {
       ]),
     );
     expect(account.defaultOpen).toBeUndefined();
-    const last = groups[groups.length - 1]!;
-    expect(last.id).toBe('danger');
-    expect(last.label).toBeUndefined();
+    // #88: Danger zone is the last entry of Account, not a group of its own.
+    expect(account.items.at(-1)!.id).toBe('danger');
+    expect(groups.map((g) => g.id)).not.toContain('danger');
   });
 
   it('applies the role filters unchanged', () => {
@@ -194,6 +198,7 @@ describe('admin nav model', () => {
       'apiKeys',
       'privacy',
       'help',
+      'danger',
     ]);
     expect(entries('owner').map((i) => i.label)).toEqual([
       'plan',
@@ -201,8 +206,15 @@ describe('admin nav model', () => {
       'developers',
       'privacy',
       'help',
+      'danger',
     ]);
-    expect(entries('staff').map((i) => i.id)).toEqual(['usage', 'integrations', 'privacy', 'help']);
+    expect(entries('staff').map((i) => i.id)).toEqual([
+      'usage',
+      'integrations',
+      'privacy',
+      'help',
+      'danger',
+    ]);
   });
 
   it('keeps each account page searchable under its own name', () => {

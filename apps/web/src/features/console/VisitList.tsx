@@ -157,6 +157,7 @@ export function VisitList({
   badges,
   guestTags,
   onBlock,
+  lineOf,
   selectedId,
   pendingIds,
   deliveryWarnings,
@@ -201,6 +202,8 @@ export function VisitList({
   guestTags?: Map<string, string[]>;
   /** Managers only (2P-PRV6): remove the visit and block who joined. */
   onBlock?: (visit: ConsoleVisit, reason: string, days: BlockDuration) => Promise<unknown>;
+  /** The line a row waits in when it is not the tab's own (#80), such as the pool; null for own rows. */
+  lineOf?: (visit: ConsoleVisit) => string | null;
 }) {
   const { t } = useTranslation('staff');
   const now = useNow(30_000);
@@ -290,6 +293,7 @@ export function VisitList({
                             timeZone={timeZone}
                             onBlock={onBlock}
                             groupWith={groupWith(v)}
+                            line={lineOf?.(v) ?? null}
                             confirmRequest={confirmRequest?.id === v.id ? confirmRequest : null}
                             onConfirmRequest={onConfirmRequest}
                             sort={sort}
@@ -338,6 +342,7 @@ export function VisitList({
                           timeZone={timeZone}
                           onBlock={onBlock}
                           groupWith={groupWith(v)}
+                          line={lineOf?.(v) ?? null}
                           confirmRequest={confirmRequest?.id === v.id ? confirmRequest : null}
                           onConfirmRequest={onConfirmRequest}
                         />
@@ -378,6 +383,7 @@ function Row({
   timeZone,
   onBlock,
   groupWith = [],
+  line = null,
   confirmRequest,
   onConfirmRequest,
   sort,
@@ -394,6 +400,8 @@ function Row({
   move?: { index: number; total: number; to: (index: number) => void };
   /** Tickets of the other visits that joined together with this one. */
   groupWith?: string[];
+  /** Set when the row waits in another line than the tab's, such as the pool (#80). */
+  line?: string | null;
   visit: ConsoleVisit;
   state: ActiveState;
   now: number;
@@ -563,6 +571,11 @@ function Row({
           {visit.name ?? t('console.noName')}
           {visit.partySize > 1 ? ` · ${t('console.party', { count: visit.partySize })}` : ''}
         </span>
+        {line ? (
+          <span className="text-sm text-muted" data-testid="line-badge">
+            {t('console.lines.inLine', { line })}
+          </span>
+        ) : null}
         {groupWith.length > 0 ? (
           <Badge tone="info" data-testid="group-badge">
             {t('console.group', { tickets: groupWith.join(', ') })}
