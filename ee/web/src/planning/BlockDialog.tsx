@@ -1,9 +1,10 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { errorCode } from '@qm/domain';
 import { BigButton, Button, Dialog, Input, useToast } from '@qm/ui';
 import { useState } from 'react';
-import { useTranslation } from '../../lib/translation.tsx';
-import type { AppointmentRow } from '../appointments/api.ts';
-import { formatTime } from '../booking/slots.ts';
+import { useTranslation } from '@app/lib/translation.tsx';
+import type { AppointmentRow } from '@app/features/appointments/api.ts';
+import { formatTime } from '@app/features/booking/slots.ts';
 import { useBlockTime, useUnblockTime } from './api.ts';
 
 export interface BlockRequest {
@@ -29,7 +30,7 @@ export function BlockDialog({
   tz: string;
   onClose: () => void;
 }) {
-  const { t, i18n } = useTranslation('staff');
+  const { t, i18n } = useTranslation('planning');
   const toast = useToast();
   const [reason, setReason] = useState('');
   const block = useBlockTime(locationId);
@@ -47,7 +48,7 @@ export function BlockDialog({
       },
       {
         onSuccess: (result) => {
-          toast.undo(t('planning.block.done', { count: result.block_ids.length }), () =>
+          toast.undo(t('block.done', { count: result.block_ids.length }), () =>
             unblock.mutate(result.block_ids),
           );
           setReason('');
@@ -61,8 +62,8 @@ export function BlockDialog({
     <Dialog
       open
       onClose={onClose}
-      title={t('planning.block.title')}
-      description={t('planning.block.summary', {
+      title={t('block.title')}
+      description={t('block.summary', {
         count: request.resources.length,
         from: time(request.start),
         to: time(request.end),
@@ -70,17 +71,17 @@ export function BlockDialog({
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>
-            {t('planning.block.cancel')}
+            {t('block.cancel')}
           </Button>
           <BigButton onClick={confirm} disabled={block.isPending}>
-            {t('planning.block.confirm')}
+            {t('block.confirm')}
           </BigButton>
         </>
       }
     >
       <p className="font-medium">{request.resources.map((r) => r.label).join(', ')}</p>
       <Input
-        label={t('planning.block.reason')}
+        label={t('block.reason')}
         value={reason}
         maxLength={200}
         onChange={(e) => setReason(e.target.value)}
@@ -88,7 +89,7 @@ export function BlockDialog({
       {request.conflicts.length > 0 ? (
         <div role="status">
           <p className="font-medium text-warning-strong">
-            {t('planning.block.conflicts', { count: request.conflicts.length })}
+            {t('block.conflicts', { count: request.conflicts.length })}
           </p>
           <ul className="list-disc pl-5">
             {request.conflicts.map((a) => (
@@ -101,9 +102,7 @@ export function BlockDialog({
       ) : null}
       {block.isError ? (
         <p role="alert" className="font-medium text-danger-strong">
-          {t(
-            `planning.block.error.${errorCode(block.error) === 'permission_denied' ? 'denied' : 'failed'}`,
-          )}
+          {t(`block.error.${errorCode(block.error) === 'permission_denied' ? 'denied' : 'failed'}`)}
         </p>
       ) : null}
     </Dialog>

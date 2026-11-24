@@ -55,7 +55,6 @@ import { Route as AdminPosterRouteImport } from './routes/admin/poster'
 import { Route as AdminResourcesRouteImport } from './routes/admin/resources'
 import { Route as AdminRoutingRouteImport } from './routes/admin/routing'
 import { Route as AdminServicesRouteImport } from './routes/admin/services'
-import { Route as AdminShiftsRouteImport } from './routes/admin/shifts'
 import { Route as AdminSignageRouteImport } from './routes/admin/signage'
 import { Route as AdminTeamRouteImport } from './routes/admin/team'
 import { Route as AdminTemplatesRouteImport } from './routes/admin/templates'
@@ -80,8 +79,6 @@ import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
 import { Route as PayCodeRouteImport } from './routes/pay/$code'
 import { Route as QLocationSlugRouteImport } from './routes/q/$locationSlug'
 import { Route as StaffIndexRouteImport } from './routes/staff/index'
-import { Route as StaffPlanningRouteImport } from './routes/staff/planning'
-import { Route as StaffShiftsRouteImport } from './routes/staff/shifts'
 import { Route as VTokenRouteImport } from './routes/v/$token'
 import { Route as WLocationSlugRouteImport } from './routes/w/$locationSlug'
 import { Route as AdminAccountCalendarRouteImport } from './routes/admin/account/calendar'
@@ -337,11 +334,6 @@ const AdminServicesRoute = AdminServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminShiftsRoute = AdminShiftsRouteImport.update({
-  id: '/shifts',
-  path: '/shifts',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminSignageRoute = AdminSignageRouteImport.update({
   id: '/signage',
   path: '/signage',
@@ -460,16 +452,6 @@ const QLocationSlugRoute = QLocationSlugRouteImport.update({
 const StaffIndexRoute = StaffIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => StaffRouteRoute,
-} as any)
-const StaffPlanningRoute = StaffPlanningRouteImport.update({
-  id: '/planning',
-  path: '/planning',
-  getParentRoute: () => StaffRouteRoute,
-} as any)
-const StaffShiftsRoute = StaffShiftsRouteImport.update({
-  id: '/shifts',
-  path: '/shifts',
   getParentRoute: () => StaffRouteRoute,
 } as any)
 const VTokenRoute = VTokenRouteImport.update({
@@ -643,7 +625,6 @@ export interface FileRoutesByFullPath {
   '/admin/resources': typeof AdminResourcesRoute
   '/admin/routing': typeof AdminRoutingRoute
   '/admin/services': typeof AdminServicesRoute
-  '/admin/shifts': typeof AdminShiftsRoute
   '/admin/signage': typeof AdminSignageRoute
   '/admin/team': typeof AdminTeamRoute
   '/admin/templates': typeof AdminTemplatesRoute
@@ -665,8 +646,6 @@ export interface FileRoutesByFullPath {
   '/o/$token': typeof OTokenRoute
   '/pay/$code': typeof PayCodeRoute
   '/q/$locationSlug': typeof QLocationSlugRoute
-  '/staff/planning': typeof StaffPlanningRoute
-  '/staff/shifts': typeof StaffShiftsRoute
   '/v/$token': typeof VTokenRoute
   '/w/$locationSlug': typeof WLocationSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -738,7 +717,6 @@ export interface FileRoutesByTo {
   '/admin/resources': typeof AdminResourcesRoute
   '/admin/routing': typeof AdminRoutingRoute
   '/admin/services': typeof AdminServicesRoute
-  '/admin/shifts': typeof AdminShiftsRoute
   '/admin/signage': typeof AdminSignageRoute
   '/admin/team': typeof AdminTeamRoute
   '/admin/templates': typeof AdminTemplatesRoute
@@ -760,8 +738,6 @@ export interface FileRoutesByTo {
   '/o/$token': typeof OTokenRoute
   '/pay/$code': typeof PayCodeRoute
   '/q/$locationSlug': typeof QLocationSlugRoute
-  '/staff/planning': typeof StaffPlanningRoute
-  '/staff/shifts': typeof StaffShiftsRoute
   '/v/$token': typeof VTokenRoute
   '/w/$locationSlug': typeof WLocationSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -838,7 +814,6 @@ export interface FileRoutesById {
   '/admin/resources': typeof AdminResourcesRoute
   '/admin/routing': typeof AdminRoutingRoute
   '/admin/services': typeof AdminServicesRoute
-  '/admin/shifts': typeof AdminShiftsRoute
   '/admin/signage': typeof AdminSignageRoute
   '/admin/team': typeof AdminTeamRoute
   '/admin/templates': typeof AdminTemplatesRoute
@@ -860,8 +835,6 @@ export interface FileRoutesById {
   '/o/$token': typeof OTokenRoute
   '/pay/$code': typeof PayCodeRoute
   '/q/$locationSlug': typeof QLocationSlugRoute
-  '/staff/planning': typeof StaffPlanningRoute
-  '/staff/shifts': typeof StaffShiftsRoute
   '/v/$token': typeof VTokenRoute
   '/w/$locationSlug': typeof WLocationSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -939,7 +912,6 @@ export interface FileRouteTypes {
     | '/admin/resources'
     | '/admin/routing'
     | '/admin/services'
-    | '/admin/shifts'
     | '/admin/signage'
     | '/admin/team'
     | '/admin/templates'
@@ -961,8 +933,6 @@ export interface FileRouteTypes {
     | '/o/$token'
     | '/pay/$code'
     | '/q/$locationSlug'
-    | '/staff/planning'
-    | '/staff/shifts'
     | '/v/$token'
     | '/w/$locationSlug'
     | '/admin/'
@@ -1034,7 +1004,6 @@ export interface FileRouteTypes {
     | '/admin/resources'
     | '/admin/routing'
     | '/admin/services'
-    | '/admin/shifts'
     | '/admin/signage'
     | '/admin/team'
     | '/admin/templates'
@@ -1056,8 +1025,6 @@ export interface FileRouteTypes {
     | '/o/$token'
     | '/pay/$code'
     | '/q/$locationSlug'
-    | '/staff/planning'
-    | '/staff/shifts'
     | '/v/$token'
     | '/w/$locationSlug'
     | '/admin'
@@ -1133,7 +1100,6 @@ export interface FileRouteTypes {
     | '/admin/resources'
     | '/admin/routing'
     | '/admin/services'
-    | '/admin/shifts'
     | '/admin/signage'
     | '/admin/team'
     | '/admin/templates'
@@ -1155,8 +1121,6 @@ export interface FileRouteTypes {
     | '/o/$token'
     | '/pay/$code'
     | '/q/$locationSlug'
-    | '/staff/planning'
-    | '/staff/shifts'
     | '/v/$token'
     | '/w/$locationSlug'
     | '/admin/'
@@ -1534,13 +1498,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminServicesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/shifts': {
-      id: '/admin/shifts'
-      path: '/shifts'
-      fullPath: '/admin/shifts'
-      preLoaderRoute: typeof AdminShiftsRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/signage': {
       id: '/admin/signage'
       path: '/signage'
@@ -1707,20 +1664,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/staff/'
       preLoaderRoute: typeof StaffIndexRouteImport
-      parentRoute: typeof StaffRouteRoute
-    }
-    '/staff/planning': {
-      id: '/staff/planning'
-      path: '/planning'
-      fullPath: '/staff/planning'
-      preLoaderRoute: typeof StaffPlanningRouteImport
-      parentRoute: typeof StaffRouteRoute
-    }
-    '/staff/shifts': {
-      id: '/staff/shifts'
-      path: '/shifts'
-      fullPath: '/staff/shifts'
-      preLoaderRoute: typeof StaffShiftsRouteImport
       parentRoute: typeof StaffRouteRoute
     }
     '/v/$token': {
@@ -1933,7 +1876,6 @@ interface AdminRouteRouteChildren {
   AdminResourcesRoute: typeof AdminResourcesRoute
   AdminRoutingRoute: typeof AdminRoutingRoute
   AdminServicesRoute: typeof AdminServicesRoute
-  AdminShiftsRoute: typeof AdminShiftsRoute
   AdminSignageRoute: typeof AdminSignageRoute
   AdminTeamRoute: typeof AdminTeamRoute
   AdminTemplatesRoute: typeof AdminTemplatesRoute
@@ -1993,7 +1935,6 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminResourcesRoute: AdminResourcesRoute,
   AdminRoutingRoute: AdminRoutingRoute,
   AdminServicesRoute: AdminServicesRoute,
-  AdminShiftsRoute: AdminShiftsRoute,
   AdminSignageRoute: AdminSignageRoute,
   AdminTeamRoute: AdminTeamRoute,
   AdminTemplatesRoute: AdminTemplatesRoute,
@@ -2115,14 +2056,10 @@ const QRouteRouteWithChildren =
   QRouteRoute._addFileChildren(QRouteRouteChildren)
 
 interface StaffRouteRouteChildren {
-  StaffPlanningRoute: typeof StaffPlanningRoute
-  StaffShiftsRoute: typeof StaffShiftsRoute
   StaffIndexRoute: typeof StaffIndexRoute
 }
 
 const StaffRouteRouteChildren: StaffRouteRouteChildren = {
-  StaffPlanningRoute: StaffPlanningRoute,
-  StaffShiftsRoute: StaffShiftsRoute,
   StaffIndexRoute: StaffIndexRoute,
 }
 

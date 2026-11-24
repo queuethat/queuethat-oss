@@ -20,4 +20,4 @@ export const rolesAdminPages: ExtensionAdminPage[] = [
 export const rolesRedirects: ExtensionRedirect[] = [{ from: 'roles', to: 'roles' }];
 
 /** The sidebar label, merged into the app's `admin-nav` strings when they load. */
-export const rolesNavStrings = { ee: { roles: 'Roles' } };
+export const rolesNavStrings = { roles: 'Roles' };

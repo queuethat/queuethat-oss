@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import type { WebExtensions } from '@app/extensions/types.ts';
 import { rolesAdminPages, rolesNavStrings, rolesRedirects } from './src/roles/extensions.ts';
+import { shiftsAdminPages, shiftsNavStrings, shiftsRedirects } from './src/shifts/extensions.ts';
 import { crmAdminPages, crmRedirects, crmSlots } from './src/crm/extensions.ts';
 
 /**
@@ -10,16 +11,18 @@ import { crmAdminPages, crmRedirects, crmSlots } from './src/crm/extensions.ts';
  * light: the router imports it into every route's chunk, so pages, slots and strings load lazily.
  */
 export const extensions: WebExtensions = {
-  adminPages: [...crmAdminPages, ...rolesAdminPages],
+  adminPages: [...crmAdminPages, ...rolesAdminPages, ...shiftsAdminPages],
   banners: [],
   slots: { ...crmSlots },
-  redirects: [...crmRedirects, ...rolesRedirects],
+  redirects: [...crmRedirects, ...rolesRedirects, ...shiftsRedirects],
   localeOverrides: async (lng, ns) => {
     // Sidebar labels are English only, like the staff screens.
-    if (ns === 'admin-nav') return rolesNavStrings;
+    if (ns === 'admin-nav') return { ee: { ...rolesNavStrings, ...shiftsNavStrings } };
     if (lng !== 'en') return undefined;
     if (ns === 'crm') return (await import('./src/locales/en/crm.json')).default;
     if (ns === 'admin-roles') return (await import('./src/locales/en/admin-roles.json')).default;
+    if (ns === 'shifts') return (await import('./src/locales/en/shifts.json')).default;
+    if (ns === 'planning') return (await import('./src/locales/en/planning.json')).default;
     return undefined;
   },
 };

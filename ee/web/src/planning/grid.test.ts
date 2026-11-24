@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { describe, expect, it } from 'vitest';
 import {
   conflictsIn,

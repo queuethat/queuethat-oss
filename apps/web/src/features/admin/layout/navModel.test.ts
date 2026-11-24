@@ -14,12 +14,10 @@ const ids = (groups: ReturnType<typeof build>) => groups.flatMap((g) => g.items.
 const PREVIOUS = [
   '/admin',
   '/admin/overview',
-  '/admin/shifts',
   '/admin/queues',
   '/admin/resources',
   '/admin/appointments',
   '/admin/events',
-  '/staff/planning',
   '/admin/availability',
   '/admin/guests',
   '/admin/blocks',
@@ -173,7 +171,6 @@ describe('admin nav model', () => {
     expect(currentItemId(groups, '/admin/queues/priority')).toBe('priority');
     expect(currentItemId(groups, '/admin/routing')).toBe('routing');
     expect(currentItemId(groups, '/staff')).toBe('liveQueue');
-    expect(currentItemId(groups, '/staff/planning')).toBe('planning');
     expect(currentItemId(groups, '/admin/nope')).toBeUndefined();
   });
 

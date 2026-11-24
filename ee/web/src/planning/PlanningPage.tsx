@@ -1,10 +1,11 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { Button, EmptyState, Input, Spinner } from '@qm/ui';
 import { useState } from 'react';
-import { useTranslation } from '../../lib/translation.tsx';
-import { useNow } from '../../lib/now.ts';
-import { useCurrentLocation, useCurrentOrg } from '../auth/current.ts';
-import { canManageQueues } from '../admin/queues/api.ts';
-import { addDays, formatTime, localDate } from '../booking/slots.ts';
+import { useTranslation } from '@app/lib/translation.tsx';
+import { useNow } from '@app/lib/now.ts';
+import { useCurrentLocation, useCurrentOrg } from '@app/features/auth/current.ts';
+import { canManageQueues } from '@app/features/admin/queues/api.ts';
+import { addDays, formatTime, localDate } from '@app/features/booking/slots.ts';
 import { usePlanning, type PlanningData } from './api.ts';
 import { BlockDialog, type BlockRequest } from './BlockDialog.tsx';
 import {
@@ -105,7 +106,7 @@ function DayGrid({
   /** Present for managers: a finished selection becomes a request to block that time. */
   onBlock?: (request: BlockRequest) => void;
 }) {
-  const { t } = useTranslation('staff');
+  const { t } = useTranslation('planning');
   const select = useGridSelection(data.resources.length, (sel) => {
     const b = bounds(sel);
     const chosen = data.resources.slice(b.r1, b.r2 + 1);
@@ -126,8 +127,8 @@ function DayGrid({
   });
   const sb = select.selection ? bounds(select.selection) : null;
   const items = itemsOn(data, day, tz, {
-    blocked: t('planning.blocked'),
-    onShift: t('planning.onShift'),
+    blocked: t('blocked'),
+    onShift: t('onShift'),
   });
   const nowMs = useNow(30_000);
   const now = spanOnDay(
@@ -139,7 +140,7 @@ function DayGrid({
   const rows = [
     ...data.resources.map((r) => ({ id: r.id, label: r.label })),
     ...(items.some((i) => i.row === UNASSIGNED)
-      ? [{ id: UNASSIGNED, label: t('planning.unassigned') }]
+      ? [{ id: UNASSIGNED, label: t('unassigned') }]
       : []),
   ];
   const hours = Array.from(
@@ -152,7 +153,7 @@ function DayGrid({
     <div
       className="overflow-x-auto"
       role="region"
-      aria-label={t('planning.gridLabel', { day })}
+      aria-label={t('gridLabel', { day })}
       // A scrollable region must be keyboard reachable (axe scrollable-region-focusable).
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
       tabIndex={0}
@@ -245,10 +246,10 @@ function DayTable({
   tz: string;
   lang: string;
 }) {
-  const { t } = useTranslation('staff');
+  const { t } = useTranslation('planning');
   const items = itemsOn(data, day, tz, {
-    blocked: t('planning.blocked'),
-    onShift: t('planning.onShift'),
+    blocked: t('blocked'),
+    onShift: t('onShift'),
   });
   const names = new Map(data.resources.map((r) => [r.id, r.label]));
   const ordered = [...items].sort(
@@ -256,20 +257,20 @@ function DayTable({
       (names.get(a.row) ?? '~').localeCompare(names.get(b.row) ?? '~') ||
       a.start.localeCompare(b.start),
   );
-  if (ordered.length === 0) return <p>{t('planning.nothing')}</p>;
+  if (ordered.length === 0) return <p>{t('nothing')}</p>;
   return (
     <table className="w-full text-left">
       <caption className="sr-only">{day}</caption>
       <thead>
         <tr>
           <th scope="col" className="p-2">
-            {t('planning.col.resource')}
+            {t('col.resource')}
           </th>
           <th scope="col" className="p-2">
-            {t('planning.col.time')}
+            {t('col.time')}
           </th>
           <th scope="col" className="p-2">
-            {t('planning.col.item')}
+            {t('col.item')}
           </th>
         </tr>
       </thead>
@@ -277,13 +278,13 @@ function DayTable({
         {ordered.map((i) => (
           <tr key={`${i.kind}-${i.row}-${i.start}-${i.text}`} className="border-t border-border">
             <th scope="row" className="p-2 font-normal">
-              {names.get(i.row) ?? t('planning.unassigned')}
+              {names.get(i.row) ?? t('unassigned')}
             </th>
             <td className="p-2">
               {formatTime(i.start, tz, lang)}–{formatTime(i.end, tz, lang)}
             </td>
             <td className="p-2">
-              {t(`planning.kind.${i.kind}`)}: {i.text}
+              {t(`kind.${i.kind}`)}: {i.text}
             </td>
           </tr>
         ))}
@@ -298,7 +299,7 @@ function DayTable({
  * is 2B-A11. The table is the accessible equivalent of the same data.
  */
 export function PlanningPage() {
-  const { t, i18n } = useTranslation('staff');
+  const { t, i18n } = useTranslation('planning');
   const { location } = useCurrentLocation();
   const tz = location?.tz ?? 'UTC';
   const [day, setDay] = useState(() => localDate(new Date(), tz));
@@ -308,55 +309,55 @@ export function PlanningPage() {
   const org = useCurrentOrg();
   const days = daysFrom(day, view === 'week' ? 7 : 1);
   const plan = usePlanning(location?.id, days[0]!, days[days.length - 1]!);
-  if (!location || plan.isPending) return <Spinner label={t('planning.loading')} />;
+  if (!location || plan.isPending) return <Spinner label={t('loading')} />;
   if (plan.isError)
     return (
       <p role="alert" className="mx-auto mt-8 max-w-3xl px-4 font-medium text-danger-strong">
-        {t('planning.error')}
+        {t('error')}
       </p>
     );
   const data = plan.data;
 
   return (
     <div className="mx-auto mt-8 flex max-w-6xl flex-col gap-4 px-4">
-      <h1 className="text-2xl font-semibold">{t('planning.title')}</h1>
+      <h1 className="text-2xl font-semibold">{t('title')}</h1>
       <div className="flex flex-wrap items-end gap-3">
         <Button variant="secondary" onClick={() => setDay(addDays(day, view === 'week' ? -7 : -1))}>
-          {t('planning.prev')}
+          {t('prev')}
         </Button>
         <Input
-          label={t('planning.date')}
+          label={t('date')}
           type="date"
           value={day}
           onChange={(e) => e.target.value && setDay(e.target.value)}
         />
         <Button variant="secondary" onClick={() => setDay(addDays(day, view === 'week' ? 7 : 1))}>
-          {t('planning.next')}
+          {t('next')}
         </Button>
         <Button
           variant={view === 'day' ? 'primary' : 'secondary'}
           aria-pressed={view === 'day'}
           onClick={() => setView('day')}
         >
-          {t('planning.day')}
+          {t('day')}
         </Button>
         <Button
           variant={view === 'week' ? 'primary' : 'secondary'}
           aria-pressed={view === 'week'}
           onClick={() => setView('week')}
         >
-          {t('planning.week')}
+          {t('week')}
         </Button>
         <Button
           variant="secondary"
           aria-pressed={layout === 'table'}
           onClick={() => setLayout(layout === 'grid' ? 'table' : 'grid')}
         >
-          {layout === 'grid' ? t('planning.showTable') : t('planning.showGrid')}
+          {layout === 'grid' ? t('showTable') : t('showGrid')}
         </Button>
       </div>
       {data.resources.length === 0 ? (
-        <EmptyState title={t('planning.noResources')} />
+        <EmptyState title={t('noResources')} />
       ) : (
         days.map((d) => (
           <section key={d} aria-labelledby={`plan-${d}`}>
@@ -378,7 +379,7 @@ export function PlanningPage() {
         ))
       )}
       {canManageQueues(org?.role) && layout === 'grid' ? (
-        <p className="text-sm text-muted">{t('planning.hint')}</p>
+        <p className="text-sm text-muted">{t('hint')}</p>
       ) : null}
       <BlockDialog
         request={request}
