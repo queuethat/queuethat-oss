@@ -67,6 +67,7 @@
     "error": {
       "slot_full": "That time is full. Pick another.",
       "slot_unavailable": "That time is no longer available. Pick another.",
+      "plan_limit_reached": "This location has reached its appointment limit for that month.",
       "permission_denied": "You can't do that.",
       "invalid_input": "Check the details and try again.",
       "unknown": "Something went wrong. Try again."

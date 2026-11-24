@@ -2,6 +2,7 @@ import { errorCode } from '@qm/domain';
 import { Button, EmptyState, Select, Spinner, Tabs } from '@qm/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { lazy, Suspense, useRef, useState } from 'react';
+import { ExtensionSlot } from '../../extensions/ExtensionSlot.tsx';
 import { useTranslation } from '../../lib/translation.tsx';
 import { useLocationLines, useSetBookingAnswers } from '../guest/api.ts';
 import { useBook, useBookingLocation, useServiceSlots } from './api.ts';
@@ -44,6 +45,7 @@ const KNOWN_ERRORS = [
   'captcha_required',
   'captcha_failed',
   'org_suspended',
+  'plan_limit_reached',
   'not_found',
 ];
 
@@ -279,9 +281,20 @@ function SlotBooking({ slug, initialService }: { slug: string; initialService?: 
       {header}
 
       {problem && !chosen ? (
-        <p role="alert" className="font-medium text-danger-strong">
-          {t(`book.error.${problem}` as 'book.error.unknown')}
-        </p>
+        problem === 'plan_limit_reached' ? (
+          <ExtensionSlot
+            name="limits.reached"
+            props={{ kind: 'appointments', limit: undefined, role: undefined }}
+          >
+            <p role="alert" className="font-medium text-danger-strong">
+              {t('book.error.plan_limit_reached')}
+            </p>
+          </ExtensionSlot>
+        ) : (
+          <p role="alert" className="font-medium text-danger-strong">
+            {t(`book.error.${problem}` as 'book.error.unknown')}
+          </p>
+        )
       ) : null}
 
       {bookable.length > 1 ? (
