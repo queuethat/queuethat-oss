@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
 import type { LlmProvider, LlmRequest } from './contract.ts';
 
 /**

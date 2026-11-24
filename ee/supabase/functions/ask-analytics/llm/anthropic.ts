@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
 import { LlmError, type LlmProvider, type LlmRequest } from './contract.ts';
 
 export const ANTHROPIC_MESSAGES_URL = 'https://api.anthropic.com/v1/messages';

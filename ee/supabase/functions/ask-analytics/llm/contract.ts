@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
 // Natural-language analytics (R-11) talks to a language model through this one interface. The model
 // only ever receives the metric catalogue, the manager's question and (for a summary) aggregate
 // numbers: callers must never put guest-level data into `system` or `user`.

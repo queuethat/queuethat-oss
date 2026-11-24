@@ -136,21 +136,6 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
         under: 'analytics',
       },
       { to: '/admin/feedback', key: 'feedback', icon: iconHelp, hidden: true, under: 'analytics' },
-      { to: '/admin/reports/schedules', key: 'reports', icon: iconChart, adminOnly: true },
-      {
-        to: '/admin/reports/custom',
-        key: 'customReports',
-        icon: iconChart,
-        hidden: true,
-        under: 'reports',
-      },
-      {
-        to: '/admin/reports/ask',
-        key: 'askAnalytics',
-        icon: iconChart,
-        hidden: true,
-        under: 'reports',
-      },
       {
         to: '/admin/comparison',
         key: 'comparison',

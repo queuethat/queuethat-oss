@@ -1,11 +1,20 @@
 {
+  "nav": {
+    "reports": "Reports",
+    "scheduled": "Scheduled reports",
+    "custom": "Custom reports",
+    "ask": "Ask analytics"
+  },
   "title": "Scheduled reports",
   "loading": "Loading report schedules",
   "adminsOnly": "Only admins and owners can manage scheduled reports.",
   "intro": "A summary of visits, waits, no-shows and ETA accuracy by email, at a time you choose in the location's own time zone. Reports contain numbers only, never guest details.",
   "add": "New schedule",
   "empty": "No scheduled reports yet.",
-  "frequency": { "daily": "Every day", "weekly": "Every week" },
+  "frequency": {
+    "daily": "Every day",
+    "weekly": "Every week"
+  },
   "weekdays": {
     "1": "Monday",
     "2": "Tuesday",

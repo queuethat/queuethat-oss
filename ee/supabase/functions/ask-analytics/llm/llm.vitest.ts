@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
 import { describe, expect, it } from 'vitest';
 import { AnthropicLlmProvider } from './anthropic.ts';
 import { LlmError } from './contract.ts';

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
 // 4-AI1 (#394): the Supabase side of ask-analytics, built from whichever supabase-js the runtime has.
 import { type AskDeps, DbError, type LlmConfig, type ReportRow, STATUS } from './handler.ts';
 
@@ -11,8 +13,10 @@ export function supabaseDeps(
   const opts = { auth: { persistSession: false, autoRefreshToken: false } };
   // The caller's own JWT: the database applies their role and tenant to the reservation and the report.
   const asCaller = (jwt: string) =>
-    createClient(env.url, env.anonKey, { ...opts, global: { headers: { Authorization: `Bearer ${jwt}` } } })
-      .schema('api');
+    createClient(env.url, env.anonKey, {
+      ...opts,
+      global: { headers: { Authorization: `Bearer ${jwt}` } },
+    }).schema('api');
   const service = createClient(env.url, env.serviceRoleKey, opts).schema('api');
   const fail = (error: { message?: string }, what: string): never => {
     // Only the error codes the handler maps are passed on; any other database message stays out of the response.
@@ -29,7 +33,10 @@ export function supabaseDeps(
       return Number(data);
     },
     async llmConfig(orgId): Promise<LlmConfig | null> {
-      const { data, error } = await service.rpc('get_channel_config', { p_org_id: orgId, p_channel: 'llm' });
+      const { data, error } = await service.rpc('get_channel_config', {
+        p_org_id: orgId,
+        p_channel: 'llm',
+      });
       if (error) throw new Error('get_channel_config');
       const row = Array.isArray(data) ? data[0] : data;
       if (!row?.enabled || !row.provider || !row.secrets?.api_key) return null;

@@ -1,6 +1,8 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
 import { useMutation } from '@tanstack/react-query';
-import { appConfig } from '../../../../lib/config.ts';
-import { supabase } from '../../../../lib/supabase.ts';
+import { appConfig } from '@app/lib/config.ts';
+import { supabase } from '@app/lib/supabase.ts';
 import type { Dimension, Measure, ReportRow } from '../custom/api.ts';
 
 export interface Answer {

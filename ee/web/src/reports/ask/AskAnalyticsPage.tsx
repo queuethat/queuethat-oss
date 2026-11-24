@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
 import {
   Button,
   Checkbox,
@@ -11,15 +13,15 @@ import {
 } from '@qm/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useTranslation } from '../../../../lib/translation.tsx';
-import { useCurrentLocation, useCurrentOrg } from '../../../auth/current.ts';
+import { useTranslation } from '@app/lib/translation.tsx';
+import { useCurrentLocation, useCurrentOrg } from '@app/features/auth/current.ts';
 import {
   canEditProviders,
   canSwitchChannels,
   providerSettingsQuery,
   useSaveProviderSettings,
   useSetChannelEnabled,
-} from '../../integrations/providers/api.ts';
+} from '@app/features/admin/integrations/providers/api.ts';
 import type { Dimension, Measure, ReportRow } from '../custom/api.ts';
 import { useAskAnalytics } from './api.ts';
 

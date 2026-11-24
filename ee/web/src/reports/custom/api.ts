@@ -1,6 +1,8 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
 import { errorCode } from '@qm/domain';
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../../../../lib/supabase.ts';
+import { supabase } from '@app/lib/supabase.ts';
 
 /** The fixed catalogue `api.run_report` accepts; the database rejects anything else. */
 export const MEASURES = [

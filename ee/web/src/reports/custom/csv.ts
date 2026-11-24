@@ -1,4 +1,6 @@
-import { field } from '../../analytics/csv.ts';
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
+import { field } from '@app/features/admin/analytics/csv.ts';
 import { DIMENSIONS, MEASURES, type ReportRow } from './api.ts';
 
 /** The result as shown, as CSV: dimension columns then measure columns, in catalogue order. */

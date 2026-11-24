@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
 import {
   Badge,
   Button,
@@ -13,9 +15,9 @@ import {
 } from '@qm/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
-import { useTranslation } from '../../../lib/translation.tsx';
-import { useCurrentLocation, useCurrentOrg } from '../../auth/current.ts';
-import { membersQuery } from '../team/api.ts';
+import { useTranslation } from '@app/lib/translation.tsx';
+import { useCurrentLocation, useCurrentOrg } from '@app/features/auth/current.ts';
+import { membersQuery } from '@app/features/admin/team/api.ts';
 import {
   canManageReports,
   reportSchedulesQuery,

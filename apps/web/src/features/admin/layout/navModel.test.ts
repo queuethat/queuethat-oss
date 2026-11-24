@@ -45,9 +45,6 @@ const PREVIOUS = [
   '/admin/usage',
   '/admin/export',
   '/admin/domains',
-  '/admin/reports/schedules',
-  '/admin/reports/custom',
-  '/admin/reports/ask',
   '/admin/integrations',
   '/admin/whatsapp',
   '/admin/poster',
@@ -137,7 +134,6 @@ describe('admin nav model', () => {
       'chatAlerts',
       'domains',
       'export',
-      'reports',
       'requests',
       'comparison',
     ]) {
@@ -168,12 +164,12 @@ describe('admin nav model', () => {
     expect(currentItemId(groups, '/admin/nope')).toBeUndefined();
   });
 
-  it('shows two Insights entries in the sidebar and leaves the tab pages to the palette', () => {
+  it('shows one Insights entry in the sidebar and leaves the tab pages to the palette', () => {
     const insights = (role: string) =>
       sidebarGroups(build(role))
         .find((g) => g.id === 'insights')!
         .items.map((i) => i.id);
-    expect(insights('owner')).toEqual(['analytics', 'reports']);
+    expect(insights('owner')).toEqual(['analytics']);
     expect(insights('staff')).toEqual(['analytics']);
     const palette = filterPalette(build('owner'), 'heatmap').map((r) => r.item.id);
     expect(palette).toEqual(['heatmap']);
@@ -230,9 +226,6 @@ describe('admin nav model', () => {
     expect(currentItemId(owner, '/admin/heatmap')).toBe('analytics');
     expect(currentItemId(owner, '/admin/feedback')).toBe('analytics');
     expect(currentItemId(owner, '/admin/comparison')).toBe('analytics');
-    expect(currentItemId(owner, '/admin/reports/custom')).toBe('reports');
-    expect(currentItemId(owner, '/admin/reports/ask')).toBe('reports');
-    expect(currentItemId(build('staff'), '/admin/reports/custom')).toBe('analytics');
   });
 
   it('palette search matches names and group names, advanced pages included', () => {

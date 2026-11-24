@@ -1,6 +1,8 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
 import { errorCode } from '@qm/domain';
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../../../lib/supabase.ts';
+import { supabase } from '@app/lib/supabase.ts';
 
 /** Only owners and admins manage report schedules; RLS and the RPCs enforce the same. */
 export const canManageReports = (role: string | undefined) => role === 'admin' || role === 'owner';

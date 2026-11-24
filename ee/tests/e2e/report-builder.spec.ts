@@ -1,7 +1,9 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
 import { readFile } from 'node:fs/promises';
-import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
-import { seedGuest, uniquePhone } from './support/guests.ts';
-import { freshQueue } from './support/queues.ts';
+import { expect, expectNoSeriousA11yViolations, test } from '../../../tests/e2e/fixtures.ts';
+import { seedGuest, uniquePhone } from '../../../tests/e2e/support/guests.ts';
+import { freshQueue } from '../../../tests/e2e/support/queues.ts';
 
 // 4-RPT2 (#393): managers build a report from the catalogue, see the table and chart, download and save it.
 test.use({ staffUser: 'owner' });
@@ -14,7 +16,7 @@ test('AC1, AC2: the table, chart and CSV show the run_report numbers and axe is 
   // One seeded guest leaves two visits in the queue today (one cancelled, one waiting).
   await seedGuest(queue.id, 'Report Guest', uniquePhone(), 2);
 
-  await staff.goto('/admin/reports/custom');
+  await staff.goto('/admin/x/reports-custom');
   await expect(staff.getByRole('heading', { name: 'Custom reports' })).toBeVisible();
   await staff.getByLabel('Weekday').uncheck();
   await staff.getByLabel('Queue', { exact: true }).check();

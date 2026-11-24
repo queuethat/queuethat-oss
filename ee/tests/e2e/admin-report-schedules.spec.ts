@@ -1,14 +1,21 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
 import { createClient } from '@supabase/supabase-js';
-import { mailpitEmailChannel } from '../../packages/providers/src/email.ts';
-import { createRegistry } from '../../packages/providers/src/channel.ts';
+import { mailpitEmailChannel } from '../../../packages/providers/src/email.ts';
+import { createRegistry } from '../../../packages/providers/src/channel.ts';
 import {
   dispatch,
   type OutboxJob,
-} from '../../supabase/functions/dispatch-notifications/handler.ts';
-import { eventually, expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
-import { supabaseEnv } from './support/env.ts';
-import { MAILPIT_URL } from './support/mail.ts';
-import { testUsers } from './support/users.ts';
+} from '../../../supabase/functions/dispatch-notifications/handler.ts';
+import {
+  eventually,
+  expect,
+  expectNoSeriousA11yViolations,
+  test,
+} from '../../../tests/e2e/fixtures.ts';
+import { supabaseEnv } from '../../../tests/e2e/support/env.ts';
+import { MAILPIT_URL } from '../../../tests/e2e/support/mail.ts';
+import { testUsers } from '../../../tests/e2e/support/users.ts';
 
 // 3-RPT2 (#369): the real dispatcher runs here in Node (no edge runtime in CI); the schedule rules
 // themselves are covered in pgTAP.
@@ -58,7 +65,7 @@ test.describe('as an owner', () => {
     const { staff } = devices;
     const since = new Date(Date.now() - 1000);
     try {
-      await staff.goto('/admin/reports/schedules');
+      await staff.goto('/admin/x/reports');
       await staff.getByRole('button', { name: 'New schedule' }).click();
       const form = staff.getByRole('dialog', { name: 'New report schedule' });
       await form.getByLabel('How often').selectOption('daily');

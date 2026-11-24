@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
 // 4-AI1 (#394): ask-analytics. A manager asks a question in plain language; the model turns it into a
 // report definition over the fixed metric catalogue, the database validates and runs it as the caller,
 // and the model may then summarise the aggregate numbers. An Edge Function because only it makes outbound
@@ -12,7 +14,7 @@
 //   400 invalid_input   401 not_authenticated   403 permission_denied   404 not_found
 //   409 analytics_disabled   422 couldnt_answer (the reply was not a valid definition; nothing ran)
 //   429 rate_limited   502 llm_unavailable   500 unknown
-import { LlmError, type LlmProvider } from '@qm/providers';
+import { LlmError, type LlmProvider } from './llm/index.ts';
 
 export interface ReportRow {
   dims: Record<string, string | number>;
@@ -71,8 +73,7 @@ dimensions (0 to 3 of): ${JSON.stringify(DIMENSIONS)}
 days: how many days back from today to include, 1 to ${MAX_DAYS}.
 If the question cannot be answered with these, reply {"error": "cannot_answer"}.`;
 
-const SUMMARY_SYSTEM =
-  `You summarise aggregate queue statistics for a manager in at most three plain sentences. The numbers are all you know; do not guess causes you cannot see in them.`;
+const SUMMARY_SYSTEM = `You summarise aggregate queue statistics for a manager in at most three plain sentences. The numbers are all you know; do not guess causes you cannot see in them.`;
 
 /** Contact details in a question would be sent to a third party, so they are refused. */
 const looksLikeContact = (q: string) => /\S+@\S+/.test(q) || /\d[\d\s().-]{6,}\d/.test(q);
@@ -97,7 +98,10 @@ function validDefinition(
   if (!reply) return null;
   const { measures, dimensions, days } = reply;
   const names = (v: unknown, allowed: Record<string, string>, min: number, max: number) =>
-    Array.isArray(v) && v.length >= min && v.length <= max && new Set(v).size === v.length &&
+    Array.isArray(v) &&
+    v.length >= min &&
+    v.length <= max &&
+    new Set(v).size === v.length &&
     v.every((x) => typeof x === 'string' && Object.hasOwn(allowed, x));
   if (!names(measures, MEASURES, 1, 6) || !names(dimensions ?? [], DIMENSIONS, 0, 3)) return null;
   if (!Number.isInteger(days) || (days as number) < 1 || (days as number) > MAX_DAYS) return null;
@@ -139,7 +143,8 @@ export function createAskHandler(deps: AskDeps): (req: Request) => Promise<Respo
     const origin = req.headers.get('origin');
     const json = (status: number, body: unknown) =>
       new Response(JSON.stringify(body), { status, headers: headers(origin) });
-    if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: headers(origin) });
+    if (req.method === 'OPTIONS')
+      return new Response(null, { status: 204, headers: headers(origin) });
     if (origin !== null && origin !== deps.publicUrl) return json(403, { error: 'forbidden' });
     if (req.method !== 'POST') return json(405, { error: 'invalid_input' });
     const jwt = /^Bearer (\S+)$/.exec(req.headers.get('authorization') ?? '')?.[1];
@@ -180,16 +185,20 @@ export function createAskHandler(deps: AskDeps): (req: Request) => Promise<Respo
       let summary: string | null = null;
       if (body?.summarize !== false && rows.length > 0) {
         try {
-          summary = (await llm.complete({
-            system: SUMMARY_SYSTEM,
-            user: JSON.stringify({
-              question,
-              from,
-              to,
-              rows: rows.slice(0, MAX_ROWS_TO_MODEL),
-            }),
-            maxTokens: 300,
-          })).trim().slice(0, 1000);
+          summary = (
+            await llm.complete({
+              system: SUMMARY_SYSTEM,
+              user: JSON.stringify({
+                question,
+                from,
+                to,
+                rows: rows.slice(0, MAX_ROWS_TO_MODEL),
+              }),
+              maxTokens: 300,
+            })
+          )
+            .trim()
+            .slice(0, 1000);
         } catch (e) {
           log('ask-analytics summary', e); // the numbers are still worth returning
         }

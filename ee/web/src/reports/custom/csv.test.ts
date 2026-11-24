@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
 import { describe, expect, it } from 'vitest';
 import { reportCsv } from './csv.ts';
 

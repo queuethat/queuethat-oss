@@ -1,5 +1,7 @@
-import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
-import { ownerOfNewBusiness, signInTo } from './support/accounts.ts';
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
+import { expect, expectNoSeriousA11yViolations, test } from '../../../tests/e2e/fixtures.ts';
+import { ownerOfNewBusiness, signInTo } from '../../../tests/e2e/support/accounts.ts';
 
 // 4-AI1 (#394): an owner saves their own key and opts in; a manager then asks a question. The Edge
 // Function itself is covered by Deno tests with a fake LLM, so the browser stubs its response here.
@@ -10,7 +12,7 @@ test('an owner opts in, asks a question and sees the table and a plain-text summ
 }) => {
   const { staff } = devices;
   const { email } = await ownerOfNewBusiness();
-  await signInTo(staff, email, '/admin/reports/ask');
+  await signInTo(staff, email, '/admin/x/ask-analytics');
   await expect(staff.getByRole('heading', { name: 'Ask analytics' })).toBeVisible();
   await expect(
     staff.getByText('Analytics questions are switched off for this business.'),
@@ -57,7 +59,7 @@ test('an owner opts in, asks a question and sees the table and a plain-text summ
 test('a refused question shows the friendly message', async ({ devices }) => {
   const { staff } = devices;
   const { email } = await ownerOfNewBusiness();
-  await signInTo(staff, email, '/admin/reports/ask');
+  await signInTo(staff, email, '/admin/x/ask-analytics');
   await staff.getByLabel('Anthropic API key').fill('sk-ant-test-0123456789abcdef');
   await staff.getByRole('button', { name: 'Save settings' }).click();
   await staff.mouse.move(0, 0);

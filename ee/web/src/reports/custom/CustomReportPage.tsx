@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+// Copyright (c) QueueThat. Source-available under ee/LICENSE.
 import {
   BarChart,
   Button,
@@ -12,9 +14,9 @@ import {
 } from '@qm/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useTranslation } from '../../../../lib/translation.tsx';
-import { useCurrentLocation, useCurrentOrg } from '../../../auth/current.ts';
-import { isoDay } from '../../analytics/csv.ts';
+import { useTranslation } from '@app/lib/translation.tsx';
+import { useCurrentLocation, useCurrentOrg } from '@app/features/auth/current.ts';
+import { isoDay } from '@app/features/admin/analytics/csv.ts';
 import {
   DIMENSIONS,
   MEASURES,
