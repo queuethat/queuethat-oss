@@ -116,3 +116,27 @@ Deno.test('AC1 (chat): a slack endpoint gets a Slack body, no HMAC headers and n
   assert.ok(body.blocks[0].text.text.includes('A012 joined in Walk-ins'));
   assert.doesNotMatch(sent[0]!.body, /phone|email/i);
 });
+
+Deno.test('AC5: the request goes to the address that was vetted, not to a second DNS answer (rebinding)', async () => {
+  let lookups = 0;
+  const pinned: (string | undefined)[] = [];
+  const { call, sent } = setup([job()], [200], {
+    // First answer is public; any later lookup would return an internal address.
+    resolve: async () => [lookups++ === 0 ? '93.184.216.34' : '169.254.169.254'],
+    post: async (_u, _h, _b, _t, address) => { pinned.push(address); return { status: 200 }; },
+  });
+  await call();
+  assert.deepEqual(pinned, ['93.184.216.34']);
+  assert.equal(lookups, 1, 'the handler resolves once per attempt');
+  assert.equal(sent.length, 0);
+});
+
+Deno.test('AC5: with WEBHOOK_ALLOW_PRIVATE no address is pinned', async () => {
+  const pinned: (string | undefined)[] = [];
+  const { call } = setup([job({ url: 'https://10.0.0.5/hook' })], [200], {
+    allowPrivate: true,
+    post: async (_u, _h, _b, _t, address) => { pinned.push(address); return { status: 200 }; },
+  });
+  await call();
+  assert.deepEqual(pinned, [undefined]);
+});

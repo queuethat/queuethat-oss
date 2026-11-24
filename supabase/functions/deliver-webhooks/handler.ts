@@ -41,8 +41,12 @@ export interface DeliverDeps {
   report(deliveryId: string, result: WebhookReport): Promise<void>;
   /** A and AAAA records of a host (an IP literal resolves to itself). */
   resolve(host: string): Promise<string[]>;
-  /** POSTs once without following redirects; throws on timeout. The body read is capped by the caller. */
-  post(url: string, headers: Record<string, string>, body: string, timeoutMs: number): Promise<{ status: number }>;
+  /**
+   * POSTs once without following redirects; throws on timeout. When `address` is set, the connection
+   * must go to exactly that IP (the one the handler vetted), not to a fresh DNS answer: that closes
+   * the DNS-rebinding window between the check and the request.
+   */
+  post(url: string, headers: Record<string, string>, body: string, timeoutMs: number, address?: string): Promise<{ status: number }>;
   secret: string;
   allowPrivate: boolean;
   /** Unix seconds. */
@@ -95,23 +99,26 @@ const CHAT_HOSTS: Record<string, RegExp> = {
   teams: /(^|\.)(webhook\.office\.com|logic\.azure\.com|powerplatform\.com)$/,
 };
 
-/** Why a URL may not be called, or null. Resolves the host, so call it for every attempt. */
-async function refusal(job: WebhookJob, deps: DeliverDeps): Promise<string | null> {
+/**
+ * Why a URL may not be called (`error`), or the vetted IP to connect to (`address`; undefined when
+ * the deployment allows private hosts). Resolves the host, so call it for every attempt.
+ */
+async function refusal(job: WebhookJob, deps: DeliverDeps): Promise<{ error?: string; address?: string }> {
   let url: URL;
   try {
     url = new URL(job.url);
   } catch {
-    return 'blocked_url';
+    return { error: 'blocked_url' };
   }
-  if (url.protocol !== 'https:' && url.protocol !== 'http:') return 'blocked_url';
-  if (url.username || url.password) return 'blocked_url';
+  if (url.protocol !== 'https:' && url.protocol !== 'http:') return { error: 'blocked_url' };
+  if (url.username || url.password) return { error: 'blocked_url' };
   const host = url.hostname.replace(/^\[|\]$/g, '');
   const vendor = CHAT_HOSTS[job.kind];
-  if (vendor && (!vendor.test(host) || url.protocol !== 'https:' || url.port)) return 'blocked_host';
-  if (deps.allowPrivate) return null;
+  if (vendor && (!vendor.test(host) || url.protocol !== 'https:' || url.port)) return { error: 'blocked_host' };
+  if (deps.allowPrivate) return {};
   // The resolver does not read /etc/hosts, so names fetch resolves locally would pass unseen.
-  if (!host.includes('.') && !host.includes(':')) return 'blocked_host';
-  if (/\.(local|localhost|internal|lan|home\.arpa)$/i.test(host)) return 'blocked_host';
+  if (!host.includes('.') && !host.includes(':')) return { error: 'blocked_host' };
+  if (/\.(local|localhost|internal|lan|home\.arpa)$/i.test(host)) return { error: 'blocked_host' };
   let addresses: string[];
   try {
     addresses = await Promise.race([
@@ -119,10 +126,11 @@ async function refusal(job: WebhookJob, deps: DeliverDeps): Promise<string | nul
       new Promise<string[]>((_, reject) => setTimeout(() => reject(new Error('dns_timeout')), 3000)),
     ]);
   } catch {
-    return 'dns_failed';
+    return { error: 'dns_failed' };
   }
-  if (addresses.length === 0) return 'dns_failed';
-  return addresses.some(isBlockedAddress) ? 'blocked_address' : null;
+  if (addresses.length === 0) return { error: 'dns_failed' };
+  if (addresses.some(isBlockedAddress)) return { error: 'blocked_address' };
+  return { address: addresses[0] };
 }
 
 function json(status: number, body: unknown): Response {
@@ -147,7 +155,7 @@ async function deliverOne(job: WebhookJob, deps: DeliverDeps): Promise<'delivere
     return !retryable || dead ? 'dead' as const : 'failed' as const;
   };
   const host = (() => { try { return new URL(job.url).host; } catch { return 'invalid'; } })();
-  const blocked = await refusal(job, deps);
+  const { error: blocked, address } = await refusal(job, deps);
   if (blocked) {
     deps.log(`webhook ${job.delivery_id} host=${host} ${blocked}`);
     return fail(blocked, undefined, undefined, blocked === 'dns_failed');
@@ -165,7 +173,7 @@ async function deliverOne(job: WebhookJob, deps: DeliverDeps): Promise<'delivere
   }
   const started = Date.now();
   try {
-    const res = await deps.post(job.url, headers, body, TIMEOUT_MS);
+    const res = await deps.post(job.url, headers, body, TIMEOUT_MS, address);
     const ms = Date.now() - started;
     deps.log(`webhook ${job.delivery_id} host=${host} status=${res.status}`);
     if (res.status >= 200 && res.status < 300) {
