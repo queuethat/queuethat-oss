@@ -4,6 +4,7 @@
 -- later. (a) won: the disable and its email commit together, one failure run is one email, and each RPC states
 -- its own errors. No Phase-0 stub existed for these (same as rotate_webhook_secret).
 -- The email carries the endpoint host only, never the URL (a Slack or Teams URL is itself a credential).
+-- 'price_change' stays in the trigger list: a deployment that already uses it must not lose it when this check is rebuilt.
 
 alter table app.notification_templates drop constraint notification_templates_trigger_check;
 alter table app.notification_templates add constraint notification_templates_trigger_check
@@ -16,7 +17,7 @@ alter table app.notification_templates add constraint notification_templates_tri
                      'support_request', 'support_confirmation', 'appointment_expired', 'reply_confirm_number',
                      'sms_paused', 'sms_paused_operator', 'sms_warning_operator', 'sms_digest_operator',
                      'incident_notice', 'incident_reported_operator', 'guest_incident_notice',
-                     'waiver_records_expiring', 'member_verify', 'webhook_disabled'));
+                     'waiver_records_expiring', 'member_verify', 'webhook_disabled', 'price_change'));
 
 insert into app.notification_templates (trigger, channel, locale, category, subject, body) values
   ('webhook_disabled', 'email', 'en', 'transactional', '{org}: a webhook was switched off',
