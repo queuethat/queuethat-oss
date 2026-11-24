@@ -4,8 +4,10 @@ Thanks for looking. This page gets you from a clone to a pull request that can b
 design rules a change must keep are in the [architecture overview](docs/architecture/README.md);
 read that before changing the database or a public interface.
 
-By contributing you agree that your contribution is licensed under [AGPL-3.0-only](LICENSE), the
-licence of the project.
+By contributing you agree to the [Contributor License Agreement](CLA.md) and that your contribution
+is licensed under [AGPL-3.0-only](LICENSE). The `ee/` folder is under a separate
+[commercial licence](ee/LICENSE) (see [LICENSING.md](LICENSING.md)): we cannot take changes to it
+without a separate agreement, so open an issue first.
 
 ## Before you start
 

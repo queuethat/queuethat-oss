@@ -81,12 +81,7 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
   },
   {
     id: 'team',
-    entries: [
-      { to: '/admin/team', key: 'team', icon: iconUsers, adminOnly: true },
-      { to: '/admin/roles', key: 'roles', icon: iconUsers, adminOnly: true },
-      { to: '/admin/shifts', key: 'shifts', icon: iconClock },
-      { to: '/staff/planning', key: 'planning', icon: iconClock },
-    ],
+    entries: [{ to: '/admin/team', key: 'team', icon: iconUsers, adminOnly: true }],
   },
   {
     id: 'setup',
@@ -98,7 +93,6 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
       { to: '/admin/location/hours', key: 'hours', icon: iconClock },
       { to: '/admin/availability', key: 'availability', icon: iconCalendar },
       { to: '/admin/forms', key: 'forms', icon: iconList },
-      { to: '/admin/templates', key: 'templates', icon: iconBell },
       { to: '/admin/poster', key: 'poster', icon: iconQr },
     ],
   },
@@ -137,21 +131,6 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
         under: 'analytics',
       },
       { to: '/admin/feedback', key: 'feedback', icon: iconHelp, hidden: true, under: 'analytics' },
-      { to: '/admin/reports/schedules', key: 'reports', icon: iconChart, adminOnly: true },
-      {
-        to: '/admin/reports/custom',
-        key: 'customReports',
-        icon: iconChart,
-        hidden: true,
-        under: 'reports',
-      },
-      {
-        to: '/admin/reports/ask',
-        key: 'askAnalytics',
-        icon: iconChart,
-        hidden: true,
-        under: 'reports',
-      },
       {
         to: '/admin/comparison',
         key: 'comparison',
@@ -180,7 +159,6 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
         hidden: true,
         under: 'integrations',
       },
-      { to: '/admin/google', key: 'google', icon: iconLink, hidden: true, under: 'integrations' },
       {
         to: '/admin/account/calendar',
         key: 'calendar',
@@ -206,14 +184,6 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
       {
         to: '/admin/developers/chat-alerts',
         key: 'chatAlerts',
-        icon: iconLink,
-        adminOnly: true,
-        hidden: true,
-        under: 'apiKeys',
-      },
-      {
-        to: '/admin/domains',
-        key: 'domains',
         icon: iconLink,
         adminOnly: true,
         hidden: true,

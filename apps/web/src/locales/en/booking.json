@@ -51,6 +51,7 @@
       "captcha_required": "We couldn't confirm you're not a robot. Wait for the check to finish, then try again.",
       "captcha_failed": "The robot check didn't pass. Wait for it to finish, then try again.",
       "org_suspended": "This business isn't taking bookings right now.",
+      "plan_limit_reached": "This place isn't taking more online bookings this month. Try another month, or contact them directly.",
       "not_found": "We can't find that place.",
       "unknown": "Something went wrong. Check your connection and try again.",
       "invalid_input": "Check the details and try again."

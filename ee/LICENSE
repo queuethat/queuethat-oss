@@ -1,0 +1,41 @@
+QueueThat Commercial License (the "Commercial License")
+
+Copyright (c) 2026-present QueueThat
+
+DRAFT: this text has not been reviewed by a lawyer. Do not rely on it until it has been.
+
+This license applies to the files in the `ee/` directory of this repository and to any other file
+whose header names `LicenseRef-QueueThat-EE` (together, the "Software"). It does not apply to the
+rest of the repository, which is licensed under AGPL-3.0-only (see the LICENSE file at the root and
+LICENSING.md).
+
+1. Use for development and testing. You may copy and modify the Software for development and
+   testing purposes, without a subscription.
+
+2. Use in production. The Software may be used in production only if you (and any entity you
+   represent) have agreed to, and are in compliance with, an agreement with QueueThat that covers
+   it, or hold a valid QueueThat Enterprise subscription (a "Commercial Subscription"). A
+   QueueThat Cloud plan that includes the relevant feature is such a subscription for that
+   hosted service.
+
+3. Modifications. You may modify the Software and publish patches to it in this repository.
+   QueueThat retains all right, title and interest in those modifications, and they may be used
+   in production only under the terms of section 2.
+
+4. No redistribution. You may not copy, merge, publish, distribute, sublicense or sell the
+   Software, except as section 1 and section 3 allow.
+
+5. Notices. You must keep this license and every copyright notice in the Software intact.
+
+6. Client-side code. Any part of the Software that is served to a user's browser as an unmodified
+   asset (CSS, images, fonts) is licensed under AGPL-3.0-only, so that recipients can view and
+   reuse what their browser already received.
+
+7. Termination. Your rights under this license end automatically if you breach it.
+
+8. Warranty. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+   NONINFRINGEMENT. IN NO EVENT SHALL QUEUETHAT BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY ARISING FROM THE SOFTWARE OR ITS USE.
+
+To ask about a Commercial Subscription, write to support@queuethat.com.

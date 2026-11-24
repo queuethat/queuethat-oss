@@ -25,7 +25,7 @@ QueueThat is for a business that serves people in turn: a barber, a repair count
 desk. It replaces the paper list and the "how long is the wait?" question with a queue that staff
 run from a tablet and guests follow from wherever they are waiting.
 
-It is licensed under AGPL-3.0. You can use the hosted service or run the whole thing yourself.
+It is open core: AGPL-3.0 for the product, plus an [`ee/`](ee/README.md) folder of enterprise features under a commercial licence. You can use the hosted service or run the AGPL part yourself. See [LICENSING.md](LICENSING.md).
 
 ## What it looks like
 
@@ -188,7 +188,9 @@ and what is in scope.
 
 ## Licence
 
-[GNU Affero General Public License v3.0](LICENSE). If you run a modified version as a network
+Open core. Everything outside `ee/` is under the [GNU Affero General Public License v3.0](LICENSE);
+`ee/` is under the [QueueThat Commercial License](ee/LICENSE) and needs a paid agreement to run in
+production ([LICENSING.md](LICENSING.md)). If you run a modified version as a network
 service, the AGPL requires you to offer your users its source. The app links to its source from
 every guest page; a fork changes that link in one place, `packages/domain/src/source.ts`.
 

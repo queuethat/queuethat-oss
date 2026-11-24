@@ -366,7 +366,9 @@ private.payments_connected
 private.require_processor_for_policy
 
 # limits from app.entitlement_defaults and app.org_entitlements
+private.enforce_feature
 private.enforce_plan_limit
+private.enforce_queue_limit
 private.enforce_retention_cap
 
 # 4-INT1 (#395) integration job queue

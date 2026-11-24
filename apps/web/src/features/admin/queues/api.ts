@@ -1,6 +1,7 @@
 import { classifyCommand, classifyKeyword, errorCode } from '@qm/domain';
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../../lib/supabase.ts';
+import { asLimitReached } from '../limits.ts';
 
 /** The settings an admin edits on a queue (A5, #45). Open, paused and closed stay on the console. */
 export interface QueueSettings {
@@ -215,6 +216,9 @@ export function useChangeQueue(org: { orgId: string; locationId: string }) {
               )
               .eq('id', change.id)
               .select('id');
+      // The plan's queue cap: keep the limit the database reports so the screen can say it.
+      const capped = asLimitReached(error);
+      if (capped) throw capped;
       // 23505 is the per-org unique index, 23514 the reserved-word check.
       if (error)
         throw new Error(

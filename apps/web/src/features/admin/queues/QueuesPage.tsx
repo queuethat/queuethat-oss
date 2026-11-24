@@ -31,6 +31,8 @@ import {
   type QueueSettings,
 } from './api.ts';
 import { SingleActiveVisit } from '../org/SingleActiveVisit.tsx';
+import { isLimitReached, limitOf } from '../limits.ts';
+import { PlanGateNotice } from '../PlanGateNotice.tsx';
 import { GuestAlerts } from './alerts/GuestAlerts.tsx';
 import { LineOwner } from './provider/LineOwner.tsx';
 
@@ -87,9 +89,13 @@ export function QueuesPage() {
       {org ? (
         <SingleActiveVisit orgId={org.id} canEdit={org.role === 'owner' || org.role === 'admin'} />
       ) : null}
-      <p role="alert" className="font-medium text-danger-strong empty:hidden">
-        {failure ? t(failure as 'errors.unknown') : null}
-      </p>
+      {isLimitReached(change.error) ? (
+        <PlanGateNotice feature="queues" limit={limitOf(change.error)} />
+      ) : (
+        <p role="alert" className="font-medium text-danger-strong empty:hidden">
+          {failure ? t(failure as 'errors.unknown') : null}
+        </p>
+      )}
       {editing === 'new' ? (
         <QueueForm
           heading={t('queues.newHeading')}
@@ -105,13 +111,6 @@ export function QueuesPage() {
           kind="queues"
           action={
             canManage ? <Button onClick={() => open('new')}>{te('queues.add')}</Button> : undefined
-          }
-          secondary={
-            canManage ? (
-              <LinkButton variant="secondary" render={(p) => <Link to="/admin/templates" {...p} />}>
-                {te('queues.template')}
-              </LinkButton>
-            ) : undefined
           }
         />
       ) : null}

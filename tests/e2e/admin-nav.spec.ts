@@ -100,16 +100,9 @@ test.describe('owner', () => {
       'aria-current',
       'page',
     );
-    await expect(sidebar.getByRole('link', { name: 'Reports' })).toBeVisible();
     for (const folded of ['Busy hours', 'Performance', 'ETA accuracy', 'Feedback']) {
       await expect(sidebar.getByRole('link', { name: folded })).toHaveCount(0);
     }
-
-    await staff.goto('/admin/reports/ask');
-    await expect(sidebar.getByRole('link', { name: 'Reports' })).toHaveAttribute(
-      'aria-current',
-      'page',
-    );
   });
 
   test('Account keeps one entry per section; its tab pages mark that entry', async ({
@@ -238,19 +231,5 @@ test.describe('staff', () => {
     const dialog = staff.getByRole('dialog', { name: 'Go to' });
     await dialog.getByRole('combobox').fill('webhook');
     await expect(dialog.getByText('No page matches that.')).toBeVisible();
-  });
-
-  test('a report page marks Analytics current when scheduled reports are not theirs', async ({
-    devices,
-  }) => {
-    const { staff } = devices;
-    await staff.setViewportSize({ width: 1280, height: 900 });
-    await staff.goto('/admin/reports/custom');
-    const nav = staff.getByRole('navigation', { name: 'Admin' });
-    await expect(nav.getByRole('link', { name: 'Analytics' })).toHaveAttribute(
-      'aria-current',
-      'page',
-    );
-    await expect(nav.getByRole('link', { name: 'Reports' })).toHaveCount(0);
   });
 });

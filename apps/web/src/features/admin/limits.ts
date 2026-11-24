@@ -16,7 +16,7 @@ export class LimitReachedError extends Error {
 export function asLimitReached(error: unknown): LimitReachedError | null {
   if (errorCode(error) !== 'plan_limit_reached') return null;
   const details = (error as { details?: unknown }).details;
-  const limit = typeof details === 'string' ? Number(details) : NaN;
+  const limit = typeof details === 'string' && details !== '' ? Number(details) : NaN;
   return new LimitReachedError(Number.isInteger(limit) && limit >= 0 ? limit : undefined);
 }
 

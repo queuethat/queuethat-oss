@@ -21,6 +21,7 @@
     "test:e2e:core": "playwright test --grep @core --project=desktop-chrome",
     "test:visual": "playwright test --config playwright.visual.config.ts",
     "test:visual:update": "playwright test --config playwright.visual.config.ts --update-snapshots",
+    "test:e2e:ee": "playwright test --config playwright.ee.config.ts --pass-with-no-tests",
     "test:e2e:pilot": "playwright test --config playwright.pilot.config.ts",
     "test:functions": "bash scripts/test-functions.sh",
     "db:start": "bash scripts/retry-on-deadlock.sh supabase start",

@@ -15,7 +15,6 @@
 
 - [Self-hosting](selfhost/README.md) and [self-host backups](selfhost/backups.md).
 - [Kiosk setup](ops/kiosk-setup.md) and [thermal ticket printing](guides/thermal-printing.md).
-- [Google Business Profile join link](guides/google-business-profile.md).
 - Providers: [email](ops/email-providers.md), [Telegram](ops/telegram.md),
   [SMS registration in the US (10DLC)](ops/10dlc-runbook.md), [Turnstile on joins](ops/turnstile.md),
   [Stripe test mode](ops/stripe-test-mode.md), [unsubscribe link secrets](ops/unsubscribe-secrets.md).
@@ -24,8 +23,10 @@
 ## Integrate with it
 
 - [API v1](api/v1.md) and its [OpenAPI description](api/openapi-v1.json).
-- [n8n](integrations/n8n.md), [Zapier](integrations/zapier.md), [HubSpot](integrations/hubspot.md),
-  [Square](integrations/square.md).
+- [n8n](integrations/n8n.md) and [Zapier](integrations/zapier.md).
+- Commercial add-ons ([ee/](../ee/README.md)): [HubSpot](../ee/docs/integrations/hubspot.md),
+  [Square](../ee/docs/integrations/square.md) and the
+  [Google Business Profile join link](../ee/docs/integrations/google-business-profile.md).
 
 ## Work on it
 

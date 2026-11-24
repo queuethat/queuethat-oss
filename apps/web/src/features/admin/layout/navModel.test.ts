@@ -9,20 +9,18 @@ const build = (role: string, extra: Partial<{ multiLocation: boolean }> = {}) =>
   buildGroups({ role, multiLocation: false, ...extra }, label, group, group);
 const ids = (groups: ReturnType<typeof build>) => groups.flatMap((g) => g.items.map((i) => i.id));
 
-// The routes of the flat menu this replaced: nothing may disappear or move URL.
+// The routes of the flat menu this replaced: nothing may disappear or move URL. (/admin/roles is
+// gone from this list: it is an ee/ page now and redirects to /admin/x/roles.)
 const PREVIOUS = [
   '/admin',
   '/admin/overview',
-  '/admin/shifts',
   '/admin/queues',
   '/admin/resources',
   '/admin/appointments',
   '/admin/events',
-  '/staff/planning',
   '/admin/availability',
   '/admin/guests',
   '/admin/blocks',
-  '/admin/roles',
   '/admin/privacy',
   '/admin/privacy/requests',
   '/admin/devices',
@@ -40,20 +38,14 @@ const PREVIOUS = [
   '/admin/feedback',
   '/admin/comparison',
   '/admin/forms',
-  '/admin/templates',
   '/admin/journeys',
   '/admin/notifications/failed',
   '/admin/usage',
   '/admin/export',
-  '/admin/domains',
-  '/admin/reports/schedules',
-  '/admin/reports/custom',
-  '/admin/reports/ask',
   '/admin/integrations',
   '/admin/whatsapp',
   '/admin/poster',
   '/admin/widget',
-  '/admin/google',
   '/admin/branding',
   '/admin/signage',
   '/admin/account/calendar',
@@ -108,7 +100,6 @@ describe('admin nav model', () => {
       'hours',
       'availability',
       'forms',
-      'templates',
       'poster',
     ]);
     const advanced = groups.find((g) => g.id === 'advanced')!;
@@ -123,14 +114,7 @@ describe('admin nav model', () => {
     const groups = build('owner');
     const account = groups.find((g) => g.id === 'account')!;
     expect(account.items.map((i) => i.id)).toEqual(
-      expect.arrayContaining([
-        'integrations',
-        'whatsapp',
-        'google',
-        'apiKeys',
-        'domains',
-        'export',
-      ]),
+      expect.arrayContaining(['integrations', 'whatsapp', 'apiKeys', 'export']),
     );
     expect(account.defaultOpen).toBeUndefined();
     // #88: Danger zone is the last entry of Account, not a group of its own.
@@ -141,13 +125,10 @@ describe('admin nav model', () => {
   it('applies the role filters unchanged', () => {
     const staff = ids(build('staff'));
     for (const hidden of [
-      'roles',
       'apiKeys',
       'webhooks',
       'chatAlerts',
-      'domains',
       'export',
-      'reports',
       'requests',
       'comparison',
     ]) {
@@ -174,16 +155,15 @@ describe('admin nav model', () => {
     expect(currentItemId(groups, '/admin/queues/priority')).toBe('priority');
     expect(currentItemId(groups, '/admin/routing')).toBe('routing');
     expect(currentItemId(groups, '/staff')).toBe('liveQueue');
-    expect(currentItemId(groups, '/staff/planning')).toBe('planning');
     expect(currentItemId(groups, '/admin/nope')).toBeUndefined();
   });
 
-  it('shows two Insights entries in the sidebar and leaves the tab pages to the palette', () => {
+  it('shows one Insights entry in the sidebar and leaves the tab pages to the palette', () => {
     const insights = (role: string) =>
       sidebarGroups(build(role))
         .find((g) => g.id === 'insights')!
         .items.map((i) => i.id);
-    expect(insights('owner')).toEqual(['analytics', 'reports']);
+    expect(insights('owner')).toEqual(['analytics']);
     expect(insights('staff')).toEqual(['analytics']);
     const palette = filterPalette(build('owner'), 'heatmap').map((r) => r.item.id);
     expect(palette).toEqual(['heatmap']);
@@ -229,7 +209,6 @@ describe('admin nav model', () => {
     expect(at('/admin/whatsapp')).toBe('integrations');
     expect(at('/admin/account/calendar')).toBe('integrations');
     expect(at('/admin/developers/webhooks')).toBe('apiKeys');
-    expect(at('/admin/domains')).toBe('apiKeys');
     expect(at('/admin/privacy/requests')).toBe('privacy');
     expect(at('/admin/export')).toBe('privacy');
     expect(at('/admin/help')).toBe('help');
@@ -240,9 +219,6 @@ describe('admin nav model', () => {
     expect(currentItemId(owner, '/admin/heatmap')).toBe('analytics');
     expect(currentItemId(owner, '/admin/feedback')).toBe('analytics');
     expect(currentItemId(owner, '/admin/comparison')).toBe('analytics');
-    expect(currentItemId(owner, '/admin/reports/custom')).toBe('reports');
-    expect(currentItemId(owner, '/admin/reports/ask')).toBe('reports');
-    expect(currentItemId(build('staff'), '/admin/reports/custom')).toBe('analytics');
   });
 
   it('palette search matches names and group names, advanced pages included', () => {

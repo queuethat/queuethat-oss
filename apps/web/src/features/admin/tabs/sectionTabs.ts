@@ -11,8 +11,7 @@ type ItemKey = keyof (typeof en)['admin-nav']['items'];
 
 export type SectionId = ExtensionTabSection;
 
-export type TabLabelKey =
-  `items.${ItemKey}` | 'insights.reports' | 'insights.scheduled' | 'insights.compare';
+export type TabLabelKey = `items.${ItemKey}` | 'insights.compare';
 
 export interface SectionTab {
   id: string;
@@ -57,7 +56,6 @@ const SECTIONS: Section[] = [
       '/admin/performance',
       '/admin/eta-accuracy',
       '/admin/feedback',
-      '/admin/reports',
       '/admin/comparison',
     ],
     tabs: ({ admin, multiLocation }) => [
@@ -66,12 +64,6 @@ const SECTIONS: Section[] = [
       tab('performance', '/admin/performance', 'items.performance'),
       tab('etaAccuracy', '/admin/eta-accuracy', 'items.etaAccuracy'),
       tab('feedback', '/admin/feedback', 'items.feedback'),
-      tab(
-        'reports',
-        admin ? '/admin/reports/schedules' : '/admin/reports/custom',
-        'insights.reports',
-        '/admin/reports',
-      ),
       ...(admin && multiLocation
         ? [tab('comparison', '/admin/comparison', 'insights.compare')]
         : []),
@@ -80,30 +72,23 @@ const SECTIONS: Section[] = [
   {
     id: 'connections',
     width: 'max-w-3xl',
-    prefixes: [
-      '/admin/integrations',
-      '/admin/whatsapp',
-      '/admin/google',
-      '/admin/account/calendar',
-    ],
+    prefixes: ['/admin/integrations', '/admin/whatsapp', '/admin/account/calendar'],
     tabs: () => [
       tab('integrations', '/admin/integrations', 'items.integrations'),
       tab('whatsapp', '/admin/whatsapp', 'items.whatsapp'),
-      tab('google', '/admin/google', 'items.google'),
       tab('calendar', '/admin/account/calendar', 'items.calendar'),
     ],
   },
   {
     id: 'developers',
     width: 'max-w-3xl',
-    prefixes: ['/admin/developers', '/admin/domains'],
+    prefixes: ['/admin/developers'],
     tabs: ({ admin }) =>
       admin
         ? [
             tab('apiKeys', '/admin/developers/api-keys', 'items.apiKeys'),
             tab('webhooks', '/admin/developers/webhooks', 'items.webhooks'),
             tab('chatAlerts', '/admin/developers/chat-alerts', 'items.chatAlerts'),
-            tab('domains', '/admin/domains', 'items.domains'),
           ]
         : [],
   },
@@ -165,15 +150,6 @@ export function sectionAt(
   return SECTIONS.map((s) => withExtensions(s, pages)).find((s) =>
     s.prefixes.some((prefix) => under(pathname, prefix)),
   );
-}
-
-/** The three report pages: scheduled ones are for admins, the others for everyone. */
-export function reportTabs(admin: boolean): SectionTab[] {
-  return [
-    ...(admin ? [tab('schedules', '/admin/reports/schedules', 'insights.scheduled')] : []),
-    tab('custom', '/admin/reports/custom', 'items.customReports'),
-    tab('ask', '/admin/reports/ask', 'items.askAnalytics'),
-  ];
 }
 
 /** The tab whose prefix is the longest match for `pathname`, if any. */
