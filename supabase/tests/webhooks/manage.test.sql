@@ -43,9 +43,9 @@ select is((select consecutive_failures from app.webhook_endpoints where id = (se
 -- auto-disable mails the owners once
 select tests.as_postgres();
 update app.webhook_endpoints set consecutive_failures = 19 where id = (select id from tests.ep where name = 'a');
-insert into app.webhook_deliveries (id, org_id, endpoint_id, event_id, event_type, payload, status, attempts)
-values (tests.id('wd1'), tests.id('org_a'), (select id from tests.ep where name = 'a'), 'e1', 'visit.joined', '{}', 'claimed', 7);
-select api.report_webhook_result(tests.id('wd1'), '{"status":"failed","attempt":7,"retryable":true}');
+insert into app.webhook_deliveries (org_id, endpoint_id, event_id, event_type, payload, status, attempts)
+values (tests.id('org_a'), (select id from tests.ep where name = 'a'), 'e1', 'visit.joined', '{}', 'claimed', 7);
+select api.report_webhook_result((select id from app.webhook_deliveries where event_id = 'e1'), '{"status":"failed","attempt":7,"retryable":true}');
 select is((select active from app.webhook_endpoints where id = (select id from tests.ep where name = 'a')), false, 'the 20th dead delivery switches the endpoint off');
 select is((select count(*)::int from app.notifications where template_key = 'webhook_disabled' and org_id = tests.id('org_a')), 1,
   'the owner is emailed once');

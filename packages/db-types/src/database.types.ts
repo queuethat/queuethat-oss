@@ -295,6 +295,9 @@ export type Database = {
 "delete_time_blocks":
 { Args: { "p_block_ids": (string)[],"p_idempotency_key": string }; Returns: number
                            },
+"delete_webhook_endpoint":
+{ Args: { "p_endpoint_id": string }; Returns: undefined
+                           },
 "detach_form":
 { Args: { "p_channel"?: string,"p_form_id": string,"p_org_id": string,"p_target_ids": (string)[] }; Returns: number
                            },
@@ -1363,6 +1366,9 @@ export type Database = {
         isOneToOne: true
         isSetofReturn: false
       } },
+"update_webhook_endpoint":
+{ Args: { "p_endpoint_id": string,"p_event_types": (string)[],"p_include_guest_name": boolean,"p_url": string }; Returns: undefined
+                           },
 "usage_summary":
 { Args: { "p_from": string,"p_org_id": string,"p_to": string }; Returns: Database["api"]['CompositeTypes']["usage_row"][]
                           SetofOptions: {
