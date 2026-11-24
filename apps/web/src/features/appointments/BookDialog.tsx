@@ -2,6 +2,9 @@ import { errorCode } from '@qm/domain';
 import { Button, Checkbox, Dialog, Input, Select, Spinner, useToast } from '@qm/ui';
 import { useState } from 'react';
 import { useTranslation } from '../../lib/translation.tsx';
+import { ExtensionSlot } from '../../extensions/ExtensionSlot.tsx';
+import { useCurrentOrg } from '../auth/current.ts';
+import { asLimitReached, limitOf } from '../admin/limits.ts';
 import { uuid } from '../guest/api.ts';
 import { useServiceSlots } from '../booking/api.ts';
 import { SlotPicker } from '../booking/SlotPicker.tsx';
@@ -40,6 +43,7 @@ export function BookDialog({
 }) {
   const { t, i18n } = useTranslation('appointments');
   const book = useStaffBook();
+  const org = useCurrentOrg();
   const series = useCreateSeries();
   const toast = useToast();
   const [repeat, setRepeat] = useState<RepeatState>(NO_REPEAT);
@@ -219,7 +223,20 @@ export function BookDialog({
               onChange={(e) => setOverride(e.target.checked)}
             />
           ) : null}
-          {failure ? (
+          {failure === 'plan_limit_reached' ? (
+            <ExtensionSlot
+              name="limits.reached"
+              props={{
+                kind: 'appointments',
+                limit: limitOf(asLimitReached(book.error ?? series.error)),
+                role: org?.role,
+              }}
+            >
+              <p role="alert" className="font-medium text-danger-strong">
+                {t('book.error.plan_limit_reached')}
+              </p>
+            </ExtensionSlot>
+          ) : failure ? (
             <p role="alert" className="font-medium text-danger-strong">
               {t(`book.error.${failure}` as 'book.error.unknown', {
                 defaultValue: t('book.error.unknown'),

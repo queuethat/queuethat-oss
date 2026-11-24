@@ -75,12 +75,13 @@ export interface ExtensionBanner {
 export interface ExtensionSlotProps {
   /**
    * In place of the plain message when the database refuses with `plan_limit_reached`: adding a
-   * team member (`members`) or a location (`locations`). `limit` is
-   * the number allowed when the database said so. For example, a deployment that sells plans can
+   * team member (`members`) or a location (`locations`), or taking another appointment this month
+   * (`appointments`: shown to a guest booking, with `role` undefined, and to staff booking at the
+   * desk). `limit` is the number allowed when the database said so. For example, a deployment that sells plans can
    * explain the plan and link to its upgrade page.
    */
   'limits.reached': {
-    kind: 'members' | 'locations';
+    kind: 'members' | 'locations' | 'appointments';
     limit: number | undefined;
     role: string | undefined;
   };
