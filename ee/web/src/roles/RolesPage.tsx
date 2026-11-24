@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+
 import {
   Badge,
   Button,
@@ -11,17 +13,14 @@ import {
 } from '@qm/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
-import { useTranslation } from '../../../lib/translation.tsx';
-import { useCurrentOrg } from '../../auth/current.ts';
 import {
-  PERMISSION_GROUPS,
-  canEditRoles,
   customRolesQuery,
   memberRolesQuery,
-  useDeleteRole,
-  useSaveRole,
   type CustomRole,
-} from './api.ts';
+} from '@app/features/admin/roles/api.ts';
+import { useCurrentOrg } from '@app/features/auth/current.ts';
+import { useTranslation } from '@app/lib/translation.tsx';
+import { PERMISSION_GROUPS, canEditRoles, useDeleteRole, useSaveRole } from './api.ts';
 
 const KNOWN_ERRORS = ['permission_denied', 'invalid_input', 'role_in_use'];
 

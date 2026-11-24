@@ -53,7 +53,6 @@ import { Route as AdminOverviewRouteImport } from './routes/admin/overview'
 import { Route as AdminPerformanceRouteImport } from './routes/admin/performance'
 import { Route as AdminPosterRouteImport } from './routes/admin/poster'
 import { Route as AdminResourcesRouteImport } from './routes/admin/resources'
-import { Route as AdminRolesRouteImport } from './routes/admin/roles'
 import { Route as AdminRoutingRouteImport } from './routes/admin/routing'
 import { Route as AdminServicesRouteImport } from './routes/admin/services'
 import { Route as AdminShiftsRouteImport } from './routes/admin/shifts'
@@ -326,11 +325,6 @@ const AdminPosterRoute = AdminPosterRouteImport.update({
 const AdminResourcesRoute = AdminResourcesRouteImport.update({
   id: '/resources',
   path: '/resources',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminRolesRoute = AdminRolesRouteImport.update({
-  id: '/roles',
-  path: '/roles',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminRoutingRoute = AdminRoutingRouteImport.update({
@@ -647,7 +641,6 @@ export interface FileRoutesByFullPath {
   '/admin/performance': typeof AdminPerformanceRoute
   '/admin/poster': typeof AdminPosterRoute
   '/admin/resources': typeof AdminResourcesRoute
-  '/admin/roles': typeof AdminRolesRoute
   '/admin/routing': typeof AdminRoutingRoute
   '/admin/services': typeof AdminServicesRoute
   '/admin/shifts': typeof AdminShiftsRoute
@@ -743,7 +736,6 @@ export interface FileRoutesByTo {
   '/admin/performance': typeof AdminPerformanceRoute
   '/admin/poster': typeof AdminPosterRoute
   '/admin/resources': typeof AdminResourcesRoute
-  '/admin/roles': typeof AdminRolesRoute
   '/admin/routing': typeof AdminRoutingRoute
   '/admin/services': typeof AdminServicesRoute
   '/admin/shifts': typeof AdminShiftsRoute
@@ -844,7 +836,6 @@ export interface FileRoutesById {
   '/admin/performance': typeof AdminPerformanceRoute
   '/admin/poster': typeof AdminPosterRoute
   '/admin/resources': typeof AdminResourcesRoute
-  '/admin/roles': typeof AdminRolesRoute
   '/admin/routing': typeof AdminRoutingRoute
   '/admin/services': typeof AdminServicesRoute
   '/admin/shifts': typeof AdminShiftsRoute
@@ -946,7 +937,6 @@ export interface FileRouteTypes {
     | '/admin/performance'
     | '/admin/poster'
     | '/admin/resources'
-    | '/admin/roles'
     | '/admin/routing'
     | '/admin/services'
     | '/admin/shifts'
@@ -1042,7 +1032,6 @@ export interface FileRouteTypes {
     | '/admin/performance'
     | '/admin/poster'
     | '/admin/resources'
-    | '/admin/roles'
     | '/admin/routing'
     | '/admin/services'
     | '/admin/shifts'
@@ -1142,7 +1131,6 @@ export interface FileRouteTypes {
     | '/admin/performance'
     | '/admin/poster'
     | '/admin/resources'
-    | '/admin/roles'
     | '/admin/routing'
     | '/admin/services'
     | '/admin/shifts'
@@ -1530,13 +1518,6 @@ declare module '@tanstack/react-router' {
       path: '/resources'
       fullPath: '/admin/resources'
       preLoaderRoute: typeof AdminResourcesRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/roles': {
-      id: '/admin/roles'
-      path: '/roles'
-      fullPath: '/admin/roles'
-      preLoaderRoute: typeof AdminRolesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/routing': {
@@ -1950,7 +1931,6 @@ interface AdminRouteRouteChildren {
   AdminPerformanceRoute: typeof AdminPerformanceRoute
   AdminPosterRoute: typeof AdminPosterRoute
   AdminResourcesRoute: typeof AdminResourcesRoute
-  AdminRolesRoute: typeof AdminRolesRoute
   AdminRoutingRoute: typeof AdminRoutingRoute
   AdminServicesRoute: typeof AdminServicesRoute
   AdminShiftsRoute: typeof AdminShiftsRoute
@@ -2011,7 +1991,6 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminPerformanceRoute: AdminPerformanceRoute,
   AdminPosterRoute: AdminPosterRoute,
   AdminResourcesRoute: AdminResourcesRoute,
-  AdminRolesRoute: AdminRolesRoute,
   AdminRoutingRoute: AdminRoutingRoute,
   AdminServicesRoute: AdminServicesRoute,
   AdminShiftsRoute: AdminShiftsRoute,

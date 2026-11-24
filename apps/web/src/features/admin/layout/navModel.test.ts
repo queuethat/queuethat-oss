@@ -9,7 +9,8 @@ const build = (role: string, extra: Partial<{ multiLocation: boolean }> = {}) =>
   buildGroups({ role, multiLocation: false, ...extra }, label, group, group);
 const ids = (groups: ReturnType<typeof build>) => groups.flatMap((g) => g.items.map((i) => i.id));
 
-// The routes of the flat menu this replaced: nothing may disappear or move URL.
+// The routes of the flat menu this replaced: nothing may disappear or move URL. (/admin/roles is
+// gone from this list: it is an ee/ page now and redirects to /admin/x/roles.)
 const PREVIOUS = [
   '/admin',
   '/admin/overview',
@@ -22,7 +23,6 @@ const PREVIOUS = [
   '/admin/availability',
   '/admin/guests',
   '/admin/blocks',
-  '/admin/roles',
   '/admin/privacy',
   '/admin/privacy/requests',
   '/admin/devices',
@@ -141,7 +141,6 @@ describe('admin nav model', () => {
   it('applies the role filters unchanged', () => {
     const staff = ids(build('staff'));
     for (const hidden of [
-      'roles',
       'apiKeys',
       'webhooks',
       'chatAlerts',
