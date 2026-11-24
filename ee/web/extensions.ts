@@ -21,6 +21,7 @@ export const extensions: WebExtensions = {
   redirects: [...crmRedirects, ...templatesRedirects, ...integrationRedirects],
   localeOverrides: async (lng, ns) => {
     if (ns === 'admin-nav' && lng === 'de') return { items: { google: 'Google-Eintrag' } };
+    if (ns === 'admin-nav' && lng === 'de') return { items: { google: 'Google-Eintrag' } };
     if (lng !== 'en') return undefined;
     if (ns === 'gbp') return (await import('./src/locales/en/gbp.json')).default;
     if (ns === 'admin-nav') return { items: { google: 'Google listing' } };
