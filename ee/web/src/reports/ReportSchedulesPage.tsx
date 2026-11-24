@@ -17,6 +17,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from '@app/lib/translation.tsx';
 import { useCurrentLocation, useCurrentOrg } from '@app/features/auth/current.ts';
+import { isFeatureGated, PlanGateNotice } from '@app/features/admin/PlanGateNotice.tsx';
 import { membersQuery } from '@app/features/admin/team/api.ts';
 import {
   canManageReports,
@@ -269,7 +270,11 @@ function ScheduleDialog({
           checked={enabled}
           onChange={(e) => setEnabled(e.target.checked)}
         />
-        {save.error ? <p role="alert">{t(errorKey(save.error.message))}</p> : null}
+        {isFeatureGated(save.error) ? (
+          <PlanGateNotice feature="reports" />
+        ) : save.error ? (
+          <p role="alert">{t(errorKey(save.error.message))}</p>
+        ) : null}
         <div className="flex justify-end gap-2">
           <Button variant="secondary" type="button" onClick={onClose}>
             {t('form.cancel')}

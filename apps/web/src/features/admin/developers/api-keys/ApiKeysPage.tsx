@@ -12,6 +12,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from '../../../../lib/translation.tsx';
+import { isFeatureGated, PlanGateNotice } from '../../PlanGateNotice.tsx';
 import { ScreenEmpty } from '../../../../components/ScreenEmpty.tsx';
 import { useCurrentLocation, useCurrentOrg } from '../../../auth/current.ts';
 import {
@@ -241,9 +242,13 @@ function CreateKeyDialog({
             </option>
           ))}
         </Select>
-        <p role="alert" className="font-medium text-danger-strong empty:hidden">
-          {failure ? t(failure) : null}
-        </p>
+        {isFeatureGated(create.error) ? (
+          <PlanGateNotice feature="api" />
+        ) : (
+          <p role="alert" className="font-medium text-danger-strong empty:hidden">
+            {failure ? t(failure) : null}
+          </p>
+        )}
         <div className="flex flex-wrap justify-end gap-3">
           <Button variant="secondary" onClick={close}>
             {t('create.cancel')}

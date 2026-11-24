@@ -90,6 +90,16 @@ export interface ExtensionSlotProps {
    * nothing when none is installed; `limits.reached` still answers a refusal.
    */
   'limits.notice': { kind: 'members' | 'locations'; role: string | undefined };
+  /**
+   * In place of the error text when the database refuses to create something because the plan does
+   * not include that feature (`feature_not_in_plan`) or the location has all the queues it may have
+   * (`plan_limit_reached`, `feature: 'queues'`). `limit` is the number allowed, when the database
+   * said so. A deployment that sells plans can explain the plan and link to its upgrade page.
+   */
+  'feature.gated': {
+    feature: 'api' | 'integrations' | 'customRoles' | 'reports' | 'queues';
+    limit: number | undefined;
+  };
   /** At the top of the Integrations page, above the channel cards. */
   'integrations.top': { orgId: string; role: string };
   /** One more item in the "how guests hear from you" list on the go-live screen. */

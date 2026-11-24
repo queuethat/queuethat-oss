@@ -20,6 +20,7 @@ import {
 } from '@app/features/admin/roles/api.ts';
 import { useCurrentOrg } from '@app/features/auth/current.ts';
 import { useTranslation } from '@app/lib/translation.tsx';
+import { isFeatureGated, PlanGateNotice } from '@app/features/admin/PlanGateNotice.tsx';
 import { PERMISSION_GROUPS, canEditRoles, useDeleteRole, useSaveRole } from './api.ts';
 
 const KNOWN_ERRORS = ['permission_denied', 'invalid_input', 'role_in_use'];
@@ -157,9 +158,13 @@ function RoleDialog({ orgId, role }: { orgId: string; role?: CustomRole }) {
               ))}
             </fieldset>
           ))}
-          <p role="alert" className="font-medium text-danger-strong empty:hidden">
-            {failure ? t(failure) : null}
-          </p>
+          {isFeatureGated(save.error) ? (
+            <PlanGateNotice feature="customRoles" />
+          ) : (
+            <p role="alert" className="font-medium text-danger-strong empty:hidden">
+              {failure ? t(failure) : null}
+            </p>
+          )}
           <div className="flex justify-end gap-3">
             <Button variant="secondary" onClick={close}>
               {t('cancel')}
