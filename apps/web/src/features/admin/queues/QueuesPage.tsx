@@ -106,13 +106,6 @@ export function QueuesPage() {
           action={
             canManage ? <Button onClick={() => open('new')}>{te('queues.add')}</Button> : undefined
           }
-          secondary={
-            canManage ? (
-              <LinkButton variant="secondary" render={(p) => <Link to="/admin/templates" {...p} />}>
-                {te('queues.template')}
-              </LinkButton>
-            ) : undefined
-          }
         />
       ) : null}
       <ul className="flex flex-col gap-3">

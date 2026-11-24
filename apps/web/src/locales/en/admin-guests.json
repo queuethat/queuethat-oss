@@ -1,8 +1,6 @@
 {
   "title": "Guests",
   "loading": "Loading",
-  "duplicates": "Review duplicate guests",
-  "importExport": "Import or export guests",
   "search": {
     "label": "Search by name, phone or email",
     "hint": "Type at least 3 characters.",
@@ -71,5 +69,13 @@
     "contact_in_use": "Another guest already uses that contact.",
     "not_found": "This guest is no longer available.",
     "unknown": "Something went wrong. Try again."
+  },
+  "export": {
+    "title": "Export",
+    "warning": "The file contains personal data: names, phone numbers, email addresses and notes. Store it securely and delete it when you no longer need it. Each export is logged; you can export up to five times a day.",
+    "button": "Export guests (CSV)",
+    "running": "Preparing",
+    "rateLimited": "You have reached today's export limit. Try again tomorrow.",
+    "failed": "The export failed. Try again."
   }
 }
