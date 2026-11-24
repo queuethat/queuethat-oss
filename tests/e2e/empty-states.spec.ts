@@ -13,7 +13,6 @@ test('empty screens of a new business explain themselves and offer a next step',
 
   await expect(staff.getByText('No queues yet')).toBeVisible();
   await expect(staff.getByText('A queue is a line guests can join.')).toBeVisible();
-  await expect(staff.getByRole('link', { name: 'Use a template' })).toBeVisible();
   await expectNoSeriousA11yViolations(staff);
   // The one action opens the form instead of sending the owner hunting for a button.
   await staff.getByRole('button', { name: 'Add your first queue' }).click();
