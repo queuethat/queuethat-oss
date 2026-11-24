@@ -42,7 +42,6 @@ import { Route as AdminEventsRouteImport } from './routes/admin/events'
 import { Route as AdminExportRouteImport } from './routes/admin/export'
 import { Route as AdminFeedbackRouteImport } from './routes/admin/feedback'
 import { Route as AdminFormsRouteImport } from './routes/admin/forms'
-import { Route as AdminGoogleRouteImport } from './routes/admin/google'
 import { Route as AdminHeatmapRouteImport } from './routes/admin/heatmap'
 import { Route as AdminHelpRouteImport } from './routes/admin/help'
 import { Route as AdminIntegrationsRouteImport } from './routes/admin/integrations'
@@ -98,9 +97,6 @@ import { Route as AdminPrivacyRequestsRouteImport } from './routes/admin/privacy
 import { Route as AdminQueuesIndexRouteImport } from './routes/admin/queues/index'
 import { Route as AdminQueuesQueueIdRouteImport } from './routes/admin/queues/$queueId'
 import { Route as AdminQueuesPriorityRouteImport } from './routes/admin/queues/priority'
-import { Route as AdminReportsAskRouteImport } from './routes/admin/reports/ask'
-import { Route as AdminReportsCustomRouteImport } from './routes/admin/reports/custom'
-import { Route as AdminReportsSchedulesRouteImport } from './routes/admin/reports/schedules'
 import { Route as AdminSettingsDangerRouteImport } from './routes/admin/settings/danger'
 import { Route as AdminXSplatRouteImport } from './routes/admin/x.$'
 import { Route as AdminQueuesQueueIdIntakeRouteImport } from './routes/admin/queues/$queueId_.intake'
@@ -269,11 +265,6 @@ const AdminFeedbackRoute = AdminFeedbackRouteImport.update({
 const AdminFormsRoute = AdminFormsRouteImport.update({
   id: '/forms',
   path: '/forms',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminGoogleRoute = AdminGoogleRouteImport.update({
-  id: '/google',
-  path: '/google',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminHeatmapRoute = AdminHeatmapRouteImport.update({
@@ -553,21 +544,6 @@ const AdminQueuesPriorityRoute = AdminQueuesPriorityRouteImport.update({
   path: '/queues/priority',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminReportsAskRoute = AdminReportsAskRouteImport.update({
-  id: '/reports/ask',
-  path: '/reports/ask',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminReportsCustomRoute = AdminReportsCustomRouteImport.update({
-  id: '/reports/custom',
-  path: '/reports/custom',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminReportsSchedulesRoute = AdminReportsSchedulesRouteImport.update({
-  id: '/reports/schedules',
-  path: '/reports/schedules',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminSettingsDangerRoute = AdminSettingsDangerRouteImport.update({
   id: '/settings/danger',
   path: '/settings/danger',
@@ -624,7 +600,6 @@ export interface FileRoutesByFullPath {
   '/admin/export': typeof AdminExportRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/forms': typeof AdminFormsRoute
-  '/admin/google': typeof AdminGoogleRoute
   '/admin/heatmap': typeof AdminHeatmapRoute
   '/admin/help': typeof AdminHelpRoute
   '/admin/integrations': typeof AdminIntegrationsRoute
@@ -678,9 +653,6 @@ export interface FileRoutesByFullPath {
   '/admin/privacy/requests': typeof AdminPrivacyRequestsRoute
   '/admin/queues/$queueId': typeof AdminQueuesQueueIdRoute
   '/admin/queues/priority': typeof AdminQueuesPriorityRoute
-  '/admin/reports/ask': typeof AdminReportsAskRoute
-  '/admin/reports/custom': typeof AdminReportsCustomRoute
-  '/admin/reports/schedules': typeof AdminReportsSchedulesRoute
   '/admin/settings/danger': typeof AdminSettingsDangerRoute
   '/admin/x/$': typeof AdminXSplatRoute
   '/admin/guests/': typeof AdminGuestsIndexRoute
@@ -718,7 +690,6 @@ export interface FileRoutesByTo {
   '/admin/export': typeof AdminExportRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/forms': typeof AdminFormsRoute
-  '/admin/google': typeof AdminGoogleRoute
   '/admin/heatmap': typeof AdminHeatmapRoute
   '/admin/help': typeof AdminHelpRoute
   '/admin/integrations': typeof AdminIntegrationsRoute
@@ -772,9 +743,6 @@ export interface FileRoutesByTo {
   '/admin/privacy/requests': typeof AdminPrivacyRequestsRoute
   '/admin/queues/$queueId': typeof AdminQueuesQueueIdRoute
   '/admin/queues/priority': typeof AdminQueuesPriorityRoute
-  '/admin/reports/ask': typeof AdminReportsAskRoute
-  '/admin/reports/custom': typeof AdminReportsCustomRoute
-  '/admin/reports/schedules': typeof AdminReportsSchedulesRoute
   '/admin/settings/danger': typeof AdminSettingsDangerRoute
   '/admin/x/$': typeof AdminXSplatRoute
   '/admin/guests': typeof AdminGuestsIndexRoute
@@ -817,7 +785,6 @@ export interface FileRoutesById {
   '/admin/export': typeof AdminExportRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/forms': typeof AdminFormsRoute
-  '/admin/google': typeof AdminGoogleRoute
   '/admin/heatmap': typeof AdminHeatmapRoute
   '/admin/help': typeof AdminHelpRoute
   '/admin/integrations': typeof AdminIntegrationsRoute
@@ -871,9 +838,6 @@ export interface FileRoutesById {
   '/admin/privacy/requests': typeof AdminPrivacyRequestsRoute
   '/admin/queues/$queueId': typeof AdminQueuesQueueIdRoute
   '/admin/queues/priority': typeof AdminQueuesPriorityRoute
-  '/admin/reports/ask': typeof AdminReportsAskRoute
-  '/admin/reports/custom': typeof AdminReportsCustomRoute
-  '/admin/reports/schedules': typeof AdminReportsSchedulesRoute
   '/admin/settings/danger': typeof AdminSettingsDangerRoute
   '/admin/x/$': typeof AdminXSplatRoute
   '/admin/guests/': typeof AdminGuestsIndexRoute
@@ -917,7 +881,6 @@ export interface FileRouteTypes {
     | '/admin/export'
     | '/admin/feedback'
     | '/admin/forms'
-    | '/admin/google'
     | '/admin/heatmap'
     | '/admin/help'
     | '/admin/integrations'
@@ -971,9 +934,6 @@ export interface FileRouteTypes {
     | '/admin/privacy/requests'
     | '/admin/queues/$queueId'
     | '/admin/queues/priority'
-    | '/admin/reports/ask'
-    | '/admin/reports/custom'
-    | '/admin/reports/schedules'
     | '/admin/settings/danger'
     | '/admin/x/$'
     | '/admin/guests/'
@@ -1011,7 +971,6 @@ export interface FileRouteTypes {
     | '/admin/export'
     | '/admin/feedback'
     | '/admin/forms'
-    | '/admin/google'
     | '/admin/heatmap'
     | '/admin/help'
     | '/admin/integrations'
@@ -1065,9 +1024,6 @@ export interface FileRouteTypes {
     | '/admin/privacy/requests'
     | '/admin/queues/$queueId'
     | '/admin/queues/priority'
-    | '/admin/reports/ask'
-    | '/admin/reports/custom'
-    | '/admin/reports/schedules'
     | '/admin/settings/danger'
     | '/admin/x/$'
     | '/admin/guests'
@@ -1109,7 +1065,6 @@ export interface FileRouteTypes {
     | '/admin/export'
     | '/admin/feedback'
     | '/admin/forms'
-    | '/admin/google'
     | '/admin/heatmap'
     | '/admin/help'
     | '/admin/integrations'
@@ -1163,9 +1118,6 @@ export interface FileRouteTypes {
     | '/admin/privacy/requests'
     | '/admin/queues/$queueId'
     | '/admin/queues/priority'
-    | '/admin/reports/ask'
-    | '/admin/reports/custom'
-    | '/admin/reports/schedules'
     | '/admin/settings/danger'
     | '/admin/x/$'
     | '/admin/guests/'
@@ -1429,13 +1381,6 @@ declare module '@tanstack/react-router' {
       path: '/forms'
       fullPath: '/admin/forms'
       preLoaderRoute: typeof AdminFormsRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/google': {
-      id: '/admin/google'
-      path: '/google'
-      fullPath: '/admin/google'
-      preLoaderRoute: typeof AdminGoogleRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/heatmap': {
@@ -1823,27 +1768,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminQueuesPriorityRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/reports/ask': {
-      id: '/admin/reports/ask'
-      path: '/reports/ask'
-      fullPath: '/admin/reports/ask'
-      preLoaderRoute: typeof AdminReportsAskRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/reports/custom': {
-      id: '/admin/reports/custom'
-      path: '/reports/custom'
-      fullPath: '/admin/reports/custom'
-      preLoaderRoute: typeof AdminReportsCustomRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/reports/schedules': {
-      id: '/admin/reports/schedules'
-      path: '/reports/schedules'
-      fullPath: '/admin/reports/schedules'
-      preLoaderRoute: typeof AdminReportsSchedulesRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/settings/danger': {
       id: '/admin/settings/danger'
       path: '/settings/danger'
@@ -1901,7 +1825,6 @@ interface AdminRouteRouteChildren {
   AdminExportRoute: typeof AdminExportRoute
   AdminFeedbackRoute: typeof AdminFeedbackRoute
   AdminFormsRoute: typeof AdminFormsRoute
-  AdminGoogleRoute: typeof AdminGoogleRoute
   AdminHeatmapRoute: typeof AdminHeatmapRoute
   AdminHelpRoute: typeof AdminHelpRoute
   AdminIntegrationsRoute: typeof AdminIntegrationsRoute
@@ -1933,9 +1856,6 @@ interface AdminRouteRouteChildren {
   AdminPrivacyRequestsRoute: typeof AdminPrivacyRequestsRoute
   AdminQueuesQueueIdRoute: typeof AdminQueuesQueueIdRoute
   AdminQueuesPriorityRoute: typeof AdminQueuesPriorityRoute
-  AdminReportsAskRoute: typeof AdminReportsAskRoute
-  AdminReportsCustomRoute: typeof AdminReportsCustomRoute
-  AdminReportsSchedulesRoute: typeof AdminReportsSchedulesRoute
   AdminSettingsDangerRoute: typeof AdminSettingsDangerRoute
   AdminXSplatRoute: typeof AdminXSplatRoute
   AdminGuestsIndexRoute: typeof AdminGuestsIndexRoute
@@ -1960,7 +1880,6 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminExportRoute: AdminExportRoute,
   AdminFeedbackRoute: AdminFeedbackRoute,
   AdminFormsRoute: AdminFormsRoute,
-  AdminGoogleRoute: AdminGoogleRoute,
   AdminHeatmapRoute: AdminHeatmapRoute,
   AdminHelpRoute: AdminHelpRoute,
   AdminIntegrationsRoute: AdminIntegrationsRoute,
@@ -1992,9 +1911,6 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminPrivacyRequestsRoute: AdminPrivacyRequestsRoute,
   AdminQueuesQueueIdRoute: AdminQueuesQueueIdRoute,
   AdminQueuesPriorityRoute: AdminQueuesPriorityRoute,
-  AdminReportsAskRoute: AdminReportsAskRoute,
-  AdminReportsCustomRoute: AdminReportsCustomRoute,
-  AdminReportsSchedulesRoute: AdminReportsSchedulesRoute,
   AdminSettingsDangerRoute: AdminSettingsDangerRoute,
   AdminXSplatRoute: AdminXSplatRoute,
   AdminGuestsIndexRoute: AdminGuestsIndexRoute,

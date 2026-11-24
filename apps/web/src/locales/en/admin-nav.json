@@ -19,9 +19,6 @@
     "plan": "Usage"
   },
   "insights": {
-    "reportsLabel": "Reports",
-    "reports": "Reports",
-    "scheduled": "Scheduled reports",
     "compare": "Compare locations"
   },
   "goTo": {
@@ -51,9 +48,6 @@
     "apiKeys": "API keys",
     "team": "Team",
     "roles": "Roles",
-    "reports": "Reports",
-    "customReports": "Custom reports",
-    "askAnalytics": "Ask analytics",
     "integrations": "Integrations",
     "whatsapp": "WhatsApp",
     "webhooks": "Webhooks",
@@ -85,8 +79,7 @@
     "requests": "Data requests",
     "privacy": "Privacy",
     "events": "Events",
-    "widget": "Website widget",
-    "google": "Google listing"
+    "widget": "Website widget"
   },
   "help": "Help"
 }

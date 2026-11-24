@@ -26,3 +26,12 @@ exports its admin pages, redirects, slots and strings; `ee/web/extensions.ts` sp
 apps/web/src>`. A feature's strings are a namespace file in `ee/web/src/locales/en/`, returned from
 `localeOverrides` and typed by a `ExtensionLocaleResources` declaration. Browser specs live in
 `ee/tests/e2e` and run with `pnpm test:e2e:ee` (a build with `QT_WEB_EXTENSIONS` set).
+
+## What is here
+
+- `integrations/`: the HubSpot and Square sync adapters (see `docs/integrations/`).
+- `supabase/functions/`: `hubspot-oauth`, `square-oauth` and `integration-sync`. `supabase/config.toml`
+  points each at its entry point here; a build without `ee/` removes those three blocks. The
+  self-host image publishes only `supabase/functions`, so these functions are not in it.
+- `web/`: the Google Business Profile page, installed through `web/extensions.ts`.
+- `docs/`: guides for the above.

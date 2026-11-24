@@ -4,7 +4,6 @@ import admin from './admin.json';
 import adminNav from './admin-nav.json';
 import adminSupport from './admin-support.json';
 import adminApiKeys from './admin-api-keys.json';
-import adminReports from './admin-reports.json';
 import adminIntegrations from './admin-integrations.json';
 import adminWhatsapp from './admin-whatsapp.json';
 import adminChatAlerts from './admin-chat-alerts.json';
@@ -71,7 +70,6 @@ export const en = {
   'admin-support': adminSupport,
   'admin-api-keys': adminApiKeys,
   'admin-chat-alerts': adminChatAlerts,
-  'admin-reports': adminReports,
   'admin-integrations': adminIntegrations,
   'admin-whatsapp': adminWhatsapp,
   'admin-webhooks': adminWebhooks,
