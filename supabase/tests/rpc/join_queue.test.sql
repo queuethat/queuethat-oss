@@ -45,8 +45,8 @@ insert into app.queues (id, org_id, location_id, name, ticket_prefix, join_rate_
   (tests.new_id('queue_rate'), tests.id('org_a'), tests.id('loc_a'), 'Slow', 'R', 2);
 insert into app.queues (id, org_id, location_id, name, ticket_prefix) values
   (tests.new_id('queue_b'), tests.id('org_b'), tests.id('loc_b'), 'Other org', 'B');
-insert into app.services (id, org_id, location_id, queue_id, name) values
-  (tests.new_id('service_b'), tests.id('org_b'), tests.id('loc_b'), tests.id('queue_b'), 'Other');
+insert into app.services (id, org_id, location_id, name) values (tests.new_id('service_b'), tests.id('org_b'), tests.id('loc_b'), 'Other');
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_b'), tests.id('loc_b'), tests.id('queue_b'), tests.id('service_b'));
 select tests.new_id(k) from unnest(array['key_1', 'key_pat', 'key_none', 'key_gina', 'key_kiosk']) k;
 create table tests.results (name text primary key, r api.join_result);
 grant select on all tables in schema tests to anon, authenticated;

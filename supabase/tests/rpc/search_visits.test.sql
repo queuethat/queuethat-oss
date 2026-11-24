@@ -6,8 +6,8 @@ select tests.create_world();
 
 insert into app.queues (id, org_id, location_id, name, ticket_prefix)
 values (tests.new_id('queue_s'), tests.id('org_a'), tests.id('loc_a'), 'Search', 'S');
-insert into app.services (id, org_id, location_id, queue_id, name)
-values (tests.new_id('svc_s'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_s'), 'Colour');
+insert into app.services (id, org_id, location_id, name) values (tests.new_id('svc_s'), tests.id('org_a'), tests.id('loc_a'), 'Colour');
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_s'), tests.id('svc_s'));
 select tests.new_visit('s1', 'queue_s', 'Gina Marsh');
 select tests.new_visit('s2', 'queue_s', 'Omar');
 select tests.new_visit('s3', 'queue_s', '100% Pat_');

@@ -29,16 +29,34 @@ async function linedLocation() {
     .select('id, name');
   if (lines.error) throw lines.error;
   const id = (name: string) => lines.data.find((l) => l.name === name)!.id as string;
+  // One Haircut for the location, offered by Ana and the pool.
   const services = await service
     .schema('app')
     .from('services')
     .insert([
-      { ...base, queue_id: id('Ana'), name: 'Haircut', expected_minutes: 20 },
-      { ...base, queue_id: id('Ana'), name: 'Colour', expected_minutes: 60 },
-      { ...base, queue_id: id('Ben'), name: 'Beard', expected_minutes: 15 },
-      { ...base, queue_id: id('Anyone'), name: 'Haircut', expected_minutes: 20 },
-    ]);
+      { ...base, name: 'Haircut', expected_minutes: 20 },
+      { ...base, name: 'Colour', expected_minutes: 60 },
+      { ...base, name: 'Beard', expected_minutes: 15 },
+    ])
+    .select('id, name');
   if (services.error) throw services.error;
+  const sid = (name: string) => services.data.find((s) => s.name === name)!.id as string;
+  const links = await service
+    .schema('app')
+    .from('queue_services')
+    .insert(
+      [
+        ['Ana', 'Haircut'],
+        ['Ana', 'Colour'],
+        ['Ben', 'Beard'],
+        ['Anyone', 'Haircut'],
+      ].map(([line, svc]) => ({
+        ...base,
+        queue_id: id(line!),
+        service_id: sid(svc!),
+      })),
+    );
+  if (links.error) throw links.error;
   return { slug: place.slug, ana: id('Ana'), pool: id('Anyone') };
 }
 

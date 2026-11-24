@@ -24,10 +24,10 @@ async function twoQueues(email: string) {
   const b = await post<{ id: string }>(email, 'queues', { ...where, name: 'Licences' });
   const service = await post<{ id: string }>(email, 'services', {
     ...where,
-    queue_id: b.id,
     name: 'Licence',
     expected_minutes: 10,
   });
+  await post(email, 'queue_services', { ...where, queue_id: b.id, service_id: service.id });
   return { where, a, b, service };
 }
 

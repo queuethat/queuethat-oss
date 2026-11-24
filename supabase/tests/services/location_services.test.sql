@@ -50,11 +50,8 @@ select is((select count(*)::int from app.services where location_id = tests.id('
 
 -- Dedupe: two queues, each with its own copy of Cut (identical) and Shave (15 vs 20 minutes).
 create temp table dd as select tests.new_id('cut1') c1, tests.new_id('cut2') c2, tests.new_id('sh1') s1, tests.new_id('sh2') s2;
-insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes, color) values
-  (tests.id('cut1'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), 'Cut', 25, '#112233'),
-  (tests.id('cut2'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_b2'), 'Cut', 25, '#112233'),
-  (tests.id('sh1'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), 'Shave', 15, null),
-  (tests.id('sh2'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_b2'), 'Shave', 20, null);
+insert into app.services (id, org_id, location_id, name, expected_minutes, color) values (tests.id('cut1'), tests.id('org_a'), tests.id('loc_a'), 'Cut', 25, '#112233'), (tests.id('cut2'), tests.id('org_a'), tests.id('loc_a'), 'Cut', 25, '#112233'), (tests.id('sh1'), tests.id('org_a'), tests.id('loc_a'), 'Shave', 15, null), (tests.id('sh2'), tests.id('org_a'), tests.id('loc_a'), 'Shave', 20, null);
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), tests.id('cut1')), (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_b2'), tests.id('cut2')), (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), tests.id('sh1')), (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_b2'), tests.id('sh2'));
 update app.services set created_at = now() - interval '1 day' where id = tests.id('cut1');
 insert into app.booking_policies (org_id, location_id, service_id, bookable)
 select org_id, location_id, id, true from app.services where id in (tests.id('cut1'), tests.id('cut2'));

@@ -26,8 +26,10 @@ describe('guest_claim_offer under concurrency', () => {
                values (${locationId}, ${orgId}, 'Shop', ${slug}, 'UTC', 10000)`;
       await tx`insert into app.queues (id, org_id, location_id, name, ticket_prefix)
                values (${queueId}, ${orgId}, ${locationId}, 'Cuts', 'C')`;
-      await tx`insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes)
-               values (${serviceId}, ${orgId}, ${locationId}, ${queueId}, 'Cut', 30)`;
+      await tx`insert into app.services (id, org_id, location_id, name, expected_minutes)
+               values (${serviceId}, ${orgId}, ${locationId}, 'Cut', 30)`;
+      await tx`insert into app.queue_services (org_id, location_id, queue_id, service_id)
+               values (${orgId}, ${locationId}, ${queueId}, ${serviceId})`;
       await tx`insert into app.booking_policies (org_id, service_id, bookable, slot_minutes, min_notice_minutes)
                values (${orgId}, ${serviceId}, true, 30, 0)`;
       for (let weekday = 0; weekday < 7; weekday++) {

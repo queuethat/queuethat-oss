@@ -21,9 +21,12 @@ describe('call_next with a mapped service', () => {
     const locationId = locRow!.location_id;
     const colour = randomUUID();
     const cut = randomUUID();
-    await admin`insert into app.services (id, org_id, location_id, queue_id, name)
-                values (${colour}, ${world.orgId}, ${locationId}, ${world.queueId}, 'Colour'),
-                       (${cut}, ${world.orgId}, ${locationId}, ${world.queueId}, 'Cut')`;
+    await admin`insert into app.services (id, org_id, location_id, name)
+                values (${colour}, ${world.orgId}, ${locationId}, 'Colour'),
+                       (${cut}, ${world.orgId}, ${locationId}, 'Cut')`;
+    await admin`insert into app.queue_services (org_id, location_id, queue_id, service_id)
+                values (${world.orgId}, ${locationId}, ${world.queueId}, ${colour}),
+                       (${world.orgId}, ${locationId}, ${world.queueId}, ${cut})`;
     // Colour is served only at counter 0; Cut anywhere.
     await admin`insert into app.service_resources (org_id, location_id, service_id, counter_id)
                 values (${world.orgId}, ${locationId}, ${colour}, ${world.counters[0]})`;

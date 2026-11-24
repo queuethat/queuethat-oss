@@ -20,9 +20,12 @@ describe('service ticket prefixes under concurrency', () => {
       select location_id from app.queues where id = ${world.queueId}`;
     const registrations = randomUUID();
     const licences = randomUUID();
-    await admin`insert into app.services (id, org_id, location_id, queue_id, name, ticket_prefix)
-                values (${registrations}, ${world.orgId}, ${queue!.location_id}, ${world.queueId}, 'Registrations', 'B'),
-                       (${licences}, ${world.orgId}, ${queue!.location_id}, ${world.queueId}, 'Licences', null)`;
+    await admin`insert into app.services (id, org_id, location_id, name, ticket_prefix)
+                values (${registrations}, ${world.orgId}, ${queue!.location_id}, 'Registrations', 'B'),
+                       (${licences}, ${world.orgId}, ${queue!.location_id}, 'Licences', null)`;
+    await admin`insert into app.queue_services (org_id, location_id, queue_id, service_id)
+                values (${world.orgId}, ${queue!.location_id}, ${world.queueId}, ${registrations}),
+                       (${world.orgId}, ${queue!.location_id}, ${world.queueId}, ${licences})`;
 
     const guests = connect(20);
     try {

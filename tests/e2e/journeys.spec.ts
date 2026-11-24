@@ -30,7 +30,8 @@ test('AC1: Send to Triage moves the guest, whose page shows the new queue, and T
   const base = { org_id: loc!.org_id, location_id: loc!.id };
   const reg = await insert(email, 'queues', { ...base, name: 'Registration', ticket_prefix: 'R' });
   const tri = await insert(email, 'queues', { ...base, name: 'Triage', ticket_prefix: 'T' });
-  const service = await insert(email, 'services', { ...base, queue_id: reg, name: 'Check-in' });
+  const service = await insert(email, 'services', { ...base, name: 'Check-in' });
+  await insert(email, 'queue_services', { ...base, queue_id: reg, service_id: service });
   const journey = await insert(email, 'journeys', { ...base, name: 'Clinic' });
   for (const [i, queue_id] of [reg, tri].entries()) {
     await insert(email, 'journey_steps', {
@@ -103,7 +104,8 @@ test('admin builds a journey from two queues and assigns a service', async ({ de
   const base = { org_id: loc!.org_id, location_id: loc!.id };
   const a = await insert(email, 'queues', { ...base, name: 'Front desk', ticket_prefix: 'F' });
   await insert(email, 'queues', { ...base, name: 'Back office', ticket_prefix: 'B' });
-  await insert(email, 'services', { ...base, queue_id: a, name: 'Forms' });
+  const forms = await insert(email, 'services', { ...base, name: 'Forms' });
+  await insert(email, 'queue_services', { ...base, queue_id: a, service_id: forms });
 
   await signInTo(staff, email, '/admin/journeys');
   await staff.getByRole('button', { name: 'Add a journey' }).click();

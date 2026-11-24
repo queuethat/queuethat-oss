@@ -8,9 +8,8 @@ delete from app.business_hours;
 
 insert into app.queues (id, org_id, location_id, name, ticket_prefix)
 values (tests.new_id('queue_p'), tests.id('org_a'), tests.id('loc_a'), 'Counter', 'A');
-insert into app.services (id, org_id, location_id, queue_id, name, ticket_prefix) values
-  (tests.new_id('svc_reg'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_p'), 'Registrations', 'B'),
-  (tests.new_id('svc_lic'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_p'), 'Licences', null);
+insert into app.services (id, org_id, location_id, name, ticket_prefix) values (tests.new_id('svc_reg'), tests.id('org_a'), tests.id('loc_a'), 'Registrations', 'B'), (tests.new_id('svc_lic'), tests.id('org_a'), tests.id('loc_a'), 'Licences', null);
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_p'), tests.id('svc_reg')), (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_p'), tests.id('svc_lic'));
 
 create function tests.tix(p_key text, p_service text) returns text
 language sql as $$

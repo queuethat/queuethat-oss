@@ -14,8 +14,8 @@ insert into app.queues (id, org_id, location_id, name, ticket_prefix, archived_a
   (tests.new_id('queue_old'), tests.id('org_a'), tests.id('loc_a'), 'Old', 'O', now());
 insert into app.queues (id, org_id, location_id, name, ticket_prefix) values
   (tests.new_id('queue_b'), tests.id('org_b'), tests.id('loc_b'), 'Other org', 'B');
-insert into app.services (id, org_id, location_id, queue_id, name, active) values
-  (tests.new_id('service_off'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), 'Retired', false);
+insert into app.services (id, org_id, location_id, name, active) values (tests.new_id('service_off'), tests.id('org_a'), tests.id('loc_a'), 'Retired', false);
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), tests.id('service_off'));
 create table tests.tokens (name text primary key, token text, visit_id uuid);
 grant select on all tables in schema tests to anon, authenticated;
 grant insert on tests.tokens to anon;

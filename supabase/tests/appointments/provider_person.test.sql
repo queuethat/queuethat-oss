@@ -23,9 +23,8 @@ insert into app.memberships (org_id, user_id, role, location_ids) values
 insert into app.queues (id, org_id, location_id, name, ticket_prefix, kind, provider_user_id) values
   (tests.new_id('line_ada'), tests.id('org_a'), tests.id('loc_a'), 'Dr Ada', 'D', 'provider', tests.id('ada')),
   (tests.new_id('line_open'), tests.id('org_a'), tests.id('loc_a'), 'Whoever', 'W', 'provider', null);
-insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes) values
-  (tests.new_id('svc_ada'), tests.id('org_a'), tests.id('loc_a'), tests.id('line_ada'), 'Checkup', 30),
-  (tests.new_id('svc_open'), tests.id('org_a'), tests.id('loc_a'), tests.id('line_open'), 'Checkup', 30);
+insert into app.services (id, org_id, location_id, name, expected_minutes) values (tests.new_id('svc_ada'), tests.id('org_a'), tests.id('loc_a'), 'Checkup', 30), (tests.new_id('svc_open'), tests.id('org_a'), tests.id('loc_a'), 'Checkup', 30);
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('line_ada'), tests.id('svc_ada')), (tests.id('org_a'), tests.id('loc_a'), tests.id('line_open'), tests.id('svc_open'));
 insert into app.booking_policies (org_id, service_id, bookable, slot_minutes, slot_offset_minutes, min_notice_minutes)
 select tests.id('org_a'), tests.id(k), true, 30, 0, 60 from unnest(array['svc_ada', 'svc_open']) k;
 -- Location-wide rules: both providers work every service, which is what used to cross the lines.

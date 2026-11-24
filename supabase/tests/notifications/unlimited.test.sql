@@ -11,8 +11,8 @@ select tests.create_world();
 delete from app.business_hours where location_id = tests.id('loc_a');
 insert into app.queues (id, org_id, location_id, name, ticket_prefix, renotify_eta_delta_minutes) values
   (tests.new_id('queue_u'), tests.id('org_a'), tests.id('loc_a'), 'Unlimited', 'U', 20);
-insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes)
-values (tests.new_id('svc_u'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_u'), 'Cut', 10);
+insert into app.services (id, org_id, location_id, name, expected_minutes) values (tests.new_id('svc_u'), tests.id('org_a'), tests.id('loc_a'), 'Cut', 10);
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_u'), tests.id('svc_u'));
 select tests.new_visit(n, 'queue_u') from unnest(array['u1', 'u2', 'u3', 'u4', 'u5']) n;
 alter table app.visit_events disable trigger enqueue_notifications;
 select private.set_actor('system', null);

@@ -7,9 +7,8 @@ select tests.create_world();
 -- Chair 1 = counter_a, Chair 2 = counter_pair (fixtures). Colour is mapped only to Chair 2.
 insert into app.queues (id, org_id, location_id, name, ticket_prefix)
 values (tests.new_id('queue_m'), tests.id('org_a'), tests.id('loc_a'), 'Mapped', 'M');
-insert into app.services (id, org_id, location_id, queue_id, name) values
-  (tests.new_id('svc_colour'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_m'), 'Colour'),
-  (tests.new_id('svc_cut'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_m'), 'Cut');
+insert into app.services (id, org_id, location_id, name) values (tests.new_id('svc_colour'), tests.id('org_a'), tests.id('loc_a'), 'Colour'), (tests.new_id('svc_cut'), tests.id('org_a'), tests.id('loc_a'), 'Cut');
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_m'), tests.id('svc_colour')), (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_m'), tests.id('svc_cut'));
 insert into app.service_resources (org_id, location_id, service_id, counter_id)
 values (tests.id('org_a'), tests.id('loc_a'), tests.id('svc_colour'), tests.id('counter_pair'));
 select tests.new_visit('m1', 'queue_m', 'Colour guest');

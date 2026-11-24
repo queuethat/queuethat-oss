@@ -18,14 +18,25 @@ test('the steps follow the guest, services are tiles, and the ticket is mono', a
     .eq('id', queueId)
     .single();
   for (const name of ['Haircut', 'Beard trim']) {
-    const { error } = await service.schema('app').from('services').insert({
+    const { data, error } = await service
+      .schema('app')
+      .from('services')
+      .insert({
+        org_id: orgId,
+        location_id: location!.location_id,
+        name,
+        expected_minutes: 15,
+      })
+      .select('id')
+      .single();
+    if (error) throw error;
+    const link = await service.schema('app').from('queue_services').insert({
       org_id: orgId,
       location_id: location!.location_id,
       queue_id: queueId,
-      name,
-      expected_minutes: 15,
+      service_id: data.id,
     });
-    if (error) throw error;
+    if (link.error) throw link.error;
   }
   await openKiosk(kiosk, code);
 

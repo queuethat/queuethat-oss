@@ -87,8 +87,8 @@ update app.organizations set status = 'active' where id = tests.id('org_a');
 
 -- AC5: Berlin DST days (loc_b / org B)
 insert into app.queues (id, org_id, location_id, name, ticket_prefix) values (tests.new_id('queue_b'), tests.id('org_b'), tests.id('loc_b'), 'B', 'B');
-insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes)
-values (tests.new_id('service_b'), tests.id('org_b'), tests.id('loc_b'), tests.id('queue_b'), 'Cut', 30);
+insert into app.services (id, org_id, location_id, name, expected_minutes) values (tests.new_id('service_b'), tests.id('org_b'), tests.id('loc_b'), 'Cut', 30);
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_b'), tests.id('loc_b'), tests.id('queue_b'), tests.id('service_b'));
 insert into app.booking_policies (org_id, service_id, bookable, slot_minutes, min_notice_minutes) values (tests.id('org_b'), tests.id('service_b'), true, 30, 0);
 insert into app.hours_exceptions (org_id, location_id, date, closed, opens, closes) values
   (tests.id('org_b'), tests.id('loc_b'), '2026-03-29', false, '01:00', '05:00'),

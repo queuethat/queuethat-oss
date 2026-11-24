@@ -35,10 +35,14 @@ async function routedLocation() {
   const svc = async (queue_id: string, name: string) => {
     const { data, error: e } = await app()
       .from('services')
-      .insert({ ...where, queue_id, name, expected_minutes: 10 })
+      .insert({ ...where, name, expected_minutes: 10 })
       .select('id')
       .single();
     if (e) throw e;
+    const link = await app()
+      .from('queue_services')
+      .insert({ ...where, queue_id, service_id: data.id });
+    if (link.error) throw link.error;
     return data.id as string;
   };
   await svc(front, 'General enquiry');

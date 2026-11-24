@@ -13,8 +13,11 @@ insert into app.queues (id, org_id, location_id, name, ticket_prefix) values
   (tests.new_id('queue_pb'), tests.id('org_b'), tests.id('loc_b'), 'Prefs B', 'B');
 delete from app.business_hours;
 delete from app.hours_exceptions;
-insert into app.services (org_id, location_id, queue_id, name, expected_minutes)
-select q.org_id, q.location_id, q.id, 'Cut', 20 from app.queues q where q.name in ('Prefs', 'Other', 'Prefs B');
+with q as (select x.*, gen_random_uuid() as sid from app.queues x where x.name in ('Prefs', 'Other', 'Prefs B')),
+     s as (insert into app.services (id, org_id, location_id, name, expected_minutes)
+           select sid, org_id, location_id, 'Cut', 20 from q)
+insert into app.queue_services (org_id, location_id, queue_id, service_id)
+select org_id, location_id, id, sid from q;
 create table tests.tokens (name text primary key, token text, vid uuid);
 grant insert, select on tests.tokens to anon, authenticated, service_role;
 create function tests.vid(p_name text) returns uuid language sql security definer set search_path = '' as $$

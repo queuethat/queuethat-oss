@@ -3587,14 +3587,14 @@ isOneToOne: false
                   ]
                 },"services": {
                   Row: {
-                    "active": boolean,"color": string | null,"created_at": string,"description": string | null,"expected_minutes": number,"id": string,"journey_id": string | null,"location_id": string,"merged_into_id": string | null,"name": string,"org_id": string,"queue_id": string | null,"sort_order": number,"ticket_prefix": string | null
+                    "active": boolean,"color": string | null,"created_at": string,"description": string | null,"expected_minutes": number,"id": string,"journey_id": string | null,"location_id": string,"merged_into_id": string | null,"name": string,"org_id": string,"sort_order": number,"ticket_prefix": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "active"?: boolean,"color"?: string | null,"created_at"?: string,"description"?: string | null,"expected_minutes"?: number,"id"?: string,"journey_id"?: string | null,"location_id": string,"merged_into_id"?: string | null,"name": string,"org_id": string,"queue_id"?: string | null,"sort_order"?: number,"ticket_prefix"?: string | null
+                    "active"?: boolean,"color"?: string | null,"created_at"?: string,"description"?: string | null,"expected_minutes"?: number,"id"?: string,"journey_id"?: string | null,"location_id": string,"merged_into_id"?: string | null,"name": string,"org_id": string,"sort_order"?: number,"ticket_prefix"?: string | null
                   }
                   Update: {
-                    "active"?: boolean,"color"?: string | null,"created_at"?: string,"description"?: string | null,"expected_minutes"?: number,"id"?: string,"journey_id"?: string | null,"location_id"?: string,"merged_into_id"?: string | null,"name"?: string,"org_id"?: string,"queue_id"?: string | null,"sort_order"?: number,"ticket_prefix"?: string | null
+                    "active"?: boolean,"color"?: string | null,"created_at"?: string,"description"?: string | null,"expected_minutes"?: number,"id"?: string,"journey_id"?: string | null,"location_id"?: string,"merged_into_id"?: string | null,"name"?: string,"org_id"?: string,"sort_order"?: number,"ticket_prefix"?: string | null
                   }
                   Relationships: [
                     {
@@ -3603,12 +3603,6 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "journeys"
       referencedColumns: ["id"]
-    },{
-      foreignKeyName: "services_org_id_location_id_queue_id_fkey"
-      columns: ["org_id","location_id","queue_id"]
-isOneToOne: false
-      referencedRelation: "queues"
-      referencedColumns: ["org_id","location_id","id"]
     },{
       foreignKeyName: "services_org_id_merged_into_id_fkey"
       columns: ["org_id","merged_into_id"]

@@ -8,8 +8,8 @@ delete from app.business_hours where location_id = tests.id('loc_a');
 delete from app.hours_exceptions where location_id = tests.id('loc_a');
 insert into app.queues (id, org_id, location_id, name, ticket_prefix) values
   (tests.new_id('queue_w'), tests.id('org_a'), tests.id('loc_a'), 'Wait', 'W');
-insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes)
-values (tests.new_id('svc_w'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_w'), 'Cut', 10);
+insert into app.services (id, org_id, location_id, name, expected_minutes) values (tests.new_id('svc_w'), tests.id('org_a'), tests.id('loc_a'), 'Cut', 10);
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_w'), tests.id('svc_w'));
 select tests.new_visit('w' || n, 'queue_w') from generate_series(1, 4) n;
 update app.visits set service_id = tests.id('svc_w') where queue_id = tests.id('queue_w');
 

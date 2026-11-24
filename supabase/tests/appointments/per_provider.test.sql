@@ -23,10 +23,8 @@ insert into app.queues (id, org_id, location_id, name, ticket_prefix, kind) valu
 insert into app.queues (id, org_id, location_id, name, ticket_prefix, kind, pulls_from) values
   (tests.new_id('line_ada'), tests.id('org_a'), tests.id('loc_a'), 'Dr Ada', 'D', 'provider', tests.id('pool')),
   (tests.new_id('line_ben'), tests.id('org_a'), tests.id('loc_a'), 'Dr Ben', 'B', 'provider', tests.id('pool'));
-insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes) values
-  (tests.new_id('svc_ada'), tests.id('org_a'), tests.id('loc_a'), tests.id('line_ada'), 'Checkup', 30),
-  (tests.new_id('svc_ben'), tests.id('org_a'), tests.id('loc_a'), tests.id('line_ben'), 'Checkup', 30),
-  (tests.new_id('svc_pool'), tests.id('org_a'), tests.id('loc_a'), tests.id('pool'), 'Checkup', 30);
+insert into app.services (id, org_id, location_id, name, expected_minutes) values (tests.new_id('svc_ada'), tests.id('org_a'), tests.id('loc_a'), 'Checkup', 30), (tests.new_id('svc_ben'), tests.id('org_a'), tests.id('loc_a'), 'Checkup', 30), (tests.new_id('svc_pool'), tests.id('org_a'), tests.id('loc_a'), 'Checkup', 30);
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('line_ada'), tests.id('svc_ada')), (tests.id('org_a'), tests.id('loc_a'), tests.id('line_ben'), tests.id('svc_ben')), (tests.id('org_a'), tests.id('loc_a'), tests.id('pool'), tests.id('svc_pool'));
 insert into app.booking_policies (org_id, service_id, bookable, slot_minutes, slot_offset_minutes, min_notice_minutes)
 select tests.id('org_a'), tests.id(k), true, 30, 0, 60 from unnest(array['svc_ada', 'svc_ben', 'svc_pool']) k;
 -- Each provider's service is theirs; the pool's is anyone's.
