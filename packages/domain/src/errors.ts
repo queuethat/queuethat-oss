@@ -81,6 +81,7 @@ export const ERROR_CODES = [
   'platform_mode_unavailable',
   'domain_taken',
   'plan_limit_reached',
+  'feature_not_in_plan',
   'slug_taken',
 ] as const;
 

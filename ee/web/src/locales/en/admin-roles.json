@@ -1,0 +1,69 @@
+{
+  "title": "Roles",
+  "loading": "Loading roles",
+  "intro": "A custom role is a set of permissions for staff members. Give it to someone on the Team page; it replaces what staff can do for the permissions below, and nothing else changes.",
+  "readOnly": "Only owners can create or change roles. You can see which roles exist.",
+  "empty": {
+    "title": "No custom roles yet",
+    "description": "Staff, managers, admins and owners work as before. Create a role to limit or extend what a staff member can do."
+  },
+  "noPermissions": "No permissions",
+  "holders_one": "{{count}} person has this role",
+  "holders_other": "{{count}} people have this role",
+  "create": {
+    "trigger": "New role",
+    "title": "New role"
+  },
+  "edit": {
+    "trigger": "Edit",
+    "triggerFor": "Edit {{name}}",
+    "title": "Edit {{name}}"
+  },
+  "dialogDescription": "Pick what people with this role may do. Anything left unticked is not allowed.",
+  "name": "Role name",
+  "nameHint": "Shown on the Team page, for example Greeter or Cashier.",
+  "group": {
+    "queue": "Running the queue",
+    "payments": "Payments"
+  },
+  "permission": {
+    "visits": {
+      "call": {
+        "label": "Call guests",
+        "help": "Call the next guest and call a guest again."
+      },
+      "remove": {
+        "label": "Remove guests",
+        "help": "Remove or cancel a guest in the queue."
+      }
+    },
+    "payments": {
+      "charge": {
+        "label": "Charge no-show fees",
+        "help": "Charge the fee on a held or stored card."
+      },
+      "refund": {
+        "label": "Refund payments",
+        "help": "Refund all or part of a payment."
+      }
+    }
+  },
+  "save": "Save role",
+  "saving": "Saving",
+  "cancel": "Cancel",
+  "delete": {
+    "trigger": "Delete",
+    "triggerFor": "Delete {{name}}",
+    "title": "Delete {{name}}?",
+    "description": "Nobody has this role. You can create it again later.",
+    "inUse": "People still have this role. Change their role on the Team page first.",
+    "confirm": "Delete role",
+    "cancel": "Keep it"
+  },
+  "errors": {
+    "permission_denied": "Only owners can change roles.",
+    "invalid_input": "That name is already used, or a permission isn't allowed.",
+    "role_in_use": "People still have this role. Change their role on the Team page first.",
+    "unknown": "Couldn’t save the role. Try again."
+  }
+}

@@ -37,13 +37,11 @@ import { Route as AdminBrandingRouteImport } from './routes/admin/branding'
 import { Route as AdminComparisonRouteImport } from './routes/admin/comparison'
 import { Route as AdminCountersRouteImport } from './routes/admin/counters'
 import { Route as AdminDevicesRouteImport } from './routes/admin/devices'
-import { Route as AdminDomainsRouteImport } from './routes/admin/domains'
 import { Route as AdminEtaAccuracyRouteImport } from './routes/admin/eta-accuracy'
 import { Route as AdminEventsRouteImport } from './routes/admin/events'
 import { Route as AdminExportRouteImport } from './routes/admin/export'
 import { Route as AdminFeedbackRouteImport } from './routes/admin/feedback'
 import { Route as AdminFormsRouteImport } from './routes/admin/forms'
-import { Route as AdminGoogleRouteImport } from './routes/admin/google'
 import { Route as AdminHeatmapRouteImport } from './routes/admin/heatmap'
 import { Route as AdminHelpRouteImport } from './routes/admin/help'
 import { Route as AdminIntegrationsRouteImport } from './routes/admin/integrations'
@@ -53,13 +51,10 @@ import { Route as AdminOverviewRouteImport } from './routes/admin/overview'
 import { Route as AdminPerformanceRouteImport } from './routes/admin/performance'
 import { Route as AdminPosterRouteImport } from './routes/admin/poster'
 import { Route as AdminResourcesRouteImport } from './routes/admin/resources'
-import { Route as AdminRolesRouteImport } from './routes/admin/roles'
 import { Route as AdminRoutingRouteImport } from './routes/admin/routing'
 import { Route as AdminServicesRouteImport } from './routes/admin/services'
-import { Route as AdminShiftsRouteImport } from './routes/admin/shifts'
 import { Route as AdminSignageRouteImport } from './routes/admin/signage'
 import { Route as AdminTeamRouteImport } from './routes/admin/team'
-import { Route as AdminTemplatesRouteImport } from './routes/admin/templates'
 import { Route as AdminUsageRouteImport } from './routes/admin/usage'
 import { Route as AdminWhatsappRouteImport } from './routes/admin/whatsapp'
 import { Route as AdminWidgetRouteImport } from './routes/admin/widget'
@@ -81,8 +76,6 @@ import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
 import { Route as PayCodeRouteImport } from './routes/pay/$code'
 import { Route as QLocationSlugRouteImport } from './routes/q/$locationSlug'
 import { Route as StaffIndexRouteImport } from './routes/staff/index'
-import { Route as StaffPlanningRouteImport } from './routes/staff/planning'
-import { Route as StaffShiftsRouteImport } from './routes/staff/shifts'
 import { Route as VTokenRouteImport } from './routes/v/$token'
 import { Route as WLocationSlugRouteImport } from './routes/w/$locationSlug'
 import { Route as AdminAccountCalendarRouteImport } from './routes/admin/account/calendar'
@@ -92,8 +85,6 @@ import { Route as AdminDevelopersChatAlertsRouteImport } from './routes/admin/de
 import { Route as AdminDevelopersWebhooksRouteImport } from './routes/admin/developers/webhooks'
 import { Route as AdminGuestsIndexRouteImport } from './routes/admin/guests/index'
 import { Route as AdminGuestsGuestIdRouteImport } from './routes/admin/guests/$guestId'
-import { Route as AdminGuestsDuplicatesRouteImport } from './routes/admin/guests/duplicates'
-import { Route as AdminGuestsImportRouteImport } from './routes/admin/guests/import'
 import { Route as AdminLocationHoursRouteImport } from './routes/admin/location_.hours'
 import { Route as AdminLocationNewRouteImport } from './routes/admin/location_.new'
 import { Route as AdminNotificationsFailedRouteImport } from './routes/admin/notifications/failed'
@@ -102,9 +93,6 @@ import { Route as AdminPrivacyRequestsRouteImport } from './routes/admin/privacy
 import { Route as AdminQueuesIndexRouteImport } from './routes/admin/queues/index'
 import { Route as AdminQueuesQueueIdRouteImport } from './routes/admin/queues/$queueId'
 import { Route as AdminQueuesPriorityRouteImport } from './routes/admin/queues/priority'
-import { Route as AdminReportsAskRouteImport } from './routes/admin/reports/ask'
-import { Route as AdminReportsCustomRouteImport } from './routes/admin/reports/custom'
-import { Route as AdminReportsSchedulesRouteImport } from './routes/admin/reports/schedules'
 import { Route as AdminSettingsDangerRouteImport } from './routes/admin/settings/danger'
 import { Route as AdminXSplatRouteImport } from './routes/admin/x.$'
 import { Route as AdminQueuesQueueIdIntakeRouteImport } from './routes/admin/queues/$queueId_.intake'
@@ -250,11 +238,6 @@ const AdminDevicesRoute = AdminDevicesRouteImport.update({
   path: '/devices',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminDomainsRoute = AdminDomainsRouteImport.update({
-  id: '/domains',
-  path: '/domains',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminEtaAccuracyRoute = AdminEtaAccuracyRouteImport.update({
   id: '/eta-accuracy',
   path: '/eta-accuracy',
@@ -278,11 +261,6 @@ const AdminFeedbackRoute = AdminFeedbackRouteImport.update({
 const AdminFormsRoute = AdminFormsRouteImport.update({
   id: '/forms',
   path: '/forms',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminGoogleRoute = AdminGoogleRouteImport.update({
-  id: '/google',
-  path: '/google',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminHeatmapRoute = AdminHeatmapRouteImport.update({
@@ -330,11 +308,6 @@ const AdminResourcesRoute = AdminResourcesRouteImport.update({
   path: '/resources',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminRolesRoute = AdminRolesRouteImport.update({
-  id: '/roles',
-  path: '/roles',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminRoutingRoute = AdminRoutingRouteImport.update({
   id: '/routing',
   path: '/routing',
@@ -345,11 +318,6 @@ const AdminServicesRoute = AdminServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminShiftsRoute = AdminShiftsRouteImport.update({
-  id: '/shifts',
-  path: '/shifts',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminSignageRoute = AdminSignageRouteImport.update({
   id: '/signage',
   path: '/signage',
@@ -358,11 +326,6 @@ const AdminSignageRoute = AdminSignageRouteImport.update({
 const AdminTeamRoute = AdminTeamRouteImport.update({
   id: '/team',
   path: '/team',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminTemplatesRoute = AdminTemplatesRouteImport.update({
-  id: '/templates',
-  path: '/templates',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminUsageRoute = AdminUsageRouteImport.update({
@@ -470,16 +433,6 @@ const StaffIndexRoute = StaffIndexRouteImport.update({
   path: '/',
   getParentRoute: () => StaffRouteRoute,
 } as any)
-const StaffPlanningRoute = StaffPlanningRouteImport.update({
-  id: '/planning',
-  path: '/planning',
-  getParentRoute: () => StaffRouteRoute,
-} as any)
-const StaffShiftsRoute = StaffShiftsRouteImport.update({
-  id: '/shifts',
-  path: '/shifts',
-  getParentRoute: () => StaffRouteRoute,
-} as any)
 const VTokenRoute = VTokenRouteImport.update({
   id: '/$token',
   path: '/$token',
@@ -526,16 +479,6 @@ const AdminGuestsGuestIdRoute = AdminGuestsGuestIdRouteImport.update({
   path: '/guests/$guestId',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminGuestsDuplicatesRoute = AdminGuestsDuplicatesRouteImport.update({
-  id: '/guests/duplicates',
-  path: '/guests/duplicates',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminGuestsImportRoute = AdminGuestsImportRouteImport.update({
-  id: '/guests/import',
-  path: '/guests/import',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminLocationHoursRoute = AdminLocationHoursRouteImport.update({
   id: '/location_/hours',
   path: '/location/hours',
@@ -575,21 +518,6 @@ const AdminQueuesQueueIdRoute = AdminQueuesQueueIdRouteImport.update({
 const AdminQueuesPriorityRoute = AdminQueuesPriorityRouteImport.update({
   id: '/queues/priority',
   path: '/queues/priority',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminReportsAskRoute = AdminReportsAskRouteImport.update({
-  id: '/reports/ask',
-  path: '/reports/ask',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminReportsCustomRoute = AdminReportsCustomRouteImport.update({
-  id: '/reports/custom',
-  path: '/reports/custom',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminReportsSchedulesRoute = AdminReportsSchedulesRouteImport.update({
-  id: '/reports/schedules',
-  path: '/reports/schedules',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminSettingsDangerRoute = AdminSettingsDangerRouteImport.update({
@@ -643,13 +571,11 @@ export interface FileRoutesByFullPath {
   '/admin/comparison': typeof AdminComparisonRoute
   '/admin/counters': typeof AdminCountersRoute
   '/admin/devices': typeof AdminDevicesRoute
-  '/admin/domains': typeof AdminDomainsRoute
   '/admin/eta-accuracy': typeof AdminEtaAccuracyRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/export': typeof AdminExportRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/forms': typeof AdminFormsRoute
-  '/admin/google': typeof AdminGoogleRoute
   '/admin/heatmap': typeof AdminHeatmapRoute
   '/admin/help': typeof AdminHelpRoute
   '/admin/integrations': typeof AdminIntegrationsRoute
@@ -659,13 +585,10 @@ export interface FileRoutesByFullPath {
   '/admin/performance': typeof AdminPerformanceRoute
   '/admin/poster': typeof AdminPosterRoute
   '/admin/resources': typeof AdminResourcesRoute
-  '/admin/roles': typeof AdminRolesRoute
   '/admin/routing': typeof AdminRoutingRoute
   '/admin/services': typeof AdminServicesRoute
-  '/admin/shifts': typeof AdminShiftsRoute
   '/admin/signage': typeof AdminSignageRoute
   '/admin/team': typeof AdminTeamRoute
-  '/admin/templates': typeof AdminTemplatesRoute
   '/admin/usage': typeof AdminUsageRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
   '/admin/widget': typeof AdminWidgetRoute
@@ -684,8 +607,6 @@ export interface FileRoutesByFullPath {
   '/o/$token': typeof OTokenRoute
   '/pay/$code': typeof PayCodeRoute
   '/q/$locationSlug': typeof QLocationSlugRoute
-  '/staff/planning': typeof StaffPlanningRoute
-  '/staff/shifts': typeof StaffShiftsRoute
   '/v/$token': typeof VTokenRoute
   '/w/$locationSlug': typeof WLocationSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -698,17 +619,12 @@ export interface FileRoutesByFullPath {
   '/admin/developers/chat-alerts': typeof AdminDevelopersChatAlertsRoute
   '/admin/developers/webhooks': typeof AdminDevelopersWebhooksRoute
   '/admin/guests/$guestId': typeof AdminGuestsGuestIdRoute
-  '/admin/guests/duplicates': typeof AdminGuestsDuplicatesRoute
-  '/admin/guests/import': typeof AdminGuestsImportRoute
   '/admin/location/hours': typeof AdminLocationHoursRoute
   '/admin/location/new': typeof AdminLocationNewRoute
   '/admin/notifications/failed': typeof AdminNotificationsFailedRoute
   '/admin/privacy/requests': typeof AdminPrivacyRequestsRoute
   '/admin/queues/$queueId': typeof AdminQueuesQueueIdRoute
   '/admin/queues/priority': typeof AdminQueuesPriorityRoute
-  '/admin/reports/ask': typeof AdminReportsAskRoute
-  '/admin/reports/custom': typeof AdminReportsCustomRoute
-  '/admin/reports/schedules': typeof AdminReportsSchedulesRoute
   '/admin/settings/danger': typeof AdminSettingsDangerRoute
   '/admin/x/$': typeof AdminXSplatRoute
   '/admin/guests/': typeof AdminGuestsIndexRoute
@@ -741,13 +657,11 @@ export interface FileRoutesByTo {
   '/admin/comparison': typeof AdminComparisonRoute
   '/admin/counters': typeof AdminCountersRoute
   '/admin/devices': typeof AdminDevicesRoute
-  '/admin/domains': typeof AdminDomainsRoute
   '/admin/eta-accuracy': typeof AdminEtaAccuracyRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/export': typeof AdminExportRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/forms': typeof AdminFormsRoute
-  '/admin/google': typeof AdminGoogleRoute
   '/admin/heatmap': typeof AdminHeatmapRoute
   '/admin/help': typeof AdminHelpRoute
   '/admin/integrations': typeof AdminIntegrationsRoute
@@ -757,13 +671,10 @@ export interface FileRoutesByTo {
   '/admin/performance': typeof AdminPerformanceRoute
   '/admin/poster': typeof AdminPosterRoute
   '/admin/resources': typeof AdminResourcesRoute
-  '/admin/roles': typeof AdminRolesRoute
   '/admin/routing': typeof AdminRoutingRoute
   '/admin/services': typeof AdminServicesRoute
-  '/admin/shifts': typeof AdminShiftsRoute
   '/admin/signage': typeof AdminSignageRoute
   '/admin/team': typeof AdminTeamRoute
-  '/admin/templates': typeof AdminTemplatesRoute
   '/admin/usage': typeof AdminUsageRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
   '/admin/widget': typeof AdminWidgetRoute
@@ -782,8 +693,6 @@ export interface FileRoutesByTo {
   '/o/$token': typeof OTokenRoute
   '/pay/$code': typeof PayCodeRoute
   '/q/$locationSlug': typeof QLocationSlugRoute
-  '/staff/planning': typeof StaffPlanningRoute
-  '/staff/shifts': typeof StaffShiftsRoute
   '/v/$token': typeof VTokenRoute
   '/w/$locationSlug': typeof WLocationSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -796,17 +705,12 @@ export interface FileRoutesByTo {
   '/admin/developers/chat-alerts': typeof AdminDevelopersChatAlertsRoute
   '/admin/developers/webhooks': typeof AdminDevelopersWebhooksRoute
   '/admin/guests/$guestId': typeof AdminGuestsGuestIdRoute
-  '/admin/guests/duplicates': typeof AdminGuestsDuplicatesRoute
-  '/admin/guests/import': typeof AdminGuestsImportRoute
   '/admin/location/hours': typeof AdminLocationHoursRoute
   '/admin/location/new': typeof AdminLocationNewRoute
   '/admin/notifications/failed': typeof AdminNotificationsFailedRoute
   '/admin/privacy/requests': typeof AdminPrivacyRequestsRoute
   '/admin/queues/$queueId': typeof AdminQueuesQueueIdRoute
   '/admin/queues/priority': typeof AdminQueuesPriorityRoute
-  '/admin/reports/ask': typeof AdminReportsAskRoute
-  '/admin/reports/custom': typeof AdminReportsCustomRoute
-  '/admin/reports/schedules': typeof AdminReportsSchedulesRoute
   '/admin/settings/danger': typeof AdminSettingsDangerRoute
   '/admin/x/$': typeof AdminXSplatRoute
   '/admin/guests': typeof AdminGuestsIndexRoute
@@ -844,13 +748,11 @@ export interface FileRoutesById {
   '/admin/comparison': typeof AdminComparisonRoute
   '/admin/counters': typeof AdminCountersRoute
   '/admin/devices': typeof AdminDevicesRoute
-  '/admin/domains': typeof AdminDomainsRoute
   '/admin/eta-accuracy': typeof AdminEtaAccuracyRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/export': typeof AdminExportRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/forms': typeof AdminFormsRoute
-  '/admin/google': typeof AdminGoogleRoute
   '/admin/heatmap': typeof AdminHeatmapRoute
   '/admin/help': typeof AdminHelpRoute
   '/admin/integrations': typeof AdminIntegrationsRoute
@@ -860,13 +762,10 @@ export interface FileRoutesById {
   '/admin/performance': typeof AdminPerformanceRoute
   '/admin/poster': typeof AdminPosterRoute
   '/admin/resources': typeof AdminResourcesRoute
-  '/admin/roles': typeof AdminRolesRoute
   '/admin/routing': typeof AdminRoutingRoute
   '/admin/services': typeof AdminServicesRoute
-  '/admin/shifts': typeof AdminShiftsRoute
   '/admin/signage': typeof AdminSignageRoute
   '/admin/team': typeof AdminTeamRoute
-  '/admin/templates': typeof AdminTemplatesRoute
   '/admin/usage': typeof AdminUsageRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
   '/admin/widget': typeof AdminWidgetRoute
@@ -885,8 +784,6 @@ export interface FileRoutesById {
   '/o/$token': typeof OTokenRoute
   '/pay/$code': typeof PayCodeRoute
   '/q/$locationSlug': typeof QLocationSlugRoute
-  '/staff/planning': typeof StaffPlanningRoute
-  '/staff/shifts': typeof StaffShiftsRoute
   '/v/$token': typeof VTokenRoute
   '/w/$locationSlug': typeof WLocationSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -899,17 +796,12 @@ export interface FileRoutesById {
   '/admin/developers/chat-alerts': typeof AdminDevelopersChatAlertsRoute
   '/admin/developers/webhooks': typeof AdminDevelopersWebhooksRoute
   '/admin/guests/$guestId': typeof AdminGuestsGuestIdRoute
-  '/admin/guests/duplicates': typeof AdminGuestsDuplicatesRoute
-  '/admin/guests/import': typeof AdminGuestsImportRoute
   '/admin/location_/hours': typeof AdminLocationHoursRoute
   '/admin/location_/new': typeof AdminLocationNewRoute
   '/admin/notifications/failed': typeof AdminNotificationsFailedRoute
   '/admin/privacy/requests': typeof AdminPrivacyRequestsRoute
   '/admin/queues/$queueId': typeof AdminQueuesQueueIdRoute
   '/admin/queues/priority': typeof AdminQueuesPriorityRoute
-  '/admin/reports/ask': typeof AdminReportsAskRoute
-  '/admin/reports/custom': typeof AdminReportsCustomRoute
-  '/admin/reports/schedules': typeof AdminReportsSchedulesRoute
   '/admin/settings/danger': typeof AdminSettingsDangerRoute
   '/admin/x/$': typeof AdminXSplatRoute
   '/admin/guests/': typeof AdminGuestsIndexRoute
@@ -948,13 +840,11 @@ export interface FileRouteTypes {
     | '/admin/comparison'
     | '/admin/counters'
     | '/admin/devices'
-    | '/admin/domains'
     | '/admin/eta-accuracy'
     | '/admin/events'
     | '/admin/export'
     | '/admin/feedback'
     | '/admin/forms'
-    | '/admin/google'
     | '/admin/heatmap'
     | '/admin/help'
     | '/admin/integrations'
@@ -964,13 +854,10 @@ export interface FileRouteTypes {
     | '/admin/performance'
     | '/admin/poster'
     | '/admin/resources'
-    | '/admin/roles'
     | '/admin/routing'
     | '/admin/services'
-    | '/admin/shifts'
     | '/admin/signage'
     | '/admin/team'
-    | '/admin/templates'
     | '/admin/usage'
     | '/admin/whatsapp'
     | '/admin/widget'
@@ -989,8 +876,6 @@ export interface FileRouteTypes {
     | '/o/$token'
     | '/pay/$code'
     | '/q/$locationSlug'
-    | '/staff/planning'
-    | '/staff/shifts'
     | '/v/$token'
     | '/w/$locationSlug'
     | '/admin/'
@@ -1003,17 +888,12 @@ export interface FileRouteTypes {
     | '/admin/developers/chat-alerts'
     | '/admin/developers/webhooks'
     | '/admin/guests/$guestId'
-    | '/admin/guests/duplicates'
-    | '/admin/guests/import'
     | '/admin/location/hours'
     | '/admin/location/new'
     | '/admin/notifications/failed'
     | '/admin/privacy/requests'
     | '/admin/queues/$queueId'
     | '/admin/queues/priority'
-    | '/admin/reports/ask'
-    | '/admin/reports/custom'
-    | '/admin/reports/schedules'
     | '/admin/settings/danger'
     | '/admin/x/$'
     | '/admin/guests/'
@@ -1046,13 +926,11 @@ export interface FileRouteTypes {
     | '/admin/comparison'
     | '/admin/counters'
     | '/admin/devices'
-    | '/admin/domains'
     | '/admin/eta-accuracy'
     | '/admin/events'
     | '/admin/export'
     | '/admin/feedback'
     | '/admin/forms'
-    | '/admin/google'
     | '/admin/heatmap'
     | '/admin/help'
     | '/admin/integrations'
@@ -1062,13 +940,10 @@ export interface FileRouteTypes {
     | '/admin/performance'
     | '/admin/poster'
     | '/admin/resources'
-    | '/admin/roles'
     | '/admin/routing'
     | '/admin/services'
-    | '/admin/shifts'
     | '/admin/signage'
     | '/admin/team'
-    | '/admin/templates'
     | '/admin/usage'
     | '/admin/whatsapp'
     | '/admin/widget'
@@ -1087,8 +962,6 @@ export interface FileRouteTypes {
     | '/o/$token'
     | '/pay/$code'
     | '/q/$locationSlug'
-    | '/staff/planning'
-    | '/staff/shifts'
     | '/v/$token'
     | '/w/$locationSlug'
     | '/admin'
@@ -1101,17 +974,12 @@ export interface FileRouteTypes {
     | '/admin/developers/chat-alerts'
     | '/admin/developers/webhooks'
     | '/admin/guests/$guestId'
-    | '/admin/guests/duplicates'
-    | '/admin/guests/import'
     | '/admin/location/hours'
     | '/admin/location/new'
     | '/admin/notifications/failed'
     | '/admin/privacy/requests'
     | '/admin/queues/$queueId'
     | '/admin/queues/priority'
-    | '/admin/reports/ask'
-    | '/admin/reports/custom'
-    | '/admin/reports/schedules'
     | '/admin/settings/danger'
     | '/admin/x/$'
     | '/admin/guests'
@@ -1148,13 +1016,11 @@ export interface FileRouteTypes {
     | '/admin/comparison'
     | '/admin/counters'
     | '/admin/devices'
-    | '/admin/domains'
     | '/admin/eta-accuracy'
     | '/admin/events'
     | '/admin/export'
     | '/admin/feedback'
     | '/admin/forms'
-    | '/admin/google'
     | '/admin/heatmap'
     | '/admin/help'
     | '/admin/integrations'
@@ -1164,13 +1030,10 @@ export interface FileRouteTypes {
     | '/admin/performance'
     | '/admin/poster'
     | '/admin/resources'
-    | '/admin/roles'
     | '/admin/routing'
     | '/admin/services'
-    | '/admin/shifts'
     | '/admin/signage'
     | '/admin/team'
-    | '/admin/templates'
     | '/admin/usage'
     | '/admin/whatsapp'
     | '/admin/widget'
@@ -1189,8 +1052,6 @@ export interface FileRouteTypes {
     | '/o/$token'
     | '/pay/$code'
     | '/q/$locationSlug'
-    | '/staff/planning'
-    | '/staff/shifts'
     | '/v/$token'
     | '/w/$locationSlug'
     | '/admin/'
@@ -1203,17 +1064,12 @@ export interface FileRouteTypes {
     | '/admin/developers/chat-alerts'
     | '/admin/developers/webhooks'
     | '/admin/guests/$guestId'
-    | '/admin/guests/duplicates'
-    | '/admin/guests/import'
     | '/admin/location_/hours'
     | '/admin/location_/new'
     | '/admin/notifications/failed'
     | '/admin/privacy/requests'
     | '/admin/queues/$queueId'
     | '/admin/queues/priority'
-    | '/admin/reports/ask'
-    | '/admin/reports/custom'
-    | '/admin/reports/schedules'
     | '/admin/settings/danger'
     | '/admin/x/$'
     | '/admin/guests/'
@@ -1444,13 +1300,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDevicesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/domains': {
-      id: '/admin/domains'
-      path: '/domains'
-      fullPath: '/admin/domains'
-      preLoaderRoute: typeof AdminDomainsRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/eta-accuracy': {
       id: '/admin/eta-accuracy'
       path: '/eta-accuracy'
@@ -1484,13 +1333,6 @@ declare module '@tanstack/react-router' {
       path: '/forms'
       fullPath: '/admin/forms'
       preLoaderRoute: typeof AdminFormsRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/google': {
-      id: '/admin/google'
-      path: '/google'
-      fullPath: '/admin/google'
-      preLoaderRoute: typeof AdminGoogleRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/heatmap': {
@@ -1556,13 +1398,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminResourcesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/roles': {
-      id: '/admin/roles'
-      path: '/roles'
-      fullPath: '/admin/roles'
-      preLoaderRoute: typeof AdminRolesRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/routing': {
       id: '/admin/routing'
       path: '/routing'
@@ -1577,13 +1412,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminServicesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/shifts': {
-      id: '/admin/shifts'
-      path: '/shifts'
-      fullPath: '/admin/shifts'
-      preLoaderRoute: typeof AdminShiftsRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/signage': {
       id: '/admin/signage'
       path: '/signage'
@@ -1596,13 +1424,6 @@ declare module '@tanstack/react-router' {
       path: '/team'
       fullPath: '/admin/team'
       preLoaderRoute: typeof AdminTeamRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/templates': {
-      id: '/admin/templates'
-      path: '/templates'
-      fullPath: '/admin/templates'
-      preLoaderRoute: typeof AdminTemplatesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/usage': {
@@ -1752,20 +1573,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StaffIndexRouteImport
       parentRoute: typeof StaffRouteRoute
     }
-    '/staff/planning': {
-      id: '/staff/planning'
-      path: '/planning'
-      fullPath: '/staff/planning'
-      preLoaderRoute: typeof StaffPlanningRouteImport
-      parentRoute: typeof StaffRouteRoute
-    }
-    '/staff/shifts': {
-      id: '/staff/shifts'
-      path: '/shifts'
-      fullPath: '/staff/shifts'
-      preLoaderRoute: typeof StaffShiftsRouteImport
-      parentRoute: typeof StaffRouteRoute
-    }
     '/v/$token': {
       id: '/v/$token'
       path: '/$token'
@@ -1829,20 +1636,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminGuestsGuestIdRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/guests/duplicates': {
-      id: '/admin/guests/duplicates'
-      path: '/guests/duplicates'
-      fullPath: '/admin/guests/duplicates'
-      preLoaderRoute: typeof AdminGuestsDuplicatesRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/guests/import': {
-      id: '/admin/guests/import'
-      path: '/guests/import'
-      fullPath: '/admin/guests/import'
-      preLoaderRoute: typeof AdminGuestsImportRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/location_/hours': {
       id: '/admin/location_/hours'
       path: '/location/hours'
@@ -1899,27 +1692,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminQueuesPriorityRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/reports/ask': {
-      id: '/admin/reports/ask'
-      path: '/reports/ask'
-      fullPath: '/admin/reports/ask'
-      preLoaderRoute: typeof AdminReportsAskRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/reports/custom': {
-      id: '/admin/reports/custom'
-      path: '/reports/custom'
-      fullPath: '/admin/reports/custom'
-      preLoaderRoute: typeof AdminReportsCustomRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/reports/schedules': {
-      id: '/admin/reports/schedules'
-      path: '/reports/schedules'
-      fullPath: '/admin/reports/schedules'
-      preLoaderRoute: typeof AdminReportsSchedulesRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/settings/danger': {
       id: '/admin/settings/danger'
       path: '/settings/danger'
@@ -1972,13 +1744,11 @@ interface AdminRouteRouteChildren {
   AdminComparisonRoute: typeof AdminComparisonRoute
   AdminCountersRoute: typeof AdminCountersRoute
   AdminDevicesRoute: typeof AdminDevicesRoute
-  AdminDomainsRoute: typeof AdminDomainsRoute
   AdminEtaAccuracyRoute: typeof AdminEtaAccuracyRoute
   AdminEventsRoute: typeof AdminEventsRoute
   AdminExportRoute: typeof AdminExportRoute
   AdminFeedbackRoute: typeof AdminFeedbackRoute
   AdminFormsRoute: typeof AdminFormsRoute
-  AdminGoogleRoute: typeof AdminGoogleRoute
   AdminHeatmapRoute: typeof AdminHeatmapRoute
   AdminHelpRoute: typeof AdminHelpRoute
   AdminIntegrationsRoute: typeof AdminIntegrationsRoute
@@ -1988,13 +1758,10 @@ interface AdminRouteRouteChildren {
   AdminPerformanceRoute: typeof AdminPerformanceRoute
   AdminPosterRoute: typeof AdminPosterRoute
   AdminResourcesRoute: typeof AdminResourcesRoute
-  AdminRolesRoute: typeof AdminRolesRoute
   AdminRoutingRoute: typeof AdminRoutingRoute
   AdminServicesRoute: typeof AdminServicesRoute
-  AdminShiftsRoute: typeof AdminShiftsRoute
   AdminSignageRoute: typeof AdminSignageRoute
   AdminTeamRoute: typeof AdminTeamRoute
-  AdminTemplatesRoute: typeof AdminTemplatesRoute
   AdminUsageRoute: typeof AdminUsageRoute
   AdminWhatsappRoute: typeof AdminWhatsappRoute
   AdminWidgetRoute: typeof AdminWidgetRoute
@@ -2005,17 +1772,12 @@ interface AdminRouteRouteChildren {
   AdminDevelopersChatAlertsRoute: typeof AdminDevelopersChatAlertsRoute
   AdminDevelopersWebhooksRoute: typeof AdminDevelopersWebhooksRoute
   AdminGuestsGuestIdRoute: typeof AdminGuestsGuestIdRoute
-  AdminGuestsDuplicatesRoute: typeof AdminGuestsDuplicatesRoute
-  AdminGuestsImportRoute: typeof AdminGuestsImportRoute
   AdminLocationHoursRoute: typeof AdminLocationHoursRoute
   AdminLocationNewRoute: typeof AdminLocationNewRoute
   AdminNotificationsFailedRoute: typeof AdminNotificationsFailedRoute
   AdminPrivacyRequestsRoute: typeof AdminPrivacyRequestsRoute
   AdminQueuesQueueIdRoute: typeof AdminQueuesQueueIdRoute
   AdminQueuesPriorityRoute: typeof AdminQueuesPriorityRoute
-  AdminReportsAskRoute: typeof AdminReportsAskRoute
-  AdminReportsCustomRoute: typeof AdminReportsCustomRoute
-  AdminReportsSchedulesRoute: typeof AdminReportsSchedulesRoute
   AdminSettingsDangerRoute: typeof AdminSettingsDangerRoute
   AdminXSplatRoute: typeof AdminXSplatRoute
   AdminGuestsIndexRoute: typeof AdminGuestsIndexRoute
@@ -2035,13 +1797,11 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminComparisonRoute: AdminComparisonRoute,
   AdminCountersRoute: AdminCountersRoute,
   AdminDevicesRoute: AdminDevicesRoute,
-  AdminDomainsRoute: AdminDomainsRoute,
   AdminEtaAccuracyRoute: AdminEtaAccuracyRoute,
   AdminEventsRoute: AdminEventsRoute,
   AdminExportRoute: AdminExportRoute,
   AdminFeedbackRoute: AdminFeedbackRoute,
   AdminFormsRoute: AdminFormsRoute,
-  AdminGoogleRoute: AdminGoogleRoute,
   AdminHeatmapRoute: AdminHeatmapRoute,
   AdminHelpRoute: AdminHelpRoute,
   AdminIntegrationsRoute: AdminIntegrationsRoute,
@@ -2051,13 +1811,10 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminPerformanceRoute: AdminPerformanceRoute,
   AdminPosterRoute: AdminPosterRoute,
   AdminResourcesRoute: AdminResourcesRoute,
-  AdminRolesRoute: AdminRolesRoute,
   AdminRoutingRoute: AdminRoutingRoute,
   AdminServicesRoute: AdminServicesRoute,
-  AdminShiftsRoute: AdminShiftsRoute,
   AdminSignageRoute: AdminSignageRoute,
   AdminTeamRoute: AdminTeamRoute,
-  AdminTemplatesRoute: AdminTemplatesRoute,
   AdminUsageRoute: AdminUsageRoute,
   AdminWhatsappRoute: AdminWhatsappRoute,
   AdminWidgetRoute: AdminWidgetRoute,
@@ -2068,17 +1825,12 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminDevelopersChatAlertsRoute: AdminDevelopersChatAlertsRoute,
   AdminDevelopersWebhooksRoute: AdminDevelopersWebhooksRoute,
   AdminGuestsGuestIdRoute: AdminGuestsGuestIdRoute,
-  AdminGuestsDuplicatesRoute: AdminGuestsDuplicatesRoute,
-  AdminGuestsImportRoute: AdminGuestsImportRoute,
   AdminLocationHoursRoute: AdminLocationHoursRoute,
   AdminLocationNewRoute: AdminLocationNewRoute,
   AdminNotificationsFailedRoute: AdminNotificationsFailedRoute,
   AdminPrivacyRequestsRoute: AdminPrivacyRequestsRoute,
   AdminQueuesQueueIdRoute: AdminQueuesQueueIdRoute,
   AdminQueuesPriorityRoute: AdminQueuesPriorityRoute,
-  AdminReportsAskRoute: AdminReportsAskRoute,
-  AdminReportsCustomRoute: AdminReportsCustomRoute,
-  AdminReportsSchedulesRoute: AdminReportsSchedulesRoute,
   AdminSettingsDangerRoute: AdminSettingsDangerRoute,
   AdminXSplatRoute: AdminXSplatRoute,
   AdminGuestsIndexRoute: AdminGuestsIndexRoute,
@@ -2178,14 +1930,10 @@ const QRouteRouteWithChildren =
   QRouteRoute._addFileChildren(QRouteRouteChildren)
 
 interface StaffRouteRouteChildren {
-  StaffPlanningRoute: typeof StaffPlanningRoute
-  StaffShiftsRoute: typeof StaffShiftsRoute
   StaffIndexRoute: typeof StaffIndexRoute
 }
 
 const StaffRouteRouteChildren: StaffRouteRouteChildren = {
-  StaffPlanningRoute: StaffPlanningRoute,
-  StaffShiftsRoute: StaffShiftsRoute,
   StaffIndexRoute: StaffIndexRoute,
 }
 

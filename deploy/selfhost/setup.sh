@@ -9,6 +9,8 @@
 #        --smtp-pass W --smtp-from ADDR  --env-file PATH  --rotate  --non-interactive
 #        --backup-key   generate an age key pair for the backup profile (prints the private key once)
 #        --demo   seed the demo organization (DEMO_MODE=true, generated demo password)
+#        --ee     run the enterprise functions in ee/ (QueueThat Commercial License: development and
+#                 testing are free, production needs an agreement with QueueThat; see ee/LICENSE)
 set -euo pipefail
 umask 077
 here=$(cd "$(dirname "$0")" && pwd)
@@ -17,17 +19,19 @@ env_file="$here/.env"
 interactive=1
 rotate=0
 demo=0
+ee=0
 backup_key=0
 public_url=""
 signup=""
 smtp_host="" smtp_port="587" smtp_user="" smtp_pass="" smtp_from=""
 
-usage() { sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; }
+usage() { sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; }
 need() { [ "$#" -ge 2 ] || { echo "setup: $1 needs a value" >&2; exit 2; }; }
 while [ "$#" -gt 0 ]; do
   case $1 in
     --non-interactive) interactive=0 ;;
     --demo) demo=1 ;;
+    --ee) ee=1 ;;
     --backup-key) backup_key=1 ;;
     --rotate) rotate=1 ;;
     --env-file) need "$@"; env_file=$2; shift ;;
@@ -69,6 +73,7 @@ if [ "$rotate" = 1 ] && [ -f "$env_file" ]; then
   keep_turnstile=$(old TURNSTILE_SECRET_KEY); keep_tunnel=$(old TUNNEL_TOKEN); keep_redirects=$(old ADDITIONAL_REDIRECT_URLS)
   keep_terms=$(old TERMS_URL); keep_privacy=$(old PRIVACY_URL); keep_support=$(old SUPPORT_EMAIL)
 fi
+[ "$ee" = 1 ] || { [ "$rotate" = 1 ] && [ "$(old QT_EE)" = 1 ] && ee=1; } || true
 [ "$demo" = 1 ] || { [ "$rotate" = 1 ] && [ "$(old DEMO_MODE)" = true ] && demo=1; } || true
 keep_demo_password=$(old DEMO_PASSWORD)
 keep_recipient=$(old BACKUP_AGE_RECIPIENT)
@@ -182,6 +187,16 @@ trap 'rm -f "$tmp"' EXIT
   echo "TURNSTILE_SECRET_KEY=$keep_turnstile"
   echo "TUNNEL_TOKEN=$keep_tunnel"
   echo "BACKUP_AGE_RECIPIENT=$backup_recipient"
+  echo "QT_EE=$ee"
+  if [ "$ee" = 1 ]; then
+    # The web bundle holds the enterprise pages only when built with them; the tag keeps that image
+    # apart from an AGPL-only one, so switching either way rebuilds instead of reusing a stale image.
+    echo "QT_WEB_EXTENSIONS=ee/web/extensions.ts"
+    echo "QT_WEB_TAG=-ee"
+  else
+    echo "QT_WEB_EXTENSIONS="
+    echo "QT_WEB_TAG="
+  fi
   if [ "$demo" = 1 ]; then
     # The seeded users keep the first password, so a rotation keeps it too.
     echo "DEMO_MODE=true"

@@ -1,0 +1,45 @@
+{
+  "title": "Planning",
+  "loading": "Loading the planning grid…",
+  "error": "Couldn't load the planning grid. Try again.",
+  "date": "Date",
+  "prev": "Previous",
+  "next": "Next",
+  "day": "Day",
+  "week": "Week",
+  "showTable": "Show as table",
+  "showGrid": "Show as grid",
+  "noResources": "This location has no resources yet. An admin can add them under Resources.",
+  "hint": "To block time, drag across the grid, or use the arrow keys to move, Shift plus arrows to select and Enter to confirm.",
+  "block": {
+    "title": "Block time",
+    "summary_one": "{{count}} resource, {{from}} to {{to}}",
+    "summary_other": "{{count}} resources, {{from}} to {{to}}",
+    "reason": "Reason (optional)",
+    "confirm": "Block time",
+    "cancel": "Cancel",
+    "conflicts_one": "{{count}} booking overlaps this time. It stays booked; contact the guest if needed.",
+    "conflicts_other": "{{count}} bookings overlap this time. They stay booked; contact the guests if needed.",
+    "done_one": "Blocked {{count}} slot.",
+    "done_other": "Blocked {{count}} slots.",
+    "error": {
+      "denied": "Only managers can block time.",
+      "failed": "Couldn't block that time. Try again."
+    }
+  },
+  "gridLabel": "Planning grid for {{day}}",
+  "nothing": "Nothing is booked, blocked or scheduled on this day.",
+  "unassigned": "No resource",
+  "blocked": "Blocked",
+  "onShift": "On shift",
+  "col": {
+    "resource": "Resource",
+    "time": "Time",
+    "item": "Item"
+  },
+  "kind": {
+    "appointment": "Appointment",
+    "block": "Block",
+    "shift": "Shift"
+  }
+}

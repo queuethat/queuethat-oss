@@ -8,6 +8,8 @@ export default defineConfig({
           name: 'packages',
           include: [
             'packages/*/src/**/*.test.ts',
+            'ee/supabase/functions/**/*.vitest.ts',
+            'ee/integrations/**/*.test.ts',
             'tests/docs/**/*.test.ts',
             'tests/compliance/**/*.test.ts',
           ],
@@ -39,6 +41,18 @@ export default defineConfig({
           setupFiles: ['src/test/setup.ts'],
           // Public placeholders so modules that create the Supabase client can load. Unit tests
           // never reach the network: with no stored session, getSession() answers locally.
+          env: { VITE_SUPABASE_URL: 'http://127.0.0.1:55321', VITE_SUPABASE_ANON_KEY: 'unit-test' },
+        },
+      },
+      {
+        extends: './apps/web/vite.config.ts',
+        test: {
+          name: 'ee-web',
+          root: './apps/web',
+          // The app's own root, so the router plugin finds its routes; the tests are under ee/web.
+          include: ['../../ee/web/src/**/*.test.{ts,tsx}'],
+          environment: 'jsdom',
+          setupFiles: ['src/test/setup.ts'],
           env: { VITE_SUPABASE_URL: 'http://127.0.0.1:55321', VITE_SUPABASE_ANON_KEY: 'unit-test' },
         },
       },

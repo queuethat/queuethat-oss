@@ -4,8 +4,6 @@ import admin from './admin.json';
 import adminNav from './admin-nav.json';
 import adminSupport from './admin-support.json';
 import adminApiKeys from './admin-api-keys.json';
-import adminDomains from './admin-domains.json';
-import adminReports from './admin-reports.json';
 import adminIntegrations from './admin-integrations.json';
 import adminWhatsapp from './admin-whatsapp.json';
 import adminChatAlerts from './admin-chat-alerts.json';
@@ -17,8 +15,6 @@ import adminHours from './admin-hours.json';
 import adminPrivacy from './admin-privacy.json';
 import adminUsage from './admin-usage.json';
 import appointments from './appointments.json';
-import shifts from './shifts.json';
-import adminRoles from './admin-roles.json';
 import adminSetup from './admin-setup.json';
 import adminTeam from './admin-team.json';
 import adminTemplates from './admin-templates.json';
@@ -29,7 +25,6 @@ import auth from './auth.json';
 import booking from './booking.json';
 import common from './common.json';
 import consoleHints from './console-hints.json';
-import crm from './crm.json';
 import devInbox from './dev-inbox.json';
 import display from './display.json';
 import empty from './empty.json';
@@ -54,7 +49,6 @@ import staff from './staff.json';
  */
 export const en = {
   common,
-  crm,
   'console-hints': consoleHints,
   'guest-info': guestInfo,
   // Typed as one namespace: the join and status strings load with their routes and are found
@@ -74,8 +68,6 @@ export const en = {
   'admin-support': adminSupport,
   'admin-api-keys': adminApiKeys,
   'admin-chat-alerts': adminChatAlerts,
-  'admin-domains': adminDomains,
-  'admin-reports': adminReports,
   'admin-integrations': adminIntegrations,
   'admin-whatsapp': adminWhatsapp,
   'admin-webhooks': adminWebhooks,
@@ -85,10 +77,8 @@ export const en = {
   'admin-privacy': adminPrivacy,
   'admin-usage': adminUsage,
   appointments,
-  'admin-roles': adminRoles,
   'admin-setup': adminSetup,
   'admin-team': adminTeam,
-  shifts,
   'admin-templates': adminTemplates,
   'admin-form-builder': adminFormBuilder,
   'admin-journeys': adminJourneys,

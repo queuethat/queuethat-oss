@@ -5,7 +5,13 @@ whether a name is verified; the web app and the TLS layer only ask.
 
 ## Records the owner adds
 
-On `/admin/domains` the owner claims a hostname and adds two DNS records:
+Serving a verified host is part of the AGPL core: the table, the `api.*` functions, host
+resolution, `domain-check` and the poster address. The owner's setup page is in `ee/web/src/domains`
+(QueueThat Commercial License) and appears when the app is built with
+`QT_WEB_EXTENSIONS=ee/web/extensions.ts`, at `/admin/x/domains` (the old `/admin/domains` redirects).
+A build without it has no page; the same steps can be done through `api.add_custom_domain`.
+
+On that page the owner claims a hostname and adds two DNS records:
 
 | Record | Value |
 | --- | --- |

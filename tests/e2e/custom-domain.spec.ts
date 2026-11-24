@@ -1,54 +1,11 @@
-import { createClient } from '@supabase/supabase-js';
 import { demo } from '../fixtures/demo.ts';
-import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
+import { expect, test } from './fixtures.ts';
 import { supabaseEnv } from './support/env.ts';
 import { freshQueue } from './support/queues.ts';
 
-// 3-DOM2 (#371): the admin page, host-based routing and the poster address.
+// 3-DOM2 (#371): host-based routing. The setup page is in ee/tests/e2e (QueueThat Commercial License).
 // The custom host is a hosts override: Playwright answers http://<host>/ from the dev server, and
 // domain-check (not served by CI's Supabase) is stubbed. The database side is in pgTAP.
-
-function serviceClient() {
-  const { serviceRoleKey, url } = supabaseEnv();
-  return createClient(url, serviceRoleKey, { auth: { persistSession: false } }).schema('app');
-}
-
-test.describe('as an owner', () => {
-  test.use({ staffUser: 'owner' });
-
-  test('AC3: adds a domain, shows the DNS records, and the poster follows only once it is verified', async ({
-    devices,
-  }) => {
-    const { staff } = devices;
-    const host = `book-${crypto.randomUUID().slice(0, 8)}.example.org`;
-    const db = serviceClient();
-    try {
-      await staff.goto('/admin/domains');
-      await staff.getByRole('button', { name: 'Add domain' }).click();
-      const form = staff.getByRole('dialog', { name: 'Add a custom domain' });
-      await form.getByRole('textbox', { name: 'Domain' }).fill(host);
-      await expectNoSeriousA11yViolations(staff);
-      await form.getByRole('button', { name: 'Add domain' }).click();
-
-      const row = staff.getByTestId('domain').filter({ hasText: host });
-      await expect(row).toContainText('Waiting for DNS');
-      await expect(row.getByLabel('TXT record name')).toHaveValue(`_queue-verify.${host}`);
-      await expect(row.getByLabel('TXT record value')).toHaveValue(/^[0-9a-f]{32}$/);
-
-      await staff.goto('/admin/poster');
-      await expect(staff.getByTestId('poster')).toContainText(`/q/${demo.locationSlug}`);
-      await expect(staff.getByTestId('poster')).not.toContainText(host);
-
-      await db.from('custom_domains').update({ status: 'verified' }).eq('hostname', host);
-      await staff.goto('/admin/poster');
-      await expect(staff.getByTestId('poster')).toContainText(
-        `https://${host}/q/${demo.locationSlug}`,
-      );
-    } finally {
-      await db.from('custom_domains').delete().eq('hostname', host);
-    }
-  });
-});
 
 test.describe('on a custom host', () => {
   const HOST = 'book.e2e-domain.test';
@@ -120,7 +77,7 @@ test.describe('on a custom host', () => {
     const { guest } = devices;
     const base = testInfo.project.use.baseURL!;
     await guest.route(`${base}/**`, (route) => route.continue());
-    await guest.goto(`http://${HOST}/admin/domains?x=1`);
+    await guest.goto(`http://${HOST}/admin/poster?x=1`);
     await expect(guest).toHaveURL(new RegExp(`^${base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/`));
   });
 

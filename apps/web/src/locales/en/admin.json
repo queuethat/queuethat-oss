@@ -943,19 +943,5 @@
     },
     "readOnly": "Only admins and owners can change this.",
     "error": "Couldn't save. Try again."
-  },
-  "gbp": {
-    "title": "Google Business Profile",
-    "loading": "Loading the link",
-    "hint": "Put your join link on your Google listing so people can join the line from Google Search and Maps.",
-    "link": "Your join link",
-    "copy": "Copy link",
-    "copied": "Copied.",
-    "stepsTitle": "How to add it",
-    "step1": "Open your Business Profile on Google (search for your business while signed in, or use business.google.com).",
-    "step2": "Choose Edit profile, then Booking links (or Appointment link).",
-    "step3": "Paste the link above and save.",
-    "step4": "Google can take a few days to show it. Open the link on your phone to check that it works.",
-    "limits": "Google's own \"join waitlist\" button needs Google's partner approval, which isn't available to us. This link shows as a booking or appointment button instead. People who join through it are counted as coming from Google."
   }
 }

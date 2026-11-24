@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 @import '@qm/ui/theme.css';
+/* Class names used by ee/ pages (a build installs them with QT_WEB_EXTENSIONS); scanning them adds no code to a build without ee. */
+@source '../../../ee/web';
 
 /* Self-hosted fonts (DS-3): Latin and Latin-1/Extended-A subsets of the variable Geist faces, from our
    own origin so guests' IPs never reach a font CDN and the PWA shell works offline (sw precaches
