@@ -98,7 +98,7 @@ export interface ExtensionSlotProps {
    * said so. A deployment that sells plans can explain the plan and link to its upgrade page.
    */
   'feature.gated': {
-    feature: 'api' | 'integrations' | 'customRoles' | 'reports' | 'queues';
+    feature: 'api' | 'integrations' | 'customRoles' | 'reports' | 'rollup' | 'queues';
     limit: number | undefined;
   };
   /** At the top of the Integrations page, above the channel cards. */
