@@ -84,9 +84,16 @@ test.describe('as an owner', () => {
     const { staff } = devices;
     const { email } = await ownerOfNewBusiness();
     const queueId = await addQueue(email, 'Repairs');
-    await restAs(email, 'services', {
+    const owner = await queueOwner(email, queueId);
+    const made = await restAs(email, 'services', {
       method: 'POST',
-      body: JSON.stringify({ ...(await queueOwner(email, queueId)), name: 'Tyres' }),
+      headers: { prefer: 'return=representation' },
+      body: JSON.stringify({ org_id: owner.org_id, location_id: owner.location_id, name: 'Tyres' }),
+    });
+    const [tyres] = (await made.json()) as { id: string }[];
+    await restAs(email, 'queue_services', {
+      method: 'POST',
+      body: JSON.stringify({ ...owner, service_id: tyres!.id }),
     });
     await signInTo(staff, email, '/admin/services');
 

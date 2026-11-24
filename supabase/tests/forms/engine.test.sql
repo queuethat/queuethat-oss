@@ -79,7 +79,8 @@ insert into app.form_targets (org_id, location_id, form_id, service_id) values (
 select is(private.resolve_form(tests.id('queue_a'), tests.id('service_a')), tests.id('v_svc'), 'a service target beats the queue target');
 select is(private.resolve_form(tests.id('queue_a'), tests.id('service_a2')), private.resolve_form(tests.id('queue_a'), null), 'a service without a form falls back to the queue form');
 insert into app.queues (id, org_id, location_id, name, ticket_prefix) values (tests.id('queue_b'), tests.id('org_b'), tests.id('loc_b'), 'B', 'B');
-insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes) values (tests.id('service_b'), tests.id('org_b'), tests.id('loc_b'), tests.id('queue_b'), 'Other', 10);
+insert into app.services (id, org_id, location_id, name, expected_minutes) values (tests.id('service_b'), tests.id('org_b'), tests.id('loc_b'), 'Other', 10);
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_b'), tests.id('loc_b'), tests.id('queue_b'), tests.id('service_b'));
 insert into app.forms (id, org_id, location_id, name, status) values (tests.id('f_b'), tests.id('org_b'), tests.id('loc_b'), 'Org B form', 'published');
 insert into app.form_versions (id, org_id, location_id, form_id, version, fields, published_at)
 values (tests.id('v_b'), tests.id('org_b'), tests.id('loc_b'), tests.id('f_b'), 1, '[{"key":"secret","label":"B only","type":"text","position":1}]', now());

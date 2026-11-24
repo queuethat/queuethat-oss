@@ -78,11 +78,21 @@ test('build a form, attach it to a queue and a service at once, edit, detach wit
     body: JSON.stringify({
       org_id: loc!.org_id,
       location_id: loc!.id,
-      queue_id: queueId,
       name: 'Cut',
     }),
   });
   expect(svc.ok, await svc.clone().text()).toBe(true);
+  const [cut] = (await svc.json()) as { id: string }[];
+  const link = await restAs(email, 'queue_services', {
+    method: 'POST',
+    body: JSON.stringify({
+      org_id: loc!.org_id,
+      location_id: loc!.id,
+      queue_id: queueId,
+      service_id: cut!.id,
+    }),
+  });
+  expect(link.ok, await link.clone().text()).toBe(true);
   await signInTo(staff, email, '/admin/forms');
   await expect(staff.getByText('No forms yet')).toBeVisible();
 

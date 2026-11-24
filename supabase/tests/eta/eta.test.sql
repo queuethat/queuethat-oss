@@ -10,10 +10,8 @@ delete from app.business_hours where location_id = tests.id('loc_a');
 insert into app.queues (id, org_id, location_id, name, ticket_prefix) values
   (tests.new_id('queue_eta'), tests.id('org_a'), tests.id('loc_a'), 'Estimates', 'E'),
   (tests.new_id('queue_wide'), tests.id('org_a'), tests.id('loc_a'), 'Wide', 'W');
-insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes) values
-  (tests.new_id('svc_20'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_eta'), 'Long', 20),
-  (tests.new_id('svc_10'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_eta'), 'Short', 10),
-  (tests.new_id('svc_60'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_wide'), 'Hour', 60);
+insert into app.services (id, org_id, location_id, name, expected_minutes) values (tests.new_id('svc_20'), tests.id('org_a'), tests.id('loc_a'), 'Long', 20), (tests.new_id('svc_10'), tests.id('org_a'), tests.id('loc_a'), 'Short', 10), (tests.new_id('svc_60'), tests.id('org_a'), tests.id('loc_a'), 'Hour', 60);
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_eta'), tests.id('svc_20')), (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_eta'), tests.id('svc_10')), (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_wide'), tests.id('svc_60'));
 
 /** A visit in p_queue for p_service, moved to p_status (called/serving) p_elapsed ago. */
 create function tests.eta_visit(p_name text, p_queue text, p_service text,

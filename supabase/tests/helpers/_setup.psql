@@ -290,8 +290,8 @@ begin
   -- S2 (#23) queues
   insert into app.queues (id, org_id, location_id, name, ticket_prefix)
   values (tests.new_id('queue_a'), tests.id('org_a'), tests.id('loc_a'), 'Walk-ins', 'A');
-  insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes)
-  values (tests.new_id('service_a'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), 'Haircut', 20);
+  insert into app.services (id, org_id, location_id, name, expected_minutes) values (tests.new_id('service_a'), tests.id('org_a'), tests.id('loc_a'), 'Haircut', 20);
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), tests.id('service_a'));
   -- 4-RBAC1 (#373) custom roles, one per org
   insert into app.custom_roles (id, org_id, name, permissions)
   values (tests.new_id('role_a'), tests.id('org_a'), 'Greeter', array['visits.call']),
@@ -310,8 +310,8 @@ begin
   values (tests.id('org_a'), tests.id('loc_a'), tests.id('service_a'), tests.id('counter_a'));
 
   -- 2P-APT1 (#157) booking config
-  insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes, active)
-  values (tests.new_id('service_a2'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), 'Shave', 15, false);
+  insert into app.services (id, org_id, location_id, name, expected_minutes, active) values (tests.new_id('service_a2'), tests.id('org_a'), tests.id('loc_a'), 'Shave', 15, false);
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), tests.id('service_a2'));
   insert into app.booking_policies (id, org_id, service_id, bookable)
   values (tests.new_id('booking_policy_a'), tests.id('org_a'), tests.id('service_a'), true);
   insert into app.availability_rules (id, org_id, location_id, weekday, starts, ends)

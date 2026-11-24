@@ -1,22 +1,14 @@
--- #75 PR A: app.queue_services (expand). The link table mirrors services.queue_id and refuses
+-- #75: app.queue_services. The link table refuses
 -- cross-location and cross-tenant links.
 begin;
 \ir ../helpers/_setup.psql
-select plan(8);
+select plan(6);
 select tests.create_world();
 
--- Backfill and dual write: a service created with a queue_id is offered by that queue.
+-- The fixture links (the dual-write trigger of the expand step is gone).
 select ok((select count(*) = 2 from app.queue_services
            where queue_id = tests.id('queue_a') and service_id in (tests.id('service_a'), tests.id('service_a2'))),
   'the fixture queue offers both of its fixture services');
-select is((select count(*)::int from app.services s
-           where not exists (select 1 from app.queue_services qs
-                             where qs.service_id = s.id and qs.queue_id = s.queue_id)), 0,
-  'every service is offered by the queue that owns it (dual write)');
-insert into app.services (id, org_id, location_id, queue_id, name, sort_order)
-values (tests.new_id('service_new'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), 'Beard', 7);
-select is((select sort_order from app.queue_services where service_id = tests.id('service_new')), 7,
-  'a new service is linked to its queue with its sort order');
 
 -- A second queue at the location can offer a service owned by the same location.
 insert into app.queues (id, org_id, location_id, name, ticket_prefix)

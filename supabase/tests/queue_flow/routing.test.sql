@@ -10,10 +10,8 @@ insert into app.queues (id, org_id, location_id, name, ticket_prefix) values
   (tests.new_id('q_pass'), tests.id('org_a'), tests.id('loc_a'), 'Passport', 'P'),
   (tests.new_id('q_lic'), tests.id('org_a'), tests.id('loc_a'), 'Licence', 'L'),
   (tests.new_id('q_b'), tests.id('org_b'), tests.id('loc_b'), 'Org B', 'B');
-insert into app.services (id, org_id, location_id, queue_id, name) values
-  (tests.new_id('s_pass'), tests.id('org_a'), tests.id('loc_a'), tests.id('q_pass'), 'Passport'),
-  (tests.new_id('s_lic'), tests.id('org_a'), tests.id('loc_a'), tests.id('q_lic'), 'Licence'),
-  (tests.new_id('s_none'), tests.id('org_a'), tests.id('loc_a'), tests.id('q_pass'), 'Unrouted');
+insert into app.services (id, org_id, location_id, name) values (tests.new_id('s_pass'), tests.id('org_a'), tests.id('loc_a'), 'Passport'), (tests.new_id('s_lic'), tests.id('org_a'), tests.id('loc_a'), 'Licence'), (tests.new_id('s_none'), tests.id('org_a'), tests.id('loc_a'), 'Unrouted');
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('q_pass'), tests.id('s_pass')), (tests.id('org_a'), tests.id('loc_a'), tests.id('q_lic'), tests.id('s_lic')), (tests.id('org_a'), tests.id('loc_a'), tests.id('q_pass'), tests.id('s_none'));
 insert into app.routing_rules (id, org_id, location_id, rank, service_id, target_queue_id) values
   (tests.new_id('r_pass'), tests.id('org_a'), tests.id('loc_a'), 1, tests.id('s_pass'), tests.id('q_pass')),
   (tests.new_id('r_lic'), tests.id('org_a'), tests.id('loc_a'), 2, tests.id('s_lic'), tests.id('q_lic'));

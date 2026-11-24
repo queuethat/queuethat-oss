@@ -28,14 +28,20 @@ async function businessWithQueue() {
     .select('id')
     .single();
   if (error) throw error;
-  const { error: serviceError } = await service.schema('app').from('services').insert({
+  const { data: cut, error: serviceError } = await service
+    .schema('app')
+    .from('services')
+    .insert({ org_id: org.id, location_id: location.id, name: 'Cut', expected_minutes: 15 })
+    .select('id')
+    .single();
+  if (serviceError) throw serviceError;
+  const { error: linkError } = await service.schema('app').from('queue_services').insert({
     org_id: org.id,
     location_id: location.id,
     queue_id: queue.id,
-    name: 'Cut',
-    expected_minutes: 15,
+    service_id: cut.id,
   });
-  if (serviceError) throw serviceError;
+  if (linkError) throw linkError;
   return { email, orgId: org.id };
 }
 

@@ -8,9 +8,8 @@ select tests.new_id(k) from unnest(array['svc','svc12']) k;
 
 insert into app.queues (id, org_id, location_id, name, ticket_prefix)
 values (tests.new_id('queue_l'), tests.id('org_a'), tests.id('loc_a'), 'Learned', 'L');
-insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes)
-values (tests.id('svc'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_l'), 'Haircut', 30),
-       (tests.id('svc12'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_l'), 'Shave', 30);
+insert into app.services (id, org_id, location_id, name, expected_minutes) values (tests.id('svc'), tests.id('org_a'), tests.id('loc_a'), 'Haircut', 30), (tests.id('svc12'), tests.id('org_a'), tests.id('loc_a'), 'Shave', 30);
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_l'), tests.id('svc')), (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_l'), tests.id('svc12'));
 
 /** Serves p_n visits of service p_svc that each took p_minutes, an hour ago; p_auto marks rollover closes. */
 create function tests.serve(p_prefix text, p_svc text, p_n int, p_minutes numeric, p_auto boolean default false)

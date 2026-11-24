@@ -26,8 +26,10 @@ describe('book_event_seats under concurrency', () => {
                values (${locationId}, ${orgId}, 'Hall', ${'ev-' + locationId}, 'UTC', 10000)`;
       await tx`insert into app.queues (id, org_id, location_id, name, ticket_prefix)
                values (${queueId}, ${orgId}, ${locationId}, 'Events', 'E')`;
-      await tx`insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes)
-               values (${serviceId}, ${orgId}, ${locationId}, ${queueId}, 'Class', 60)`;
+      await tx`insert into app.services (id, org_id, location_id, name, expected_minutes)
+               values (${serviceId}, ${orgId}, ${locationId}, 'Class', 60)`;
+      await tx`insert into app.queue_services (org_id, location_id, queue_id, service_id)
+               values (${orgId}, ${locationId}, ${queueId}, ${serviceId})`;
       await tx`insert into app.events (id, org_id, location_id, service_id, title, during, capacity, public)
                values (${eventId}, ${orgId}, ${locationId}, ${serviceId}, 'Pottery',
                        tstzrange(now() + interval '3 days', now() + interval '3 days 1 hour'), 10, true)`;

@@ -77,11 +77,17 @@ export async function bookableLocation(tz = 'Europe/Berlin', capacity = 1) {
     await service
       .schema('app')
       .from('services')
-      .insert({ ...base, queue_id: queue!.id, name: 'Consultation', expected_minutes: 30 })
+      .insert({ ...base, name: 'Consultation', expected_minutes: 30 })
       .select('id')
       .single(),
   );
   const serviceId = svc!.id as string;
+  check(
+    await service
+      .schema('app')
+      .from('queue_services')
+      .insert({ ...base, queue_id: queue!.id, service_id: serviceId }),
+  );
   const days = [0, 1, 2, 3, 4, 5, 6];
   // The hours trigger needs a signed-in role; the service role cannot run private helpers.
   const ownerClient = createClient(env.url, env.anonKey, { auth: { persistSession: false } });

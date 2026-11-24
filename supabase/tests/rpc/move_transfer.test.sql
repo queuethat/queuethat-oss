@@ -10,10 +10,8 @@ insert into app.queues (id, org_id, location_id, name, ticket_prefix) values
   (tests.new_id('queue_m'), tests.id('org_a'), tests.id('loc_a'), 'Move', 'M'),
   (tests.new_id('queue_n'), tests.id('org_a'), tests.id('loc_a'), 'Other', 'N'),
   (tests.new_id('queue_p'), tests.id('org_a'), tests.id('loc_a'), 'Same prefix', 'M');
-insert into app.services (id, org_id, location_id, queue_id, name) values
-  (tests.new_id('svc_m1'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_m'), 'Cut'),
-  (tests.new_id('svc_m2'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_m'), 'Colour'),
-  (tests.new_id('svc_n1'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_n'), 'Beard');
+insert into app.services (id, org_id, location_id, name) values (tests.new_id('svc_m1'), tests.id('org_a'), tests.id('loc_a'), 'Cut'), (tests.new_id('svc_m2'), tests.id('org_a'), tests.id('loc_a'), 'Colour'), (tests.new_id('svc_n1'), tests.id('org_a'), tests.id('loc_a'), 'Beard');
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_m'), tests.id('svc_m1')), (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_m'), tests.id('svc_m2')), (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_n'), tests.id('svc_n1'));
 select tests.new_visit('m1', 'queue_m', 'One');
 select tests.new_visit('m2', 'queue_m', 'Two');
 select tests.new_visit('m3', 'queue_m', 'Three');

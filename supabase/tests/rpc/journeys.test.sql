@@ -12,10 +12,8 @@ insert into app.queues (id, org_id, location_id, name, ticket_prefix) values
   (tests.new_id('q_tri'), tests.id('org_a'), tests.id('loc_a'), 'Triage', 'T'),
   (tests.new_id('q_doc'), tests.id('org_a'), tests.id('loc_a'), 'Doctor', 'D'),
   (tests.new_id('q_org_b'), tests.id('org_b'), tests.id('loc_b'), 'B queue', 'B');
-insert into app.services (id, org_id, location_id, queue_id, name) values
-  (tests.new_id('s_reg'), tests.id('org_a'), tests.id('loc_a'), tests.id('q_reg'), 'Register'),
-  (tests.new_id('s_tri'), tests.id('org_a'), tests.id('loc_a'), tests.id('q_tri'), 'Triage'),
-  (tests.new_id('s_doc'), tests.id('org_a'), tests.id('loc_a'), tests.id('q_doc'), 'Consult');
+insert into app.services (id, org_id, location_id, name) values (tests.new_id('s_reg'), tests.id('org_a'), tests.id('loc_a'), 'Register'), (tests.new_id('s_tri'), tests.id('org_a'), tests.id('loc_a'), 'Triage'), (tests.new_id('s_doc'), tests.id('org_a'), tests.id('loc_a'), 'Consult');
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('q_reg'), tests.id('s_reg')), (tests.id('org_a'), tests.id('loc_a'), tests.id('q_tri'), tests.id('s_tri')), (tests.id('org_a'), tests.id('loc_a'), tests.id('q_doc'), tests.id('s_doc'));
 insert into app.journeys (id, org_id, location_id, name)
 values (tests.new_id('j1'), tests.id('org_a'), tests.id('loc_a'), 'Clinic visit');
 insert into app.journey_steps (journey_id, org_id, step_no, queue_id, service_id) values

@@ -39,13 +39,19 @@ export async function freshQueue() {
     .insert({
       org_id: demo.orgId,
       location_id: demo.locationId,
-      queue_id: queue.id,
       name: 'Trim',
       expected_minutes: 15,
     })
     .select('id')
     .single();
   if (svcError) throw svcError;
+  const { error: linkError } = await service.schema('app').from('queue_services').insert({
+    org_id: demo.orgId,
+    location_id: demo.locationId,
+    queue_id: queue.id,
+    service_id: svc.id,
+  });
+  if (linkError) throw linkError;
   return { id: queue.id as string, serviceId: svc.id as string, name };
 }
 

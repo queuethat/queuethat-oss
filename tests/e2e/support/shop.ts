@@ -199,14 +199,19 @@ async function openPilotShop(): Promise<Shop> {
         .single();
       if (error) throw error;
       queueIds.push(queue.id);
-      const { error: serviceError } = await app(owner).from('services').insert({
+      const { data: service, error: serviceError } = await app(owner)
+        .from('services')
+        .insert({ org_id: orgId, location_id: locationId, name: 'Check', expected_minutes: 15 })
+        .select('id')
+        .single();
+      if (serviceError) throw serviceError;
+      const { error: linkError } = await app(owner).from('queue_services').insert({
         org_id: orgId,
         location_id: locationId,
         queue_id: queue.id,
-        name: 'Check',
-        expected_minutes: 15,
+        service_id: service.id,
       });
-      if (serviceError) throw serviceError;
+      if (linkError) throw linkError;
       return { id: queue.id as string, name };
     },
     async pairTv(page, name) {

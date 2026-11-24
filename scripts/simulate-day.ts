@@ -137,12 +137,21 @@ async function setUp() {
         SERVICES.map((s) => ({
           org_id: demo.orgId,
           location_id: demo.locationId,
-          queue_id: queue.id,
           name: s.name,
           expected_minutes: s.minutes,
         })),
       )
       .select('id, expected_minutes'),
+  );
+  await must(
+    app.from('queue_services').insert(
+      services.map((s) => ({
+        org_id: demo.orgId,
+        location_id: demo.locationId,
+        queue_id: queue.id,
+        service_id: s.id,
+      })),
+    ),
   );
   const counters = await must(
     app
@@ -540,7 +549,7 @@ async function report(
   // Learned durations must not have fed the quotes: at speed they are SPEED times too short.
   const [{ n: learned }] = await sql`
     select count(*)::int as n from private.service_duration_stats
-    where service_id in (select id from app.services where queue_id = ${queueId})`;
+    where service_id in (select service_id from app.queue_services where queue_id = ${queueId})`;
   const corrected = score((v) => Number(v.compression));
   const failures = [
     ...(learned

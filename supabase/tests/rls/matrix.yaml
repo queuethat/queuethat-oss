@@ -151,7 +151,7 @@ tables:
   app.services:
     where: id = tests.id('service_a')
     update: name = name
-    insert: (org_id, location_id, queue_id, name) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_a'), 'Beard')
+    insert: (org_id, location_id, name) values (tests.id('org_a'), tests.id('loc_a'), 'Beard')
     allow:
       select: [owner, admin, manager, staff, display, kiosk]
       insert: [owner, admin, manager]

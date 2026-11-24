@@ -76,9 +76,8 @@ begin
   insert into app.queues (id, org_id, location_id, name, ticket_prefix, servers_on_duty, show_eta, eta_reserves_appointments)
   values (tests.new_id(qname), tests.id('org_a'), tests.id('loc_a'), qname, chr(65 + p_idx),
           (s ->> 'servers')::int, true, (s ->> 'reserve')::boolean);
-  insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes)
-  values (tests.new_id(qname || '_walkin'), tests.id('org_a'), tests.id('loc_a'), tests.id(qname), 'Walk-in',
-          (s ->> 'walkinMinutes')::int);
+  insert into app.services (id, org_id, location_id, name, expected_minutes) values (tests.new_id(qname || '_walkin'), tests.id('org_a'), tests.id('loc_a'), 'Walk-in', (s ->> 'walkinMinutes')::int);
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id(qname), tests.id(qname || '_walkin'));
   for i in 1..(s ->> 'walkins')::int loop
     vid := tests.new_visit(qname || '_w' || i, qname);
     perform private.set_actor('system', null);
@@ -87,8 +86,8 @@ begin
   for a in select * from jsonb_array_elements(s -> 'appointments') loop
     n := n + 1;
     svc := tests.new_id(qname || '_svc' || n);
-    insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes, active)
-    values (svc, tests.id('org_a'), tests.id('loc_a'), tests.id(qname), 'Booked ' || n, (a ->> 'minutes')::int, false);
+    insert into app.services (id, org_id, location_id, name, expected_minutes, active) values (svc, tests.id('org_a'), tests.id('loc_a'), 'Booked ' || n, (a ->> 'minutes')::int, false);
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id(qname), svc);
     vid := tests.make_expected_visit(qname || '_a' || n, qname,
                                      now() + (a ->> 'inMinutes')::int * interval '1 minute');
     perform private.set_actor('system', null);

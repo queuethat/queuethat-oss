@@ -11,9 +11,8 @@ delete from app.business_hours where location_id = tests.id('loc_a');
 insert into app.queues (id, org_id, location_id, name, ticket_prefix, renotify_eta_delta_minutes) values
   (tests.new_id('queue_r'), tests.id('org_a'), tests.id('loc_a'), 'Renotify', 'R', 40),
   (tests.new_id('queue_rb'), tests.id('org_b'), tests.id('loc_b'), 'Renotify B', 'B', 40);
-insert into app.services (id, org_id, location_id, queue_id, name, expected_minutes) values
-  (tests.new_id('svc_r'), tests.id('org_a'), tests.id('loc_a'), tests.id('queue_r'), 'Cut', 10),
-  (tests.new_id('svc_rb'), tests.id('org_b'), tests.id('loc_b'), tests.id('queue_rb'), 'Cut', 10);
+insert into app.services (id, org_id, location_id, name, expected_minutes) values (tests.new_id('svc_r'), tests.id('org_a'), tests.id('loc_a'), 'Cut', 10), (tests.new_id('svc_rb'), tests.id('org_b'), tests.id('loc_b'), 'Cut', 10);
+  insert into app.queue_services (org_id, location_id, queue_id, service_id) values (tests.id('org_a'), tests.id('loc_a'), tests.id('queue_r'), tests.id('svc_r')), (tests.id('org_b'), tests.id('loc_b'), tests.id('queue_rb'), tests.id('svc_rb'));
 select tests.new_visit(n, 'queue_r') from unnest(array['r1', 'r2', 'r3', 'r4', 'r5', 'r6']) n;
 select tests.new_visit('rb1', 'queue_rb');
 alter table app.visit_events disable trigger enqueue_notifications;
