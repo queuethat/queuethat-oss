@@ -38,7 +38,6 @@ const PREVIOUS = [
   '/admin/feedback',
   '/admin/comparison',
   '/admin/forms',
-  '/admin/templates',
   '/admin/journeys',
   '/admin/notifications/failed',
   '/admin/usage',
@@ -106,7 +105,6 @@ describe('admin nav model', () => {
       'hours',
       'availability',
       'forms',
-      'templates',
       'poster',
     ]);
     const advanced = groups.find((g) => g.id === 'advanced')!;

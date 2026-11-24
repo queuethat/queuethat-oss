@@ -1,8 +1,14 @@
 // SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import type { WebExtensions } from '@app/extensions/types.ts';
+import { crmAdminPages, crmRedirects, crmSlots } from './src/crm/extensions.ts';
+import { paymentsSlots } from './src/payments/extensions.ts';
 import { rolesAdminPages, rolesNavStrings, rolesRedirects } from './src/roles/extensions.ts';
 import { shiftsAdminPages, shiftsNavStrings, shiftsRedirects } from './src/shifts/extensions.ts';
-import { paymentsSlots } from './src/payments/extensions.ts';
+import {
+  templatesAdminPages,
+  templatesRedirects,
+  templatesSlots,
+} from './src/templates/extensions.ts';
 
 /**
  * What the QueueThat Commercial License adds to the web app. A build opts in with
@@ -11,14 +17,17 @@ import { paymentsSlots } from './src/payments/extensions.ts';
  * light: the router imports it into every route's chunk, so pages, slots and strings load lazily.
  */
 export const extensions: WebExtensions = {
-  adminPages: [...rolesAdminPages, ...shiftsAdminPages],
+  adminPages: [...crmAdminPages, ...templatesAdminPages, ...rolesAdminPages, ...shiftsAdminPages],
   banners: [],
-  slots: { ...paymentsSlots },
-  redirects: [...rolesRedirects, ...shiftsRedirects],
+  slots: { ...crmSlots, ...templatesSlots, ...paymentsSlots },
+  redirects: [...crmRedirects, ...templatesRedirects, ...rolesRedirects, ...shiftsRedirects],
   localeOverrides: async (lng, ns) => {
     // Sidebar labels are English only, like the staff screens.
     if (ns === 'admin-nav') return { ee: { ...rolesNavStrings, ...shiftsNavStrings } };
     if (lng !== 'en') return undefined;
+    if (ns === 'crm') return (await import('./src/locales/en/crm.json')).default;
+    if (ns === 'admin-templates')
+      return (await import('./src/locales/en/admin-templates.json')).default;
     if (ns === 'admin-roles') return (await import('./src/locales/en/admin-roles.json')).default;
     if (ns === 'payments-desk')
       return (await import('./src/locales/en/payments-desk.json')).default;
