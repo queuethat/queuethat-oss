@@ -1,9 +1,10 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { Button, ConfirmDestructive, Input } from '@qm/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
-import { useTranslation } from '../../../lib/translation.tsx';
-import { useSession } from '../../auth/api.ts';
-import { useCurrentOrg } from '../../auth/current.ts';
+import { useTranslation } from '@app/lib/translation.tsx';
+import { useSession } from '@app/features/auth/api.ts';
+import { useCurrentOrg } from '@app/features/auth/current.ts';
 import { guestNotesQuery, useAddGuestNote, useDeleteGuestNote } from './api.ts';
 
 /** A guest's notes across visits, newest first. Notes are free text: no health information. */

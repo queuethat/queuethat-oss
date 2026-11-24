@@ -43,6 +43,17 @@ export default defineConfig({
         },
       },
       {
+        extends: './apps/web/vite.config.ts',
+        test: {
+          name: 'ee-web',
+          root: './ee/web',
+          include: ['src/**/*.test.{ts,tsx}'],
+          environment: 'jsdom',
+          setupFiles: ['../../apps/web/src/test/setup.ts'],
+          env: { VITE_SUPABASE_URL: 'http://127.0.0.1:55321', VITE_SUPABASE_ANON_KEY: 'unit-test' },
+        },
+      },
+      {
         test: {
           name: 'web-scripts',
           root: './apps/web',

@@ -1,9 +1,10 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { Badge, Card, ConfirmDestructive, EmptyState, Spinner, useToast } from '@qm/ui';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
-import { useTranslation } from '../../../lib/translation.tsx';
-import { guestQuery, maskContact } from '../../admin/guests/api.ts';
-import { useCurrentOrg } from '../../auth/current.ts';
+import { useTranslation } from '@app/lib/translation.tsx';
+import { guestQuery, maskContact } from '@app/features/admin/guests/api.ts';
+import { useCurrentOrg } from '@app/features/auth/current.ts';
 import { guestTagsQuery } from '../tags/api.ts';
 import { duplicatesQuery, useMergeGuests, type DuplicatePair } from './api.ts';
 

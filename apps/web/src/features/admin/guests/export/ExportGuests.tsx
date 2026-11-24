@@ -1,11 +1,11 @@
 import { Button } from '@qm/ui';
-import { useTranslation } from '../../../lib/translation.tsx';
+import { useTranslation } from '../../../../lib/translation.tsx';
 import { downloadCsv } from '../csv.ts';
 import { useExportGuests } from './api.ts';
 
 /** Downloads the guest list as CSV, with a warning that the file holds personal data. */
 export function ExportGuests() {
-  const { t } = useTranslation('crm');
+  const { t } = useTranslation('admin-guests');
   const exporter = useExportGuests();
   const message =
     exporter.error?.message === 'rate_limited' ? 'export.rateLimited' : 'export.failed';

@@ -1,8 +1,9 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { errorCode } from '@qm/domain';
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../../../lib/supabase.ts';
-import { useCurrentOrg } from '../../auth/current.ts';
-import { useSession } from '../../auth/api.ts';
+import { supabase } from '@app/lib/supabase.ts';
+import { useCurrentOrg } from '@app/features/auth/current.ts';
+import { useSession } from '@app/features/auth/api.ts';
 
 export interface GuestNote {
   id: string;

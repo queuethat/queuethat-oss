@@ -1,6 +1,7 @@
-import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
-import { seedGuest, uniquePhone } from './support/guests.ts';
-import { freshQueue } from './support/queues.ts';
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
+import { expect, expectNoSeriousA11yViolations, test } from '../../../tests/e2e/fixtures.ts';
+import { seedGuest, uniquePhone } from '../../../tests/e2e/support/guests.ts';
+import { freshQueue } from '../../../tests/e2e/support/queues.ts';
 
 // 2B-C2 (#301): tags and notes on a guest profile; tag chips on the console row.
 

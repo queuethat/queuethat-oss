@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 /** The fields an import file can fill; `api.import_guests` reads them by these row keys. */
 export const IMPORT_FIELDS = [
   'name',

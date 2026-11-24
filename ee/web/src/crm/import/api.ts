@@ -1,7 +1,8 @@
+// SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import { errorCode } from '@qm/domain';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../../../lib/supabase.ts';
-import { useCurrentOrg } from '../../auth/current.ts';
+import { supabase } from '@app/lib/supabase.ts';
+import { useCurrentOrg } from '@app/features/auth/current.ts';
 import type { ImportRow } from './mapping.ts';
 
 export interface ImportResult {

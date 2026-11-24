@@ -29,7 +29,6 @@ import auth from './auth.json';
 import booking from './booking.json';
 import common from './common.json';
 import consoleHints from './console-hints.json';
-import crm from './crm.json';
 import devInbox from './dev-inbox.json';
 import display from './display.json';
 import empty from './empty.json';
@@ -54,7 +53,6 @@ import staff from './staff.json';
  */
 export const en = {
   common,
-  crm,
   'console-hints': consoleHints,
   'guest-info': guestInfo,
   // Typed as one namespace: the join and status strings load with their routes and are found

@@ -107,6 +107,18 @@ export interface ExtensionSlotProps {
    * `private.ext_report_incident`; a deployment that acts on it can let the business choose here.
    */
   'incidents.report': { notify: boolean; setNotify: (notify: boolean) => void };
+  /**
+   * In the header of the Guests page, beside the page's own buttons: a deployment that manages the
+   * guest list (import, merging duplicates) links its pages here. `role` is the member's role.
+   */
+  'guests.actions': { role: string };
+  /** On a guest's profile, between the contacts and the visit history: tags, notes. */
+  'guest.profile': { guestId: string };
+  /**
+   * Renders nothing. Hands `onTags` the tag names by guest id for the guests on the staff console, so
+   * its rows can show them as chips. Called again whenever the guests on screen change.
+   */
+  'console.guestTags': { guestIds: string[]; onTags: (tags: Map<string, string[]>) => void };
 }
 
 /** An incident log row as the slot gets it. */

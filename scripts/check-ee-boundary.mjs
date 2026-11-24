@@ -14,6 +14,8 @@ const IMPORT = /(?:from|import|require\(|import\()\s*['"]([^'"]+)['"]/g;
 const SKIP_HEADER = ['ee/LICENSE', 'ee/README.md'];
 
 const inEe = (path) => path.startsWith('ee/');
+// Its test holds import lines as fixture strings.
+const SELF_TEST = 'scripts/check-ee-boundary.test.mjs';
 
 /** Code files under ee/ whose first 5 lines do not carry the SPDX header. */
 export function missingHeader(files) {
@@ -40,7 +42,7 @@ function pointsIntoEe(file, spec) {
 export function coreImportsEe(files) {
   const errors = [];
   for (const [path, text] of Object.entries(files)) {
-    if (inEe(path) || !CODE.test(path)) continue;
+    if (inEe(path) || path === SELF_TEST || !CODE.test(path)) continue;
     for (const [, spec] of text.matchAll(IMPORT)) {
       if (pointsIntoEe(path, spec)) errors.push(`${path}: imports ${spec} from ee/`);
     }
