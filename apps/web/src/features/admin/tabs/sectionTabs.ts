@@ -72,16 +72,10 @@ const SECTIONS: Section[] = [
   {
     id: 'connections',
     width: 'max-w-3xl',
-    prefixes: [
-      '/admin/integrations',
-      '/admin/whatsapp',
-      '/admin/google',
-      '/admin/account/calendar',
-    ],
+    prefixes: ['/admin/integrations', '/admin/whatsapp', '/admin/account/calendar'],
     tabs: () => [
       tab('integrations', '/admin/integrations', 'items.integrations'),
       tab('whatsapp', '/admin/whatsapp', 'items.whatsapp'),
-      tab('google', '/admin/google', 'items.google'),
       tab('calendar', '/admin/account/calendar', 'items.calendar'),
     ],
   },

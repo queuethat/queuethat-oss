@@ -164,7 +164,6 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
         hidden: true,
         under: 'integrations',
       },
-      { to: '/admin/google', key: 'google', icon: iconLink, hidden: true, under: 'integrations' },
       {
         to: '/admin/account/calendar',
         key: 'calendar',

@@ -67,6 +67,3 @@ export { solvePow, type SolveOptions } from './captcha/powSolver.ts';
 export { postmarkEmailChannel, type PostmarkOptions } from './email/postmark.ts';
 export { resendEmailChannel } from './email/resend.ts';
 export type { HttpEmailOptions } from './email/shared.ts';
-export * from './integration.ts';
-export * from './pos/square.ts';
-export * from './crm/hubspot.ts';

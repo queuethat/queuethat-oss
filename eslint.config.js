@@ -15,7 +15,7 @@ export default tseslint.config(
       'packages/db-types/src/database.types.ts',
       'apps/web/src/routeTree.gen.ts',
       'supabase/functions/**',
-      'ee/functions/**',
+      'ee/supabase/functions/**',
       '**/playwright-report/**',
       '**/playwright-report-visual/**',
       '**/test-results/**',
