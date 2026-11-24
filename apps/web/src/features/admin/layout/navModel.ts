@@ -98,7 +98,6 @@ const GROUPS: { id: GroupId; entries: Entry[] }[] = [
       { to: '/admin/location/hours', key: 'hours', icon: iconClock },
       { to: '/admin/availability', key: 'availability', icon: iconCalendar },
       { to: '/admin/forms', key: 'forms', icon: iconList },
-      { to: '/admin/templates', key: 'templates', icon: iconBell },
       { to: '/admin/poster', key: 'poster', icon: iconQr },
     ],
   },
