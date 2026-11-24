@@ -1,7 +1,7 @@
 import { Button, PageHeader, Skeleton } from '@qm/ui';
 import { useTranslation } from '../../../lib/translation.tsx';
 import { useCurrentLocation, useCurrentOrg } from '../../auth/current.ts';
-import { useVerifiedDomain } from '../domains/api.ts';
+import { useVerifiedDomain } from './useVerifiedDomain.ts';
 import { useTelegramLink, useTextToJoin } from './api.ts';
 import { JoinQr } from './JoinQr.tsx';
 import { publicJoinUrl } from './url.ts';

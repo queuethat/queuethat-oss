@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import type { WebExtensions } from '@app/extensions/types.ts';
+import { domainsAdminPages, domainsRedirects } from './src/domains/extensions.ts';
 import { reportPages, reportRedirects } from './src/reports/extension.ts';
 import { integrationAdminPages, integrationRedirects } from './src/integrations/extensions.ts';
 import { crmAdminPages, crmRedirects, crmSlots } from './src/crm/extensions.ts';
@@ -24,6 +25,7 @@ export const extensions: WebExtensions = {
     ...templatesAdminPages,
     ...integrationAdminPages,
     ...reportPages,
+    ...domainsAdminPages,
     ...rolesAdminPages,
     ...shiftsAdminPages,
   ],
@@ -34,17 +36,19 @@ export const extensions: WebExtensions = {
     ...templatesRedirects,
     ...integrationRedirects,
     ...reportRedirects,
+    ...domainsRedirects,
     ...rolesRedirects,
     ...shiftsRedirects,
   ],
   localeOverrides: async (lng, ns) => {
-    if (ns === 'admin-nav' && lng === 'de') return { items: { google: 'Google-Eintrag' } };
+    if (ns === 'admin-nav' && lng === 'de')
+      return { items: { google: 'Google-Eintrag', domains: 'Eigene Domains' } };
     if (lng !== 'en') return undefined;
     if (ns === 'gbp') return (await import('./src/locales/en/gbp.json')).default;
     // Sidebar labels of the pages in this folder.
     if (ns === 'admin-nav')
       return {
-        items: { google: 'Google listing' },
+        items: { google: 'Google listing', domains: 'Custom domains' },
         ee: { ...rolesNavStrings, ...shiftsNavStrings },
       };
     if (ns === 'crm') return (await import('./src/locales/en/crm.json')).default;
@@ -52,6 +56,8 @@ export const extensions: WebExtensions = {
       return (await import('./src/locales/en/admin-reports.json')).default;
     if (ns === 'admin-templates')
       return (await import('./src/locales/en/admin-templates.json')).default;
+    if (ns === 'admin-domains')
+      return (await import('./src/locales/en/admin-domains.json')).default;
     if (ns === 'admin-roles') return (await import('./src/locales/en/admin-roles.json')).default;
     if (ns === 'payments-desk')
       return (await import('./src/locales/en/payments-desk.json')).default;

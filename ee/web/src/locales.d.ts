@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: LicenseRef-QueueThat-EE
+import type adminDomains from './locales/en/admin-domains.json';
 import type adminReports from './locales/en/admin-reports.json';
 import type adminRoles from './locales/en/admin-roles.json';
 import type adminTemplates from './locales/en/admin-templates.json';
@@ -14,6 +15,7 @@ declare module '@app/extensions/types.ts' {
     'admin-reports': typeof adminReports;
     // Merged over the app's own `admin-templates` (its queue look strings).
     'admin-templates': typeof adminTemplates;
+    'admin-domains': typeof adminDomains;
     'admin-roles': typeof adminRoles;
     'payments-desk': typeof paymentsDesk;
     planning: typeof planning;
