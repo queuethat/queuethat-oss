@@ -11,7 +11,6 @@ import { supabaseEnv } from '../../../tests/e2e/support/env.ts';
 
 // 2B-A11 (#286): managers block many cells in one gesture, by pointer or keyboard.
 test.use({ staffUser: null });
-test.skip(process.env.E2E_PILOT === '1', 'needs the service role to set up a bookable location');
 
 const env = supabaseEnv();
 const service = createClient(env.url, env.serviceRoleKey, { auth: { persistSession: false } });

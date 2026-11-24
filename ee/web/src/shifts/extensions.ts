@@ -23,6 +23,8 @@ export const shiftsAdminPages: ExtensionAdminPage[] = [
       await withStrings('shifts');
       return { default: (await import('./ShiftsPage.tsx')).MyShiftsPage };
     },
+    // Every member sees their own upcoming shifts, read only.
+    nav: { group: 'team', icon: iconClock, labelKey: 'admin-nav:ee.myShifts' },
   },
   {
     path: 'planning',
@@ -38,4 +40,4 @@ export const shiftsAdminPages: ExtensionAdminPage[] = [
 export const shiftsRedirects: ExtensionRedirect[] = [{ from: 'shifts', to: 'shifts' }];
 
 /** Sidebar labels, merged into the app's `admin-nav` strings when they load. */
-export const shiftsNavStrings = { shifts: 'Shifts', planning: 'Planning' };
+export const shiftsNavStrings = { shifts: 'Shifts', myShifts: 'My shifts', planning: 'Planning' };

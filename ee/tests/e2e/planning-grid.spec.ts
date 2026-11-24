@@ -12,7 +12,6 @@ import { supabaseEnv } from '../../../tests/e2e/support/env.ts';
 
 // 2B-A10 (#285): managers see who is booked, blocked or on shift across the day.
 test.use({ staffUser: null });
-test.skip(process.env.E2E_PILOT === '1', 'needs the service role to set up a bookable location');
 
 const env = supabaseEnv();
 const service = createClient(env.url, env.serviceRoleKey, { auth: { persistSession: false } });
