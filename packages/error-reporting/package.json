@@ -1,0 +1,23 @@
+{
+  "name": "@qm/error-reporting",
+  "version": "0.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@qm/domain": "workspace:*"
+  },
+  "devDependencies": {
+    "@sentry/browser": "11.10.0"
+  },
+  "peerDependencies": {
+    "@sentry/browser": "11.10.0"
+  }
+}

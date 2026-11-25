@@ -16,6 +16,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@qm/db-types": "workspace:*",
     "@qm/domain": "workspace:*",
+    "@qm/error-reporting": "workspace:*",
     "@qm/ui": "workspace:*",
     "@sentry/browser": "11.10.0",
     "@supabase/realtime-js": "2.118.0",
