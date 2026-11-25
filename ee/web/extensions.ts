@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: LicenseRef-QueueThat-EE
 import type { WebExtensions } from '@app/extensions/types.ts';
 import { domainsAdminPages, domainsRedirects } from './src/domains/extensions.ts';
-import { reportPages, reportRedirects } from './src/reports/extension.ts';
+import { reportPages, reportRedirects, reportsNavStrings } from './src/reports/extension.ts';
 import { integrationAdminPages, integrationRedirects } from './src/integrations/extensions.ts';
 import { crmAdminPages, crmRedirects, crmSlots } from './src/crm/extensions.ts';
 import { paymentsSlots } from './src/payments/extensions.ts';
@@ -49,7 +49,7 @@ export const extensions: WebExtensions = {
     if (ns === 'admin-nav')
       return {
         items: { google: 'Google listing', domains: 'Custom domains' },
-        ee: { ...rolesNavStrings, ...shiftsNavStrings },
+        ee: { ...rolesNavStrings, ...shiftsNavStrings, ...reportsNavStrings },
       };
     if (ns === 'crm') return (await import('./src/locales/en/crm.json')).default;
     if (ns === 'admin-reports')
