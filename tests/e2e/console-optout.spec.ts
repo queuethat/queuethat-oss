@@ -4,6 +4,7 @@ import { expect, expectNoSeriousA11yViolations, test } from './fixtures.ts';
 import { openQueue } from './support/console.ts';
 import { supabaseEnv } from './support/env.ts';
 import { freshQueue } from './support/queues.ts';
+import { enableDemoSms } from './support/sms.ts';
 
 // 3-CG10 (#335): staff see whether a guest can receive texts, and a STOP shows up within seconds.
 
@@ -19,6 +20,8 @@ test('AC1: a STOP flips the badge from Texts on to Opted out within 5 s', async 
   const exchange = pick % 100 === 11 ? pick + 1 : pick; // N11 exchanges aren't numbers
   const line = String(Math.floor(Math.random() * 10_000)).padStart(4, '0');
 
+  // The opt-in is offered only once texts are on for the business; don't rely on an earlier spec.
+  await enableDemoSms(service);
   await openQueue(staff, queue.id);
   await staff.getByRole('button', { name: 'Add guest' }).click();
   const dialog = staff.getByRole('dialog', { name: `Add a guest to ${queue.name}` });
