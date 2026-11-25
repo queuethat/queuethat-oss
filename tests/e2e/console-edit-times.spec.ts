@@ -13,9 +13,10 @@ function shift(hhmm: string, minutes: number): string {
 }
 
 /**
- * Hours to backdate: up to 3, fewer when that would carry the visit back across the location's
- * midnight (the history lists today's finished visits, and a time within 10 minutes of midnight
- * makes the "five minutes earlier" check wrap to a later time, so the order error never comes).
+ * Hours to backdate (fractional): up to 3, fewer when that would carry the visit back across the
+ * location's midnight (the history lists today's finished visits, and a time within 10 minutes of
+ * midnight makes the "five minutes earlier" check wrap to a later time, so the order error never
+ * comes). Never a whole 0 shortly after midnight: "five minutes later" would then be in the future.
  */
 function backdateHours(timeZone = 'America/New_York'): number {
   const [hour, minute] = new Intl.DateTimeFormat('en-GB', {
@@ -27,7 +28,7 @@ function backdateHours(timeZone = 'America/New_York'): number {
     .format(new Date())
     .split(':')
     .map(Number);
-  return Math.min(3, Math.floor((hour! * 60 + minute! - 10) / 60));
+  return Math.min(3, (hour! * 60 + minute! - 10) / 60);
 }
 
 test('AC1: a correction shows in the history as "times corrected by" with old and new values', async ({

@@ -63,10 +63,10 @@ export async function backdateVisit(queueId: string, hours: number): Promise<voi
   try {
     await sql.begin(async (tx) => {
       await tx`set local session_replication_role = replica`;
-      await tx`update app.visits set joined_at = joined_at - make_interval(hours => ${hours}),
-                 called_at = called_at - make_interval(hours => ${hours}),
-                 serving_at = serving_at - make_interval(hours => ${hours}),
-                 finished_at = finished_at - make_interval(hours => ${hours})
+      await tx`update app.visits set joined_at = joined_at - make_interval(secs => ${hours * 3600}),
+                 called_at = called_at - make_interval(secs => ${hours * 3600}),
+                 serving_at = serving_at - make_interval(secs => ${hours * 3600}),
+                 finished_at = finished_at - make_interval(secs => ${hours * 3600})
                where queue_id = ${queueId}`;
     });
   } finally {
