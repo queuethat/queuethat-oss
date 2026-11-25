@@ -11,6 +11,7 @@ COPY packages/domain/package.json packages/domain/
 COPY packages/ui/package.json packages/ui/
 COPY packages/providers/package.json packages/providers/
 COPY packages/db-types/package.json packages/db-types/
+COPY packages/error-reporting/package.json packages/error-reporting/
 COPY ee/web/package.json ee/web/
 RUN pnpm install --frozen-lockfile --filter @qm/web... --filter @qm/ee-web...
 COPY apps/web apps/web
