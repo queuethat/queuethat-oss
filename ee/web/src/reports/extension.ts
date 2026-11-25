@@ -16,10 +16,10 @@ export const reportPages: ExtensionAdminPage[] = [
     nav: {
       group: 'insights',
       icon: iconChart,
-      labelKey: 'admin-reports:nav.reports',
+      labelKey: 'admin-nav:ee.reports',
       adminOnly: true,
     },
-    tab: { section: 'insights', labelKey: 'admin-reports:nav.scheduled' },
+    tab: { section: 'insights', labelKey: 'admin-nav:ee.reportsScheduled' },
     // The page also guards itself; this only hides the link from staff.
     roles: ['owner', 'admin'],
   },
@@ -31,11 +31,11 @@ export const reportPages: ExtensionAdminPage[] = [
     nav: {
       group: 'insights',
       icon: iconChart,
-      labelKey: 'admin-reports:nav.custom',
+      labelKey: 'admin-nav:ee.reportsCustom',
       hidden: true,
       under: 'x:reports',
     },
-    tab: { section: 'insights', labelKey: 'admin-reports:nav.custom' },
+    tab: { section: 'insights', labelKey: 'admin-nav:ee.reportsCustom' },
   },
   {
     path: 'ask-analytics',
@@ -43,13 +43,24 @@ export const reportPages: ExtensionAdminPage[] = [
     nav: {
       group: 'insights',
       icon: iconChart,
-      labelKey: 'admin-reports:nav.ask',
+      labelKey: 'admin-nav:ee.reportsAsk',
       hidden: true,
       under: 'x:reports',
     },
-    tab: { section: 'insights', labelKey: 'admin-reports:nav.ask' },
+    tab: { section: 'insights', labelKey: 'admin-nav:ee.reportsAsk' },
   },
 ];
+
+/**
+ * Sidebar and tab labels, merged into the app's `admin-nav` strings when they load. The nav renders
+ * before any page's own namespace loads, so labels in `admin-reports` showed as raw keys.
+ */
+export const reportsNavStrings = {
+  reports: 'Reports',
+  reportsScheduled: 'Scheduled reports',
+  reportsCustom: 'Custom reports',
+  reportsAsk: 'Ask analytics',
+};
 
 /** The old `/admin/reports/*` addresses, when they were part of the core app. */
 export const reportRedirects: ExtensionRedirect[] = [
