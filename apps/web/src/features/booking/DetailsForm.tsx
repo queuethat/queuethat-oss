@@ -46,7 +46,7 @@ export function DetailsForm({
   onSubmit: (details: Details) => void;
   /** Fields a flow adds above the privacy note (an event's party size). */
   extra?: ReactNode;
-  /** Some flows (events) need a phone or an email to reach the guest. */
+  /** Appointments and events need a phone or an email to reach the guest. */
   contactRequired?: boolean;
   /** The waitlist offers a slot by email, so it needs one. */
   emailRequired?: boolean;
@@ -113,7 +113,7 @@ export function DetailsForm({
         }}
       />
       <PhoneInput
-        label={t('book.phone')}
+        label={t(contactRequired ? 'book.phoneEither' : 'book.phone')}
         countryLabel={t('book.country')}
         hint={t('book.phoneHint')}
         defaultCountry={(countryCode as CountryCode | null) ?? 'US'}
@@ -126,7 +126,7 @@ export function DetailsForm({
         locale={i18n.language}
       />
       <Input
-        label={t('book.email')}
+        label={t(contactRequired ? 'book.emailEither' : 'book.email')}
         hint={t('book.emailHint')}
         type="email"
         inputMode="email"
@@ -135,6 +135,9 @@ export function DetailsForm({
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
+      {contactRequired && !contactMissing ? (
+        <p className="text-muted">{t('book.contactNote')}</p>
+      ) : null}
       {contactMissing ? (
         <p role="alert" className="font-medium text-danger-strong">
           {t(emailRequired ? 'waitlist.emailRequired' : 'book.contactRequired')}

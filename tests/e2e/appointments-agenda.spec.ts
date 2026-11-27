@@ -77,6 +77,8 @@ test.describe('as owner', () => {
       .first()
       .click();
     await staff.getByLabel('Guest name').fill('Phone Caller');
+    await expect(staff.getByRole('button', { name: 'Book', exact: true })).toBeDisabled(); // needs a phone or email
+    await staff.getByLabel('Phone').fill('+49 30 1234567');
     await expect(staff.getByLabel('Allow over capacity')).toBeVisible(); // managers see it
     await staff.getByRole('button', { name: 'Book', exact: true }).click();
     await expect(staff.getByRole('dialog')).toBeHidden();

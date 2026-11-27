@@ -49,6 +49,7 @@ test('a series lists its conflict before confirm, books the rest and cancels thi
     .first()
     .click();
   await dialog.getByLabel('Guest name').fill('Rita Regular');
+  await dialog.getByLabel('Email').fill('rita@example.test');
   await dialog.getByLabel('Repeat').selectOption('weekly');
   await dialog.getByLabel('Number of bookings').fill('3');
   await expectNoSeriousA11yViolations(staff);

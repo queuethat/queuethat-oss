@@ -61,6 +61,8 @@ export function BookDialog({
   const failure = (book.error ?? series.error) ? errorCode(book.error ?? series.error) : null;
   const repeating = repeat.repeat;
   const pending = book.isPending || series.isPending;
+  // The database refuses a booking nobody can be reached about; the button waits for one.
+  const hasContact = phone.trim() !== '' || email.trim() !== '';
 
   function reset() {
     setSlot(null);
@@ -75,7 +77,7 @@ export function BookDialog({
 
   /** A series is previewed first (nothing is kept), then booked on the second tap with the same key. */
   function submitSeries(dryRun: boolean) {
-    if (!slot || !name.trim() || pending) return;
+    if (!slot || !name.trim() || !hasContact || pending) return;
     series.mutate(
       {
         key,
@@ -104,7 +106,7 @@ export function BookDialog({
 
   function submit() {
     if (repeating) return submitSeries(preview === null);
-    if (!slot || !name.trim() || book.isPending) return;
+    if (!slot || !name.trim() || !hasContact || book.isPending) return;
     book.mutate(
       {
         key,
@@ -148,7 +150,13 @@ export function BookDialog({
             </Button>
           ) : null}
           <Button
-            disabled={!slot || !name.trim() || !repeatReady(repeat) || preview?.booked.length === 0}
+            disabled={
+              !slot ||
+              !name.trim() ||
+              !hasContact ||
+              !repeatReady(repeat) ||
+              preview?.booked.length === 0
+            }
             loading={pending}
             loadingLabel={t('book.submit')}
             onClick={submit}
@@ -214,6 +222,7 @@ export function BookDialog({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+          <p className="text-muted">{t('book.contactNote')}</p>
           <RepeatFields value={repeat} onChange={setRepeat} />
           {canOverride && !repeating ? (
             <Checkbox

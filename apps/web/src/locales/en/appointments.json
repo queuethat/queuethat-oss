@@ -56,8 +56,9 @@
     "chosen": "{{when}}",
     "change": "Change time",
     "name": "Guest name",
-    "phone": "Phone (optional)",
-    "email": "Email (optional)",
+    "phone": "Phone",
+    "email": "Email",
+    "contactNote": "Phone or email needed so the guest can get confirmations and changes. A family member's works.",
     "override": "Allow over capacity",
     "overrideHint": "Managers only. Books even when the slot is full.",
     "submit": "Book",
@@ -70,6 +71,7 @@
       "plan_limit_reached": "This location has reached its appointment limit for that month.",
       "permission_denied": "You can't do that.",
       "invalid_input": "Check the details and try again.",
+      "contact_required": "Add a phone number or an email for this guest.",
       "unknown": "Something went wrong. Try again."
     }
   },

@@ -47,6 +47,7 @@ const KNOWN_ERRORS = [
   'org_suspended',
   'plan_limit_reached',
   'not_found',
+  'contact_required',
 ];
 
 /**
@@ -341,6 +342,7 @@ function SlotBooking({ slug, initialService }: { slug: string; initialService?: 
             pending={book.isPending}
             onBack={() => setSlotStart(null)}
             onSubmit={submit}
+            contactRequired
           />
           {siteKey ? (
             <Turnstile
