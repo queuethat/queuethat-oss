@@ -46,7 +46,7 @@
     },
     "privacy": {
       "summary": "Comment nous utilisons vos informations",
-      "body": "Nous utilisons votre prénom, votre numéro et votre e-mail uniquement pour gérer votre place dans cette file et vous informer de cette visite. Le personnel de ce lieu peut les voir. Votre numéro et votre e-mail ne sont jamais affichés sur les écrans de la salle d'attente."
+      "body": "Nous utilisons votre prénom, votre numéro et votre e-mail uniquement pour gérer votre place dans cette file et vous informer de cette visite. Le personnel de ce lieu peut les voir. Les écrans de la salle d'attente peuvent afficher votre prénom et l'initiale de votre nom, comme James W. Votre numéro et votre e-mail ne sont jamais affichés."
     },
     "notAccepting": {
       "closed": "Cette file est fermée pour le moment.",

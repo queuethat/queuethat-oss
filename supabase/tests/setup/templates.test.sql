@@ -1,7 +1,7 @@
 -- 2A-ORG4 (#92): industry templates and the clinic privacy guardrail.
 begin;
 \ir ../helpers/_setup.psql
-select plan(23);
+select plan(25);
 
 select tests.create_world();
 select tests.as_postgres();
@@ -62,6 +62,14 @@ select is((select count(*) from app.locations where org_id = tests.id('org_a') a
 select tests.act_as('admin');
 select throws_ok($$ update app.locations set display_names_enabled = true where id = tests.id('loc_new') $$,
   'P0001', 'display_names_locked', 'AC2: an admin cannot turn names on for a clinic org');
+select tests.as_postgres();
+insert into app.locations (id, org_id, name, slug, tz)
+values (tests.new_id('loc_later'), tests.id('org_a'), 'Later place', 'later-place-a', 'America/New_York');
+select is((select display_names_enabled from app.locations where id = tests.id('loc_later')), false,
+  'a new location of a clinic org starts with names off despite the default');
+select is((select count(*) from app.locations where org_id = tests.id('org_a') and display_names_enabled), 0::bigint,
+  'still no location of the clinic org shows names');
+select tests.act_as('admin');
 select throws_ok($$ update app.organizations set health_tagged = false where id = tests.id('org_a') $$,
   '42501', null, 'an owner-level user cannot lift the tag');
 select tests.act_as('owner');
