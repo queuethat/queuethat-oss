@@ -104,6 +104,8 @@
     "message": {
       "called": "Es tu turno. Por favor ve a {{counter}}.",
       "calledNoCounter": "Es tu turno. Por favor ve a la recepción.",
+      "late": "Ya pasó la hora de tu cita. Si te registras ahora, entrarás al final de la fila.",
+      "movedBack": "Llegaste después de la hora de tu cita, así que te pusimos al final de la fila. Gracias por tu paciencia.",
       "serving": "Te están atendiendo.",
       "served": "Gracias por visitar {{location}}.",
       "no_show": "Te llamamos pero no te encontramos. Pregunta al personal si sigues aquí.",

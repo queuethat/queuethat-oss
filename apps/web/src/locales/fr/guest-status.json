@@ -104,6 +104,8 @@
     "message": {
       "called": "C'est votre tour. Veuillez vous rendre au {{counter}}.",
       "calledNoCounter": "C'est votre tour. Veuillez vous rendre à l'accueil.",
+      "late": "L'heure de votre rendez-vous est passée. Si vous vous enregistrez maintenant, vous serez placé à la fin de la file.",
+      "movedBack": "Vous êtes arrivé après l'heure de votre rendez-vous, vous avez donc été placé à la fin de la file. Merci de votre patience.",
       "serving": "Vous êtes pris en charge.",
       "served": "Merci de votre visite chez {{location}}.",
       "no_show": "Nous vous avons appelé mais ne vous avons pas trouvé. Demandez au personnel si vous êtes encore là.",

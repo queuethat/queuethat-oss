@@ -76,8 +76,8 @@ select set_eq($$ select a.attname::text from pg_attribute a
   array['display_ticket', 'status', 'position', 'people_ahead', 'eta_state', 'eta_low', 'eta_high',
         'counter_label', 'call_count', 'called_at', 'queue_name', 'location_name', 'queue_pulse_id',
         'guest_actions', 'version', 'as_of', 'grace_until', 'warn_at', 'snoozes_left', 'on_the_way', 'companions',
-        'chat_version', 'unread_staff_messages', 'arrive_after', 'text_consent'],
-  'AC1: visit_status has no name, phone, email, contact or guest id field (companions: own party only; arrive_after: its own reserved time; text_consent: none, off or on, never the number)');
+        'chat_version', 'unread_staff_messages', 'arrive_after', 'text_consent', 'late_state'],
+  'AC1: visit_status has no name, phone, email, contact or guest id field (companions: own party only; arrive_after: its own reserved time; text_consent: none, off or on, never the number; late_state: late, moved_back or null)');
 select set_config('request.method', 'GET', true);
 select throws_ok($$ select tests.status('ann') $$, 'P0001', 'invalid_input',
   'get_visit_status refuses GET, so the token never travels in a URL');

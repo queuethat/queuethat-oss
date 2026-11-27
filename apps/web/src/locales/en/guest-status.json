@@ -104,6 +104,8 @@
     "message": {
       "called": "It's your turn. Please go to {{counter}}.",
       "calledNoCounter": "It's your turn. Please go to the front desk.",
+      "late": "You're past your appointment time. When you check in, you'll join the end of the line.",
+      "movedBack": "You arrived after your appointment time, so you've been placed at the end of the line. Thanks for your patience.",
       "serving": "You're being served.",
       "served": "Thanks for visiting {{location}}.",
       "no_show": "We called you but couldn't find you. Ask staff if you're still here.",
