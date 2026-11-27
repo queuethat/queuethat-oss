@@ -262,7 +262,15 @@ function QueueForm({
       setQ((s) => ({ ...s, [key]: Number(event.target.value) })),
   });
   const policyNumber = (
-    key: 'partySizeMin' | 'partySizeMax' | 'graceMinutes' | 'noShowWarningSeconds',
+    key:
+      | 'partySizeMin'
+      | 'partySizeMax'
+      | 'graceMinutes'
+      | 'noShowWarningSeconds'
+      | 'earlyCheckinMinutes'
+      | 'lateToleranceMinutes'
+      | 'noShowAfterMinutes'
+      | 'maxWalkinDelayMinutes',
   ) => ({
     type: 'number',
     inputMode: 'numeric' as const,
@@ -276,6 +284,10 @@ function QueueForm({
     partyMax: policyNumber('partySizeMax'),
     grace: policyNumber('graceMinutes'),
     warning: policyNumber('noShowWarningSeconds'),
+    early: policyNumber('earlyCheckinMinutes'),
+    late: policyNumber('lateToleranceMinutes'),
+    noShowAfter: policyNumber('noShowAfterMinutes'),
+    maxWalkin: policyNumber('maxWalkinDelayMinutes'),
   };
   const fields = {
     name: {
@@ -442,6 +454,38 @@ function QueueForm({
                 />
               </div>
             ) : null}
+            <p className="font-medium">{t('queues.appointmentWindows')}</p>
+            <p className="text-sm text-fg-muted">{t('queues.appointmentWindowsHint')}</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Input
+                label={t('queues.earlyCheckin')}
+                hint={t('queues.earlyCheckinHint')}
+                {...policy.early}
+                min={0}
+                max={240}
+              />
+              <Input
+                label={t('queues.lateTolerance')}
+                hint={t('queues.lateToleranceHint')}
+                {...policy.late}
+                min={0}
+                max={240}
+              />
+              <Input
+                label={t('queues.noShowAfter')}
+                hint={t('queues.noShowAfterHint')}
+                {...policy.noShowAfter}
+                min={0}
+                max={240}
+              />
+              <Input
+                label={t('queues.maxWalkinDelay')}
+                hint={t('queues.maxWalkinDelayHint')}
+                {...policy.maxWalkin}
+                min={0}
+                max={240}
+              />
+            </div>
             <Input
               label={t('queues.servingReminder')}
               hint={t('queues.servingReminderHint')}

@@ -189,6 +189,16 @@
     "graceMinutes": "Grace period (minutes)",
     "warningSeconds": "Warn them this many seconds before",
     "warningSecondsHint": "At least 20, and shorter than the grace period.",
+    "appointmentWindows": "Appointments and walk-ins",
+    "appointmentWindowsHint": "How a booked guest and a walk-in share this line when both arrive around the same time.",
+    "earlyCheckin": "Early check-in window (minutes)",
+    "earlyCheckinHint": "A guest who checks in on time is placed as if they arrived this long before their start.",
+    "lateTolerance": "Late tolerance (minutes)",
+    "lateToleranceHint": "After this long past their start, a guest who checks in goes to the back of the line.",
+    "noShowAfter": "Mark no-show after (minutes)",
+    "noShowAfterHint": "A booked guest who never checked in this long after their start is marked a no-show.",
+    "maxWalkinDelay": "Longest extra walk-in wait (minutes)",
+    "maxWalkinDelayHint": "A walk-in waiting this much longer than quoted is called before booked guests.",
     "servingReminder": "Remind staff after (minutes)",
     "servingReminderHint": "Minutes into service before staff are nudged. At least 15. Leave blank to let the system decide.",
     "policyProblem": {
@@ -197,7 +207,9 @@
       "warningVsGrace": "The warning must be shorter than the grace period.",
       "reminder": "The service reminder must be at least 15 minutes, or blank.",
       "threshold": "Almost up must be between 1 and 20 places.",
-      "joinLater": "Joining later can look ahead 1 to 12 hours."
+      "joinLater": "Joining later can look ahead 1 to 12 hours.",
+      "appointmentWindows": "Appointment windows must be whole minutes from 0 to 240.",
+      "lateVsNoShow": "Late tolerance can't be longer than the no-show time."
     },
     "showEtaHint": "When off, customers see their place in line only.",
     "save": "Save queue",
