@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { demo } from '../fixtures/demo.ts';
 import { expect, expectNoSeriousA11yViolations, LIVE_TIMEOUT_MS, test } from './fixtures.ts';
 import { supabaseEnv } from './support/env.ts';
+import { expectedVisit } from './support/console.ts';
 import { freshQueue } from './support/queues.ts';
 import { testUsers } from './support/users.ts';
 
@@ -159,4 +160,30 @@ test('offline: a card says the position is the last one known', async ({ devices
   await expectNoSeriousA11yViolations(guest);
   await guest.context().setOffline(false);
   await expect(card).toHaveCount(0);
+});
+
+test('late appointment: told they will join the end, then told they were moved back', async ({
+  devices,
+}) => {
+  const { guest } = devices;
+  const queue = await freshQueue();
+  // Not clamped to today: this page does not care about the timeline, and a clamp at midnight would make it flaky.
+  const token = await expectedVisit(queue.id, 'Lena', -50, { clampToToday: false });
+  await guest.goto(`/v/${token}`);
+  await expect(guest.getByText("You're past your appointment time")).toBeVisible();
+
+  const status = await rpc<{ version: number }>('get_visit_status', { p_token: token });
+  await rpc(
+    'transition_visit',
+    {
+      p_visit_id: token,
+      p_action: 'check_in',
+      p_expected_version: status.version,
+      p_idempotency_key: randomUUID(),
+    },
+    await staffToken(),
+  );
+  await guest.reload();
+  await expect(guest.getByText('You arrived after your appointment time')).toBeVisible();
+  await expectNoSeriousA11yViolations(guest);
 });

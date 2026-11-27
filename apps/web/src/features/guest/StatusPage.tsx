@@ -179,6 +179,11 @@ export function StatusPage({ token }: { token: string }) {
           {message}
         </p>
       ) : null}
+      {v.late_state === 'late' || v.late_state === 'moved_back' ? (
+        <p role="status" className="rounded-card bg-warning-soft p-3 text-warning-strong">
+          {t(v.late_state === 'late' ? 'status.message.late' : 'status.message.movedBack')}
+        </p>
+      ) : null}
 
       <CalledTakeover
         called={status === 'called'}

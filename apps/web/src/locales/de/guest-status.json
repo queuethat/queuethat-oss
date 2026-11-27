@@ -104,6 +104,8 @@
     "message": {
       "called": "Sie sind an der Reihe. Bitte gehen Sie zu {{counter}}.",
       "calledNoCounter": "Sie sind an der Reihe. Bitte gehen Sie zum Empfang.",
+      "late": "Ihr Termin ist bereits vorbei. Wenn Sie sich jetzt anmelden, kommen Sie ans Ende der Warteschlange.",
+      "movedBack": "Sie sind nach Ihrer Terminzeit eingetroffen und wurden deshalb ans Ende der Warteschlange gesetzt. Danke für Ihre Geduld.",
       "serving": "Sie werden bedient.",
       "served": "Danke für Ihren Besuch bei {{location}}.",
       "no_show": "Wir haben Sie aufgerufen, konnten Sie aber nicht finden. Fragen Sie das Personal, wenn Sie noch da sind.",
