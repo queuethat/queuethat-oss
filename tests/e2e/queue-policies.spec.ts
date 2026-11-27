@@ -90,3 +90,36 @@ test('AC2: a warning under 20 seconds is refused, and the copy says guests are w
     serving_reminder_minutes: 20,
   });
 });
+
+test('admins tune the appointment windows and are told when they conflict', async ({ devices }) => {
+  const { staff } = devices;
+  const { email } = await ownerOfNewBusiness();
+  const queueId = await queueOf(email, 'Appointments');
+  await signInTo(staff, email, '/admin/queues');
+  await staff.getByRole('button', { name: 'Edit' }).click();
+
+  await expect(staff.getByLabel('Early check-in window (minutes)')).toHaveValue('10');
+  await expect(staff.getByLabel('Late tolerance (minutes)')).toHaveValue('10');
+  await expect(staff.getByLabel('Mark no-show after (minutes)')).toHaveValue('15');
+  await expect(staff.getByLabel('Longest extra walk-in wait (minutes)')).toHaveValue('15');
+
+  await staff.getByLabel('Late tolerance (minutes)').fill('20');
+  await expect(
+    staff.getByRole('alert').filter({ hasText: "can't be longer than the no-show time" }),
+  ).toBeVisible();
+
+  await staff.getByLabel('Early check-in window (minutes)').fill('5');
+  await staff.getByLabel('Mark no-show after (minutes)').fill('30');
+  await staff.getByLabel('Longest extra walk-in wait (minutes)').fill('0');
+  await staff.getByRole('button', { name: 'Save queue' }).click();
+  await expect(staff.getByRole('heading', { name: 'Appointments' })).toBeVisible();
+  const [after] = (await readAs(email, [
+    `queues?select=early_checkin_minutes,late_tolerance_minutes,no_show_after_minutes,max_walkin_delay_minutes&id=eq.${queueId}`,
+  ])) as [Record<string, unknown>[]];
+  expect(after![0]).toEqual({
+    early_checkin_minutes: 5,
+    late_tolerance_minutes: 20,
+    no_show_after_minutes: 30,
+    max_walkin_delay_minutes: 0,
+  });
+});

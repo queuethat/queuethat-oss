@@ -12,6 +12,14 @@ export interface QueueSettings {
   capacity: number | null;
   serversOnDuty: number;
   showEta: boolean;
+  /** Minutes before its start an appointment guest counts as arrived early for ordering, 0 to 240. */
+  earlyCheckinMinutes: number;
+  /** Minutes after its start an appointment guest still keeps their earned place, 0 to 240. */
+  lateToleranceMinutes: number;
+  /** Minutes after its start an appointment guest who never checked in is marked no-show, 0 to 240. */
+  noShowAfterMinutes: number;
+  /** A walk-in waiting past its quote plus this many minutes is called before appointments, 0 to 240. */
+  maxWalkinDelayMinutes: number;
   joinRatePerMin: number;
   /** Online joins the queue takes in any hour, 1 to 1000; above it guests are sent to the desk. */
   onlineJoinsPerHour: number;
@@ -72,6 +80,10 @@ export const NEW_QUEUE: QueueSettings = {
   capacity: null,
   serversOnDuty: 1,
   showEta: true,
+  earlyCheckinMinutes: 10,
+  lateToleranceMinutes: 10,
+  noShowAfterMinutes: 15,
+  maxWalkinDelayMinutes: 15,
   joinRatePerMin: 60,
   onlineJoinsPerHour: 120,
   partySizeEnabled: false,
@@ -101,7 +113,7 @@ export const queuesQuery = (locationId: string) =>
         .schema('app')
         .from('queues')
         .select(
-          'id, name, ticket_prefix, capacity, servers_on_duty, show_eta, join_rate_per_min, online_joins_per_hour, party_size_enabled, party_size_min, party_size_max, auto_no_show_enabled, grace_minutes, no_show_warning_seconds, serving_reminder_minutes, notify_triggers, almost_up_threshold, assignment_strategy, join_later_enabled, join_later_max_hours, join_restriction, sms_keyword, origin_template, origin_version',
+          'id, name, ticket_prefix, capacity, servers_on_duty, show_eta, early_checkin_minutes, late_tolerance_minutes, no_show_after_minutes, max_walkin_delay_minutes, join_rate_per_min, online_joins_per_hour, party_size_enabled, party_size_min, party_size_max, auto_no_show_enabled, grace_minutes, no_show_warning_seconds, serving_reminder_minutes, notify_triggers, almost_up_threshold, assignment_strategy, join_later_enabled, join_later_max_hours, join_restriction, sms_keyword, origin_template, origin_version',
         )
         .eq('location_id', locationId)
         .is('archived_at', null)
@@ -115,6 +127,10 @@ export const queuesQuery = (locationId: string) =>
         capacity: q.capacity,
         serversOnDuty: q.servers_on_duty,
         showEta: q.show_eta,
+        earlyCheckinMinutes: q.early_checkin_minutes,
+        lateToleranceMinutes: q.late_tolerance_minutes,
+        noShowAfterMinutes: q.no_show_after_minutes,
+        maxWalkinDelayMinutes: q.max_walkin_delay_minutes,
         joinRatePerMin: q.join_rate_per_min,
         onlineJoinsPerHour: q.online_joins_per_hour,
         partySizeEnabled: q.party_size_enabled,
@@ -145,6 +161,10 @@ const columns = (q: QueueSettings) => ({
   capacity: q.capacity,
   servers_on_duty: q.serversOnDuty,
   show_eta: q.showEta,
+  early_checkin_minutes: q.earlyCheckinMinutes,
+  late_tolerance_minutes: q.lateToleranceMinutes,
+  no_show_after_minutes: q.noShowAfterMinutes,
+  max_walkin_delay_minutes: q.maxWalkinDelayMinutes,
   join_rate_per_min: q.joinRatePerMin,
   online_joins_per_hour: q.onlineJoinsPerHour,
   party_size_enabled: q.partySizeEnabled,
@@ -169,7 +189,16 @@ const columns = (q: QueueSettings) => ({
  */
 export function policyProblem(
   q: QueueSettings,
-): 'partyRange' | 'warning' | 'warningVsGrace' | 'reminder' | 'threshold' | 'joinLater' | null {
+):
+  | 'partyRange'
+  | 'warning'
+  | 'warningVsGrace'
+  | 'reminder'
+  | 'threshold'
+  | 'joinLater'
+  | 'appointmentWindows'
+  | 'lateVsNoShow'
+  | null {
   if (
     q.partySizeEnabled &&
     !(q.partySizeMin >= 1 && q.partySizeMin <= q.partySizeMax && q.partySizeMax <= 50)
@@ -181,6 +210,14 @@ export function policyProblem(
   if (!(q.almostUpThreshold >= 1 && q.almostUpThreshold <= 20)) return 'threshold';
   if (q.joinLaterEnabled && !(q.joinLaterMaxHours >= 1 && q.joinLaterMaxHours <= 12))
     return 'joinLater';
+  const windows = [
+    q.earlyCheckinMinutes,
+    q.lateToleranceMinutes,
+    q.noShowAfterMinutes,
+    q.maxWalkinDelayMinutes,
+  ];
+  if (!windows.every((m) => Number.isInteger(m) && m >= 0 && m <= 240)) return 'appointmentWindows';
+  if (q.lateToleranceMinutes > q.noShowAfterMinutes) return 'lateVsNoShow';
   return null;
 }
 
