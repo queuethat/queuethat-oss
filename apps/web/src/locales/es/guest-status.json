@@ -101,6 +101,10 @@
       "expired": "Caducado",
       "scheduled": "Programado"
     },
+    "checkIn": {
+      "button": "Ya llegué, registrarme",
+      "failed": "No se pudo registrar tu llegada. Inténtalo de nuevo o avisa al personal."
+    },
     "message": {
       "called": "Es tu turno. Por favor ve a {{counter}}.",
       "calledNoCounter": "Es tu turno. Por favor ve a la recepción.",

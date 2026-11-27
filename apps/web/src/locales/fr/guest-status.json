@@ -101,6 +101,10 @@
       "expired": "Expiré",
       "scheduled": "Planifié"
     },
+    "checkIn": {
+      "button": "Je suis là, m'enregistrer",
+      "failed": "L'enregistrement a échoué. Réessayez ou prévenez le personnel."
+    },
     "message": {
       "called": "C'est votre tour. Veuillez vous rendre au {{counter}}.",
       "calledNoCounter": "C'est votre tour. Veuillez vous rendre à l'accueil.",

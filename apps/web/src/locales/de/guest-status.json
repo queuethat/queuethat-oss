@@ -101,6 +101,10 @@
       "expired": "Abgelaufen",
       "scheduled": "Geplant"
     },
+    "checkIn": {
+      "button": "Ich bin da, jetzt anmelden",
+      "failed": "Die Anmeldung hat nicht geklappt. Versuchen Sie es erneut oder sagen Sie dem Personal Bescheid."
+    },
     "message": {
       "called": "Sie sind an der Reihe. Bitte gehen Sie zu {{counter}}.",
       "calledNoCounter": "Sie sind an der Reihe. Bitte gehen Sie zum Empfang.",
