@@ -19,6 +19,7 @@ import { useState, type ReactNode } from 'react';
 import { useTranslation } from '../../lib/translation.tsx';
 import { useNow } from '../../lib/now.ts';
 import { ScreenEmpty } from '../../components/ScreenEmpty.tsx';
+import { DueSoon } from './DueSoon.tsx';
 import { ShareLine } from './ShareLine.tsx';
 import { HistoryDrawer } from './history/HistoryDrawer.tsx';
 import { TransferDialog, type OnTransfer } from './transfer/TransferDialog.tsx';
@@ -214,6 +215,7 @@ export function VisitList({
     v.groupKey ? (groups.get(v.groupKey)?.filter((x) => x !== v.ticket) ?? []) : [];
   return (
     <div className="flex flex-col gap-4">
+      <DueSoon visits={visits} now={now} timeZone={timeZone ?? 'UTC'} />
       {SECTIONS.map(({ key, state, later }) => {
         const rows = visits.filter(
           (v) => v.status === state && (state !== 'expected' || (v.arriveAfter !== null) === later),

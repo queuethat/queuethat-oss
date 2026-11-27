@@ -410,6 +410,17 @@
       "correctedBy": "times corrected by {{name}}"
     },
     "expectedAt": "Due {{time}}",
+    "dueSoon": {
+      "title_one": "Appointment due soon",
+      "title_other": "{{count}} appointments due soon",
+      "row": "{{who}} · due {{time}} ({{when}}), not checked in",
+      "in_one": "in {{count}} min",
+      "in_other": "in {{count}} min",
+      "now": "now",
+      "ago_one": "{{count}} min ago",
+      "ago_other": "{{count}} min ago",
+      "hint": "On time, they go ahead of walk-ins who joined shortly before their time or later. Leave a gap if you can."
+    },
     "arrival": {
       "early": "Early",
       "onTime": "On time",
