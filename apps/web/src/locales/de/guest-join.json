@@ -46,7 +46,7 @@
     },
     "privacy": {
       "summary": "So verwenden wir Ihre Angaben",
-      "body": "Wir verwenden Ihren Vornamen, Ihre Nummer und Ihre E-Mail-Adresse nur, um Ihren Platz in dieser Warteschlange zu verwalten und Sie über diesen Besuch zu informieren. Das Personal an diesem Standort kann sie sehen. Ihre Nummer und E-Mail-Adresse werden nie auf Bildschirmen im Wartebereich angezeigt."
+      "body": "Wir verwenden Ihren Vornamen, Ihre Nummer und Ihre E-Mail-Adresse nur, um Ihren Platz in dieser Warteschlange zu verwalten und Sie über diesen Besuch zu informieren. Das Personal an diesem Standort kann sie sehen. Bildschirme im Wartebereich können Ihren Vornamen und den Anfangsbuchstaben Ihres Nachnamens zeigen, zum Beispiel James W. Ihre Nummer und E-Mail-Adresse werden nie angezeigt."
     },
     "notAccepting": {
       "closed": "Diese Warteschlange ist derzeit geschlossen.",

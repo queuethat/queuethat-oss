@@ -1,7 +1,13 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadNamespaces } from '../../../lib/i18n.ts';
-import { createAnnouncer, spellTicket, type AnnounceMode, type Speaker } from './announce.ts';
+import {
+  createAnnouncer,
+  spellTicket,
+  spokenName,
+  type AnnounceMode,
+  type Speaker,
+} from './announce.ts';
 import { useAnnouncements } from './useAnnouncements.ts';
 
 beforeAll(() => loadNamespaces('display', 'announce'));
@@ -230,5 +236,13 @@ describe('multilingual calls', () => {
 describe('spellTicket', () => {
   it('spells every character apart', () => {
     expect(spellTicket('A012')).toBe('A 0 1 2');
+  });
+});
+
+describe('spokenName', () => {
+  it('drops the last initial so a voice says only the first name', () => {
+    expect(spokenName('James W.')).toBe('James');
+    expect(spokenName('Dana')).toBe('Dana');
+    expect(spokenName(null)).toBe('');
   });
 });

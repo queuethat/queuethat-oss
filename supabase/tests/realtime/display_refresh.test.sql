@@ -97,6 +97,8 @@ insert into app.queues (id, org_id, location_id, name, ticket_prefix) values
 insert into app.queues (id, org_id, location_id, name, ticket_prefix, archived_at) values
   (tests.new_id('queue_ax'), tests.id('org_a'), tests.id('loc_a'), 'Old', 'X', now());
 select tests.flush();
+update app.locations set display_names_enabled = false where id = tests.id('loc_a');
+select tests.flush();
 delete from realtime.messages;
 
 select tests.act_as('owner');

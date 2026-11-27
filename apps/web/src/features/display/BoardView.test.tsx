@@ -23,7 +23,7 @@ const snapshot = (over: { names?: boolean; called?: string[] } = {}) => ({
       now_serving: (over.called ?? ['A001']).map((ticket, i) => ({
         display_ticket: ticket,
         counter_label: 'Chair 2',
-        first_name: over.names ? 'Dana' : null,
+        first_name: over.names ? 'Dana L.' : null,
         called_at: `2026-10-25T09:5${i}:00Z`,
       })),
       next_up: [{ display_ticket: 'A003', counter_label: null, first_name: null, called_at: null }],
@@ -46,9 +46,9 @@ describe('BoardView', () => {
     const { rerender } = render(
       <BoardView snapshot={{ ...snapshot({ names: true }), names_enabled: false }} />,
     );
-    expect(screen.queryByText('Dana')).toBeNull();
+    expect(screen.queryByText('Dana L.')).toBeNull();
     rerender(<BoardView snapshot={snapshot({ names: true })} />);
-    expect(screen.getByText('Dana')).toBeTruthy();
+    expect(screen.getByText('Dana L.')).toBeTruthy();
   });
 
   it('highlights a new call, not the calls on screen at load, and lets it fade', () => {

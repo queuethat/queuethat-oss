@@ -75,7 +75,7 @@ The single biggest technical risk is not RLS on tables you remember. It is the S
 **Displays (D-1, D-3, D-2).** A waiting-room TV that shows full names next to a service is a disclosure to everyone in the room, and TTS announcing names is the same in audio. Privacy mode cannot be P1 when the display is P0. Default must be ticket number only; first name opt-in per location with a warning; service name hidden on public surfaces by default; clinic templates lock names off the display.
 
 **Clinics.** X-8 says "don't target healthcare records" while ORG-14 ships a clinic template and the MVP is meant for "a clinic front desk". Under HIPAA, PHI is individually identifiable information held by a covered entity relating to health or care; the fact that a named person is in a clinic's queue, plus a service like "vaccination" or "lab draw", is plausibly PHI, and a vendor hosting it for the clinic is a business associate needing a BAA **[lawyer]**. In the EU/UK it is special-category data (Art. 9). "Reason for visit" turns this from plausible to certain. Guardrails:
-- Clinic template: ticket numbers only on displays, no free-text reason field, services named generically ("Appointment", "Walk-in") by default.
+- Clinic template: ticket numbers only on displays (names locked off), no free-text reason field, services named generically ("Appointment", "Walk-in") by default.
 - Q-8 builder shows a warning when a field label matches health terms (symptom, reason, condition, medication, insurance, DOB) and on any free-text field in a health-tagged org.
 - Drop the `file` field type (insurance cards, referral letters will arrive).
 - Hosted ToS: no PHI unless a BAA is signed, and you won't sign one. Self-host docs: a plain statement that HIPAA compliance is the operator's responsibility.
@@ -185,7 +185,7 @@ Dependency hygiene: CI licence allowlist (MIT, Apache-2.0, BSD-2/3, ISC, MPL-2.0
 - [ ] Realtime channels used by guests/displays carry no names or contact data (payload schema test).
 - [ ] Device pairing: one-time code expiring in 10 minutes; issued token scoped to one location and role; stored hashed; revocation takes effect within 60s (test).
 - [ ] Display role can read only the sanitized display view; kiosk role can only call `join_queue` for its location (matrix-asserted).
-- [ ] Display default shows ticket numbers only; names require an explicit per-location setting; clinic template cannot enable names.
+- [ ] Display default shows ticket number plus a short name (first name and last initial) cut in the database; a location can turn names off; clinic template cannot enable names.
 - [ ] Join endpoint enforces per-IP (default 10/10min) and per-queue (default 60/min) limits and a CAPTCHA verifier interface with Turnstile and a no-third-party option; test exceeds the limit and gets 429.
 - [ ] Queue capacity limit enforced in DB.
 - [ ] Audit table records actor, role, org, action, target, before/after for: membership/role changes, device issue/revoke, queue settings, visit removal, exports, data deletion. Append-only: `UPDATE`/`DELETE` revoked from all app roles (test).

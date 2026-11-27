@@ -1,7 +1,7 @@
 -- V10 (#39): api.display_snapshot and api.today_stats.
 begin;
 \ir ../helpers/_setup.psql
-select plan(31);
+select plan(37);
 select tests.create_world();
 
 -- Fixtures in loc_a: queue_d with two called and six waiting visits, one leftover visit from
@@ -66,12 +66,13 @@ grant insert on tests.snaps, tests.stats to authenticated;
 ------------------------------------------------------------------------------------------------
 -- display_snapshot: content
 ------------------------------------------------------------------------------------------------
+update app.locations set display_names_enabled = false where id = tests.id('loc_a');
 select tests.act_as('display');
 insert into tests.snaps values ('off', api.display_snapshot(tests.id('loc_a')));
 select tests.as_postgres();
 
 select results_eq($$ select (s).location_name, (s).names_enabled, (s).as_of = now() from tests.snaps where name = 'off' $$,
-  $$ values ('Location A', false, true) $$, 'the snapshot names the location, names off by default, as_of now');
+  $$ values ('Location A', false, true) $$, 'the snapshot names the location, names off when the location turned them off, as_of now');
 select is((select array_agg(q.name order by ord) from tests.snaps, unnest((s).queues) with ordinality q(id, name, state, now_serving, next_up, ord) where tests.snaps.name = 'off'),
   array['Walk-ins', 'Display'], 'active queues in sort order; archived queues are left out');
 create view tests.dq as
@@ -99,9 +100,16 @@ insert into tests.snaps values ('on', api.display_snapshot(tests.id('loc_a')));
 select tests.as_postgres();
 select is((select (s).names_enabled from tests.snaps where name = 'on'), true, 'names_enabled follows the location');
 select is((select array_agg(t.first_name) from tests.dq, unnest(now_serving || next_up) t where snap = 'on'),
-  array['Eli', 'Dana', 'Fay', 'Gus', 'Hal', 'Ivy', 'Jo'], 'with names enabled each ticket shows a first name');
+  array['Eli M.', 'Dana L.', 'Fay', 'Gus', 'Hal', 'Ivy', 'Jo'], 'with names enabled each ticket shows first name and last initial, a single word as is');
 select is((select strpos(to_jsonb(s)::text, 'Lee') + strpos(to_jsonb(s)::text, 'Moss') from tests.snaps where name = 'on'), 0,
   'with names enabled, surnames still never appear');
+
+select is(private.display_short_name('James Whitfield'), 'James W.', 'short name: first name and last initial');
+select is(private.display_short_name('  mary   jane van der berg '), 'mary B.', 'short name: first word and last word initial, spaces collapsed');
+select is(private.display_short_name('Dana'), 'Dana', 'short name: one word stays');
+select is(private.display_short_name('   '), null, 'short name: blank is null');
+select is(private.display_short_name('James (walk-in)'), 'James', 'short name: a last word that is not a name adds no initial');
+select is(private.display_short_name(null), null, 'short name: null is null');
 
 ------------------------------------------------------------------------------------------------
 -- display_snapshot: who may call it

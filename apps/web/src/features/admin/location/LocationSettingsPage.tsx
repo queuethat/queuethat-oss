@@ -271,14 +271,6 @@ function LocationSettingsForm({
                   setSettings((s) => ({ ...s, ...next }));
                 }}
               />
-              {settings.displayNamesEnabled ? (
-                <p
-                  className="rounded-control border border-warning-strong bg-warning-soft p-3 text-warning-strong"
-                  data-testid="display-names-warning"
-                >
-                  {t('location.displayNamesWarning')}
-                </p>
-              ) : null}
             </>
           ) : null}
           {section === 'advanced' ? (

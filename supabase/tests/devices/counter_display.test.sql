@@ -64,15 +64,17 @@ select tests.as_postgres();
 select results_eq($$ select status, ticket from tests.snap $$,
   $$ select 'serving', display_ticket from app.visits where id = tests.id('v1') $$,
   'Chair 1 shows the ticket called there');
+select tests.as_postgres();
+update app.locations set display_names_enabled = false where id = tests.id('loc_a');
 select tests.act_as('display');
-select is((api.counter_display_snapshot()).guest_first_name, null, 'names stay hidden by default');
+select is((api.counter_display_snapshot()).guest_first_name, null, 'names stay hidden when the location turned them off');
 select tests.act_as('display2');
 select is((api.counter_display_snapshot()).ticket, null, 'Chair 2 does not see Chair 1''s ticket');
 
 select tests.as_postgres();
 update app.locations set display_names_enabled = true where id = tests.id('loc_a');
 select tests.act_as('display');
-select is((api.counter_display_snapshot()).guest_first_name, 'Dana', 'the first name shows once enabled');
+select is((api.counter_display_snapshot()).guest_first_name, 'Dana L.', 'the first name and last initial show once enabled');
 
 select tests.act_as('kiosk');
 select is(tests.error_of($$ select api.counter_display_snapshot() $$), 'P0001 not_found', 'a kiosk is denied');
