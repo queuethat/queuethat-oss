@@ -1,3 +1,4 @@
+import { CheckIn } from './CheckIn.tsx';
 import { appConfig } from '../../lib/config.ts';
 import { errorCode, formatEta, type Translate } from '@qm/domain';
 import {
@@ -184,6 +185,8 @@ export function StatusPage({ token }: { token: string }) {
           {t(v.late_state === 'late' ? 'status.message.late' : 'status.message.movedBack')}
         </p>
       ) : null}
+
+      <CheckIn token={token} visit={v} />
 
       <CalledTakeover
         called={status === 'called'}

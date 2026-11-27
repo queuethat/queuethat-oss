@@ -101,6 +101,10 @@
       "expired": "Expired",
       "scheduled": "Scheduled"
     },
+    "checkIn": {
+      "button": "I'm here, check me in",
+      "failed": "Check-in didn't go through. Try again, or tell the staff you're here."
+    },
     "message": {
       "called": "It's your turn. Please go to {{counter}}.",
       "calledNoCounter": "It's your turn. Please go to the front desk.",

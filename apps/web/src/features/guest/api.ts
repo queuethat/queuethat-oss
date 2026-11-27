@@ -400,7 +400,7 @@ export function useUndoLeave(token: string) {
 }
 
 /**
- * "I'm on my way" and "I need more time" (G-4) via api.guest_act. One key per tap, kept until the
+ * "I'm on my way", "I need more time" (G-4) and, for a booked guest, "check me in" via api.guest_act. One key per tap, kept until the
  * database answers, so a retry after a lost answer is the same tap and never a second snooze. The
  * answer replaces the live status at once; a refused snooze (`snooze_limit_reached`) leaves it as is.
  */
@@ -408,7 +408,7 @@ export function useGuestAct(token: string) {
   const queryClient = useQueryClient();
   const key = useRef(uuid());
   return useMutation({
-    mutationFn: (action: 'on_my_way' | 'need_more_time') =>
+    mutationFn: (action: 'on_my_way' | 'need_more_time' | 'check_in') =>
       guestRpc('guest_act', { p_token: token, p_action: action, p_idempotency_key: key.current }),
     onSuccess: (visit) => {
       key.current = uuid();
