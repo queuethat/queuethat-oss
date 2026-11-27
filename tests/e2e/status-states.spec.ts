@@ -187,3 +187,21 @@ test('late appointment: told they will join the end, then told they were moved b
   await expect(guest.getByText('You arrived after your appointment time')).toBeVisible();
   await expectNoSeriousA11yViolations(guest);
 });
+
+test('a booked guest checks themselves in from the status page once the window opens', async ({
+  devices,
+}) => {
+  const { guest } = devices;
+  const queue = await freshQueue();
+  const early = await expectedVisit(queue.id, 'Early Eve', 120, { clampToToday: false });
+  await guest.goto(`/v/${early}`);
+  await expect(guest.getByTestId('ticket')).toBeVisible();
+  await expect(guest.getByRole('button', { name: "I'm here, check me in" })).toHaveCount(0);
+
+  const soon = await expectedVisit(queue.id, 'Soon Sue', 10, { clampToToday: false });
+  await guest.goto(`/v/${soon}`);
+  await expectNoSeriousA11yViolations(guest);
+  await guest.getByRole('button', { name: "I'm here, check me in" }).click();
+  await expect(guest.getByTestId('position')).toBeVisible();
+  await expect(guest.getByRole('button', { name: "I'm here, check me in" })).toHaveCount(0);
+});
