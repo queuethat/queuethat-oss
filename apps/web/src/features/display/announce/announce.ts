@@ -161,6 +161,11 @@ export function spellTicket(ticket: string): string {
   return [...ticket].join(' ');
 }
 
+/** "James W." is spoken as "James": a voice would read the initial as a letter name. */
+export function spokenName(name: string | null): string {
+  return (name ?? '').replace(/\s+\p{L}\.$/u, '');
+}
+
 /**
  * The phrase for one call, from the `announce` locale files. The name is spoken only when the
  * snapshot carries it, which the database does only for locations that opted in (never for
@@ -177,7 +182,7 @@ export function callPhrase(t: Translate, ticket: CalledTicket): string {
   return t(key, {
     ticket: spellTicket(ticket.display_ticket ?? ''),
     counter: ticket.counter_label ?? '',
-    name: ticket.first_name ?? '',
+    name: spokenName(ticket.first_name),
   });
 }
 

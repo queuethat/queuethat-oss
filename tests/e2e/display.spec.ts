@@ -138,7 +138,9 @@ test('#529: a socket that stops answering shows the reconnect banner within abou
   await expect(display.getByTestId('reconnecting')).toHaveCount(0, { timeout: 30_000 });
 });
 
-test('AC2: with display names off, no guest names render', async ({ devices }) => {
+test('AC2: by default the board shows first name and last initial, never the rest', async ({
+  devices,
+}) => {
   const { display } = devices;
   const queue = await freshQueue();
   const { display_ticket: waiting } = await join(queue.id, 'Zelda Quartz');
@@ -148,8 +150,10 @@ test('AC2: with display names off, no guest names render', async ({ devices }) =
 
   const board = display.getByRole('region', { name: queue.name });
   await expect(board.getByTestId('now-serving')).toContainText(waiting);
+  await expect(board.getByTestId('now-serving')).toContainText('Zelda Q.');
   await expect(board.getByTestId('next-up')).toContainText(next);
-  for (const name of ['Zelda', 'Quartz', 'Yusuf', 'Marlowe']) {
-    await expect(display.locator('body')).not.toContainText(name);
+  await expect(board.getByTestId('next-up')).toContainText('Yusuf M.');
+  for (const surname of ['Quartz', 'Marlowe']) {
+    await expect(display.locator('body')).not.toContainText(surname);
   }
 });

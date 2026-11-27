@@ -14,7 +14,7 @@ test('AC1: staff see the settings read-only', async ({ devices }) => {
   }
   await expect(staff.getByLabel('Location name')).toHaveValue('Demo Barber Main Street');
   await staff.getByRole('tab', { name: 'Display' }).click();
-  await expect(staff.getByLabel(/Show customers' names/)).toBeDisabled();
+  await expect(staff.getByLabel(/Show a short name/)).toBeDisabled();
   await expect(staff.getByRole('button', { name: 'Save settings' })).toHaveCount(0);
   await expectNoSeriousA11yViolations(staff);
 });
@@ -22,7 +22,7 @@ test('AC1: staff see the settings read-only', async ({ devices }) => {
 test.describe('as an owner', () => {
   test.use({ staffUser: null });
 
-  test('AC2: turning on display names warns, saves, and writes an audit row', async ({
+  test('AC2: names show by default; turning them off saves and writes an audit row', async ({
     devices,
   }) => {
     const { staff } = devices;
@@ -30,11 +30,10 @@ test.describe('as an owner', () => {
     await signInTo(staff, email, '/admin/location');
 
     await staff.getByRole('tab', { name: 'Display' }).click();
-    const toggle = staff.getByLabel(/Show customers' names/);
-    await expect(toggle).not.toBeChecked();
-    await expect(staff.getByTestId('display-names-warning')).toHaveCount(0);
-    await toggle.check();
-    await expect(staff.getByTestId('display-names-warning')).toContainText('Everyone in the room');
+    const toggle = staff.getByLabel(/Show a short name/);
+    await expect(toggle).toBeChecked();
+    await expect(staff.getByText(/first name and last initial, like James W\./)).toBeVisible();
+    await toggle.uncheck();
     await expectNoSeriousA11yViolations(staff);
     await staff.getByRole('button', { name: 'Save settings' }).click();
     await expect(staff.getByRole('status')).toHaveText('Settings saved.');
@@ -43,11 +42,11 @@ test.describe('as an owner', () => {
       'locations?select=display_names_enabled',
       'audit_log?select=action,before,after&table_name=eq.locations&action=eq.UPDATE',
     ]);
-    expect(locations).toEqual([{ display_names_enabled: true }]);
+    expect(locations).toEqual([{ display_names_enabled: false }]);
     expect(audit).toEqual([
       expect.objectContaining({
-        before: expect.objectContaining({ display_names_enabled: false }),
-        after: expect.objectContaining({ display_names_enabled: true }),
+        before: expect.objectContaining({ display_names_enabled: true }),
+        after: expect.objectContaining({ display_names_enabled: false }),
       }),
     ]);
   });
