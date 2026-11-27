@@ -73,3 +73,26 @@ test('the timeline fits a phone-width screen', async ({ devices }) => {
   );
   expect(overflow).toBe(false);
 });
+
+test('an appointment due soon is flagged above the line until they check in', async ({
+  devices,
+}) => {
+  const { staff } = devices;
+  const queue = await freshQueue();
+  const sue = uniq('Due Sue');
+  // Not clamped to today: the cue does not care about the timeline, and a clamp would blur "5 minutes away".
+  await expectedVisit(queue.id, sue, 5, { clampToToday: false });
+  await openQueue(staff, queue.id);
+
+  const cue = staff.getByTestId('due-soon');
+  await expect(cue).toContainText('Appointment due soon');
+  await expect(cue).toContainText(sue);
+  await expect(cue).toContainText('not checked in');
+  await expectNoSeriousA11yViolations(staff);
+
+  await staff
+    .getByTestId('section-expected')
+    .getByRole('button', { name: /^Check in / })
+    .click();
+  await expect(cue).toHaveCount(0);
+});

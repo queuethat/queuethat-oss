@@ -89,11 +89,17 @@ export async function backdateServing(queueId: string, minutes: number): Promise
 }
 
 /**
- * An expected visit for an appointment due `minutes` from now (negative = already due). The time is
- * kept inside the location's current calendar day, because the timeline only shows today: an hour
+ * An expected visit for an appointment due `minutes` from now (negative = already due). Returns its id, which is also its guest link token. The time is
+ * kept inside the location's current calendar day (unless `clampToToday` is false), because the timeline only shows today: an hour
  * ahead at 23:30 local would otherwise land after midnight and drop off it.
  */
-export async function expectedVisit(queueId: string, name: string, minutes: number) {
+export async function expectedVisit(
+  queueId: string,
+  name: string,
+  minutes: number,
+  { clampToToday = true }: { clampToToday?: boolean } = {},
+): Promise<string> {
+  const id = randomUUID();
   const sql = postgres(ADMIN_DATABASE_URL, { max: 1, onnotice: () => {} });
   try {
     await sql.begin(async (tx) => {
@@ -104,7 +110,6 @@ export async function expectedVisit(queueId: string, name: string, minutes: numb
         { tz: string }[]
       >`select tz from app.locations where id = ${demo.locationId}`;
       const tz = loc!.tz;
-      const id = randomUUID();
       const [n] = await tx<{ next: number }[]>`
         select private.next_ticket(${queueId}, ${q!.ticket_prefix}, private.service_day(${demo.locationId})) as next`;
       await tx`insert into app.visits (id, org_id, location_id, queue_id, service_day, ticket_prefix, ticket_number,
@@ -114,14 +119,17 @@ export async function expectedVisit(queueId: string, name: string, minutes: numb
                        private.service_day(${demo.locationId}), ${q!.ticket_prefix}, ${n!.next},
                        ${q!.ticket_prefix + String(n!.next).padStart(3, '0')}, 'expected', ${n!.next * 1024},
                        ${name}, private.token_hash(${id}), 'appointment', ${randomUUID()},
-                       least(
-                         greatest(
-                           now() + ${minutes} * interval '1 minute',
-                           date_trunc('day', now() at time zone ${tz}) at time zone ${tz}
-                         ),
-                         (date_trunc('day', now() at time zone ${tz}) + interval '1 day' - interval '1 second') at time zone ${tz}
-                       ))`;
+                       case when ${clampToToday} then
+                         least(
+                           greatest(
+                             now() + ${minutes} * interval '1 minute',
+                             date_trunc('day', now() at time zone ${tz}) at time zone ${tz}
+                           ),
+                           (date_trunc('day', now() at time zone ${tz}) + interval '1 day' - interval '1 second') at time zone ${tz}
+                         )
+                       else now() + ${minutes} * interval '1 minute' end)`;
     });
+    return id;
   } finally {
     await sql.end();
   }
