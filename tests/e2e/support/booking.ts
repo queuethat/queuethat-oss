@@ -162,7 +162,7 @@ export async function bookAsGuest(
       p_slot_start: slotStart,
       p_name: name,
       p_phone_e164: null,
-      p_email: null,
+      p_email: `${randomUUID()}@example.test`,
       p_party_size: 1,
       p_locale: 'en',
       p_idempotency_key: randomUUID(),

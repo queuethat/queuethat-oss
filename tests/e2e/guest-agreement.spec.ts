@@ -59,6 +59,7 @@ test('booking: an unticked waiver is refused, then accepted and signed', async (
     .first()
     .click();
   await guest.getByLabel('First name').fill('Dana');
+  await guest.getByLabel('Email').fill('dana@example.test');
   await expect(guest.getByRole('heading', { name: 'Studio waiver' })).toBeVisible();
   await expect(guest.getByText('Bring ID')).toBeVisible();
   await expect(guest.getByLabel(/I have read and agree/)).not.toBeChecked();

@@ -18,6 +18,7 @@ export const ERROR_CODES = [
   'not_relevant',
   'not_a_member',
   'invalid_input',
+  'contact_required',
   'invalid_url',
   'invalid_resource',
   'range_too_large',

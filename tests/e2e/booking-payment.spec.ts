@@ -57,6 +57,7 @@ async function bookWithPayment(
     .first()
     .click();
   await guest.getByLabel('First name').fill('Dana');
+  await guest.getByLabel('Email').fill('dana@example.test');
   await guest.getByRole('button', { name: 'Confirm booking' }).click();
 }
 

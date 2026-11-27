@@ -1,7 +1,7 @@
 -- 2P-APT3 (#159): booking RPCs. The 20-way race is in tests/concurrency/booking.test.ts.
 begin;
 \ir ../helpers/_setup.psql
-select plan(20);
+select plan(26);
 select tests.create_world();
 -- Payment policies are covered by payments/require_card.test.sql; this suite books without a card step.
 update app.payment_policies set mode = 'none';
@@ -81,7 +81,7 @@ select throws_ok(format($$ select api.staff_book_appointment(%L, %L, %L, null, '
   tests.id('loc_a'), tests.id('service_a'), (select slot from ctx)),
   '42501', null, 'only manager and up may override capacity');
 select tests.act_as('manager');
-select is((select (api.staff_book_appointment(tests.id('loc_a'), tests.id('service_a'), (select slot from ctx), null, 'Cy', null, null, 1, true, gen_random_uuid())).status),
+select is((select (api.staff_book_appointment(tests.id('loc_a'), tests.id('service_a'), (select slot from ctx), null, 'Cy', '+15551230077', null, 1, true, gen_random_uuid())).status),
   'booked', 'a manager may book a full slot with the override');
 select tests.as_postgres();
 select is((select count(*)::int from app.audit_log where table_name = 'appointments' and after ->> 'override_capacity' = 'true'), 1,
@@ -89,6 +89,26 @@ select is((select count(*)::int from app.audit_log where table_name = 'appointme
 select tests.act_as('manager');
 select is((select (api.staff_cancel_appointment((select id from app.appointments where guest_name = 'Cy'), 0, 'changed mind', gen_random_uuid())).status),
   'cancelled', 'staff cancel releases the booking');
+
+-- A booking needs a phone or an email so the guest can get confirmations and reminders.
+select tests.act_as('manager');
+select throws_ok(format($$ select api.staff_book_appointment(%L, %L, %L, null, 'Dee', null, null, 1, true, gen_random_uuid()) $$,
+  tests.id('loc_a'), tests.id('service_a'), (select slot from ctx)),
+  'P0001', 'contact_required', 'staff booking with no phone and no email is refused');
+select throws_ok(format($$ select api.staff_book_appointment(%L, %L, %L, null, 'Dee', '  ', '   ', 1, true, gen_random_uuid()) $$,
+  tests.id('loc_a'), tests.id('service_a'), (select slot from ctx)),
+  'P0001', 'contact_required', 'blank phone and email count as none');
+select is((select (api.staff_book_appointment(tests.id('loc_a'), tests.id('service_a'), (select slot from ctx), null, 'Eve', null, 'eve@example.com', 1, true, gen_random_uuid())).status),
+  'booked', 'an email alone is enough');
+select tests.as_anon();
+select throws_ok(format($$ select api.book_appointment(%L, %L, %L, 'Fay', null, null, 1, null, gen_random_uuid()) $$,
+  (select slug from ctx), tests.id('service_a'), (select slot from ctx)),
+  'P0001', 'contact_required', 'a guest booking with no phone and no email is refused');
+select throws_ok(format($$ select api.book_appointment(%L, %L, %L, 'Fay', '', '', 1, null, gen_random_uuid()) $$,
+  (select slug from ctx), tests.id('service_a'), (select slot from ctx)),
+  'P0001', 'contact_required', 'a guest booking with blank phone and email is refused');
+select is((select count(*)::int from api.book_appointment((select slug from ctx), tests.id('service_a'), (select slot from ctx) + interval '30 minutes', 'Gus', null, 'gus@example.com', 1, null, gen_random_uuid())), 1,
+  'a guest booking with only an email succeeds');
 
 select * from finish();
 rollback;

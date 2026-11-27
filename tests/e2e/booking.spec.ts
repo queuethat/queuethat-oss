@@ -30,6 +30,7 @@ test('a double tap on Confirm books exactly one appointment, shown in the locati
     .first()
     .click();
   await guest.getByLabel('First name').fill('Dana');
+  await guest.getByLabel('Email').fill('dana@example.test');
   await expectNoSeriousA11yViolations(guest);
   await guest.getByRole('button', { name: 'Confirm booking' }).dblclick();
 
@@ -39,6 +40,33 @@ test('a double tap on Confirm books exactly one appointment, shown in the locati
   // The page moves on as soon as the answer arrives, which can be before its body is read.
   const booked = await Promise.all(pending);
   expect(new Set(booked).size).toBe(1);
+});
+
+test('a booking needs a phone or an email, and says so before anything is sent', async ({
+  devices,
+}) => {
+  const { guest } = devices;
+  const { slug } = await bookableLocation('Europe/Berlin');
+  const sent: string[] = [];
+  guest.on('request', (request) => {
+    if (request.url().endsWith('/rpc/book_appointment')) sent.push(request.url());
+  });
+
+  await guest.goto(`/b/${slug}`);
+  await guest.getByRole('list').first().getByRole('button').first().click();
+  await guest
+    .getByRole('button', { name: /^\d{1,2}:\d{2}/ })
+    .first()
+    .click();
+  await guest.getByLabel('First name').fill('Dana');
+  await expect(guest.getByText(/A family member's works too/)).toBeVisible();
+  await guest.getByRole('button', { name: 'Confirm booking' }).click();
+  await expect(guest.getByRole('alert')).toContainText('phone number or an email');
+  expect(sent).toHaveLength(0);
+
+  await guest.getByLabel('Email').fill('dana@example.test');
+  await guest.getByRole('button', { name: 'Confirm booking' }).click();
+  await expect(guest).toHaveURL(/\/a\/[\w-]+$/);
 });
 
 test('a slot taken by someone else shows a friendly message and fresh times @core', async ({
@@ -54,6 +82,7 @@ test('a slot taken by someone else shows a friendly message and fresh times @cor
     .first()
     .click();
   await guest.getByLabel('First name').fill('Dana');
+  await guest.getByLabel('Email').fill('dana@example.test');
   // Another guest takes the earliest slot while this one types.
   const earliest = await firstSlot(
     slug,

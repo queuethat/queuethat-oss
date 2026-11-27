@@ -40,6 +40,7 @@ test('booking: the form shows after the details, a refused answer is fixed after
     .first()
     .click();
   await guest.getByLabel('First name').fill('Dana');
+  await guest.getByLabel('Email').fill('dana@example.test');
   await expect(guest.getByRole('heading', { name: 'About you' })).toBeVisible();
   await guest.getByLabel('Neck').check();
   await expectNoSeriousA11yViolations(guest);

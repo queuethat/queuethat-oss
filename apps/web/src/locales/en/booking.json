@@ -53,10 +53,14 @@
       "org_suspended": "This business isn't taking bookings right now.",
       "plan_limit_reached": "This place isn't taking more online bookings this month. Try another month, or contact them directly.",
       "not_found": "We can't find that place.",
+      "contact_required": "Add a phone number or an email so the business can reach you about this booking.",
       "unknown": "Something went wrong. Check your connection and try again.",
       "invalid_input": "Check the details and try again."
     },
-    "contactRequired": "Add a phone number or an email so we can reach you if the event changes.",
+    "contactRequired": "Add a phone number or an email so the business can reach you about this booking.",
+    "contactNote": "A phone number or an email is needed so the business can reach you. A family member's works too.",
+    "phoneEither": "Mobile number",
+    "emailEither": "Email",
     "tabs": {
       "label": "What to book",
       "slots": "Appointments",
